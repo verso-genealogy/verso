@@ -1,0 +1,9 @@
+# Invented: old letters in a name of a civil registry book (ZGS005) and an estate written in it (ZGS004), on a death
+# that is held (reviewed=False) — a held record is linted like any other, by dsllint and by the walk alike.
+from verso.ru.dsl import Gender, death, death_records, person
+
+deaths = death_records(
+    "Госархив Примерской области", "21", "3", "113", "Примерово", "", 1926,
+    death(1, Gender.MALE, 1, 2, deceased=person("Ѳома", "Лукинъ", "Примеровъ", status="экономический крестьянин"),
+          reviewed=False),
+    civil=True)

@@ -1,0 +1,27 @@
+# Invented: a relative's relationship_ref misspelled with a known correction (REL001), and one no
+# allowlist knows (REL002), in a birth, a marriage and a death; allowed references stay quiet.
+from verso.ru.dsl import Gender, Month, Relationship, birth, birth_records, death, death_records, marriage, marriage_records, person, relative
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4047", "Маниловка", "Церковь", 1851,
+    birth(1, Gender.MALE, 3, 5, child=person("Лука"),
+          father=person("Ѳома", "Лукинъ", "Примеровъ"), mother=person("Марія"),
+          god_parent1=person("Сергій", "Косьминъ", "Опискинъ"), god_parent2=person("Анфиса"),
+          relatives=[relative(person("Петр", "Ѳомичъ"), Relationship.FATHER, "восприемника 1"),
+                     relative(person("Иван", "Ѳомичъ"), Relationship.FATHER, "воспреемника №2"),
+                     relative(person("Лука", "Ѳомичъ"), Relationship.FATHER, "восприемника №1"),
+                     relative(person("Марія"), Relationship.MOTHER, "соседка")]))
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4048", "Маниловка", "Церковь", 1852,
+    marriage(1, 7, Month.FEBRUARY, groom=person("Лука", "Ѳомичъ", "Примеровъ"), bride=person("Марія", "Ивановна"),
+             witness1=person("Петр", "Ивановъ"),
+             relatives=[relative(person("Ѳома", "Лукинъ"), Relationship.FATHER, "жениха"),
+                        relative(person("Анфиса"), Relationship.MOTHER, "невесты"),
+                        relative(person("Иван", "Петровъ"), Relationship.FATHER, "невеста"),
+                        relative(person("Сергій", "Петровъ"), Relationship.FATHER, "поручитель №1")]))
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4049", "Маниловка", "Церковь", 1853,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука", "Ѳомичъ", "Примеровъ"), age=60,
+          relatives=[relative(person("Марія"), Relationship.WIFE, "вдова")]))

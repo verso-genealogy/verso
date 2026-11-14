@@ -1,0 +1,10 @@
+from verso.ru.dsl import birth, birth_month, birth_records
+from verso.ru.dsl import Gender, RecordDefaults, person
+from verso.ru.dsl import Relationship, relative
+DEFAULTS = RecordDefaults(status_male=TENTETNIKOV_M, status_female=TENTETNIKOV_F)
+mk = birth_records(
+    "ЦГАРМ", "57", "6", "1", "Горюхино", "Николаевская", 1842,
+    birth(1, Gender.MALE, 3, 5,
+          father=person("Ѳедоръ", "Харитоновъ", status=TENTETNIKOV_M)),
+    defaults=DEFAULTS,
+)

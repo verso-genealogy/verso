@@ -1,0 +1,9 @@
+# What the given names of the snapshot link to: P460 («said to be the same as») and P1560 («given name version
+# for other gender»). `wikidata.py` fills @ITEMS@ with a batch of `wd:Q…` and asks batch by batch.
+SELECT ?item ?property ?target
+WHERE {
+  VALUES ?item { @ITEMS@ }
+  { ?item wdt:P460 ?target . BIND("p460" AS ?property) }
+  UNION
+  { ?item wdt:P1560 ?target . BIND("p1560" AS ?property) }
+}

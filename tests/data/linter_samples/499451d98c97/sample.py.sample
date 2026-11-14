@@ -1,0 +1,3 @@
+birth(1, Gender.MALE,
+      mother=person("Иван",
+                    status=SOLDIER_WIFE))

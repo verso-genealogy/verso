@@ -1,0 +1,72 @@
+# verso-ru: the Russian books' plugin — the DSL and its kinds, the domain, naming, facts,
+# consolidation, linters, exporters, importers, the translator, the CLI's modules.
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "verso-ru"
+version = "0.1.38"
+description = "verso's plugin for records written in Russian: DSL, naming, linters, facts, translator"
+requires-python = ">=3.14"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Dmitry Malchikov" }]
+readme = "README.md"
+keywords = ["genealogy", "metric books", "revision lists", "russian empire", "geni"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: Russian",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Sociology :: Genealogy",
+]
+# Pinned EXACTLY: their bytes reach what the corpus produces. python-dateutil does the
+# translator's date and age arithmetic; openpyxl writes the Familio справочник; libcst writes
+# Verso's edits back into the DSL and runs the codemods. There is no uv.lock (see `bootstrap` in
+# the root Makefile), so this is the only place the version is held, and a bump arrives as a
+# Dependabot PR: Lint and Test's staleness guards fail one that moves the generated tree or a
+# committed CSV, and a corpus's own byte-for-byte comparison covers the rest of its
+# output; openpyxl and libcst are held by their own tests. tests/test_output_pins.py keeps them
+# exact. The res_names' transliteration is no package since 0.1.0: the profile ru-v1, our own table
+# frozen by its hash (verso.ru.naming.transliteration).
+dependencies = [
+    "verso-core==0.1.38",
+    "python-dateutil==4.0.0",
+]
+
+[project.urls]
+Repository = "https://github.com/verso-genealogy/verso"
+Issues = "https://github.com/verso-genealogy/verso/issues"
+
+[project.optional-dependencies]
+# The Familio справочник (verso familio-spravochnik).
+xlsx = ["openpyxl==3.1.5"]
+# What edits the DSL: verso upgrade-dsl, the DSL's source primitives Verso writes through.
+dsl-tools = ["libcst==1.9.0"]
+# The Google Sheets importer: it writes DSL, so it takes the DSL's tools too.
+sheets = ["verso-ru[dsl-tools]", "gspread>=6.0"]
+
+# The plugins the core's registry finds (verso.core.plugins); a workspace enables one by
+# name (`plugins = ["ru"]` in verso.toml). After a change here, `make bootstrap`: an entry point
+# is the venv's metadata.
+[project.entry-points."verso.plugins"]
+ru = "verso.ru.plugin:PLUGIN"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["verso.ru*"]
+
+# The official Familio МК submission template, the святцы table (with its upstream licence)
+# the church-calendar checks read, the names base (its three tables and their sources), the
+# records v1 JSON Schema of the plugin's vocabulary, and the DSL's surface — all read through
+# importlib.resources.
+[tool.setuptools.package-data]
+"verso.ru" = ["locales/*.toml", "py.typed"]
+"verso.ru.church_calendar" = ["data/*.tsv", "data/LICENSE*"]
+"verso.ru.naming" = ["data/base/*.tsv", "data/base/SOURCES.md", "data/translit/*.toml"]
+"verso.ru.records" = ["*.json", "*.toml"]
+"verso.ru.dsl" = ["api-v*.json"]
+"verso.ru.linters" = ["hosted.toml"]

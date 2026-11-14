@@ -1,0 +1,16 @@
+# Invented: external-source cards — a marital status no catalog constant holds on a WWI and a WWII card
+# (MST001; a criminal card has no marital_status), and ages of a card that cannot be read or spell whole
+# years as a string (AGE001, AGE002).
+from verso.ru.dsl import criminal_record, external_source_records, person, wwi_record, wwii_record
+from verso.ru.dsl.marital_status import MARRIED
+
+cards = external_source_records(
+    "Маниловка",
+    wwi_record(person("Лука", "Ѳомичъ", "Примеровъ", residence="Маниловка"), source_url="https://example.org/a/1",
+               age="30 лет", marital_status="женатый"),
+    wwi_record(person("Иван", "Петровъ", "Опискинъ", residence="Маниловка"), source_url="https://example.org/a/2",
+               age=-5, marital_status=MARRIED),
+    wwii_record(person("Петр", "Лукичъ", "Примеровъ", residence="Маниловка"), source_url="https://example.org/a/3",
+                age="тридцать", marital_status="неженат"),
+    criminal_record(person("Сергій", "Косьминъ", "Опискинъ", residence="Маниловка"), original_text="текст",
+                    source_url="https://example.org/a/4", age="1 год"))

@@ -1,0 +1,3 @@
+death_records("a", "f", "i", "c", "Заманиловка", "Церковь", 1816,
+    death(1, Gender.FEMALE, 12, 14, deceased=person("Пелагея", residence="Собакевичево"), age="3 мес", relatives=[relative(person("Прохор", "Лукин", residence="Собакевичево"), Relationship.FATHER)]),
+    defaults=RecordDefaults(residence="Заманиловка"))

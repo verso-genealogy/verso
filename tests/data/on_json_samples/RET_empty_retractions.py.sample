@@ -1,0 +1,29 @@
+# Invented: age retractions on lines that state no such age (RET001: previous_age_error with no
+# previous figure; RET002: source_age_error with no age, and on a burial source_age_error / namesake with
+# none; RET003: both on one line) — on a leaf that is held (reviewed=False), which is linted like any
+# other. A line that states the age it retracts stays quiet.
+from verso.ru.dsl import CensusRole, Gender, census_records, death, death_records, household, member, page, person
+
+census = census_records(
+    "ГА Глуповской области", "10", "4", "4044", "Маниловка", 1858,
+    *page("16",
+          household("3",
+                    member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60,
+                           previous_age_error="писец ошибся"),
+                    member(2, person("Марія"), CensusRole.WIFE, ref_member=1,
+                           source_age_error="возраст не прочитан"),
+                    member(3, person("Ѳома", "Лукинъ"), CensusRole.SON, ref_member=1, age=20, previous_age=15,
+                           source_age_error="писец ошибся", previous_age_error="писец ошибся"),
+                    member(4, person("Иван", "Лукинъ"), CensusRole.SON, ref_member=1, age=18,
+                           source_age_error="писец ошибся"),
+                    member(5, person("Петр", "Лукинъ"), CensusRole.SON, ref_member=1, birth_year=1850,
+                           comment="прошлая РС: 4", previous_age_error="писец ошибся", source_age_error="писец ошибся")),
+          reviewed=False))
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4049", "Маниловка", "Церковь", 1853,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука"), source_age_error="возраст не прочитан",
+          namesake="другой Лука"),
+    death(2, Gender.MALE, 5, 6, deceased=person("Иван"), age=40, source_age_error="возраст не прочитан",
+          namesake="другой Иван"),
+    death(3, Gender.FEMALE, 7, 8, deceased=person("Марія"), age="?", namesake="другая Марія"))

@@ -1,0 +1,21 @@
+# Invented: ages of a burial and a wedding that spell a whole number of years as a string (AGE001: a
+# quoted number, a year unit), and ages no one can read (AGE002: negative, junk text, a repeated unit);
+# readable ages stay quiet.
+from verso.ru.dsl import Gender, Month, death, death_records, marriage, marriage_records, person
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4049", "Маниловка", "Церковь", 1853,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука"), age="70"),
+    death(2, Gender.FEMALE, 5, 6, deceased=person("Марія"), age="1 год"),
+    death(3, Gender.MALE, 7, 8, deceased=person("Иван"), age="3 мес"),
+    death(4, Gender.MALE, 9, 10, deceased=person("Петр"), age=-4),
+    death(5, Gender.FEMALE, 11, 12, deceased=person("Анфиса"), age="много лет"),
+    death(7, Gender.MALE, 15, 16, deceased=person("Ѳома"), age=-2.5),
+    death(8, Gender.MALE, 17, 18, deceased=person("Лука"), age=35))
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4048", "Маниловка", "Церковь", 1852,
+    marriage(1, 7, Month.FEBRUARY, groom=person("Лука", "Ѳомичъ", "Примеровъ"), bride=person("Марія", "Ивановна"),
+             groom_age="25 лет", bride_age="19 лет 19 лет"),
+    marriage(2, 8, Month.FEBRUARY, groom=person("Иван", "Петровъ", "Опискинъ"), bride=person("Анфиса", "Кузьминична"),
+             groom_age=22, bride_age="17 лет 6 мес"))

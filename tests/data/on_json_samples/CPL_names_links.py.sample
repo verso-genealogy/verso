@@ -1,0 +1,39 @@
+# Invented: a hidden parent whose reference makes a couple that cannot be one (CPL011) and a patronymic the member's
+# linked father's name cannot give (CPL012; member 8's is one a table without «Андрей» cannot even canonicalize).
+from verso.ru.dsl import CensusRole, census_records, household, member, person
+
+links = census_records(
+    "ГА Глуповской области", "10", "4", "4048", "Маниловка", 1858,
+    # CPL011: a hidden brother of the head with the head as the partner of his children; a hidden uncle beside a man
+    # of his own sex; a hidden father pointing at the mother (a couple, silent); and one with a declared spouse.
+    household("1",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),
+              member(2, person("Ѳома", "Лукинъ"), CensusRole.SON, ref_member=1, age=30),
+              member(-1, person("Иванъ"), CensusRole.BROTHER, ref_member=1, hidden=True),
+              member(3, person("Семенъ"), CensusRole.NEPHEW, ref_member=1, parent_member=-1, age=20)),
+    household("2",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),
+              member(2, person("Петръ"), CensusRole.BROTHER, ref_member=1, age=50),
+              member(-1, person("Иванъ"), CensusRole.UNCLE, ref_member=2, hidden=True),
+              member(3, person("Семенъ"), CensusRole.NEPHEW, ref_member=2, parent_member=-1, age=20)),
+    household("3",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),
+              member(2, person("Анна"), CensusRole.WIFE, ref_member=1, age=55),
+              member(-1, person("Иванъ"), CensusRole.FATHER, ref_member=2, hidden=True),
+              member(3, person("Семенъ"), CensusRole.SON, ref_member=1, parent_member=-1, age=20)),
+    household("4",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),
+              member(2, person("Петръ"), CensusRole.BROTHER, ref_member=1, age=50),
+              member(-1, person("Иванъ"), CensusRole.UNCLE, ref_member=2, hidden=True, spouse_member=2),
+              member(3, person("Семенъ"), CensusRole.NEPHEW, ref_member=2, parent_member=-1, age=20)),
+    # CPL012: a patronymic the father's name cannot give — by a son's ref_member and by parent_member; one that
+    # agrees (silent); one whose patr_old agrees (silent); a woman for a father (skipped).
+    household("5",
+              member(1, person("Петръ", "Лукинъ", "Примеровъ"), CensusRole.HEAD, age=60),
+              member(2, person("Ѳома", "Ивановъ"), CensusRole.SON, ref_member=1, age=30),
+              member(3, person("Семенъ", "Петровъ"), CensusRole.GRANDSON, ref_member=1, parent_member=2, age=5),
+              member(4, person("Марія", "Петрова"), CensusRole.DAUGHTER, ref_member=1, age=25),
+              member(5, person("Иванъ", "Фомичъ", patr_old="Петров"), CensusRole.SON, ref_member=1, age=20),
+              member(6, person("Анна"), CensusRole.WIFE, ref_member=2, age=28),
+              member(7, person("Семенъ", "Ивановъ"), CensusRole.GRANDSON, ref_member=2, parent_member=6, age=3),
+              member(8, person("Андрей", "Андреевъ"), CensusRole.SON, ref_member=1, age=10)))

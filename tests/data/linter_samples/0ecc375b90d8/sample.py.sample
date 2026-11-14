@@ -1,0 +1,2 @@
+criminal_record(person("X"), source_url="u", original_text="t", age=40)
+wwi_record(person("Y"), source_url="u", age="19 лет 6 мес")

@@ -1,0 +1,3 @@
+from geni.domain import person
+
+x = 1

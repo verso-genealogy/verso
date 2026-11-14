@@ -1,0 +1,13 @@
+# A toy workspace (examples/): one invented village, «Степанчиково», after Dostoevsky's
+# «Село Степанчиково и его обитатели» — its people, its landlord and its book are made up.
+schema = 6
+villages = ["Степанчиково"]
+plugins = ["ru"]
+
+[names]
+base = "ru"
+layers = ["names"]
+writable = "names"
+
+[corpus]
+dir = "corpus"

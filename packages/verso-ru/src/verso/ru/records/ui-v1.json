@@ -1,0 +1,2570 @@
+{
+ "schema": "ui-v1",
+ "records": "records-v1",
+ "package": "verso.ru",
+ "kinds": {
+  "birth": {
+   "label": "ui.kind.birth",
+   "fields": [
+    {
+     "path": "number",
+     "type": "age",
+     "label": "ui.field.number"
+    },
+    {
+     "path": "gender",
+     "type": "enum",
+     "label": "ui.field.gender",
+     "enum": "gender"
+    },
+    {
+     "path": "birth.day",
+     "type": "integer",
+     "label": "ui.field.birth_day"
+    },
+    {
+     "path": "baptism.day",
+     "type": "integer",
+     "label": "ui.field.baptism_day"
+    },
+    {
+     "path": "birth.month",
+     "type": "enum",
+     "label": "ui.field.birth_month",
+     "enum": "month"
+    },
+    {
+     "path": "baptism.month",
+     "type": "enum",
+     "label": "ui.field.baptism_month",
+     "enum": "month"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.field.page"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "comment",
+     "type": "text",
+     "label": "ui.field.comment",
+     "widget": "wide"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "baptism.year",
+     "type": "integer",
+     "label": "ui.field.baptism_year"
+    },
+    {
+     "path": "source_date_error",
+     "type": "text",
+     "label": "ui.field.source_date_error",
+     "checks": true
+    },
+    {
+     "path": "calendar_note",
+     "type": "text",
+     "label": "ui.field.calendar_note_birth",
+     "checks": true
+    },
+    {
+     "path": "civil",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "baptism.age",
+     "type": "integer",
+     "hidden": true
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "book",
+     "type": "text",
+     "hidden": true
+    }
+   ],
+   "slots": [
+    {
+     "role": "child",
+     "label": "ui.slot.child",
+     "gender": "of_record"
+    },
+    {
+     "role": "father",
+     "label": "ui.slot.father",
+     "gender": "male"
+    },
+    {
+     "role": "mother",
+     "label": "ui.slot.mother",
+     "gender": "female"
+    },
+    {
+     "role": "godparent",
+     "label": "ui.slot.godparent",
+     "slots": [
+      1,
+      4
+     ],
+     "gender": null,
+     "quick": "ui.quick.godparent"
+    },
+    {
+     "role": "priest",
+     "label": "ui.slot.priest",
+     "gender": "male"
+    },
+    {
+     "role": "deacon",
+     "label": "ui.slot.deacon",
+     "gender": "male"
+    },
+    {
+     "role": "dyachok",
+     "label": "ui.slot.dyachok",
+     "gender": "male"
+    },
+    {
+     "role": "sexton",
+     "label": "ui.slot.sexton",
+     "gender": "male"
+    }
+   ],
+   "groups": [
+    {
+     "name": "relatives",
+     "label": "ui.group.relatives",
+     "item": {
+      "role": "relative",
+      "fields": [
+       {
+        "path": "relationship",
+        "type": "enum",
+        "label": "ui.field.relationship",
+        "enum": "relationship"
+       },
+       {
+        "path": "relationship_ref",
+        "type": "ref",
+        "label": "ui.field.relationship_ref",
+        "ref": {
+         "to": "slot",
+         "choices": [
+          {
+           "role": "mother",
+           "word": "мать",
+           "label": "ui.ref.mother"
+          },
+          {
+           "role": "godparent",
+           "word": "восприемника №{n}",
+           "label": "ui.ref.godparent"
+          }
+         ]
+        }
+       }
+      ],
+      "persons": [
+       "person"
+      ]
+     },
+     "orderable": true
+    }
+   ],
+   "events": [
+    {
+     "label": "ui.event.birth",
+     "day": "birth.day",
+     "month": "birth.month",
+     "year": "year",
+     "of": "ui.event.of_birth"
+    },
+    {
+     "label": "ui.event.baptism",
+     "day": "baptism.day",
+     "month": "baptism.month",
+     "year": "baptism.year"
+    }
+   ],
+   "draft": {
+    "creatable": true,
+    "slots": [
+     "child",
+     "father",
+     "mother"
+    ]
+   },
+   "rules": [
+    {
+     "rule": "follows",
+     "from": "birth.month",
+     "to": "baptism.month",
+     "advance": {
+      "day_from": "birth.day",
+      "day_to": "baptism.day"
+     }
+    },
+    {
+     "rule": "late",
+     "after": 0,
+     "event": 1,
+     "days": 12
+    },
+    {
+     "rule": "ref_choices",
+     "group": "relatives",
+     "path": "relationship_ref"
+    }
+   ]
+  },
+  "christening": {
+   "label": "ui.kind.christening",
+   "fields": [
+    {
+     "path": "number",
+     "type": "age",
+     "label": "ui.field.number"
+    },
+    {
+     "path": "gender",
+     "type": "enum",
+     "label": "ui.field.gender",
+     "enum": "gender"
+    },
+    {
+     "path": "baptism.day",
+     "type": "integer",
+     "label": "ui.field.baptism_day"
+    },
+    {
+     "path": "baptism.month",
+     "type": "enum",
+     "label": "ui.field.baptism_month",
+     "enum": "month"
+    },
+    {
+     "path": "baptism.age",
+     "type": "integer",
+     "label": "ui.field.baptism_age"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.field.page"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "comment",
+     "type": "text",
+     "label": "ui.field.comment",
+     "widget": "wide"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "calendar_note",
+     "type": "text",
+     "label": "ui.field.calendar_note_birth",
+     "checks": true
+    },
+    {
+     "path": "civil",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "source_date_error",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "birth.day",
+     "type": "integer",
+     "hidden": true
+    },
+    {
+     "path": "birth.month",
+     "type": "enum",
+     "hidden": true
+    },
+    {
+     "path": "baptism.year",
+     "type": "integer",
+     "hidden": true
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "book",
+     "type": "text",
+     "hidden": true
+    }
+   ],
+   "slots": [
+    {
+     "role": "child",
+     "label": "ui.slot.child",
+     "gender": "of_record"
+    },
+    {
+     "role": "father",
+     "label": "ui.slot.father",
+     "gender": "male"
+    },
+    {
+     "role": "mother",
+     "label": "ui.slot.mother",
+     "gender": "female"
+    },
+    {
+     "role": "godparent",
+     "label": "ui.slot.godparent",
+     "slots": [
+      1,
+      4
+     ],
+     "gender": null,
+     "quick": "ui.quick.godparent"
+    },
+    {
+     "role": "priest",
+     "label": "ui.slot.priest",
+     "gender": "male"
+    },
+    {
+     "role": "deacon",
+     "label": "ui.slot.deacon",
+     "gender": "male"
+    },
+    {
+     "role": "dyachok",
+     "label": "ui.slot.dyachok",
+     "gender": "male"
+    },
+    {
+     "role": "sexton",
+     "label": "ui.slot.sexton",
+     "gender": "male"
+    }
+   ],
+   "groups": [
+    {
+     "name": "relatives",
+     "label": "ui.group.relatives",
+     "item": {
+      "role": "relative",
+      "fields": [
+       {
+        "path": "relationship",
+        "type": "enum",
+        "label": "ui.field.relationship",
+        "enum": "relationship"
+       },
+       {
+        "path": "relationship_ref",
+        "type": "ref",
+        "label": "ui.field.relationship_ref",
+        "ref": {
+         "to": "slot",
+         "choices": [
+          {
+           "role": "mother",
+           "word": "мать",
+           "label": "ui.ref.mother"
+          },
+          {
+           "role": "godparent",
+           "word": "восприемника №{n}",
+           "label": "ui.ref.godparent"
+          }
+         ]
+        }
+       }
+      ],
+      "persons": [
+       "person"
+      ]
+     },
+     "orderable": true
+    }
+   ],
+   "events": [
+    {
+     "label": "ui.event.baptism",
+     "day": "baptism.day",
+     "month": "baptism.month"
+    }
+   ],
+   "draft": {
+    "creatable": false,
+    "slots": []
+   },
+   "rules": [
+    {
+     "rule": "ref_choices",
+     "group": "relatives",
+     "path": "relationship_ref"
+    }
+   ]
+  },
+  "marriage": {
+   "label": "ui.kind.marriage",
+   "fields": [
+    {
+     "path": "number",
+     "type": "age",
+     "label": "ui.field.number"
+    },
+    {
+     "path": "marriage.day",
+     "type": "integer",
+     "label": "ui.field.marriage_day"
+    },
+    {
+     "path": "marriage.month",
+     "type": "enum",
+     "label": "ui.field.marriage_month",
+     "enum": "month"
+    },
+    {
+     "path": "groom_marriage_number",
+     "type": "integer",
+     "label": "ui.field.groom_marriage_number"
+    },
+    {
+     "path": "bride_marriage_number",
+     "type": "integer",
+     "label": "ui.field.bride_marriage_number"
+    },
+    {
+     "path": "groom_age",
+     "type": "age",
+     "label": "ui.field.groom_age"
+    },
+    {
+     "path": "bride_age",
+     "type": "age",
+     "label": "ui.field.bride_age"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.field.page"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.field.village"
+    },
+    {
+     "path": "church",
+     "type": "text",
+     "label": "ui.field.church"
+    },
+    {
+     "path": "comment",
+     "type": "text",
+     "label": "ui.field.comment",
+     "widget": "wide"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "bride_takes_groom_surname",
+     "type": "boolean",
+     "label": "ui.field.bride_takes_groom_surname"
+    },
+    {
+     "path": "source_kin_error",
+     "type": "text",
+     "label": "ui.field.source_kin_error",
+     "checks": true
+    },
+    {
+     "path": "calendar_note",
+     "type": "text",
+     "label": "ui.field.calendar_note_marriage",
+     "checks": true
+    },
+    {
+     "path": "civil",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "archive",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "fund",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "book",
+     "type": "text",
+     "hidden": true
+    }
+   ],
+   "slots": [
+    {
+     "role": "groom",
+     "label": "ui.slot.groom",
+     "gender": "male",
+     "row": [
+      "groom_age",
+      "groom_marriage_number"
+     ]
+    },
+    {
+     "role": "bride",
+     "label": "ui.slot.bride",
+     "gender": "female",
+     "row": [
+      "bride_age",
+      "bride_marriage_number"
+     ]
+    },
+    {
+     "role": "witness",
+     "label": "ui.slot.witness",
+     "slots": [
+      1,
+      6
+     ],
+     "gender": null,
+     "party": "side",
+     "quick": "ui.quick.witness"
+    },
+    {
+     "role": "priest",
+     "label": "ui.slot.priest",
+     "gender": "male"
+    },
+    {
+     "role": "deacon",
+     "label": "ui.slot.deacon",
+     "gender": "male"
+    },
+    {
+     "role": "dyachok",
+     "label": "ui.slot.dyachok",
+     "gender": "male"
+    },
+    {
+     "role": "sexton",
+     "label": "ui.slot.sexton",
+     "gender": "male"
+    }
+   ],
+   "groups": [
+    {
+     "name": "relatives",
+     "label": "ui.group.relatives",
+     "item": {
+      "role": "relative",
+      "fields": [
+       {
+        "path": "relationship",
+        "type": "enum",
+        "label": "ui.field.relationship",
+        "enum": "relationship"
+       },
+       {
+        "path": "relationship_ref",
+        "type": "ref",
+        "label": "ui.field.relationship_ref",
+        "ref": {
+         "to": "slot",
+         "choices": [
+          {
+           "role": "groom",
+           "word": "жених",
+           "label": "ui.ref.groom"
+          },
+          {
+           "role": "bride",
+           "word": "невеста",
+           "label": "ui.ref.bride"
+          },
+          {
+           "role": "witness",
+           "word": "поручитель №{n}",
+           "label": "ui.ref.witness"
+          }
+         ]
+        }
+       }
+      ],
+      "persons": [
+       "person"
+      ]
+     },
+     "orderable": true
+    }
+   ],
+   "events": [
+    {
+     "label": "ui.event.marriage",
+     "day": "marriage.day",
+     "month": "marriage.month"
+    }
+   ],
+   "draft": {
+    "creatable": true,
+    "slots": [
+     "groom",
+     "bride"
+    ]
+   },
+   "rules": [
+    {
+     "rule": "ref_choices",
+     "group": "relatives",
+     "path": "relationship_ref",
+     "party": "side"
+    }
+   ]
+  },
+  "death": {
+   "label": "ui.kind.death",
+   "fields": [
+    {
+     "path": "number",
+     "type": "age",
+     "label": "ui.field.number"
+    },
+    {
+     "path": "gender",
+     "type": "enum",
+     "label": "ui.field.gender",
+     "enum": "gender"
+    },
+    {
+     "path": "death.day",
+     "type": "integer",
+     "label": "ui.field.death_day"
+    },
+    {
+     "path": "burial.day",
+     "type": "integer",
+     "label": "ui.field.burial_day"
+    },
+    {
+     "path": "death.month",
+     "type": "enum",
+     "label": "ui.field.death_month",
+     "enum": "month"
+    },
+    {
+     "path": "burial.month",
+     "type": "enum",
+     "label": "ui.field.burial_month",
+     "enum": "month"
+    },
+    {
+     "path": "age",
+     "type": "age",
+     "label": "ui.field.age"
+    },
+    {
+     "path": "cause_of_death",
+     "type": "catalog",
+     "label": "ui.field.cause_of_death",
+     "catalog": "cause",
+     "quick": "ui.quick.cause_of_death"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.field.page"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "comment",
+     "type": "text",
+     "label": "ui.field.comment",
+     "widget": "wide"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "source_age_error",
+     "type": "text",
+     "label": "ui.field.source_age_error",
+     "checks": true
+    },
+    {
+     "path": "source_date_error",
+     "type": "text",
+     "label": "ui.field.source_date_error",
+     "checks": true
+    },
+    {
+     "path": "namesake",
+     "type": "text",
+     "label": "ui.field.namesake",
+     "checks": true
+    },
+    {
+     "path": "civil",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "archive",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "fund",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "church",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "book",
+     "type": "text",
+     "hidden": true
+    }
+   ],
+   "slots": [
+    {
+     "role": "deceased",
+     "label": "ui.slot.deceased",
+     "gender": "of_record",
+     "row": [
+      "age",
+      "cause_of_death"
+     ]
+    },
+    {
+     "role": "witness",
+     "label": "ui.slot.witness_death",
+     "slots": [
+      1,
+      2
+     ],
+     "gender": null
+    },
+    {
+     "role": "priest",
+     "label": "ui.slot.priest",
+     "gender": "male"
+    },
+    {
+     "role": "deacon",
+     "label": "ui.slot.deacon",
+     "gender": "male"
+    },
+    {
+     "role": "dyachok",
+     "label": "ui.slot.dyachok",
+     "gender": "male"
+    },
+    {
+     "role": "sexton",
+     "label": "ui.slot.sexton",
+     "gender": "male"
+    }
+   ],
+   "groups": [
+    {
+     "name": "relatives",
+     "label": "ui.group.relatives",
+     "item": {
+      "role": "relative",
+      "fields": [
+       {
+        "path": "relationship",
+        "type": "enum",
+        "label": "ui.field.relationship",
+        "enum": "relationship"
+       },
+       {
+        "path": "relationship_ref",
+        "type": "text",
+        "label": "ui.field.relationship_ref"
+       }
+      ],
+      "persons": [
+       "person"
+      ]
+     },
+     "orderable": true
+    }
+   ],
+   "events": [
+    {
+     "label": "ui.event.death",
+     "day": "death.day",
+     "month": "death.month",
+     "of": "ui.event.of_death"
+    },
+    {
+     "label": "ui.event.burial",
+     "day": "burial.day",
+     "month": "burial.month"
+    }
+   ],
+   "draft": {
+    "creatable": true,
+    "slots": [
+     "deceased"
+    ]
+   },
+   "rules": [
+    {
+     "rule": "follows",
+     "from": "death.month",
+     "to": "burial.month"
+    },
+    {
+     "rule": "late",
+     "after": 0,
+     "event": 1,
+     "days": 4
+    }
+   ]
+  },
+  "household": {
+   "label": "ui.kind.household",
+   "fields": [
+    {
+     "path": "family_id",
+     "type": "age",
+     "label": "ui.field.family_id"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.field.page"
+    },
+    {
+     "path": "comment",
+     "type": "text",
+     "label": "ui.field.comment",
+     "widget": "wide"
+    },
+    {
+     "path": "record.day",
+     "type": "integer",
+     "label": "ui.field.record_day"
+    },
+    {
+     "path": "record.month",
+     "type": "enum",
+     "label": "ui.field.record_month",
+     "enum": "month"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "hidden": true
+    }
+   ],
+   "slots": [],
+   "groups": [
+    {
+     "name": "members",
+     "label": "ui.group.members",
+     "item": {
+      "role": "member",
+      "fields": [
+       {
+        "path": "number",
+        "type": "integer",
+        "label": "ui.field.number"
+       },
+       {
+        "path": "role",
+        "type": "enum",
+        "label": "ui.field.role",
+        "enum": "census_role"
+       },
+       {
+        "path": "ref_member",
+        "type": "ref",
+        "label": "ui.field.ref_member",
+        "ref": {
+         "to": "item"
+        }
+       },
+       {
+        "path": "age",
+        "type": "age",
+        "label": "ui.field.age"
+       },
+       {
+        "path": "previous_age",
+        "type": "age",
+        "label": "ui.field.previous_age"
+       },
+       {
+        "path": "marital_status",
+        "type": "catalog",
+        "label": "ui.field.marital_status",
+        "catalog": "marital"
+       },
+       {
+        "path": "occupation",
+        "type": "text",
+        "label": "ui.field.occupation"
+       },
+       {
+        "path": "arrival.place",
+        "type": "text",
+        "label": "ui.field.arrival_place"
+       },
+       {
+        "path": "departure.place",
+        "type": "text",
+        "label": "ui.field.departure_place"
+       },
+       {
+        "path": "arrival.year",
+        "type": "integer",
+        "label": "ui.field.arrival_year"
+       },
+       {
+        "path": "arrival.reason",
+        "type": "text",
+        "label": "ui.field.arrival_reason"
+       },
+       {
+        "path": "departure.year",
+        "type": "integer",
+        "label": "ui.field.departure_year"
+       },
+       {
+        "path": "departure.reason",
+        "type": "text",
+        "label": "ui.field.departure_reason"
+       },
+       {
+        "path": "record_number",
+        "type": "age",
+        "label": "ui.field.record_number"
+       },
+       {
+        "path": "birth.day",
+        "type": "integer",
+        "label": "ui.field.birth_day"
+       },
+       {
+        "path": "birth.month",
+        "type": "enum",
+        "label": "ui.field.birth_month",
+        "enum": "month"
+       },
+       {
+        "path": "birth.year",
+        "type": "integer",
+        "label": "ui.field.birth_year"
+       },
+       {
+        "path": "parent_member",
+        "type": "ref",
+        "label": "ui.field.parent_member",
+        "ref": {
+         "to": "item"
+        }
+       },
+       {
+        "path": "father_ref",
+        "type": "text",
+        "label": "ui.field.father_ref"
+       },
+       {
+        "path": "secondary_role",
+        "type": "enum",
+        "label": "ui.field.secondary_role",
+        "enum": "census_role"
+       },
+       {
+        "path": "secondary_ref_member",
+        "type": "ref",
+        "label": "ui.field.secondary_ref_member",
+        "ref": {
+         "to": "item"
+        }
+       },
+       {
+        "path": "hidden",
+        "type": "boolean",
+        "label": "ui.field.hidden"
+       },
+       {
+        "path": "comment",
+        "type": "text",
+        "label": "ui.field.comment",
+        "widget": "wide"
+       },
+       {
+        "path": "spouse_member",
+        "type": "ref",
+        "label": "ui.field.spouse_member",
+        "ref": {
+         "to": "item"
+        }
+       },
+       {
+        "path": "source_age_error",
+        "type": "text",
+        "label": "ui.field.source_age_error",
+        "checks": true
+       },
+       {
+        "path": "previous_age_error",
+        "type": "text",
+        "label": "ui.field.previous_age_error",
+        "checks": true
+       }
+      ],
+      "persons": [
+       "person"
+      ]
+     },
+     "orderable": true,
+     "layout": [
+      [
+       "number",
+       "role",
+       "ref_member"
+      ],
+      [
+       "previous_age",
+       "age"
+      ],
+      [
+       "arrival.year",
+       "arrival.reason",
+       "arrival.place"
+      ],
+      [
+       "departure.year",
+       "departure.reason",
+       "departure.place"
+      ]
+     ]
+    }
+   ],
+   "events": [],
+   "draft": {
+    "creatable": false,
+    "slots": []
+   },
+   "rules": [
+    {
+     "rule": "shown_when",
+     "group": "members",
+     "path": "previous_age",
+     "when": {
+      "book": "previous_age",
+      "women": "female_previous_age",
+      "gender_of": "role"
+     }
+    },
+    {
+     "rule": "renumber",
+     "group": "members",
+     "number": "number",
+     "refs": [
+      "ref_member",
+      "parent_member",
+      "spouse_member",
+      "secondary_ref_member"
+     ]
+    }
+   ]
+  },
+  "listed_person": {
+   "label": "ui.kind.listed_person",
+   "fields": [
+    {
+     "path": "number",
+     "type": "integer",
+     "label": "ui.field.number"
+    },
+    {
+     "path": "age",
+     "type": "age",
+     "label": "ui.field.age"
+    },
+    {
+     "path": "comment",
+     "type": "text",
+     "label": "ui.field.comment",
+     "widget": "wide"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.field.page"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "index",
+     "type": "integer",
+     "hidden": true
+    }
+   ],
+   "slots": [
+    {
+     "role": "person",
+     "label": "ui.slot.person",
+     "gender": null
+    }
+   ],
+   "groups": [],
+   "events": [],
+   "draft": {
+    "creatable": false,
+    "slots": []
+   },
+   "rules": []
+  },
+  "divorce": {
+   "label": "ui.kind.divorce",
+   "fields": [
+    {
+     "path": "number",
+     "type": "age",
+     "label": "ui.field.number"
+    },
+    {
+     "path": "divorce.day",
+     "type": "integer",
+     "label": "ui.field.divorce_day"
+    },
+    {
+     "path": "divorce.month",
+     "type": "enum",
+     "label": "ui.field.divorce_month",
+     "enum": "month"
+    },
+    {
+     "path": "husband_age",
+     "type": "age",
+     "label": "ui.field.husband_age"
+    },
+    {
+     "path": "wife_age",
+     "type": "age",
+     "label": "ui.field.wife_age"
+    },
+    {
+     "path": "marriage_date",
+     "type": "text",
+     "label": "ui.field.marriage_date"
+    },
+    {
+     "path": "children",
+     "type": "text",
+     "label": "ui.field.children"
+    },
+    {
+     "path": "initiator",
+     "type": "text",
+     "label": "ui.field.initiator"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.field.page"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "comment",
+     "type": "text",
+     "label": "ui.field.comment",
+     "widget": "wide"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    }
+   ],
+   "slots": [
+    {
+     "role": "husband",
+     "label": "ui.slot.husband",
+     "gender": "male"
+    },
+    {
+     "role": "wife",
+     "label": "ui.slot.wife",
+     "gender": "female"
+    }
+   ],
+   "groups": [],
+   "events": [
+    {
+     "label": "ui.event.divorce",
+     "day": "divorce.day",
+     "month": "divorce.month"
+    }
+   ],
+   "draft": {
+    "creatable": false,
+    "slots": []
+   },
+   "rules": []
+  },
+  "external_record": {
+   "label": "ui.kind.external_record",
+   "fields": [
+    {
+     "path": "record_number",
+     "type": "age",
+     "label": "ui.field.record_number"
+    },
+    {
+     "path": "age",
+     "type": "age",
+     "label": "ui.field.age"
+    },
+    {
+     "path": "birth_year",
+     "type": "integer",
+     "label": "ui.field.birth_year"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.field.page"
+    },
+    {
+     "path": "comment",
+     "type": "text",
+     "label": "ui.field.comment",
+     "widget": "wide"
+    },
+    {
+     "path": "rank",
+     "type": "text",
+     "label": "ui.field.rank"
+    },
+    {
+     "path": "military_unit",
+     "type": "text",
+     "label": "ui.field.military_unit"
+    },
+    {
+     "path": "casualty_reason",
+     "type": "text",
+     "label": "ui.field.casualty_reason"
+    },
+    {
+     "path": "document_type",
+     "type": "enum",
+     "label": "ui.field.document_type",
+     "enum": "wwi_document_type|wwii_document_type"
+    },
+    {
+     "path": "award",
+     "type": "text",
+     "label": "ui.field.award"
+    },
+    {
+     "path": "award_number",
+     "type": "age",
+     "label": "ui.field.award_number"
+    },
+    {
+     "path": "marital_status",
+     "type": "text",
+     "label": "ui.field.marital_status"
+    },
+    {
+     "path": "place_of_casualty",
+     "type": "text",
+     "label": "ui.field.place_of_casualty"
+    },
+    {
+     "path": "draft_board",
+     "type": "text",
+     "label": "ui.field.draft_board"
+    },
+    {
+     "path": "date",
+     "hidden": true
+    },
+    {
+     "path": "labels",
+     "hidden": true
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "casualty_date",
+     "hidden": true
+    },
+    {
+     "path": "birth_date",
+     "hidden": true
+    },
+    {
+     "path": "draft_date",
+     "hidden": true
+    },
+    {
+     "path": "feat_date",
+     "hidden": true
+    },
+    {
+     "path": "kind",
+     "type": "enum",
+     "hidden": true
+    },
+    {
+     "path": "citation",
+     "hidden": true
+    },
+    {
+     "path": "index",
+     "type": "integer",
+     "hidden": true
+    }
+   ],
+   "slots": [
+    {
+     "role": "person",
+     "label": "ui.slot.person",
+     "gender": null
+    }
+   ],
+   "groups": [],
+   "events": [],
+   "draft": {
+    "creatable": false,
+    "slots": []
+   },
+   "rules": []
+  }
+ },
+ "persona": {
+  "fields": [
+   {
+    "path": "given.original",
+    "type": "text",
+    "label": "ui.field.given_original",
+    "column": true,
+    "suggest": true
+   },
+   {
+    "path": "patronymic.original",
+    "type": "text",
+    "label": "ui.field.patronymic_original",
+    "column": true,
+    "suggest": true
+   },
+   {
+    "path": "surname.original",
+    "type": "text",
+    "label": "ui.field.surname_original",
+    "column": true,
+    "suggest": true
+   },
+   {
+    "path": "status",
+    "type": "catalog",
+    "label": "ui.field.status",
+    "catalog": "status",
+    "line": true,
+    "suggest": true
+   },
+   {
+    "path": "residence",
+    "type": "text",
+    "label": "ui.field.residence",
+    "line": true,
+    "suggest": true
+   },
+   {
+    "path": "given.modern",
+    "type": "text",
+    "label": "ui.field.given_modern"
+   },
+   {
+    "path": "patronymic.old",
+    "type": "text",
+    "label": "ui.field.patronymic_old"
+   },
+   {
+    "path": "surname.modern",
+    "type": "text",
+    "label": "ui.field.surname_modern"
+   },
+   {
+    "path": "gender",
+    "type": "enum",
+    "label": "ui.field.gender",
+    "enum": "gender"
+   },
+   {
+    "path": "side",
+    "type": "enum",
+    "label": "ui.field.side",
+    "enum": "side"
+   },
+   {
+    "path": "comment",
+    "type": "text",
+    "label": "ui.field.comment",
+    "widget": "wide"
+   },
+   {
+    "path": "surname.in_book",
+    "type": "boolean",
+    "label": "ui.field.surname_in_book",
+    "auto": true
+   },
+   {
+    "path": "maiden_surname.modern",
+    "type": "text",
+    "label": "ui.field.maiden_surname_modern",
+    "offer": {
+     "gender": "female",
+     "not_in": [
+      "child"
+     ]
+    }
+   },
+   {
+    "path": "occupation",
+    "type": "text",
+    "label": "ui.field.occupation"
+   },
+   {
+    "path": "patronymic.modern",
+    "type": "text",
+    "hidden": true
+   },
+   {
+    "path": "status_defaulted",
+    "type": "boolean",
+    "hidden": true
+   }
+  ]
+ },
+ "enums": {
+  "gender": [
+   {
+    "code": "male",
+    "label": "ui.enum.gender.male",
+    "gender": "male"
+   },
+   {
+    "code": "female",
+    "label": "ui.enum.gender.female",
+    "gender": "female"
+   }
+  ],
+  "month": [
+   {
+    "code": "january",
+    "label": "ui.enum.month.january.nom",
+    "forms": {
+     "nom": "ui.enum.month.january.nom",
+     "gen": "ui.enum.month.january.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "february",
+    "label": "ui.enum.month.february.nom",
+    "forms": {
+     "nom": "ui.enum.month.february.nom",
+     "gen": "ui.enum.month.february.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "march",
+    "label": "ui.enum.month.march.nom",
+    "forms": {
+     "nom": "ui.enum.month.march.nom",
+     "gen": "ui.enum.month.march.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "april",
+    "label": "ui.enum.month.april.nom",
+    "forms": {
+     "nom": "ui.enum.month.april.nom",
+     "gen": "ui.enum.month.april.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "may",
+    "label": "ui.enum.month.may.nom",
+    "forms": {
+     "nom": "ui.enum.month.may.nom",
+     "gen": "ui.enum.month.may.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "june",
+    "label": "ui.enum.month.june.nom",
+    "forms": {
+     "nom": "ui.enum.month.june.nom",
+     "gen": "ui.enum.month.june.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "july",
+    "label": "ui.enum.month.july.nom",
+    "forms": {
+     "nom": "ui.enum.month.july.nom",
+     "gen": "ui.enum.month.july.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "august",
+    "label": "ui.enum.month.august.nom",
+    "forms": {
+     "nom": "ui.enum.month.august.nom",
+     "gen": "ui.enum.month.august.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "september",
+    "label": "ui.enum.month.september.nom",
+    "forms": {
+     "nom": "ui.enum.month.september.nom",
+     "gen": "ui.enum.month.september.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "october",
+    "label": "ui.enum.month.october.nom",
+    "forms": {
+     "nom": "ui.enum.month.october.nom",
+     "gen": "ui.enum.month.october.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "november",
+    "label": "ui.enum.month.november.nom",
+    "forms": {
+     "nom": "ui.enum.month.november.nom",
+     "gen": "ui.enum.month.november.gen"
+    },
+    "gender": null
+   },
+   {
+    "code": "december",
+    "label": "ui.enum.month.december.nom",
+    "forms": {
+     "nom": "ui.enum.month.december.nom",
+     "gen": "ui.enum.month.december.gen"
+    },
+    "gender": null
+   }
+  ],
+  "relationship": [
+   {
+    "code": "father",
+    "label": "ui.enum.relationship.father",
+    "gender": "male"
+   },
+   {
+    "code": "mother",
+    "label": "ui.enum.relationship.mother",
+    "gender": "female"
+   },
+   {
+    "code": "husband",
+    "label": "ui.enum.relationship.husband",
+    "gender": "male"
+   },
+   {
+    "code": "wife",
+    "label": "ui.enum.relationship.wife",
+    "gender": "female"
+   },
+   {
+    "code": "son",
+    "label": "ui.enum.relationship.son",
+    "gender": "male"
+   },
+   {
+    "code": "daughter",
+    "label": "ui.enum.relationship.daughter",
+    "gender": "female"
+   },
+   {
+    "code": "father_in_law",
+    "label": "ui.enum.relationship.father_in_law",
+    "gender": "male"
+   },
+   {
+    "code": "mother_in_law",
+    "label": "ui.enum.relationship.mother_in_law",
+    "gender": "female"
+   },
+   {
+    "code": "son_in_law",
+    "label": "ui.enum.relationship.son_in_law",
+    "gender": "male"
+   },
+   {
+    "code": "daughter_in_law",
+    "label": "ui.enum.relationship.daughter_in_law",
+    "gender": "female"
+   },
+   {
+    "code": "foster_father",
+    "label": "ui.enum.relationship.foster_father",
+    "gender": null
+   },
+   {
+    "code": "foster_mother",
+    "label": "ui.enum.relationship.foster_mother",
+    "gender": null
+   },
+   {
+    "code": "step_mother",
+    "label": "ui.enum.relationship.step_mother",
+    "gender": null
+   },
+   {
+    "code": "step_father",
+    "label": "ui.enum.relationship.step_father",
+    "gender": null
+   }
+  ],
+  "census_role": [
+   {
+    "code": "head",
+    "label": "ui.enum.census_role.head",
+    "gender": null
+   },
+   {
+    "code": "wife",
+    "label": "ui.enum.census_role.wife",
+    "gender": "female"
+   },
+   {
+    "code": "husband",
+    "label": "ui.enum.census_role.husband",
+    "gender": "male"
+   },
+   {
+    "code": "son",
+    "label": "ui.enum.census_role.son",
+    "gender": "male"
+   },
+   {
+    "code": "daughter",
+    "label": "ui.enum.census_role.daughter",
+    "gender": "female"
+   },
+   {
+    "code": "brother",
+    "label": "ui.enum.census_role.brother",
+    "gender": "male"
+   },
+   {
+    "code": "uncle",
+    "label": "ui.enum.census_role.uncle",
+    "gender": "male"
+   },
+   {
+    "code": "grandson",
+    "label": "ui.enum.census_role.grandson",
+    "gender": "male"
+   },
+   {
+    "code": "granddaughter",
+    "label": "ui.enum.census_role.granddaughter",
+    "gender": "female"
+   },
+   {
+    "code": "daughter_in_law",
+    "label": "ui.enum.census_role.daughter_in_law",
+    "gender": "female"
+   },
+   {
+    "code": "son_in_law",
+    "label": "ui.enum.census_role.son_in_law",
+    "gender": "male"
+   },
+   {
+    "code": "brother_in_law",
+    "label": "ui.enum.census_role.brother_in_law",
+    "gender": "male"
+   },
+   {
+    "code": "stepson",
+    "label": "ui.enum.census_role.stepson",
+    "gender": "male"
+   },
+   {
+    "code": "nephew",
+    "label": "ui.enum.census_role.nephew",
+    "gender": "male"
+   },
+   {
+    "code": "niece",
+    "label": "ui.enum.census_role.niece",
+    "gender": "female"
+   },
+   {
+    "code": "cousin",
+    "label": "ui.enum.census_role.cousin",
+    "gender": "male"
+   },
+   {
+    "code": "mother",
+    "label": "ui.enum.census_role.mother",
+    "gender": "female"
+   },
+   {
+    "code": "father",
+    "label": "ui.enum.census_role.father",
+    "gender": "male"
+   },
+   {
+    "code": "sister",
+    "label": "ui.enum.census_role.sister",
+    "gender": "female"
+   },
+   {
+    "code": "stepdaughter",
+    "label": "ui.enum.census_role.stepdaughter",
+    "gender": "female"
+   },
+   {
+    "code": "lodger",
+    "label": "ui.enum.census_role.lodger",
+    "gender": null
+   },
+   {
+    "code": "stepbrother",
+    "label": "ui.enum.census_role.stepbrother",
+    "gender": null
+   },
+   {
+    "code": "foster_son",
+    "label": "ui.enum.census_role.foster_son",
+    "gender": "male"
+   },
+   {
+    "code": "foster_daughter",
+    "label": "ui.enum.census_role.foster_daughter",
+    "gender": "female"
+   }
+  ],
+  "wwi_document_type|wwii_document_type": [
+   {
+    "code": "wwi_document_type.casualty_lists",
+    "label": "ui.enum.document_type.wwi_document_type.casualty_lists",
+    "gender": null
+   },
+   {
+    "code": "wwi_document_type.casualty_card_lower",
+    "label": "ui.enum.document_type.wwi_document_type.casualty_card_lower",
+    "gender": null
+   },
+   {
+    "code": "wwi_document_type.wounded_notice",
+    "label": "ui.enum.document_type.wwi_document_type.wounded_notice",
+    "gender": null
+   },
+   {
+    "code": "wwi_document_type.arrival_card_higher",
+    "label": "ui.enum.document_type.wwi_document_type.arrival_card_higher",
+    "gender": null
+   },
+   {
+    "code": "wwi_document_type.arrival_card_lower",
+    "label": "ui.enum.document_type.wwi_document_type.arrival_card_lower",
+    "gender": null
+   },
+   {
+    "code": "wwi_document_type.award_lists",
+    "label": "ui.enum.document_type.wwi_document_type.award_lists",
+    "gender": null
+   },
+   {
+    "code": "wwi_document_type.reporting_card",
+    "label": "ui.enum.document_type.wwi_document_type.reporting_card",
+    "gender": null
+   },
+   {
+    "code": "wwi_document_type.pow_card",
+    "label": "ui.enum.document_type.wwi_document_type.pow_card",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.nagradnoy_list",
+    "label": "ui.enum.document_type.wwii_document_type.nagradnoy_list",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.award_order",
+    "label": "ui.enum.document_type.wwii_document_type.award_order",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.anniversary_award",
+    "label": "ui.enum.document_type.wwii_document_type.anniversary_award",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.casualty_report",
+    "label": "ui.enum.document_type.wwii_document_type.casualty_report",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.memory_book",
+    "label": "ui.enum.document_type.wwii_document_type.memory_book",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.service_card",
+    "label": "ui.enum.document_type.wwii_document_type.service_card",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.pow_card",
+    "label": "ui.enum.document_type.wwii_document_type.pow_card",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.award_card",
+    "label": "ui.enum.document_type.wwii_document_type.award_card",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.casualty_clarification",
+    "label": "ui.enum.document_type.wwii_document_type.casualty_clarification",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.wound_card",
+    "label": "ui.enum.document_type.wwii_document_type.wound_card",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.transit_point",
+    "label": "ui.enum.document_type.wwii_document_type.transit_point",
+    "gender": null
+   },
+   {
+    "code": "wwii_document_type.unit_roster",
+    "label": "ui.enum.document_type.wwii_document_type.unit_roster",
+    "gender": null
+   }
+  ],
+  "external_source_kind": [
+   {
+    "code": "criminal",
+    "label": "ui.enum.external_source_kind.criminal",
+    "gender": null
+   },
+   {
+    "code": "wwi",
+    "label": "ui.enum.external_source_kind.wwi",
+    "gender": null
+   },
+   {
+    "code": "wwii",
+    "label": "ui.enum.external_source_kind.wwii",
+    "gender": null
+   }
+  ],
+  "side": [
+   {
+    "code": "groom",
+    "label": "ui.enum.side.groom",
+    "gender": null
+   },
+   {
+    "code": "bride",
+    "label": "ui.enum.side.bride",
+    "gender": null
+   }
+  ]
+ },
+ "books": {
+  "births": {
+   "label": "ui.set.births.title",
+   "forms": {
+    "title": "ui.set.births.title",
+    "word": "ui.set.births.word",
+    "plural": "ui.set.births.plural"
+   },
+   "fields": [
+    {
+     "path": "archive",
+     "type": "text",
+     "label": "ui.field.archive"
+    },
+    {
+     "path": "fund",
+     "type": "text",
+     "label": "ui.field.fund"
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "label": "ui.field.inventory"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.field.village"
+    },
+    {
+     "path": "church",
+     "type": "text",
+     "label": "ui.field.church"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    }
+   ],
+   "fills": [
+    {
+     "field": "residence",
+     "label": "ui.default.residence",
+     "gender": null,
+     "type": "text"
+    },
+    {
+     "field": "status_male",
+     "label": "ui.default.status_male",
+     "gender": "male",
+     "type": "catalog",
+     "catalog": "status"
+    },
+    {
+     "field": "status_female",
+     "label": "ui.default.status_female",
+     "gender": "female",
+     "type": "catalog",
+     "catalog": "status"
+    },
+    {
+     "field": "status_mother",
+     "label": "ui.default.status_mother",
+     "gender": "female",
+     "type": "catalog",
+     "catalog": "status",
+     "fallback": "status_female"
+    }
+   ],
+   "flags": [
+    {
+     "field": "civil",
+     "label": "ui.book.civil"
+    }
+   ],
+   "queue": true
+  },
+  "marriages": {
+   "label": "ui.set.marriages.title",
+   "forms": {
+    "title": "ui.set.marriages.title",
+    "word": "ui.set.marriages.word",
+    "plural": "ui.set.marriages.plural"
+   },
+   "fields": [
+    {
+     "path": "archive",
+     "type": "text",
+     "label": "ui.field.archive"
+    },
+    {
+     "path": "fund",
+     "type": "text",
+     "label": "ui.field.fund"
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "label": "ui.field.inventory"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.field.village"
+    },
+    {
+     "path": "church",
+     "type": "text",
+     "label": "ui.field.church"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    }
+   ],
+   "fills": [
+    {
+     "field": "residence",
+     "label": "ui.default.residence",
+     "gender": null,
+     "type": "text"
+    },
+    {
+     "field": "status_male",
+     "label": "ui.default.status_male",
+     "gender": "male",
+     "type": "catalog",
+     "catalog": "status"
+    },
+    {
+     "field": "status_female",
+     "label": "ui.default.status_female",
+     "gender": "female",
+     "type": "catalog",
+     "catalog": "status"
+    },
+    {
+     "field": "status_groom",
+     "label": "ui.default.status_groom",
+     "gender": "male",
+     "type": "catalog",
+     "catalog": "status",
+     "fallback": "status_male"
+    },
+    {
+     "field": "status_bride",
+     "label": "ui.default.status_bride",
+     "gender": "female",
+     "type": "catalog",
+     "catalog": "status",
+     "fallback": "status_female"
+    }
+   ],
+   "flags": [
+    {
+     "field": "civil",
+     "label": "ui.book.civil"
+    }
+   ],
+   "queue": true
+  },
+  "deaths": {
+   "label": "ui.set.deaths.title",
+   "forms": {
+    "title": "ui.set.deaths.title",
+    "word": "ui.set.deaths.word",
+    "plural": "ui.set.deaths.plural"
+   },
+   "fields": [
+    {
+     "path": "archive",
+     "type": "text",
+     "label": "ui.field.archive"
+    },
+    {
+     "path": "fund",
+     "type": "text",
+     "label": "ui.field.fund"
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "label": "ui.field.inventory"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.field.village"
+    },
+    {
+     "path": "church",
+     "type": "text",
+     "label": "ui.field.church"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    }
+   ],
+   "fills": [
+    {
+     "field": "residence",
+     "label": "ui.default.residence",
+     "gender": null,
+     "type": "text"
+    },
+    {
+     "field": "status_male",
+     "label": "ui.default.status_male",
+     "gender": "male",
+     "type": "catalog",
+     "catalog": "status"
+    },
+    {
+     "field": "status_female",
+     "label": "ui.default.status_female",
+     "gender": "female",
+     "type": "catalog",
+     "catalog": "status"
+    },
+    {
+     "field": "cause_of_death",
+     "label": "ui.default.cause_of_death",
+     "gender": null,
+     "type": "catalog",
+     "catalog": "cause"
+    }
+   ],
+   "flags": [
+    {
+     "field": "civil",
+     "label": "ui.book.civil"
+    }
+   ],
+   "queue": true
+  },
+  "census": {
+   "label": "ui.set.census.title",
+   "forms": {
+    "title": "ui.set.census.title",
+    "word": "ui.set.census.word",
+    "plural": "ui.set.census.plural"
+   },
+   "fields": [
+    {
+     "path": "archive",
+     "type": "text",
+     "label": "ui.field.archive"
+    },
+    {
+     "path": "fund",
+     "type": "text",
+     "label": "ui.field.fund"
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "label": "ui.field.inventory"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.field.village"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "record.day",
+     "type": "integer",
+     "label": "ui.field.record_day"
+    },
+    {
+     "path": "record.month",
+     "type": "enum",
+     "label": "ui.field.record_month",
+     "enum": "month"
+    },
+    {
+     "path": "archive_suffix",
+     "type": "text",
+     "label": "ui.field.archive_suffix"
+    },
+    {
+     "path": "prev_revision_year",
+     "type": "integer",
+     "label": "ui.field.prev_revision_year"
+    },
+    {
+     "path": "document_type",
+     "type": "text",
+     "label": "ui.field.document_type"
+    },
+    {
+     "path": "document_type_genitive",
+     "type": "text",
+     "label": "ui.field.document_type_genitive"
+    },
+    {
+     "path": "district",
+     "type": "text",
+     "label": "ui.field.district"
+    },
+    {
+     "path": "volost",
+     "type": "text",
+     "label": "ui.field.volost"
+    },
+    {
+     "path": "household_label",
+     "type": "text",
+     "label": "ui.field.household_label"
+    },
+    {
+     "path": "household_number_label",
+     "type": "text",
+     "label": "ui.field.household_number_label"
+    },
+    {
+     "path": "record_type",
+     "type": "text",
+     "label": "ui.field.record_type"
+    },
+    {
+     "path": "suffix_in_res_names",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "file_prefix",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "doc_res_prefix",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "single_age_column",
+     "type": "boolean",
+     "hidden": true
+    }
+   ],
+   "fills": [
+    {
+     "field": "status_male",
+     "label": "ui.default.status_male",
+     "gender": "male",
+     "type": "catalog",
+     "catalog": "status"
+    },
+    {
+     "field": "status_female",
+     "label": "ui.default.status_female",
+     "gender": "female",
+     "type": "catalog",
+     "catalog": "status"
+    }
+   ],
+   "flags": [
+    {
+     "field": "female_previous_age",
+     "label": "ui.book.female_previous_age"
+    }
+   ],
+   "queue": true
+  },
+  "name_list": {
+   "label": "ui.set.name_list.title",
+   "forms": {
+    "title": "ui.set.name_list.title",
+    "word": "ui.set.name_list.word",
+    "plural": "ui.set.name_list.plural"
+   },
+   "fields": [
+    {
+     "path": "archive",
+     "type": "text",
+     "label": "ui.field.archive"
+    },
+    {
+     "path": "fund",
+     "type": "text",
+     "label": "ui.field.fund"
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "label": "ui.field.inventory"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.field.village"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    },
+    {
+     "path": "document_type",
+     "type": "text",
+     "label": "ui.field.document_type"
+    },
+    {
+     "path": "document_type_genitive",
+     "type": "text",
+     "label": "ui.field.document_type_genitive"
+    },
+    {
+     "path": "district",
+     "type": "text",
+     "label": "ui.field.district"
+    },
+    {
+     "path": "volost",
+     "type": "text",
+     "label": "ui.field.volost"
+    },
+    {
+     "path": "record.day",
+     "type": "integer",
+     "label": "ui.field.record_day"
+    },
+    {
+     "path": "record.month",
+     "type": "enum",
+     "label": "ui.field.record_month",
+     "enum": "month"
+    },
+    {
+     "path": "source_url",
+     "type": "text",
+     "label": "ui.field.source_url"
+    },
+    {
+     "path": "scan_file",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "labels",
+     "hidden": true
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "household_order",
+     "type": "boolean",
+     "hidden": true
+    }
+   ],
+   "fills": [],
+   "flags": [],
+   "queue": true
+  },
+  "divorces": {
+   "label": "ui.set.divorces.title",
+   "forms": {
+    "title": "ui.set.divorces.title",
+    "word": "ui.set.divorces.word",
+    "plural": "ui.set.divorces.plural"
+   },
+   "fields": [
+    {
+     "path": "archive",
+     "type": "text",
+     "label": "ui.field.archive"
+    },
+    {
+     "path": "fund",
+     "type": "text",
+     "label": "ui.field.fund"
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "label": "ui.field.inventory"
+    },
+    {
+     "path": "case",
+     "type": "text",
+     "label": "ui.field.case"
+    },
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.field.village"
+    },
+    {
+     "path": "church",
+     "type": "text",
+     "label": "ui.field.church"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.field.year"
+    }
+   ],
+   "fills": [],
+   "flags": [],
+   "queue": false
+  },
+  "external_sources": {
+   "label": "ui.set.external_sources.title",
+   "forms": {
+    "title": "ui.set.external_sources.title",
+    "word": "ui.set.external_sources.word",
+    "plural": "ui.set.external_sources.plural"
+   },
+   "fields": [
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.field.village"
+    }
+   ],
+   "fills": [],
+   "flags": [],
+   "queue": false
+  }
+ }
+}

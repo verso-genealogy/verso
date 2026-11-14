@@ -1,0 +1,3 @@
+marriage(1, 2, groom_age="20 лет", bride_age="18 лет")
+wwi_record(1, age="26 лет")
+wwii_record(1, age="30 лет")

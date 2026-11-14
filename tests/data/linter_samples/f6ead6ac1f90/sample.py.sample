@@ -1,0 +1,5 @@
+marriage_records("a", "f", "i", "c", "Горюхино", "Церковь", 1840,
+    marriage(9, 21, groom=person("Мартын", "Сидоров"),
+             bride=person("Мелания", "Иванова", residence="Ротозеево"),
+             relatives=[relative(person("Поликарп", "Фомин", residence="Горюхино"), Relationship.FATHER, "невеста")]),
+    defaults=RecordDefaults(residence="Горюхино"))

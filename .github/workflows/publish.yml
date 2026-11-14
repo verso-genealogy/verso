@@ -1,0 +1,123 @@
+name: Publish (TestPyPI trial)
+
+# The library's two distributions — verso-core, verso-ru — built from this repo at a dev
+# version, published to TestPyPI by trusted publishing (no token: the `testpypi` environment's
+# OIDC identity), then installed from the index and run on the toy example. Run by hand only, and
+# only once a TestPyPI pending publisher for this repository exists to upload to.
+# The scan of the built artifacts against a corpus's words needs that corpus, so it is the corpus's
+# own (`tools/public_tree --artifacts`), run before the first upload.
+on:
+  workflow_dispatch:
+    inputs:
+      index:
+        description: 'Where to publish'
+        type: choice
+        options: ['testpypi']
+        default: 'testpypi'
+
+jobs:
+  build:
+    name: Build the distributions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # One version an attempt: re-running the whole workflow uploads a new one rather than
+      # clashing with the last; re-running verify alone reads this job's output from its attempt.
+      - name: Version
+        id: version
+        run: echo "version=0.1.0.dev$(( GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT ))" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.12.16"
+          enable-cache: true
+
+      - name: Stamp the version into both distributions
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: python3 tools/release.py stamp "$VERSION"
+
+      - name: Build wheels and sdists
+        run: make build
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/*
+
+  publish:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  verify:
+    name: Install from TestPyPI and run the example
+    needs: [build, publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      VERSION: ${{ needs.build.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.12.16"
+
+      # Only verso comes from TestPyPI, without its dependencies; the index takes a while to show
+      # a new upload, so the download is retried for five minutes.
+      - name: Download verso from TestPyPI
+        run: |
+          for attempt in $(seq 1 30); do
+            pip download --no-deps --index-url https://test.pypi.org/simple/ "verso-core==$VERSION" "verso-ru==$VERSION" -d wheels/ && exit 0
+            echo "attempt $attempt: not on the index yet"
+            sleep 10
+          done
+          exit 1
+
+      # The two downloaded wheels by path, so no index can stand in for them; everything else
+      # from PyPI, as a user would install it.
+      - name: Install into a clean venv
+        run: |
+          uv venv verify-venv
+          uv pip install --python verify-venv/bin/python \
+            "$(ls wheels/verso_core-*.whl)[schema]" "$(ls wheels/verso_ru-*.whl)[xlsx,dsl-tools]"
+
+      - name: The installed console script answers
+        run: verify-venv/bin/verso --help
+
+      - name: Run the toy example on the installed wheels
+        run: |
+          mkdir ex
+          git archive HEAD:examples | tar -x -C ex/
+          verify-venv/bin/python ex/run.py

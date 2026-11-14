@@ -1,0 +1,1 @@
+wwii_record(person("Иван"), source_url="https://pamyat-naroda.ru/heroes/x", document_type=WwiiDocumentType.CASUALTY_REPORT, award="Орден Красной Звезды")

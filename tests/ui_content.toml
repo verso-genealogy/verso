@@ -1,0 +1,26 @@
+# What of verso-ru's Cyrillic is not the interface (tests/ui_text.py): generated content and the
+# sources' vocabulary — never translated. A path or a glob, relative to lib/, and why. A line of
+# content in a module that is otherwise the interface is marked `# i18n: content` instead.
+roots = ["packages/verso-ru/src/verso/ru"]
+
+[content]
+modules = [
+    { path = "packages/verso-ru/src/verso/ru/targets/geni/translator/**", why = "Geni's prose and its documents: generated content, frozen" },
+    { path = "packages/verso-ru/src/verso/ru/exporters/**", why = "the CSVs and the Familio справочник: generated content" },
+    { path = "packages/verso-ru/src/verso/ru/timeline/**", why = "the timeline page: generated content" },
+    { path = "packages/verso-ru/src/verso/ru/familio/**", why = "the Familio tree: generated content" },
+    { path = "packages/verso-ru/src/verso/ru/domain/statuses.py", why = "the sources' statuses: vocabulary" },
+    { path = "packages/verso-ru/src/verso/ru/domain/causes_of_death.py", why = "the sources' causes of death: vocabulary" },
+    { path = "packages/verso-ru/src/verso/ru/domain/estates.py", why = "the estates' words in a status: vocabulary" },
+    { path = "packages/verso-ru/src/verso/ru/domain/marital_status.py", why = "the sources' marital statuses: vocabulary" },
+    { path = "packages/verso-ru/src/verso/ru/naming/**", why = "names, patronymics, the old orthography: vocabulary" },
+    { path = "packages/verso-ru/src/verso/ru/church_calendar/**", why = "the saints and the paschalion: vocabulary" },
+    { path = "packages/verso-ru/src/verso/ru/ages.py", why = "an age as the reader-facing prose writes it: content" },
+    { path = "packages/verso-ru/src/verso/ru/relationship.py", why = "the sources' kinship words: vocabulary" },
+    { path = "packages/verso-ru/src/verso/ru/dsl/records/**", why = "the documents' labels a record set writes: content" },
+    { path = "packages/verso-ru/src/verso/ru/importers/google_sheets/**", why = "reads the sheets as they are written and writes DSL files: the sources' layout and words, and the code it writes" },
+    { path = "packages/verso-ru/src/verso/ru/consolidation/batches/build.py", why = "reads and rewrites the translator's prose in the config's overrides: content" },
+    { path = "packages/verso-ru/src/verso/ru/importers/validation.py", why = "the Familio sheets' columns, tabs, default statuses and age units, as the sheets write them: the sources' layout" },
+    { path = "packages/verso-ru/src/verso/ru/facts/model.py", why = "a date's and a citation's text is what facts.jsonl writes, and the model imports nothing but the standard library: why() speaks it too" },
+    { path = "packages/verso-ru/src/verso/ru/cli/all_persons.py", why = "village.db's record types and roles, as find_person and --type ask for them" },
+]

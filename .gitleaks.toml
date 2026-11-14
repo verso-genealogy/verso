@@ -1,0 +1,15 @@
+# gitleaks over the library's public tree (tools/secrets_check.sh lib): what is no secret, with its reason.
+[extend]
+useDefault = true
+
+[[allowlists]]
+# A res_name a test binds to `key` («_1840_01_01_ivan_petrovich_mk_births_1_father») is no API key.
+description = "res_name in a test"
+regexTarget = "line"
+regexes = ['''key = "_\d{4}_\d{2}_\d{2}_[a-z0-9_]+"''']
+
+[[allowlists]]
+# A message's catalog key a finding carries («CPL001.evidence_patronymic», `params.evidence.key`) is no API key.
+description = "catalog key of a linter message"
+regexTarget = "line"
+regexes = ['''"key": "[A-Za-z]+[0-9]*\.[a-z_]+"''']

@@ -1,0 +1,13 @@
+sex	name	bases	canonical	source	note
+	Админ			ignore	a name known and left out of validation (an archaic kind, which no rule derives)
+	Пичкинза			ignore	a name known and left out of validation (an archaic kind, which no rule derives)
+	Бурмяй			ignore	a name known and left out of validation (an archaic kind, which no rule derives)
+	Оска			ignore	a name known and left out of validation (an archaic kind, which no rule derives)
+	Сакя			ignore	a name known and left out of validation (an archaic kind, which no rule derives)
+	Шумила			ignore	a name known and left out of validation (an archaic kind, which no rule derives)
+M	Тазей			fixture	the books' spelling the base lacks (the tests write it)
+M	Тозей	Тазей		fixture	the books' spelling the base lacks (the tests write it)
+M	Тозяй	Тазей		fixture	the books' spelling the base lacks (the tests write it)
+M	Пахом	Пахомий		fixture	the books' spelling the base lacks (the tests write it)
+M	Перфил			fixture	the books' spelling the base lacks (the tests write it)
+M	Тихан	Тихон		fixture	the books' spelling the base lacks (the tests write it)

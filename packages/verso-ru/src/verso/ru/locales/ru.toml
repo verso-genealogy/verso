@@ -1,0 +1,1646 @@
+# verso.ru's messages, Russian: the source's text verbatim where it was Russian.
+schema = 1
+untranslated = [
+    "CML001.numbered",
+    "CML001.unnumbered",
+    "SYN001.bare",
+    "SYN001.detail",
+    "SYN002.detail",
+    "LNT001.crashed",
+    "DRL001.dropped",
+    "MST001.unknown",
+    "NLC001.age",
+    "NLC001.document_type",
+    "SOR001.literal_constant",
+    "SOR001.literal_words",
+    "SOR001.bound_constant",
+    "SOR001.bound_words",
+    "VSR001.redundant",
+    "CSR001.redundant",
+    "RET001.no_previous",
+    "RET002.no_age",
+    "RET003.both",
+    "RET002.burial_source_age_error",
+    "RET002.burial_namesake",
+    "RVR001.page_labelled_default",
+    "RVR001.page_labelled_set",
+    "RVR001.page_bare_default",
+    "RVR001.page_bare_set",
+    "RVR001.inner_records_default",
+    "RVR001.inner_records_set",
+    "RVR001.inner_page_labelled",
+    "RVR001.inner_page_bare",
+    "census.member",
+    "census.member_named",
+    "census.died",
+    "census.married_out",
+    "CAI003.zero",
+    "CAI004.departed",
+    "CAI005.departed",
+    "CAI001.with_year",
+    "CAI001.without_year",
+    "CAI002.gap",
+    "CPL008.same_ref",
+    "CPL007.role_none",
+    "CPL011.hidden_partner",
+    "CPL009.no_such_member",
+    "CPL010.number_taken",
+    "CPL006.ref_hidden",
+    "CPL005.hidden_leaf",
+    "CPL004.invented_parent",
+    "CPL001.no_parent_link",
+    "CPL002.no_father",
+    "CPL003.no_husband",
+    "CPL001.evidence_patronymic",
+    "CPL001.evidence_comment",
+    "CPL001.evidence_derived",
+    "CPL011.one_sex",
+    "CPL011.head_blood",
+    "CPL004.own_husband",
+    "CPL004.husband_ancestor",
+    "CPL004.husband_sibling",
+    "CPL002.hint",
+    "DRA001.contradicts",
+    "DRA002.redundant",
+    "DRA002.redundant_positional",
+    "PAF001.full_form",
+    "BRD001.residence",
+    "BRD002.residence_positional",
+    "BRD003.surname",
+    "BRD004.surname_positional",
+    "BRD005.modern_surname",
+    "BRD006.in_book",
+    "CRD001.modern_surname",
+    "CRD002.surname_orig",
+    "CRD003.surname",
+    "CRD004.modern_birth_surname",
+    "CRD005.patronymic_orig",
+    "CRD006.patronymic",
+    "birth.mother_at_father",
+    "birth.child_at_family",
+    "census.surname_matches_head",
+    "census.patronymic_advisory",
+    "MRA001.father_groom",
+    "MRA001.father_bride",
+    "MRA001.mother_groom",
+    "MRA001.mother_bride",
+    "NGA001.surname_man",
+    "NGA002.patronymic_man",
+    "NGA001.surname_woman",
+    "NGA002.patronymic_woman",
+    "RLA001.no_subject",
+    "RLA001.unwired_godmother",
+    "RLA001.unwired",
+    "RLA002.patronymic",
+    "RLA003.surname",
+    "WSD002.says_groom",
+    "WSD003.undeclared_groom",
+    "WSD003.repeated_groom",
+    "WSD006.too_many_groom",
+    "WSD002.says_bride",
+    "WSD003.undeclared_bride",
+    "WSD003.repeated_bride",
+    "WSD006.too_many_bride",
+    "WSD001.outside",
+    "WSD003.record_comment",
+    "WSD004.half_declared",
+    "WSD005.order",
+    "ESC001.host",
+    "ESC003.award",
+    "ESC002.empty",
+    "ESC004.award_typed",
+    "ESC004.award_untyped",
+    "ESC004.award_number_typed",
+    "ESC004.award_number_untyped",
+    "DBD002.death_no_month",
+    "DBD002.death_month",
+    "DBD002.burial_no_month",
+    "DBD002.burial_month",
+    "DBD001.precedes",
+    "DBD001.registration_precedes",
+    "DBD001.hint_new_year",
+    "DBD001.hint_swapped_december",
+    "DBD001.hint_swapped",
+    "DBD001.hint_override",
+    "DBD001.hint_before",
+    "GND001.mismatch",
+    "REL001.suggest",
+    "REL002.allowed",
+    "AGE002.unrecognized",
+    "AGE001.quoted_number",
+    "AGE001.unit",
+    "AGE001.unit_death",
+    "SLC001.spans",
+    "SLC002.constant",
+    "SLC003.default",
+    "SLC004.default",
+    "SLC005.default",
+    "NAM001.unknown",
+    "NAM002.unknown",
+    "NAM003.mismatch",
+    "NAM004.mismatch",
+    "NAM005.latin",
+    "HID001.string_number",
+    "HID002.absent_not_hidden",
+    "PM001.redundant",
+    "PM002.partners_parent",
+]
+
+[baseline]
+v1 = "базлайн v1 — verso dsllint --baseline FILE --update-baseline --villages"
+
+[corpus_data]
+expected_list = "ожидался список"
+expected_order_tables = "ожидался список таблиц {{ year, suffix }}"
+expected_integer = "ожидалось целое число"
+expected_string = "ожидалась строка"
+expected_prev_revision = "ожидалась таблица {{ год = год | false }}"
+expected_year = "ожидался год"
+expected_year_or_false = "ожидался год или false"
+csv_skip_missing = "{path}: [csv] skip: нет файла {name}"
+expected_table = "ожидалась таблица"
+expected_landlord = "ожидалась таблица {{ villages, token }}"
+unknown_landlord_key = "{path}: неизвестный ключ «landlords.{key}.{unknown}»"
+expected_entries = "ожидался список таблиц [[{table}]]"
+expected_side = "ожидалась таблица {{ village, in }}"
+
+[ULC001]
+residence = "место жительства: «{place}» нет среди мест корпуса — в TF уйдёт без блока location. Добавьте место или напишите известное."
+origin = "откуда прибыл: «{place}» нет среди мест корпуса — в TF уйдёт без блока location. Добавьте место или напишите известное."
+destination = "куда выбыл: «{place}» нет среди мест корпуса — в TF уйдёт без блока location. Добавьте место или напишите известное."
+parish_village = "приход: «{place}» нет среди мест корпуса — в TF уйдёт без блока location. Добавьте место или напишите известное."
+default_residence = "место по умолчанию книги: «{place}» нет среди мест корпуса — в TF уйдёт без блока location. Добавьте место или напишите известное."
+
+[IMP001]
+outside = "импорт не из фасада DSL: {module}"
+upgrade = "импорт не из фасада DSL: {module} — verso upgrade-dsl {path}"
+
+[forms.role.father]
+nom = "отец"
+nom_capital = "Отец"
+gen = "отца"
+gen_capital = "Отца"
+dat = "отцу"
+dat_capital = "Отцу"
+
+[forms.role.mother]
+nom = "мать"
+nom_capital = "Мать"
+gen = "матери"
+gen_capital = "Матери"
+dat = "матери"
+dat_capital = "Матери"
+
+[forms.role.husband]
+nom = "муж"
+nom_capital = "Муж"
+gen = "мужа"
+gen_capital = "Мужа"
+dat = "мужу"
+dat_capital = "Мужу"
+
+[forms.role.wife]
+nom = "жена"
+nom_capital = "Жена"
+gen = "жены"
+gen_capital = "Жены"
+dat = "жене"
+dat_capital = "Жене"
+
+[forms.role.son]
+nom = "сын"
+nom_capital = "Сын"
+gen = "сына"
+gen_capital = "Сына"
+dat = "сыну"
+dat_capital = "Сыну"
+
+[forms.role.daughter]
+nom = "дочь"
+nom_capital = "Дочь"
+gen = "дочери"
+gen_capital = "Дочери"
+dat = "дочери"
+dat_capital = "Дочери"
+
+[forms.role.brother]
+nom = "брат"
+nom_capital = "Брат"
+gen = "брата"
+gen_capital = "Брата"
+dat = "брату"
+dat_capital = "Брату"
+
+[forms.role.sister]
+nom = "сестра"
+nom_capital = "Сестра"
+gen = "сестры"
+gen_capital = "Сестры"
+dat = "сестре"
+dat_capital = "Сестре"
+
+[forms.role.child]
+nom = "ребёнок"
+nom_capital = "Ребёнок"
+gen = "ребёнка"
+gen_capital = "Ребёнка"
+dat = "ребёнку"
+dat_capital = "Ребёнку"
+
+[forms.role.newborn_male]
+nom = "новорождённый"
+nom_capital = "Новорождённый"
+gen = "новорождённого"
+gen_capital = "Новорождённого"
+dat = "новорождённому"
+dat_capital = "Новорождённому"
+
+[forms.role.newborn_female]
+nom = "новорождённая"
+nom_capital = "Новорождённая"
+gen = "новорождённой"
+gen_capital = "Новорождённой"
+dat = "новорождённой"
+dat_capital = "Новорождённой"
+
+[forms.role.deceased_male]
+nom = "умерший"
+nom_capital = "Умерший"
+gen = "умершего"
+gen_capital = "Умершего"
+dat = "умершему"
+dat_capital = "Умершему"
+
+[forms.role.deceased_female]
+nom = "умершая"
+nom_capital = "Умершая"
+gen = "умершей"
+gen_capital = "Умершей"
+dat = "умершей"
+dat_capital = "Умершей"
+
+[forms.role.groom]
+nom = "жених"
+nom_capital = "Жених"
+gen = "жениха"
+gen_capital = "Жениха"
+dat = "жениху"
+dat_capital = "Жениху"
+
+[forms.role.bride]
+nom = "невеста"
+nom_capital = "Невеста"
+gen = "невесты"
+gen_capital = "Невесты"
+dat = "невесте"
+dat_capital = "Невесте"
+
+[forms.role.godfather]
+nom = "восприемник"
+nom_capital = "Восприемник"
+gen = "восприемника"
+gen_capital = "Восприемника"
+dat = "восприемнику"
+dat_capital = "Восприемнику"
+
+[forms.role.godmother]
+nom = "восприемница"
+nom_capital = "Восприемница"
+gen = "восприемницы"
+gen_capital = "Восприемницы"
+dat = "восприемнице"
+dat_capital = "Восприемнице"
+
+[forms.role.surety]
+nom = "поручитель"
+nom_capital = "Поручитель"
+gen = "поручителя"
+gen_capital = "Поручителя"
+dat = "поручителю"
+dat_capital = "Поручителю"
+
+[forms.role.witness]
+nom = "свидетель"
+nom_capital = "Свидетель"
+gen = "свидетеля"
+gen_capital = "Свидетеля"
+dat = "свидетелю"
+dat_capital = "Свидетелю"
+
+[forms.role.relative]
+nom = "родственник"
+nom_capital = "Родственник"
+gen = "родственника"
+gen_capital = "Родственника"
+dat = "родственнику"
+dat_capital = "Родственнику"
+
+[forms.role.household_member]
+nom = "член двора"
+nom_capital = "Член двора"
+gen = "члена двора"
+gen_capital = "Члена двора"
+dat = "члену двора"
+dat_capital = "Члену двора"
+
+[words]
+who = "{role} ({name})"
+offer = "«{words}» ({constant})"
+either = "{some} или {last}"
+
+[residence]
+census_village = "село переписи"
+book_default = "по умолчанию книги"
+written = "указано в записи"
+like = "как у {role}"
+
+[CPL012]
+patronymic = "Член двора {number} ({name}): отчество «{patronymic}» не от имени «{father}», а {kw}={ref} называет отцом его. Сверьте отчество со сканом или исправьте {kw}."
+
+[RTV001]
+elsewhere = "{who} — «{words}»: {estate} жили в {villages}, а место жительства здесь — {village} ({source}). Проверьте статус или укажите residence=."
+
+[RTV002]
+owner_in_state_village = "{who} живёт {lives} ({source}), а статус — «{words}»: {state} жили казённые крестьяне, вотчинные — {owners}. Проверьте статус или место."
+state_in_owners_village = "{who} живёт {lives} ({source}), а статус — «{words}»: {owners} жили вотчинные крестьяне, казённые — {state}. Проверьте статус или место."
+owner_in_state_village_default = "{who} живёт {lives} ({source}), а статус — «{words}» (по умолчанию книги): {state} жили казённые крестьяне, вотчинные — {owners}. Проверьте статус или место."
+state_in_owners_village_default = "{who} живёт {lives} ({source}), а статус — «{words}» (по умолчанию книги): {owners} жили вотчинные крестьяне, казённые — {state}. Проверьте статус или место."
+
+[PSA001]
+spouses = "{child} — «{child_words}», а {parent} — «{parent_words}». У супругов одно сословие — проверьте, какой статус верен."
+generations = "{child} — «{child_words}», а {parent} — «{parent_words}». У родителей и детей одно сословие — проверьте, какой статус верен."
+
+[PSA002]
+female_spouses = "У {silent} сословие не указано — по умолчанию книги она «{default}», а {stated} — «{stated_words}». У супругов одно сословие: {fix}."
+male_spouses = "У {silent} сословие не указано — по умолчанию книги он «{default}», а {stated} — «{stated_words}». У супругов одно сословие: {fix}."
+female_generations = "У {silent} сословие не указано — по умолчанию книги она «{default}», а {stated} — «{stated_words}». У родителей и детей одно сословие: {fix}."
+male_generations = "У {silent} сословие не указано — по умолчанию книги он «{default}», а {stated} — «{stated_words}». У родителей и детей одно сословие: {fix}."
+
+[PSA004]
+female_spouses = "У {silent} сословие не указано — по умолчанию книги она просто «{default}», а {stated} — «{stated_words}». У супругов одно сословие: {fix}."
+male_spouses = "У {silent} сословие не указано — по умолчанию книги он просто «{default}», а {stated} — «{stated_words}». У супругов одно сословие: {fix}."
+female_generations = "У {silent} сословие не указано — по умолчанию книги она просто «{default}», а {stated} — «{stated_words}». У родителей и детей одно сословие: {fix}."
+male_generations = "У {silent} сословие не указано — по умолчанию книги он просто «{default}», а {stated} — «{stated_words}». У родителей и детей одно сословие: {fix}."
+
+[parent_status]
+fix_offer = "укажите {role} {offer}"
+fix_like = "укажите {role} сословие, как у {stated}"
+fix_offer_mother = "укажите {role} {offer} — или status_mother= в DEFAULTS, если так вся книга"
+fix_like_mother = "укажите {role} сословие, как у {stated} — или status_mother= в DEFAULTS, если так вся книга"
+
+[PSA003]
+offer = "{newborn} проставлен взрослый статус «{words}» — нужна детская форма, например {offer}."
+forms = "{newborn} проставлен взрослый статус «{words}» — нужна детская форма, ({base}_SON / {base}_DAUGHTER / {base}_BOY / {base}_GIRL)."
+
+[NCSV006]
+empty = "пустое «Имя»"
+
+[NCSV005]
+gender = "«Пол» = {gender}, а должно быть М или Ж"
+
+[NCSV002]
+repeats = "«Имя-основа» повторяет «Имя» — у канонической строки она пуста"
+
+[NCSV001]
+unknown_base = "«Имя-основа» = {base}, но такого «Имя» в таблице нет"
+
+[NCSV003]
+chain = "«Имя-основа» = {base} — но {base} сам вариант, а канонизация цепочки не проходит"
+
+[NCSV004]
+duplicate = "строка полностью повторяет более раннюю"
+
+[statuses]
+imported_elsewhere = "{name}: импортирован из {found}, а рабочая область — {path}; запустите из корня дерева (PYTHONPATH)"
+not_a_module = "{path}: не загружается как модуль"
+both_forms = "{toml} и {py}: корпус держит статусы дважды — оставьте одно"
+expected_aliases = "ожидается таблица «константа» = «константа»"
+expected_constant = "ожидается таблица {{ text, gender }} с именем-константой в верхнем регистре"
+expected_gender = "«male», «female» или без пола"
+# Deprecated in 0.1.20, no longer called (corpus_data.unknown_key says it); kept until 0.2.
+unknown_key = "{path}: неизвестный ключ «{key}»"
+
+[lexicon]
+conflict = "словарь выводит для {index} «{key}» два ответа: {candidates} — закрепите один строкой patronymics слоя"
+unknown_kind = "в словаре нет индекса «{kind}»: один из {kinds}"
+read_only = "слой имён «{layer}» только для чтения"
+unsexed_patronymic = "слой имён «{layer}»: у отчества «{form}» нет пола, но есть отец, современная или старая форма — без пола бывает только отчество, ни к чему не привязанное"
+
+[legacy]
+no_column = "{path}: в заголовке таблицы имён нет нужного столбца"
+bad_row = "{path}, строка {line}: строка без «Имя» или с «Пол» не М/Ж"
+ignored_sex_contradicts = "{path}: список исключений даёт «{name}» пол, которого нет у строк таблицы имён"
+form_both_ways = "«{form}» — и старое, и современное отчество одного пола: таблицу имён нельзя прочесть одним слоем"
+
+[layer_files]
+header = "{file}: заголовок не тот — нужен «{columns}»"
+width = "{file}, строка {line}: число ячеек не то"
+sex = "{file}, строка {line}: пол «{sex}» — не M, не F и не пусто"
+forms_sex = "{file}, строка {line}: у формы «{name}» не указан пол"
+duplicate = "{file}, строка {line}: ключ «{key}» уже записан выше"
+bad_value = "значение {value} не помещается в ячейку TSV"
+
+[LEX001]
+not_cyrillic = "«{key}»: в ключе не одно кириллическое слово"
+not_russian = "«{key}»: в ключе базы буква не русского алфавита"
+stress = "«{key}»: в ключе знак ударения"
+space = "«{key}»: лишний пробел в ключе"
+no_sex = "«{key}»: у формы не указан пол"
+bad_sex = "«{key}»: пол «{sex}» — не M, не F и не пусто"
+
+[LEX002]
+duplicate = "«{key}»: ключ уже записан в строке {first}"
+
+[LEX003]
+unknown_base = "«{key}»: основы «{base}» нет ни в одном слое"
+removed_base = "«{key}»: снятие «{base}» оставляет основу этого имени ни в одном слое"
+
+[LEX004]
+chain = "«{key}»: основа «{base}» сама вариант «{next}»"
+
+[LEX005]
+names = "«{key}»: строка отвечает так же, как слои под ней — лишняя"
+forms = "«{key}»: {column} = «{value}» — то же даёт правило, ячейка лишняя"
+removal = "«{key}»: строка снимает ключ, которого нет в слоях под ней, — лишняя"
+patronymics = "«{key}»: закрепление отвечает так же, как вывод без него — лишнее"
+
+[LEX006]
+source = "«{key}»: источник «{source}» не из списка источников базы"
+removal = "«{key}»: строка базы ничего не снимает — под базой нет слоёв («-» в bases)"
+
+[LEX007]
+conflict = "«{key}»: два вывода для {index} — {candidates}; закрепите один в patronymics.tsv"
+
+[LEX008]
+profile = "«{key}»: нет профиля транслитерации «{profile}»; есть: {known}"
+word = "«{key}»: слово правила — не одно кириллическое слово"
+empty = "«{key}»: правило пишет слово пустой строкой — правило снимает «-»"
+
+[LEX009]
+redundant = "«{key}»: «{latin}» даёт и сумма без правила — правило лишнее"
+removal = "«{key}»: строка снимает правило, которого нет ни в одном слое ниже, — она лишняя"
+
+[LEX010]
+latin = "«{key}»: в «{latin}» знак вне латинских букв, апострофа, пробела и дефиса"
+
+[translit_edit]
+minted = "«{word}»: так его уже пишут {count} адресов Terraform рабочей области ({example}) — правило профиля адресов их переименует; правило для отображения: --profile {display}"
+minted_same = "«{word}»: так его уже пишут {count} адресов Terraform рабочей области ({example}) — правило профиля адресов их переименует; имена для чтения пишет тот же профиль — сначала дайте отображению свой ([translit] display)"
+no_rule = "«{word}»: ни один слой не держит правила {profile} для него"
+needs_schema_7 = "{config}: правила — строки слоёв имён с schema 7 — [translit]"
+no_old_file = "{config}: в корпусе нет transliteration.toml, переносить нечего"
+
+[names_layers]
+unknown_base = "{config}: «names.base» — нет базы «{base}»: одна из {known} или false"
+no_directory = "слой имён «{layer}»: нет каталога {path}"
+legacy_layer = "слой имён «{layer}» — старая таблица ({path}): она читается слоем до 0.2 — запишите её как names.tsv, forms.tsv и patronymics.tsv (verso names layer-diff)"
+
+[names_edit]
+no_layers = "{config}: схема ≤ 5 — имена лежат в старых таблицах, слоёв нет"
+no_writable = "{config}: нет записываемого слоя имён — назовите один из [names] layers в [names] writable"
+not_a_layer = "{path} — не слой из [names] layers в {config}"
+not_writable = "{path} — не записываемый слой имён: add и remove пишут только в {writable} ([names] writable в {config}) — чтобы править другой слой, измените [names]"
+old_format = "слой имён «{layer}» — старая таблица (names.csv): сначала запишите её тремя файлами TSV (verso names layer-diff)"
+exists = "«{name}» ({sex}) уже есть в {table}.tsv слоя «{layer}» — сначала удалите её: у ключа одна строка"
+no_such_name = "ни один слой не держит «{name}» ({sex})"
+
+[oracle]
+cannot_write = "оракул имён не может записать ответ {value} ({type}) в своей записи"
+unknown_function = "оракул имён не спрашивает функцию «{function}»: одна из {known}"
+
+[layer_diff]
+unresolved = "вопросов, которых не решает ни одна запись старых таблиц — ни имя, ни закрепление, ни ячейка «-», ни снятие, — {count}:\n{rows}"
+conflict = "два имени слоя выводят один ключ, {index} «{key}» ({candidates}), а у старых таблиц нет ответа для закрепления: слой не записан"
+
+[names_registry]
+no_file = "нет файла {path}: проверьте [names] dir в verso.toml"
+
+[names_table]
+empty_name = "«Имя» пусто"
+row_exists = "такая строка для {name} в таблице уже есть"
+base_repeats_name = "«Имя-основа» повторяет «Имя» ({name}) — у канонической строки она пуста"
+base_missing = "основы {base} нет в таблице как «Имя»"
+base_is_variant = "{base} сам вариант — канонизация цепочки не проходит; укажите --base {ultimate}"
+
+[transliteration]
+not_toml = "{path}: не читается как TOML: {e}"
+unknown_key = "{path}: неизвестный ключ «{unknown}»"
+names_not_table = "{path}: «names» — ожидалась таблица"
+name_not_string = "{path}: «names.{name}» — ожидалась строка"
+profile_spells = "{path}: «{name}» пишет таблица профиля {profile} — не корпус"
+unknown_profile = "{config}: «{key}» = «{profile}» — такого профиля транслитерации нет; есть: {known}"
+moved_to_layer = "{path}: правила транслитерации теперь в слое имён — verso translit migrate"
+no_writable_layer = "{config}: нет слоя имён, куда писать правило — [names] writable"
+
+# The review page's labels — the keys of ui-hints.toml and of the page (ui-v1.json).
+
+[ui.field]
+given_original = "имя"
+patronymic_original = "отчество"
+surname_original = "фамилия"
+given_modern = "имя (совр.)"
+patronymic_old = "отчество (совр.)"
+surname_modern = "фамилия (совр.)"
+residence = "место"
+status = "звание"
+gender = "пол"
+side = "сторона"
+comment = "комментарий"
+surname_in_book = "фамилия в книге"
+maiden_surname_modern = "фамилия при рождении"
+occupation = "занятие"
+number = "№"
+birth_day = "день рожд."
+baptism_day = "день крещ."
+birth_month = "мес. рожд."
+baptism_month = "мес. крещ."
+page = "лист"
+case = "дело"
+year = "год"
+baptism_year = "год крещ."
+source_date_error = "ошибка даты в подлиннике"
+calendar_note_birth = "имя не по святцам — верно"
+relationship = "кем приходится"
+relationship_ref = "чей родственник"
+baptism_age = "возраст при крещении"
+marriage_day = "день венч."
+marriage_month = "мес. венч."
+groom_marriage_number = "№ брака жениха"
+bride_marriage_number = "№ брака невесты"
+groom_age = "возраст жениха"
+bride_age = "возраст невесты"
+village = "село"
+church = "церковь"
+bride_takes_groom_surname = "невеста берёт фамилию жениха"
+source_kin_error = "ошибка родства в подлиннике"
+calendar_note_marriage = "венчание в запретный день — верно"
+death_day = "день смерти"
+burial_day = "день погреб."
+death_month = "мес. смерти"
+burial_month = "мес. погреб."
+age = "возраст"
+cause_of_death = "причина смерти"
+source_age_error = "ошибка возраста в подлиннике"
+namesake = "тёзка (возраст чужой)"
+family_id = "двор"
+record_day = "день записи"
+record_month = "мес. записи"
+role = "роль"
+ref_member = "к члену №"
+previous_age = "возраст прошл. ревизии"
+marital_status = "семейное положение"
+arrival_place = "откуда"
+departure_place = "куда"
+arrival_year = "год прибытия"
+arrival_reason = "причина прибытия"
+departure_year = "год выбытия"
+departure_reason = "причина выбытия"
+record_number = "№ записи"
+birth_year = "год рожд."
+parent_member = "родитель №"
+father_ref = "отец (ссылка)"
+secondary_role = "вторая роль"
+secondary_ref_member = "вторая ссылка №"
+hidden = "скрыт"
+spouse_member = "супруг №"
+previous_age_error = "ошибка прошл. возраста"
+divorce_day = "день развода"
+divorce_month = "мес. развода"
+husband_age = "возраст мужа"
+wife_age = "возраст жены"
+marriage_date = "дата брака"
+children = "дети"
+initiator = "инициатор"
+rank = "звание"
+military_unit = "часть"
+casualty_reason = "причина выбытия"
+document_type = "вид документа"
+award = "награда"
+award_number = "№ награды"
+place_of_casualty = "место выбытия"
+draft_board = "военкомат"
+archive = "архив"
+fund = "фонд"
+inventory = "опись"
+archive_suffix = "суффикс шифра"
+prev_revision_year = "год прошл. ревизии"
+document_type_genitive = "вид документа (род. п.)"
+district = "уезд"
+volost = "волость"
+household_label = "слово «двор»"
+household_number_label = "слово «№ двора»"
+record_type = "тип записи"
+source_url = "ссылка на источник"
+
+[ui.ref]
+groom = "жениха"
+bride = "невесты"
+witness = "поручителя № {n}"
+mother = "матери"
+godparent = "восприемника № {n}"
+
+[ui.event]
+birth = "рождение"
+of_birth = "рождения"
+baptism = "крещение"
+death = "смерть"
+of_death = "смерти"
+burial = "погребение"
+marriage = "венчание"
+divorce = "развод"
+
+[ui.row]
+groom_age = "возраст"
+bride_age = "возраст"
+groom_marriage_number = "№ брака"
+bride_marriage_number = "№ брака"
+age = "возраст"
+cause_of_death = "причина смерти"
+
+[ui.quick]
+cause_of_death = "+ причина смерти"
+godparent = "+ восприемник"
+witness = "+ поручитель"
+
+[ui.kind]
+birth = "Рождение"
+christening = "Крещение"
+marriage = "Брак"
+death = "Смерть"
+household = "Двор"
+listed_person = "Список"
+divorce = "Развод"
+external_record = "Карточка"
+
+[ui.slot]
+child = "Младенец"
+father = "Отец"
+mother = "Мать"
+godparent = "Восприемник"
+priest = "Священник"
+deacon = "Диакон"
+dyachok = "Дьячок"
+sexton = "Пономарь"
+groom = "Жених"
+bride = "Невеста"
+witness = "Поручитель"
+deceased = "Умерший"
+witness_death = "Свидетель"
+person = "Человек"
+husband = "Муж"
+wife = "Жена"
+
+[ui.group]
+relatives = "Родственник"
+members = "Член двора"
+
+[ui.enum.gender]
+male = "муж"
+female = "жен"
+
+[ui.enum.relationship]
+father = "отец"
+mother = "мать"
+husband = "муж"
+wife = "жена"
+son = "сын"
+daughter = "дочь"
+father_in_law = "свекор"
+mother_in_law = "свекровь"
+son_in_law = "зять"
+daughter_in_law = "сноха"
+foster_father = "приемный отец"
+foster_mother = "приемная мать"
+step_mother = "мачеха"
+step_father = "отчим"
+
+[ui.enum.census_role]
+head = "хозяин"
+wife = "жена"
+husband = "муж"
+son = "сын"
+daughter = "дочь"
+brother = "брат"
+uncle = "дядя"
+grandson = "внук"
+granddaughter = "внучка"
+daughter_in_law = "невестка"
+son_in_law = "зять"
+brother_in_law = "шурин"
+stepson = "пасынок"
+nephew = "племянник"
+niece = "племянница"
+cousin = "двоюродный брат"
+mother = "мать"
+father = "отец"
+sister = "сестра"
+stepdaughter = "падчерица"
+lodger = "прохожий"
+stepbrother = "сводный брат"
+foster_son = "приёмный сын"
+foster_daughter = "приёмная дочь"
+
+[ui.enum.side]
+groom = "по жениху"
+bride = "по невесте"
+
+[ui.enum.external_source_kind]
+criminal = "судимость"
+wwi = "военная служба"
+wwii = "Великая Отечественная война"
+
+[ui.enum.document_type.wwi_document_type]
+casualty_lists = "Именные списки потерь"
+casualty_card_lower = "Карточка на выбывших (нижние чины)"
+wounded_notice = "Уведомление о приеме раненого"
+arrival_card_higher = "Карточка на прибывших (высшие чины)"
+arrival_card_lower = "Карточка на прибывших (нижние чины)"
+award_lists = "Списки награжденных"
+reporting_card = "Отчетно-осведомительные карточки"
+pow_card = "Карточки военнопленных"
+
+[ui.enum.document_type.wwii_document_type]
+nagradnoy_list = "Наградной лист"
+award_order = "Приказ (указ) о награждении"
+anniversary_award = "Юбилейная картотека награждений"
+casualty_report = "Донесение о безвозвратных потерях"
+memory_book = "Книга памяти"
+service_card = "Учётно-послужная картотека"
+pow_card = "Картотека военнопленных"
+award_card = "Картотека награждений"
+casualty_clarification = "Документ, уточняющий потери"
+wound_card = "Картотека ранений"
+transit_point = "Военно-пересыльные пункты и запасные полки"
+unit_roster = "Именной список части"
+
+[ui.enum.month.january]
+nom = "январь"
+gen = "января"
+
+[ui.enum.month.february]
+nom = "февраль"
+gen = "февраля"
+
+[ui.enum.month.march]
+nom = "март"
+gen = "марта"
+
+[ui.enum.month.april]
+nom = "апрель"
+gen = "апреля"
+
+[ui.enum.month.may]
+nom = "май"
+gen = "мая"
+
+[ui.enum.month.june]
+nom = "июнь"
+gen = "июня"
+
+[ui.enum.month.july]
+nom = "июль"
+gen = "июля"
+
+[ui.enum.month.august]
+nom = "август"
+gen = "августа"
+
+[ui.enum.month.september]
+nom = "сентябрь"
+gen = "сентября"
+
+[ui.enum.month.october]
+nom = "октябрь"
+gen = "октября"
+
+[ui.enum.month.november]
+nom = "ноябрь"
+gen = "ноября"
+
+[ui.enum.month.december]
+nom = "декабрь"
+gen = "декабря"
+
+[ui.set.births]
+title = "Рождение"
+word = "рожд."
+plural = "рождения"
+
+[ui.default]
+residence = "место"
+status_male = "мужчины"
+status_female = "женщины"
+status_mother = "матери"
+status_groom = "женихи"
+status_bride = "невесты"
+cause_of_death = "причина смерти"
+
+[ui.set.marriages]
+title = "Брак"
+word = "венч."
+plural = "браки"
+
+[ui.set.deaths]
+title = "Смерть"
+word = "погреб."
+plural = "смерти"
+
+[ui.set.census]
+title = "Двор"
+word = "двор"
+plural = "переписи"
+
+[ui.book]
+civil = "книга ЗАГС (вторая дата — регистрация)"
+female_previous_age = "возраст прошл. ревизии у женщин"
+
+[ui.set.name_list]
+title = "Список"
+word = "список"
+plural = "списки"
+
+[ui.set.divorces]
+title = "Развод"
+word = "развод"
+plural = "разводы"
+
+[ui.set.external_sources]
+title = "Карточка"
+word = "карточка"
+plural = "карточки"
+
+[ui.place]
+city = "название — с видом: село, деревня…"
+county = "уезд, волость"
+state = "губерния"
+country = "страна"
+
+[ui.names]
+pol = "пол"
+imya = "имя (совр. орфография)"
+osnova = "имя-основа"
+ot = "от"
+skloneniya = "склонения, связи"
+roditelny = "родительный падеж"
+patr_old = "старое"
+patr_modern = "современное"
+istochnik = "источник"
+head_son = "отчество сына"
+head_daughter = "отчество дочери"
+
+# An edit refused (verso.ru.dsl.source: EditError, Stale) — its key and params.
+[source]
+unknown_value_kind = "неизвестный вид значения '{kind}'"
+no_parameter = "{func}() has no parameter '{param}'"
+cannot_create = "нельзя создать вызов {func}()"
+no_parameters = "{func}() has no parameter(s) {params}"
+splat = "распакованный список (*…) правится только в редакторе"
+unknown_op = "неизвестная операция '{op}'"
+no_member = "в {func}() нет члена {head}"
+no_place = "в {func}() нет места @{to}"
+member_comment = "комментарий в конце строки члена — переставьте в редакторе"
+not_a_list = "{param}= здесь не список — он правится только как выражение"
+no_element = "в {param}= нет элемента {key}"
+gone = "в файле нет записи #{ordinal}"
+stale = "запись изменилась на диске с момента загрузки"
+listed_needs_review = "запись уже на Geni и не вычитана: правка проходит только вместе с «Вычитано» — иначе храповик её задержит, и план удалит её профили с Geni"
+unknown_where_new = "неизвестное место новой записи '{where}'"
+new_only_in_a_metric_book = "новую запись можно добавить только в метрическую книгу"
+not_in_its_group_new = "запись стоит не прямо в своей группе — новую рядом с ней пишут в редакторе"
+new_not_a_call = "начало новой записи — не вызов {func}()"
+new_no_number = "у новой записи нет номера"
+unknown_where = "неизвестное место '{where}'"
+already_here = "запись уже здесь"
+listed_move = "запись уже на Geni и не вычитана: сначала «Вычитано», потом на место — иначе храповик её задержит, и план удалит её профили с Geni"
+not_in_its_group_move = "запись стоит не прямо в своей группе — переносят в редакторе"
+not_in_its_group_remove = "запись стоит не прямо в своей группе — убирают в редакторе"
+unknown_constant = "неизвестная константа '{code}': её нет в файле и в каталоге"
+looks_like_a_constant = "«{code}» — похоже на имя константы, но её нет ни в файле, ни в каталоге"
+not_python = "не выражение Python: {value} ({error})"
+not_a_number = "не число: '{value}'"
+no_call = "в {func}() нет вызова '{head}'"
+household_end_only_adds = "в конец двора можно только добавить"
+by_its_fields = "{head} правится по полям, а не целиком"
+list_end_only_adds = "в конец {param}= можно только добавить"
+not_an_element_number = "не номер элемента: '{key}'"
+element_not_a_call = "{param}={key} — не вызов"
+empty_path = "пустой путь правки"
+reviewed_already = "запись уже вычитана"
+not_a_constant_name = "'{code}' — не имя константы"
+dsl_v0 = "DSL v0: verso upgrade-dsl <файл>"
+
+# An operation of /api/v2 the record's schema cannot address (verso.ru.dsl.paths).
+[paths]
+unknown = "{path}: нет такого пути в схеме записи"
+type = "{path}: значение не того вида — ждали {expected}"
+opaque = "{path}: в исходнике это выражение — правится только в редакторе"
+not_a_group = "{path}: не группа и не слот — добавлять, вставлять, убирать и переносить можно только их"
+not_a_value = "{path}: не поле — задать или стереть можно только поле"
+slot_taken = "{path}: слот уже занят"
+position = "{path}: нет такого места — в группе {size}"
+op = "неизвестная операция '{op}'"
+
+[ZGS001]
+slot = "{slot}= в книге ЗАГС (civil=True): акт не пишет ни восприемников, ни поручителей, ни причта — шаблон метрической книги?"
+christening = "christening() в книге ЗАГС (civil=True): акт не записывает крещения — пишите birth()"
+
+[ZGS002]
+precedes = "регистрация {registration} раньше рождения {birth} в книге ЗАГС — неверно прочитан день или месяц?"
+
+[ZGS003]
+unflagged = "книга {year} г. без церкви — не книга ли ЗАГС? Тогда civil=True: иначе регистрации читаются как крещения и погребения"
+
+[ZGS004]
+estate = "сословие «{status}» в книге ЗАГС: сословия упразднены в 1917 г. — так ли в акте?"
+
+[ZGS005]
+old_letters = "«{name}» в книге ЗАГС (1918 и позже) написано по старой орфографии — так ли в акте?"
+
+[on_json]
+unsupported = "{code}: такого кода линтера нет — линтеры на records JSON знают коды dsllint и никакие другие"
+source_code = "{code}: код о виде исходного текста — у файла он есть, у records JSON нет; линтеры на records JSON его не проверяют"
+no_context = "{record}: в records JSON нет контекста обёрток в written (выгрузка до 0.1.16) — перевыгрузите записи"
+not_replayable = "records JSON нельзя собрать заново из того, что записано ({error})"
+codes_is_str = "codes — это набор кодов, а не строка «{codes}»"
+not_a_file = "records JSON должен быть отображением, а не {found}"
+other_schema = "ожидался records JSON схемы {wanted}, а в файле {found}"
+no_documents = "в records JSON должен быть список документов (каждый — отображение), а не {found}"
+set_scope = "{code}: код о заголовке набора — его проверяет lint_header, а не lint_record"
+needs_file_scope = "{code}: код читает один факт всего файла — передайте file_in_scope (places.file_in_scope(headers))"
+needs_run_levels = "{code}: код читает уровни вычитки листа записи — передайте run_levels"
+
+[hosted]
+bad_row = "hosted.toml: строку [{code}] не прочесть: {row}"
+
+[cli.echz]
+case_summary = "  {dates}, листов по описи: {folios}, сканов: {total_pages}"
+no_folio_names = "  (в именах файлов нет номеров листов — качать придётся по страницам)"
+folio_range = "  листы {first}-{last} ({count} шт.)"
+folios_missing = "  НЕТ листов: {missing}"
+spreads = "  разворотов (два листа на скане): {spreads}"
+lettered = "  литерные: {lettered}"
+not_folios = "  не-листы (обложка/опись/заверитель): {other}{more}"
+session_expired = "  302/402 = истекла сессия или кончился час абонемента: обновите echz_token.txt / доступ и повторите ту же команду — уже скачанное пропустится."
+help_archive = "какой архив (по умолчанию gavo)"
+help_meta = "найти дело → echz_meta.json"
+help_notes = "собрать имена файлов → notes.json + индекс листов"
+help_get = "скачать листы, например 51-119 | 51,60-64 | all"
+help_out = "куда класть (по умолчанию <фонд>-<опись>-<дело>)"
+unknown_archive = "неизвестный архив {archive}; есть: {known}"
+no_meta = "нет {meta} — сначала: echz meta <фонд> <опись> <дело>"
+not_in_reading_room = "Ф.{fund} оп.{opis} д.{delo}: нет в ЭЧЗ (не оцифровано или номера не те).\nПроверьте номера фонда, описи и дела."
+no_pages = "{code}: дело найдено, но вьюер не отдал ни одной страницы — скорее всего не активирован час абонемента."
+notes_missing = ", НЕ получено: {missing}"
+no_such_folios = "{spec}: таких листов в деле нет (посмотрите `echz notes`)"
+downloaded = { one = "{spec}: {count} страница → {target}/ ; скачано {got}", few = "{spec}: {count} страницы → {target}/ ; скачано {got}", many = "{spec}: {count} страниц → {target}/ ; скачано {got}", other = "{spec}: {count} страницы → {target}/ ; скачано {got}" }
+not_downloaded = ", НЕ скачано: {failed}"
+
+[cli.export_csv]
+two_sets_one_file = "{path}: два набора пишут {name}"
+help_village = "каталог села"
+help_year = "только этот год (можно несколько)"
+help_out = "писать в DIR/<год>/, а не рядом с файлами"
+done = "{village}: CSV {written}, файлов {files}, пропущено {skipped}"
+
+[cli.export_records]
+description = "Выгрузить записи деревни в JSON records-v1"
+help_village = "каталог деревни"
+help_out = "корень выгрузки (по умолчанию records/ в корне рабочей области)"
+help_strict = "выход 1, если какой-то файл не импортировался"
+done = "{files}, {records} → {target}"
+skipped = "пропущено файлов: {count} (см. {where})"
+
+[cli.facts]
+dumped = { one = "{count} утверждение → {path}", few = "{count} утверждения → {path}", many = "{count} утверждений → {path}", other = "{count} утверждения → {path}" }
+leaf = ", л. {page}"
+calendar_noted = "; снято заметкой calendar_note — {noted}"
+
+[cli.familio_spravochnik]
+no_template = "нет шаблона МК Familio: --template ФАЙЛ или <корпус>/familio/Shablon_MK.xlsx"
+help_cases = "Limit output to these дела (Фонд-Опись-Дело), comma-separated, e.g. 2162-74-12,64-9-956 — keeps only matching records across the years"
+help_template = "Familio МК template .xlsx to fill (default: <corpus>/familio/Shablon_MK.xlsx)"
+
+[cli.fetch_record]
+layout = "fetch_record читает только таблицы familio-extended, а у «{site}» — {layout}"
+other_layout = "другая"
+
+[cli.translit]
+description = "Показать, добавить, снять и проверить правила транслитерации (строки слоёв имён, translit.tsv); перенести transliteration.toml корпуса в слой."
+show_help = "как каждая роль пишет слова и по какому правилу"
+add_help = "записать правило в записываемый слой"
+remove_help = "снять правило"
+check_help = "линтер слоёв по их правилам"
+migrate_help = "записать transliteration.toml корпуса в записываемый слой правилами ru-v1"
+help_word = "слово, как его пишут записи (одно кириллическое слово)"
+help_latin = "его написание латиницей"
+help_profile = "профиль правила (по умолчанию — профиль отображения)"
+help_dry_run = "проверить, ничего не записывать"
+help_layer = "каталог одного слоя"
+added = "{word} → {latin} ({profile}): записано в {layer}"
+redundant = "{word}: {profile} и без правила даёт «{latin}» — правило лишнее"
+removed = "{word}: правило {latin} ({profile}) снято в {layer}; профиль даёт {gives}"
+dry_run = "--dry-run: ничего не записано"
+migrated = "записано правил: {count}, в {layer}; теперь удалите {path}"
+show_profile = "{word}: {role} ({profile}) → {result}"
+show_rule = "{word}: {role} ({profile} даёт {gives}) → {result}, правило слоя {layer}"
+check_summary = "слои: {layers}; жёстких находок {hard}, советов {advice}"
+
+[cli.names]
+layer_diff_help = "записать наименьший слой над базой, отвечающий на вопросы оракула как старые таблицы"
+layer_diff_description = """Записать наименьший слой имён над базой, который отвечает на каждый вопрос оракула так же, как старые таблицы каталога DIR (names.csv, names_ignore.csv, patronymics_ignore.csv).
+
+Оракул — файл TSV, строка на вопрос: function<TAB>args_json<TAB>answer_json. Строка с # в начале — комментарий. function — имя функции именования без модуля (canonicalize_name, matching_base, derive_patronymic …); args_json — JSON-список всех её параметров по порядку, с умолчаниями, пол — "M", "F" или null; answer_json — ответ в той же записи или {{"raises": "<класс исключения>"}}.
+
+Слой — три файла TSV (names.tsv, forms.tsv, patronymics.tsv) в --out, источник каждой записи — «legacy» (имя старого списка игнорирования сохраняет «ignore»: это его метка); одни и те же входы пишут одни и те же байты. Код 1 — вопросы, которых не решает ни одна запись старых таблиц, перечислены; слой записан всё равно."""
+help_from_legacy = "каталог старых таблиц"
+help_base = "база, над которой стоит слой"
+help_oracle = "файл оракула: вопросы и записанные ответы"
+help_out = "каталог слоя (пишется)"
+layer_diff_done = "{out}: имён {names}, форм {forms}, отчеств {patronymics} — вопросов {questions} и выведенных {derived} (feminine_patronymic), одна база отвечает иначе на {differing}; записей взято по этим вопросам {direct}, вместе с ними {along}; кругов {rounds}, {seconds} с"
+layer_diff_stale = "вопросов {oracle}, записанных не так, как {legacy} отвечает сегодня, — {count}: слой следует {legacy}"
+placed = "{path}:{line}: после {neighbour}"
+dry_run = "--dry-run: файл не тронут"
+top_of_file = "(начало файла)"
+add_help = "добавить имя в записываемый слой имён (схема 6) или строку в names.csv (схема ≤ 5)"
+add_description = """Добавить имя в записываемый слой [names] (--layer DIR — другой из его слоёв): строка в names.tsv и, если заданы формы, в forms.tsv — без места и порядка, у ключа одна строка. Сначала строку читает линтер слоёв поверх слоёв под ней: жёсткая находка (LEX001, LEX003, LEX007) отказывает, ничего не пишется; строка, на которую слои под ней отвечают так же (LEX005), пишется — с предупреждением. Форма `-` значит «такой формы нет», опущенная — правило.
+
+Рабочая область схемы ≤ 5 держит старый names.csv: строка идёт туда (--path — другой файл), --origin и --declension — его столбцы."""
+help_name = "имя, как его пишет словарь (кириллица, одно слово)"
+help_add_base = "основа имени (имя, которое держит какой-то слой); для канонического имени не задавать"
+help_origin = "«От» names.csv (только схема ≤ 5)"
+help_declension = "«Склонения, связи» names.csv (только схема ≤ 5)"
+help_genitive = "родительный падеж, если правило для имени ошибается; - — нет"
+help_patronymic_m = "отчество сына, если правило ошибается; - — нет"
+help_patronymic_f = "отчество дочери, если правило ошибается; - — нет"
+help_old_patronymic_m = "краткая форма отчества сына, если правило ошибается; - — нет"
+help_old_patronymic_f = "краткая форма отчества дочери, если правило ошибается; - — нет"
+help_source = "источник строки (по умолчанию editor)"
+help_replace = "заменить строку ключа, который записываемый слой уже держит (вместо отказа)"
+help_layer = "каталог записываемого слоя — единственного, куда пишут (по умолчанию [names] writable)"
+help_path = "names.csv (схема ≤ 5; по умолчанию — рабочей области)"
+legacy_note = "{config}: схема ≤ 5 — строка идёт в старый names.csv (рабочая область схемы 6 держит имена в слоях)"
+no_layers = "{config}: схема ≤ 5 — имена лежат в старых таблицах, а не в слоях: «verso names {command}» работает со слоями (схема 6)"
+layer_needs_schema_6 = "{config}: --layer — для рабочей области схемы 6; старый names.csv принимает --path"
+replace_needs_schema_6 = "{config}: --replace — для рабочей области схемы 6; в старом names.csv нет строк слоя, которые можно заменить"
+path_needs_schema_5 = "{config}: --path — names.csv, а рабочая область схемы 6 держит имена в слоях: --layer DIR"
+legacy_only = "{option} — столбец старого names.csv: у слоя такого нет"
+refused = "{layer}: ничего не записано — жёстких находок {count}"
+warning = "предупреждение: {message}"
+added = "{layer}/{file}: {sex} {name}"
+replaced = "{layer}/{file}: {sex} {name} (заменена)"
+remove_help = "убрать имя из записываемого слоя имён"
+remove_description = """Удалить строки имени из слоя (его строки names.tsv и forms.tsv). Имя, которое держит только нижний слой (база), убирается из стопки строкой удаления — `-` в bases, — записанной в слой; повторный remove удалит эту строку слоя, если нижний слой всё ещё держит имя. Предупреждает — предупреждением, не отказом, — если записи корпуса ещё пишут это имя."""
+help_remove_gender = "пол записи: М, Ж или - для записи имени без пола"
+removed_rows = "{layer}: «{name}» ({sex}) — удалено из {tables}"
+removed_tombstone = "{layer}: «{name}» ({sex}) держит нижний слой — записана строка удаления, имени в стопке нет"
+still_held = "нижний слой всё ещё держит «{name}» ({sex}): повторный remove запишет строку удаления"
+dangling = { one = "{count} имя всё ещё опирается на основу «{name}»: {names} — отвечает, как написано (LEX003 в `verso names check`)", few = "{count} имени всё ещё опираются на основу «{name}»: {names} — отвечают, как написано (LEX003 в `verso names check`)", many = "{count} имён всё ещё опираются на основу «{name}»: {names} — отвечают, как написано (LEX003 в `verso names check`)", other = "{count} имени всё ещё опираются на основу «{name}»: {names} — отвечают, как написано (LEX003 в `verso names check`)" }
+used = { one = "корпус всё ещё пишет «{name}» в {count} записи", few = "корпус всё ещё пишет «{name}» в {count} записях", many = "корпус всё ещё пишет «{name}» в {count} записях", other = "корпус всё ещё пишет «{name}» в {count} записях" }
+check_help = "прочитать слои имён линтером слоёв (LEX001–LEX007)"
+check_description = """Прочитать линтером слоёв записываемый слой (без параметров), один слой (--layer DIR) или каждый слой, базу тоже, и сумму слоёв (--all): находка печатается как слой/файл:строка: сообщение. Код 1 — если находка жёсткая (LEX001, LEX002, LEX003, LEX006, LEX007); советы (LEX004, LEX005) печатаются и проходят."""
+help_check_layer = "один из [names] layers"
+help_check_all = "каждый слой, база тоже, и их сумма"
+check_old_table = "{layer}: старая таблица — здесь не читается"
+check_sum = "сумма слоёв: {error}"
+check_summary = "проверено {layers}: жёстких {hard}, советов {advice}"
+explain_help = "сказать, что отвечают функции имён для имени и запись какого слоя дала ответ"
+explain_description = """Для имени: ответ каждой функции (canonicalize_name, matching_base, genitive_given_name, get_gender_from_name, derive_patronymic и derive_old_patronymic для сына и для дочери) и под ним записи, из которых он прочитан, со слоем каждой. Форма, которой не пишет ни один слой, — «правило»: её дали правила verso.ru.naming.forms; функция, читающая форму, показывает ячейку, которую читает."""
+help_explain_gender = "пол имени: М, Ж или - для записи без пола (по умолчанию — пол, в которых его держит словарь)"
+explain_call = "{call} = {answer}"
+explain_name = "    {layer}: names.tsv {sex} {name}{bases}, источник {source}"
+explain_forms = "    {layer}: forms {sex} {name}: {cell} = {value} [{where}]"
+explain_pin = "    {layer}: patronymics.tsv {sex} {form}: отец {father}, современная {modern}, краткая {old}"
+explain_unknown = "    ни один слой не держит {kind} «{key}»"
+explain_rule = "правило"
+
+[cli.review_ratchet]
+seeded_already = "{path} уже есть — список засевается один раз, дальше только убывает"
+seeded = "{village}: не вычитано {unreviewed}; на Geni (документ в state) {listed} → {list_name}; держится {held}"
+nameless = "  без документа (не засевается): {nameless}"
+shared_name = { one = "  ⚠ {count} запись делит имя документа с другой записью — сверить вручную", few = "  ⚠ {count} записи делят имя документа с другой записью — сверить вручную", many = "  ⚠ {count} записей делят имя документа с другой записью — сверить вручную", other = "  ⚠ {count} записи делят имя документа с другой записью — сверить вручную" }
+held_in_file = "  держится: {file} — {n}"
+no_lines_of_file = "{file}: в списке нет строк этого файла или файла нет"
+nothing_rebound = "\nНичего не перепривязано: такую правку надо вычитать."
+rebound = "{village}: перепривязано {moved}"
+no_line = "нет строки {spec}"
+pruned = "{village}: вычеркнуто {struck}, осталось {left}"
+ok = "{village}: храповик в порядке — на Geni не вычитано {count}"
+behind = "\nСписок отстал от вычитки: verso review-ratchet --village \"{village}\" --prune"
+file_gone = "файла нет — если переименован, поправьте путь"
+file_unreadable = "файл не читается: {error}: {detail}"
+line_not_in_base = "строки нет в {base}: список только убывает"
+
+[cli.statuses_toml]
+description = "Статусы корпуса рабочей области (statuses.py) как statuses.toml"
+help_out = "записать TOML в этот файл (без параметра — вывести на экран)"
+no_module = "в корпусе рабочей области нет {name}"
+written = "{path}"
+both_now = "{py}: корпус теперь держит статусы дважды — удалите statuses.py или statuses.toml"
+
+[cli.svyatcy]
+no_such_day = "{text}: такого дня нет в юлианском календаре"
+table_not_on_disk = "svyatcy import: таблица пакета не на диске — укажите --out"
+written = { one = "{out}: {count} строка", few = "{out}: {count} строки", many = "{out}: {count} строк", other = "{out}: {count} строки" }
+not_kept = "{name}: в святцах 1906 г. нет"
+help_near = "имена, поминаемые около дня"
+help_date = "юлианская дата, ГГГГ-ММ-ДД"
+help_like = "как прочитано: ранжировать по сходству"
+help_days = "дни поминовения имени"
+help_coverage = "доля рождений села, чьё имя есть в святцах"
+help_import = "пересобрать таблицу из upstream"
+help_upstream = "путь к {file}"
+help_sha = "SHA коммита upstream"
+no_day = "{headword}: нет дня {d:02d}.{m:02d}"
+near = { one = "{gender}, {d:02d}.{m:02d}.{y} ±{window}: {count} имя", few = "{gender}, {d:02d}.{m:02d}.{y} ±{window}: {count} имени", many = "{gender}, {d:02d}.{m:02d}.{y} ±{window}: {count} имён", other = "{gender}, {d:02d}.{m:02d}.{y} ±{window}: {count} имени" }
+coverage = "{village}: {known} {of_births} ({share:.1%}) — имя есть в святцах"
+
+[cli.upgrade_dsl]
+help_village = "каталог села (без него — только названные файлы)"
+help_check = "ничего не писать; выход 1, если файл изменился бы"
+help_files = "только эти файлы села"
+nothing_named = "нужны --village или файлы"
+counts = "файлов {files}, переписано {changed}, без изменений {same}"
+
+[cli.find_person.column]
+year = "Год"
+type = "Тип"
+number = "Номер записи"
+role = "Роль"
+birth = "Рождение (дата)"
+death = "Смерть (дата)"
+name = "ФИО (совр)"
+status = "Звание"
+residence = "НП"
+file = "Файл"
+
+[cli.facts.identity]
+appearances = "явлений в записях:                     {total}"
+placed = "  размещено на канонике:               {minted}  ({share:.2f}%)"
+refused = "  ОТКАЗ — профиля не существует:       {refused}"
+reached = "каноников достигнуто:                  {placed} из {canonicals}"
+folded = "  свёрнутых (>1 явления):              {folded}"
+repeated_number = "  два явления под одним номером записи: {repeated}"
+surplus = "  НЕОБЪЯСНЁННЫЙ избыток явлений:       {surplus}"
+minted_twice = "одно явление — два профиля:            {twice}"
+
+[cli.facts.date_order]
+head = "date-order: {within} внутри записи, {across} между записями"
+within = "ВНУТРИ ОДНОЙ ЗАПИСИ — источник сам себе противоречит:"
+across = "ДВЕ ЗАПИСИ РАСХОДЯТСЯ — не ошибка даты, а сигнал свода: две записи, сведённые в одного человека, называют разное:"
+
+[cli.facts.birth]
+age_on = "{age} (на {as_of})"
+born = "р. {date}"
+implied_year = "  → р. {year}"
+implied_years = "  → р. {first}–{last}"
+
+[cli.facts.date]
+none = "без даты рождения"
+circa = "ок. {date}"
+between = "между {start} и {end}"
+after = "после {start}"
+before = "до {start}"
+
+[cli.facts.ignore]
+no_profile = "ignore: —  (у записи нет своего профиля)"
+no_birth = "ignore: —  (профиль записи без даты рождения, снимать нечего)"
+or = " или "
+shared_res_name = "  (один res_name у двух записей с одним номером)"
+not_from_this_claim = "  ⚠ дата профиля выведена не из этого показания"
+drops_also = "  ⚠ снимет и дату: {also}"
+
+[cli.facts.birth_claims]
+head = "birth-claims: {count} человек, чьи записи расходятся о рождении (HIGH {high}, LOW {low}) — сигнал свода: две записи, сведённые в одного человека, могут быть о двух"
+finding = "[{confidence}] {name} ({res_name}): расхождение {years:.1f} г. при допуске {allowed:.1f}"
+on_geni = "    на Geni: {date}"
+
+[cli.facts.father]
+derived_dot = " · восстановлен"
+derived_comma = ", восстановлен"
+ok_noted = "; {noted} записаны в подлиннике"
+head = "father-claims: {across} человек, чьи записи называют разных отцов (HIGH {high}, LOW {low}); {within} с записью, противоречащей самой себе"
+head_noted = "; {noted} — так в подлиннике"
+across = "ЗАПИСИ РАСХОДЯТСЯ — сигнал пересвода: записи, сведённые в одного человека, называют разных отцов; меньшие группы — записи, которые выбиваются. Находка — сигнал: расщепление каноника — мутация, применённый мерж Geni не откатить."
+group = "    записей {records}: {shown}"
+within = "ЗАПИСЬ ПРОТИВОРЕЧИТ САМА СЕБЕ — сверить DSL и скан:"
+noted = "ТАК В ПОДЛИННИКЕ — запись сама говорит, что её имена родни расходятся (source_kin_error):"
+noted_pair = "  {name} ({canonical}): {first} и {second}  [{file} №{number}] — {note}"
+
+[cli.facts.span]
+days = "{count} дн."
+years = "≈{years:.1f} г."
+
+[cli.facts.death_claims]
+head = "death-claims: {count} человек, чьи записи датируют две смерти (HIGH {high}, LOW {low})"
+note = "Смерть сравнивается со смертью, погребение с погребением; год со слов ревизии — с допуском ±2. Погребение одной записи раньше смерти другой — за `date-order` и здесь не повторяется. Находка — сигнал пересвода: расщепление каноника — мутация, применённый мерж Geni не откатить."
+finding = "[{confidence}] {name} ({canonical}) — разрыв {gap} сверх допуска"
+death = "смерть"
+burial = "погребение"
+told = " (год со слов)"
+
+[cli.facts.name_days]
+unknown = "; имени нет в святцах — {births} ({names})"
+ok = "name-days: OK — 0 findings {of_births}{tail}{noted}."
+head = "name-days: {count} {of_births} — святой имени дальше {far} дн. от окна (HIGH {high}, LOW {low}){tail}{noted}"
+note = "Окно: рождение −{before} … max(крещение, 8-й день) +{after} дн. Чаще всего имя просто дано не по святцам; HIGH — в окне поминается похожее имя, с него и начинать сверку по скану. Имя верно — `birth(..., calendar_note=\"…\")`."
+finding = "[{confidence}] {name} ({gender}), р. {born}, кр. {christened} — ближайший святой имени {day:02d}.{month:02d}, {outside} дн. за окном"
+lookalikes = "    в окне поминается: {alts}"
+
+[cli.facts.wedding_calendar]
+ok = "wedding-calendar: OK — 0 findings {of_weddings}{noted}."
+head = "wedding-calendar: {strict} в строгий запрет (HIGH) и {loose} в нестрогий (LOW) {of_dated}{noted}"
+note = "Строгий — посты, сырная и Светлая седмицы, Святки, 29.08 и 14.09: почти всегда неверно прочитан месяц или день. Нестрогий — вторник, четверг, суббота, кануны праздников: книги его соблюдают не всегда. Дата верна — `marriage(..., calendar_note=\"…\")`."
+pascha = " (Пасха {day:02d}.{month:02d})"
+other_months = "    тот же день в соседнем месяце разрешён: "
+other_days = "    день рядом разрешён: "
+
+[cli.facts.lags]
+baptism_head = { one = "{check}: {count} крещение позже {days} дн. после рождения (HIGH {high}, LOW {low})", few = "{check}: {count} крещения позже {days} дн. после рождения (HIGH {high}, LOW {low})", many = "{check}: {count} крещений позже {days} дн. после рождения (HIGH {high}, LOW {low})", other = "{check}: {count} крещения позже {days} дн. после рождения (HIGH {high}, LOW {low})" }
+baptism_note = "HIGH — день крещения меньше дня рождения, и месяц крещения выведен как следующий: один из двух дней, вероятно, прочитан неверно."
+burial_head = { one = "{check}: {count} погребение позже {days} дн. после смерти (HIGH {high}, LOW {low})", few = "{check}: {count} погребения позже {days} дн. после смерти (HIGH {high}, LOW {low})", many = "{check}: {count} погребений позже {days} дн. после смерти (HIGH {high}, LOW {low})", other = "{check}: {count} погребения позже {days} дн. после смерти (HIGH {high}, LOW {low})" }
+burial_note = "Хоронили на третий день; HIGH — больше {days} дн., чего не объяснить ни погодой, ни отлучкой причта."
+finding = "[{confidence}] {first_word} {first}, {second_word} {second} — {days}  [{file} №{number}{page}]"
+
+[cli.facts.abbr]
+born = "р."
+christened = "кр."
+died = "ум."
+buried = "погр."
+
+[cli.facts.posthumous]
+head = { one = "posthumous-birth: {count} рождение после смерти родителя (HIGH {high}, LOW {low})", few = "posthumous-birth: {count} рождения после смерти родителя (HIGH {high}, LOW {low})", many = "posthumous-birth: {count} рождений после смерти родителя (HIGH {high}, LOW {low})", other = "posthumous-birth: {count} рождения после смерти родителя (HIGH {high}, LOW {low})" }
+note = "Ребёнок позже смерти матери или позже {days} дн. после смерти отца; смерть — самая поздняя, какую допускают записи родителя. Находка — сигнал пересвода: в одного родителя сведены двое."
+mother = "мать"
+father = "отец"
+finding = "[{confidence}] {name} ({parent}), {role} — ребёнок {born} [{child}], через {days} после смерти {died} [{death}]"
+
+[cli.facts.children_span]
+head = { one = "children-span: {count} мать, чьи дети родились дальше {years:g} лет друг от друга (HIGH {high}, LOW {low})", few = "children-span: {count} матери, чьи дети родились дальше {years:g} лет друг от друга (HIGH {high}, LOW {low})", many = "children-span: {count} матерей, чьи дети родились дальше {years:g} лет друг от друга (HIGH {high}, LOW {low})", other = "children-span: {count} матери, чьи дети родились дальше {years:g} лет друг от друга (HIGH {high}, LOW {low})" }
+note = "Дольше, чем рожает женщина: в одну мать сведены две."
+finding = "[{confidence}] {name} ({parent}) — {children} детей за {years:g} г.: {first} [{first_where}] … {last} [{last_where}]"
+
+[cli.facts.wedding_ages]
+head = "wedding-ages: {count} (HIGH {high} — моложе узаконенного возраста больше чем на {dispensation:g} г.; LOW {low} — супруги дальше {gap:g} лет)"
+note = "Минимум — по дате венчания: с 17.12.1774 15/13, с 19.07.1830 18/16; полгода книги допускают сами."
+groom = "жених"
+bride = "невеста"
+under_age = "[{confidence}] {married}, {who} «{age}» — моложе {minimum}  {where}"
+gap = "[{confidence}] {married}, жених «{groom}», невеста «{bride}» — {years:g} г.  {where}"
+
+[cli.facts.basis]
+none = "фактов нет"
+total = "утверждений всего: {total}"
+stated = "  ЗАПИСАНО:                        {stated}"
+unknown = "  ЗАПИСАНО?, основание неизвестно: {unknown}   ({share:.1f}% — цена вывода по месту в DSL-конструкторе)"
+retracted = "  ОТОЗВАНО автором:                {retracted}"
+derived = "  ВЫВЕДЕНО:"
+
+[cli.facts.explain]
+record = "— {village}, {file}, {year} рек. {number} —"
+not_found = "запись {spec} не найдена"
+nothing_folded = "{res_name}: ни одно явление в записях на этот каноник не сведено"
+person = "— {name} ({res_name}): {appearances} {in_records} —"
+
+[consolidation]
+leaf = ", л. {page}"
+no_candidates = "Кандидатов нет."
+
+[consolidation.reconcile.kind]
+list = "список"
+external = "карточка"
+birth = "рождение"
+marriage = "венчание"
+death = "смерть"
+census = "ревизия"
+
+[consolidation.reconcile]
+no_birth = "рождение не указано"
+born = "р. {year}"
+born_between = "р. {first}–{last}"
+person = "{name} ({res_name}) · {born} · записей: {records}"
+backing_by_name = "      сосед по списку №{number} {name} — по имени и отчеству {relation} кандидата: {canonical} (фамилия в записях другая или не записана)"
+backing = "      сосед по списку №{number} {name} → {canonical} — {relation} кандидата"
+targets = "человек только из списков и карточек"
+folded = "записей списков и карточек"
+by_neighbours = ", по соседям {backed}"
+head = "{channel}: {count} {targets} — {candidates} кандидат(ов) (HIGH {high}{by_list}), {ambiguous} неоднозначно, {none} не найдено"
+signal = "Находка — СИГНАЛ, не вердикт: прочесть записи обоих, прежде чем сводить."
+through_neighbour = " — найден(а) через соседа по списку: имя и отчество совпали, фамилия в записях другая или не записана"
+chosen_by_neighbours = " — выбран соседями по списку"
+record_profile = "    профиль записи: {profile}"
+contested = "    ⚠ тот же человек предложен и строке {entries} этого списка — две строки одного списка суть два человека"
+also_by_name = "· тоже по имени (тёзка или несведённый дубль), соседи не подтверждают:"
+father_agrees = "отец по отчеству совпадает"
+father_not_both = "отчество записано не у обоих"
+birth_checked = "рождение сверено"
+birth_unchecked = "рождение не сверить"
+audit_head = "{channel} --audit-folded: {count} {folded}, уже сведённых вручную — {summary}"
+audit_folded = "■ [{outcome}] {name} — сведён в {canonical_name} ({canonical})"
+channel_proposes = "    канал предлагает: {person}"
+
+[consolidation.reconcile.said]
+age = "{age} на {as_of}"
+born = "р. {date}"
+died = "умер {date}"
+alive = "жив {date}"
+
+[consolidation.name_variants]
+targets = "несведённых записей с фамилией и отцом"
+folded = "сведённых записей с фамилией и отцом"
+
+[consolidation.estate_conflicts]
+reconstructed = " · восстановлен"
+finding = "{name} [{res_name}] — {estates} {in_records}:"
+hint = "  → сословие РАСХОДИТСЯ между записями. Это сигнал, не приговор: писец бывает\n    ненадёжен, и человек, заведомо один, проходит по нескольким помещикам.\n    Проверь гипотезу на том, чья личность НЕ под вопросом, прежде чем\n    расщеплять кластер.\n"
+
+[consolidation.union_dups]
+same_household = "оба — члены двора {household} одного списка ({where}): писарь перечислил их отдельно, значит это два человека"
+reused_name = "{died} умер(ла) в {death_year}, {born} родился(ась) в {birth_year} — имя дано повторно"
+drift = " (расходятся на {spread}, но ближе {closest} их не прочесть — приблизительный год уже расширен)"
+siblings = "годы рождения расходятся на {closest}{drift} — скорее разные дети"
+two_baptisms = "у каждого своя запись о крещении — {first}; {second}: одного человека не крестят дважды, значит это два ребёнка"
+alive_after_death = "{first}: {first_said}, а {second}: {second_said} — позже этой смерти, значит это два человека"
+candidate_approximate = "даты не разводят этих людей: год рождения {names} приблизительный (выведен из возраста), и расхождение укладывается в дрейф возраста"
+candidate = "даты не разводят этих людей"
+group = "■ {name} — союз {union}"
+parents = "    родители: {parents}"
+single_parent = "(одинокий родитель)"
+died = ", ум. {year}"
+member = "      р. {born}{died}  {name}"
+head = "union-dups: {groups} групп(а) одноимённых детей в одном союзе — {candidates} кандидат(ов), {reused} повторное имя, {siblings} разные дети, {household} один двор, {baptisms} два крещения, {alive} жив после смерти"
+signal = "Кандидаты — СИГНАЛ, не вердикт: сверьте двор и записи прежде чем сводить."
+retired = "Отставлены — даты, двор или записи уже разводят этих людей:"
+
+[consolidation.split_couples]
+generations = "половины стоят не ближе {closest} лет друг от друга — скорее одноимённые пары разных поколений"
+half_fold = "общий профиль {shared} — второй супруг не сведён (полусвод)"
+no_shared = "у половин нет общего профиля — пара разложена по записям (например, двор ревизии/переписи рядом с метриками)"
+group = "■ {label} — {halves} пары профилей"
+no_dates = "без дат"
+child = "        · р. {born}  {name}  {res_name}"
+head = "split-couples: {couples} пар(а), разложенных по нескольким союзам — {candidates} кандидат(ов) ({half_folds} полусвод, {unshared} без общего профиля), {retired} разные поколения"
+signal = "Кандидаты — СИГНАЛ, не вердикт: сверьте записи. Сводить ПАРОЙ — обоих супругов; детей потом найдёт union-dups."
+retired = "Отставлены — даты разводят половины на поколение:"
+
+[consolidation.death_age.hint]
+years_for_months = "возраст записан в ГОДАХ там, где источник имел в виду МЕСЯЦЫ (голое число без единицы измерения)"
+months_for_years = "возраст записан в МЕСЯЦАХ там, где источник имел в виду ГОДЫ (голое число без единицы измерения)"
+tens_unread = "заявленный возраст МЕНЬШЕ прожитого — вероятно недочитана цифра десятков"
+disagrees = "возраст не сходится с метрикой о рождении — сверить обе записи по скану"
+
+[consolidation.death_age]
+days = "{n:.0f} дн"
+months = "{n:.1f} мес"
+years = "{n:.1f} л"
+child = "[{confidence}] {child} (отец/мать: {parent})"
+birth = "    рождение {year} № {record}  [{source}]"
+death = "    смерть   {year} № {record}  [{source}]"
+stated = "    в записи «{stated}» = {span}, а прошло {elapsed} (расхождение {gap})"
+low = "LOW = имя в семье повторяется, либо прожитое больше заявленного более чем в {ratio:g} раз: погребение почти наверное относится к тёзке, чьей метрики о рождении в корпусе нет."
+signal = "Находка — СИГНАЛ, а не приговор: сверять обе записи по скану."
+
+[consolidation.death_age.unit]
+days = "дн"
+months = "мес"
+years = "л"
+
+[consolidation.event]
+baptism = "крещение"
+birth = "рождение"
+death = "смерть"
+burial = "погребение"
+
+[consolidation.date_order]
+hint = "  → событие раньше рождения — вероятно не задан k_year= на декабрьском рождении, либо перепутан день/год в источнике\n"
+
+[consolidation.sibling_spacing.hint]
+two_records = "две ЗАПИСАННЫЕ метрики о рождении слишком близко — либо двойня, записанная порознь, либо одна из дат прочитана неверно"
+two_burials = "оба возраста выведены из погребений — сойтись они могут только если хотя бы у одного не та единица измерения"
+one_burial = "возраст «{name}» выведен из погребения и ставит рождение вплотную к брату/сестре — вероятно в записи надо читать {unit}"
+
+[consolidation.sibling_spacing.unit]
+years = "ГОДЫ"
+other = "другую единицу"
+
+[consolidation.sibling_spacing]
+from_burial = "выведено из погребения"
+from_birth = "метрика о рождении"
+gap = "    расхождение {days} дн — {hint}\n"
+twins = "Двойня, записанная одним номером, сюда не попадает; записанная порознь — попадает и снимается вручную."
+
+[consolidation.age_conflicts.role]
+mother = "мать"
+father = "отец"
+parent = "родитель"
+
+[consolidation.age_conflicts.hint]
+too_old = "  → неверный/неточный год рождения родителя ИЛИ over-merge (два тёзки слиты в один канонический профиль)\n"
+too_young = "  → неверный/неточный год рождения родителя ИЛИ ошибочно привязанный ребёнок (не тот родитель)\n"
+
+[consolidation.age_conflicts.band]
+too_old = "слишком поздний возраст"
+too_young = "слишком ранний возраст"
+
+[consolidation.age_conflicts]
+parent = "{name} (р. {born}{approx}) — {role} {children} детей в возрасте {min_age}–{max_age} ({band}):"
+child = "    - {name}: р. {born} (возраст {age})"
+
+[consolidation.stale_claims]
+subject = "    о ком: {subject}"
+earlier = "    но раньше: {earlier} ({when})"
+perishable = "Утверждение о первенстве — самое скоропортящееся, что есть в этих комментариях: проход идёт вглубь, и каждый новый год может его снять."
+signal = "Находка — повод перечитать ДВЕ записи, а не приговор: сплошь и рядом превосходная степень относится не к субъекту записи."
+kind.birth = "рождение"
+kind.marriage = "брак"
+kind.death = "смерть"
+
+[importers.validation]
+expected_string_table = "ожидалась таблица строк"
+expected_integer_table = "ожидалась таблица целых чисел"
+unknown_key = "{path}: неизвестный ключ «sheets.{key}»"
+missing_key = "{path}: нет ключа «sheets.{key}»"
+wrong_type = "{path}: «sheets.{key}» — {expected}"
+none_known = "ни одной"
+unread = "; не прочитано: {unread}"
+no_sheet = "нет таблицы «{site}»: есть {known}{unread}"
+two_villages = "таблицу «{site}» называют две деревни: {villages} — оставьте одну"
+format = "{path}: «sheets.format» — один из {formats}"
+
+[linters.names_csv]
+empty_spelling = "пустое написание"
+in_the_table = "«{value}» уже есть в справочнике — исключение перевернуло бы род всех, кто носит это имя; добавьте строку в names.csv"
+listed_already = "«{value}» уже есть в {file}"
+
+[linters.dead_code]
+functions = "DEAD001: {count} функци(я/и) без единого обращения во всём репозитории"
+functions_hint = "Убрать — или, если вызывается по имени во время выполнения, добавить в EXEMPT_NAMES с объяснением."
+keys = "DEAD002: {count} ключ(а/ей) схемы, которые линтер принимает, а код не читает"
+key = "  {key:32} объявлен в схеме {schema}"
+keys_hint = "Убрать из PROFILE_SCHEMA_KEYS/UNION_SCHEMA_KEYS вместе со строками в конфигах сёл — иначе куратор пишет их впустую."
+
+[linters]
+finding = "{linter}: стр. {line}: {message}"
+
+[linters.dsllint]
+villages_take_no_paths = "--villages: пути не нужны"
+
+[facts]
+leaf = ", л. {page}"
+
+[facts.event]
+baptism = "крещение"
+birth = "рождение"
+death = "смерть"
+burial = "погребение"
+marriage = "венчание"
+counted_alive = "учтён живым"
+
+[facts.date_order.hint]
+baptism_before_birth = "крещение раньше рождения — обычно не задан k_year= на декабрьском рождении, либо перепутан день/год в источнике"
+death_before_birth = "смерть раньше рождения — либо перепутан год, либо на профиль село чужое событие"
+burial_before_death = "погребение раньше смерти — обычно перепутаны дни внутри записи, либо b_month унаследован от блока месяца, когда d_month задан отдельно"
+burial_before_birth = "погребение раньше рождения — перепутан год"
+marriage_before_birth = "венчание раньше рождения — рождение выведено из возраста, прочитанного неверно, либо в одного сведены двое"
+death_before_marriage = "смерть раньше венчания — в одного сведены двое (тёзка, вдова и невестка одного имени), либо перепутан год"
+burial_before_marriage = "погребение раньше венчания — в одного сведены двое, либо перепутан год"
+death_before_baptism = "смерть раньше крещения — перепутаны день или месяц в одной из записей, либо сведены два младенца-тёзки"
+burial_before_baptism = "погребение раньше крещения — перепутаны день или месяц, либо сведены два младенца-тёзки"
+death_before_alive = "умер раньше, чем ревизия учла его живым — в одного сведены двое (отец и сын одного имени), либо перепутан год смерти"
+burial_before_alive = "погребён раньше, чем ревизия учла его живым — в одного сведены двое, либо перепутан год"
+
+[facts.reconcile]
+born = "р. {date} [{cite}]"
+same_list = "у каноника уже есть запись этого же списка — два участника одного списка суть два человека"
+same_household = "оба во дворе одной ревизии — писец перечислил их порознь"
+birth_apart = "рождение расходится на {years:.1f} г. при допуске {allowed:.1f}"
+two_baptisms = "у каждого своя запись о крещении — {first}; {second}: одного человека не крестят дважды"
+target = "цель"
+canonical = "каноник"
+seen_before_birth = "{who} назван(а) в записи [{cite}], а другой {birth}"
+life_apart = "{who}: {first}, а другой: {second} — после этой смерти"
+
+[facts.reconcile.audit]
+first = "первым"
+at = "на месте {place}"
+among = "среди {count} кандидатов, {first}"
+no_name = "имя не сошлось"
+no_name_father_surname = "имя не сошлось (имя, отец или фамилия)"
+
+[facts.lives]
+christened_at = "{cite}, р. {date}"
+died = "умер(ла)"
+buried = "погребён(а)"
+alive = "жив(а)"
+married = "венчан(а)"
+born = "родился(ась)"
+christened = "крещён(а)"
+
+[facts.fathers]
+father = "отец {name}"
+
+[consolidation.reconcile.relation]
+spouse = "супруг(а)"
+parent = "родитель"
+child = "ребёнок"
+
+[dsl.upgrade]
+not_in_catalog = "{name}: этого имени нет в каталоге {catalog}"
+not_in_facade = "{name}: этого имени нет в фасаде DSL ({module})"
+not_a_dsl_module = "{module} — не модуль DSL"
+comment_in_head = "комментарий в шапке импортов"
+comment_in_head_at = "комментарий в шапке импортов: {code}"
+import_after_code = "импорт после кода: {code}"
+main_does_more = "в __main__ не только экспорт CSV"
+comment_before_main = "комментарий перед __main__"
+not_a_dsl_form = "import {dotted} — не форма DSL"
+not_a_dsl_import = "import {dotted} — не импорт DSL"
+code_not_a_dsl_import = "{code} — не импорт DSL"
+import_as = "импорт с as: {code}"
+calendar_name = "calendar.{name} — не имя DSL"
+prints_would_move = "отпечатки храповика изменились бы: {was} → {becomes}"
+more_than_head = "изменилось что-то кроме шапки: AST вне импортов и __main__ другой"
+
+[dsl.surface]
+two_files = "{rev}: два файла поверхности: {found}"
+not_written = "поверхность DSL не записана: verso dsl-surface --write"
+no_param = "{where}: нет параметра {name}"
+param_kind = "{where}: параметр {name}: другой вид"
+param_default = "{where}: умолчание {name} {was} → {now}"
+positional_order = "{where}: порядок позиционных"
+new_param = "{where}: новый параметр {name} без умолчания"
+value = "{where}: значение «{was}» → «{now}»"
+no_name = "{where}: нет имени"
+kind = "{where}: другой вид"
+gender = "{where}: пол {was} → {now}"
+incompatible = "несовместимое изменение DSL v1: {changes} — это DSL v2 (DSL_API = 2, api-v2.json)"
+
+[archives.kaisa]
+bad_range = "не разобрать диапазон листов: {part} (пример: 51-119 или 51,53,60-64)"
+no_token = "нет файла с токеном {path} — скопируйте в него JWT сессии из браузера, вошедшего в читальный зал"
+not_json = "{endpoint}: не JSON после {tries} попыток — истёк токен или кончился час абонемента:\n{out}"
+no_pages = "{code}: вьюер не отдал ни одной страницы — скорее всего не активирован час абонемента"
+walk_diverges = "{code}, листы {lo}-{hi}: обход не сходится ({hits} сканов) — имена файлов этого дела не несут номера листа. Соберите `notes` и посмотрите на них."
+nothing_matched = "{code}: ни один скан не сопоставлен листам — проверьте имена файлов через `notes`."
+
+[records.blank]
+kind = "пустой книги вида «{kind}» нет: рождения, браки или смерти"
+year = "год {year} вне 1700–1930"
+shelfmark = "книге нужны фонд, опись и дело: «{fund}», «{inventory}», «{case}»"
+path = "«{value}» не может стоять в пути книги: ни «/», ни «\\», ни «..», ни пробелов по краям и управляющих символов, а пункт не пуст и не «.» или «..»"
+parish = "книге нужен приход, в котором она ведётся"
+defaults = "умолчания книги не приняты: {error}"
+
+[records.cite]
+no_sex = "{kind} № {number}{sheet}: пол не указан — номер рождения и смерти пишется с полом (m{number}, f{number})"
+leaf = ", л. {page}"
+
+[notes.stale_notes]
+not_git = "stale-notes: не git-репозиторий"
+no_config = "stale-notes: в {root} нет {config}"
+head = "stale-notes: {village}, {revs} (заметки — {notes_at}): изменённых имён {names}, старых пар слов {pairs}; мест, где старое чтение ещё написано, — {places}"
+settled = " (и {settled} уже исправлены, --all)"
+headers = "; заголовков с reviewed=False без удержанных записей — {headers}\n"
+still = "  ⚠ эта пара ещё пишется в DSL ({still}) — показаны только заметки, привязанные к записи номером, листом или годом"
+settled_mark = "  (уже исправлено?)"
+unsearched = "Изменено одно слово без пары — не искалось (одно имя есть в каждом году):"
+stale_headers = "В заголовке ещё reviewed=False, а удержанных записей в файле нет:"
+signal = "Находка — повод перечитать заметку, а не приговор: старое чтение можно цитировать нарочно. Заметки, где рядом стоит новое чтение или старое названо отменённым («не «…»», «вместо»), скрыты; --all покажет и их."
+working_tree = "рабочее дерево"
+
+[dsl.order.month]
+1 = "январь"
+2 = "февраль"
+3 = "март"
+4 = "апрель"
+5 = "май"
+6 = "июнь"
+7 = "июль"
+8 = "август"
+9 = "сентябрь"
+10 = "октябрь"
+11 = "ноябрь"
+12 = "декабрь"
+
+[dsl.order]
+no_number = "без номера"
+after = "после {number}"
+before = "перед {number}"
+frame = "кадр {n}"
+leaf = "л. {label}"
+
+[notes.stale_notes.kind]
+reading = "чтение"
+spelling = "написание"
+
+[counted]
+files = { one = "{count} файл", few = "{count} файла", many = "{count} файлов", other = "{count} файла" }
+records = { one = "{count} запись", few = "{count} записи", many = "{count} записей", other = "{count} записи" }
+in_records = { one = "в {count} записи", few = "в {count} записях", many = "в {count} записях", other = "в {count} записях" }
+births = "{count} рожд."
+of_births = { one = "из {count} рождения", few = "из {count} рождений", many = "из {count} рождений", other = "из {count} рождений" }
+names = { one = "{count} имя", few = "{count} имени", many = "{count} имён", other = "{count} имени" }
+appearances = { one = "{count} явление", few = "{count} явления", many = "{count} явлений", other = "{count} явления" }
+estates = { one = "{count} сословие", few = "{count} сословия", many = "{count} сословий", other = "{count} сословия" }
+weddings = { one = "{count} венчание", few = "{count} венчания", many = "{count} венчаний", other = "{count} венчания" }
+of_weddings = { one = "из {count} датированного венчания", few = "из {count} датированных венчаний", many = "из {count} датированных венчаний", other = "из {count} датированных венчаний" }
+of_dated = { one = "из {count} датированного", few = "из {count} датированных", many = "из {count} датированных", other = "из {count} датированных" }

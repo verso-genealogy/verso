@@ -1,0 +1,5956 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "records-v1",
+ "title": "Verso records v1",
+ "description": "The built DSL records as JSON: documents, page runs, records, personas; `written` is what a DSL call wrote, `derived` what the objects hold besides.",
+ "oneOf": [
+  {
+   "$ref": "#/$defs/file"
+  },
+  {
+   "$ref": "#/$defs/index"
+  }
+ ],
+ "$defs": {
+  "id": {
+   "type": "string",
+   "pattern": "^r1:[^/]+(?:/[^/]+)+$"
+  },
+  "status": {
+   "type": "object",
+   "properties": {
+    "text": {
+     "type": "string"
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "text",
+    "gender"
+   ]
+  },
+  "cause": {
+   "type": "object",
+   "properties": {
+    "text": {
+     "type": "string"
+    },
+    "type": {
+     "const": "cause"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "text",
+    "type"
+   ]
+  },
+  "source_citation": {
+   "type": "object",
+   "properties": {
+    "catalog": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_url": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "original_text": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "bibliography": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "archive_location": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "scan_files": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "items": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     ]
+    },
+    "scan_file": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "scan_content_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "event_date": {
+   "type": "object",
+   "properties": {
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "month": {
+     "enum": [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+      null
+     ]
+    },
+    "day": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "year_end": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "month_end": {
+     "enum": [
+      "january",
+      "february",
+      "march",
+      "april",
+      "may",
+      "june",
+      "july",
+      "august",
+      "september",
+      "october",
+      "november",
+      "december",
+      null
+     ]
+    },
+    "day_end": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "circa": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "circa_end": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "date_range": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "record_defaults": {
+   "type": "object",
+   "properties": {
+    "residence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "status_male": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/status"
+      }
+     ]
+    },
+    "status_female": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/status"
+      }
+     ]
+    },
+    "status_bride": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/status"
+      }
+     ]
+    },
+    "status_groom": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/status"
+      }
+     ]
+    },
+    "status_mother": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/status"
+      }
+     ]
+    },
+    "cause_of_death": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/cause"
+      }
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_person": {
+   "type": "object",
+   "properties": {
+    "given": {
+     "type": "object",
+     "properties": {
+      "original": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "modern": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "patronymic": {
+     "type": "object",
+     "properties": {
+      "original": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "old": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "surname": {
+     "type": "object",
+     "properties": {
+      "original": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "modern": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "in_book": {
+       "type": [
+        "boolean",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "residence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "status": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/status"
+      }
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    },
+    "side": {
+     "enum": [
+      "groom",
+      "bride",
+      null
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "maiden_surname": {
+     "type": "object",
+     "properties": {
+      "modern": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "occupation": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_person": {
+   "type": "object",
+   "properties": {
+    "given": {
+     "type": "object",
+     "properties": {
+      "original": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "modern": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "patronymic": {
+     "type": "object",
+     "properties": {
+      "original": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "old": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "modern": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "surname": {
+     "type": "object",
+     "properties": {
+      "original": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "modern": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "in_book": {
+       "type": [
+        "boolean",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "maiden_surname": {
+     "type": "object",
+     "properties": {
+      "modern": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "residence": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "status": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/status"
+      }
+     ]
+    },
+    "status_defaulted": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "occupation": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "side": {
+     "enum": [
+      "groom",
+      "bride",
+      null
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_relative": {
+   "type": "object",
+   "properties": {
+    "person": {
+     "type": "null"
+    },
+    "relationship": {
+     "enum": [
+      "father",
+      "mother",
+      "husband",
+      "wife",
+      "son",
+      "daughter",
+      "father_in_law",
+      "mother_in_law",
+      "son_in_law",
+      "daughter_in_law",
+      "foster_father",
+      "foster_mother",
+      "step_mother",
+      "step_father",
+      null
+     ]
+    },
+    "relationship_ref": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_relative": {
+   "type": "object",
+   "properties": {
+    "relationship": {
+     "enum": [
+      "father",
+      "mother",
+      "husband",
+      "wife",
+      "son",
+      "daughter",
+      "father_in_law",
+      "mother_in_law",
+      "son_in_law",
+      "daughter_in_law",
+      "foster_father",
+      "foster_mother",
+      "step_mother",
+      "step_father",
+      null
+     ]
+    },
+    "relationship_ref": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_birth": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    },
+    "birth": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "baptism": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "child": {
+     "type": "null"
+    },
+    "father": {
+     "type": "null"
+    },
+    "mother": {
+     "type": "null"
+    },
+    "god_parent1": {
+     "type": "null"
+    },
+    "god_parent2": {
+     "type": "null"
+    },
+    "god_parent3": {
+     "type": "null"
+    },
+    "god_parent4": {
+     "type": "null"
+    },
+    "priest": {
+     "type": "null"
+    },
+    "deacon": {
+     "type": "null"
+    },
+    "dyachok": {
+     "type": "null"
+    },
+    "sexton": {
+     "type": "null"
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "relatives": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "maxItems": 0
+      }
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "source_date_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "calendar_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "book": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "context": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "reviewed",
+       "birth.month",
+       "baptism.month",
+       "year",
+       "baptism.year",
+       "inventory",
+       "case",
+       "book"
+      ]
+     },
+     "uniqueItems": true
+    },
+    "wrapper": {
+     "type": "object",
+     "properties": {
+      "birth": {
+       "type": "object",
+       "properties": {
+        "month": {
+         "enum": [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"
+         ]
+        }
+       },
+       "additionalProperties": false
+      },
+      "baptism": {
+       "type": "object",
+       "properties": {
+        "month": {
+         "enum": [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"
+         ]
+        }
+       },
+       "additionalProperties": false
+      },
+      "year": {
+       "type": [
+        "integer"
+       ]
+      },
+      "page": {
+       "type": [
+        "string"
+       ]
+      }
+     },
+     "additionalProperties": false,
+     "minProperties": 1
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_birth": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "calendar_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_date_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    },
+    "birth": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "baptism": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "age": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "book": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_christening": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    },
+    "baptism": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      },
+      "age": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "child": {
+     "type": "null"
+    },
+    "father": {
+     "type": "null"
+    },
+    "mother": {
+     "type": "null"
+    },
+    "god_parent1": {
+     "type": "null"
+    },
+    "god_parent2": {
+     "type": "null"
+    },
+    "god_parent3": {
+     "type": "null"
+    },
+    "god_parent4": {
+     "type": "null"
+    },
+    "priest": {
+     "type": "null"
+    },
+    "deacon": {
+     "type": "null"
+    },
+    "dyachok": {
+     "type": "null"
+    },
+    "sexton": {
+     "type": "null"
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "relatives": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "maxItems": 0
+      }
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "calendar_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "birth": {
+     "type": "object",
+     "properties": {
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "book": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "context": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "reviewed",
+       "birth.month",
+       "baptism.month",
+       "year",
+       "baptism.year",
+       "inventory",
+       "case",
+       "book"
+      ]
+     },
+     "uniqueItems": true
+    },
+    "wrapper": {
+     "type": "object",
+     "properties": {
+      "birth": {
+       "type": "object",
+       "properties": {
+        "month": {
+         "enum": [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"
+         ]
+        }
+       },
+       "additionalProperties": false
+      },
+      "baptism": {
+       "type": "object",
+       "properties": {
+        "month": {
+         "enum": [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"
+         ]
+        }
+       },
+       "additionalProperties": false
+      },
+      "year": {
+       "type": [
+        "integer"
+       ]
+      },
+      "page": {
+       "type": [
+        "string"
+       ]
+      }
+     },
+     "additionalProperties": false,
+     "minProperties": 1
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_christening": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "calendar_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_date_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    },
+    "birth": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "baptism": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "age": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "book": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_marriage": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "marriage": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "groom": {
+     "type": "null"
+    },
+    "bride": {
+     "type": "null"
+    },
+    "groom_marriage_number": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "bride_marriage_number": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "groom_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "bride_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "witness1": {
+     "type": "null"
+    },
+    "witness2": {
+     "type": "null"
+    },
+    "witness3": {
+     "type": "null"
+    },
+    "witness4": {
+     "type": "null"
+    },
+    "witness5": {
+     "type": "null"
+    },
+    "witness6": {
+     "type": "null"
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "priest": {
+     "type": "null"
+    },
+    "deacon": {
+     "type": "null"
+    },
+    "dyachok": {
+     "type": "null"
+    },
+    "sexton": {
+     "type": "null"
+    },
+    "relatives": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "maxItems": 0
+      }
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "bride_takes_groom_surname": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "source_kin_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "calendar_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "book": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "context": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "reviewed",
+       "marriage.month",
+       "archive",
+       "fund",
+       "inventory",
+       "case",
+       "church",
+       "book",
+       "year"
+      ]
+     },
+     "uniqueItems": true
+    },
+    "wrapper": {
+     "type": "object",
+     "properties": {
+      "marriage": {
+       "type": "object",
+       "properties": {
+        "month": {
+         "enum": [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"
+         ]
+        }
+       },
+       "additionalProperties": false
+      },
+      "page": {
+       "type": [
+        "string"
+       ]
+      },
+      "year": {
+       "type": [
+        "integer"
+       ]
+      }
+     },
+     "additionalProperties": false,
+     "minProperties": 1
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_marriage": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "calendar_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_kin_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "marriage": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "groom_marriage_number": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "bride_marriage_number": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "groom_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "bride_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "book": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "bride_takes_groom_surname": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_death": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    },
+    "death": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "burial": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "deceased": {
+     "type": "null"
+    },
+    "age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "relatives": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "maxItems": 0
+      }
+     ]
+    },
+    "witness1": {
+     "type": "null"
+    },
+    "witness2": {
+     "type": "null"
+    },
+    "priest": {
+     "type": "null"
+    },
+    "deacon": {
+     "type": "null"
+    },
+    "dyachok": {
+     "type": "null"
+    },
+    "sexton": {
+     "type": "null"
+    },
+    "cause_of_death": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/cause"
+      }
+     ]
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "source_age_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_date_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "namesake": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "book": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "context": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "reviewed",
+       "year",
+       "death.month",
+       "burial.month",
+       "archive",
+       "fund",
+       "inventory",
+       "case",
+       "church",
+       "book"
+      ]
+     },
+     "uniqueItems": true
+    },
+    "wrapper": {
+     "type": "object",
+     "properties": {
+      "year": {
+       "type": [
+        "integer"
+       ]
+      },
+      "death": {
+       "type": "object",
+       "properties": {
+        "month": {
+         "enum": [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"
+         ]
+        }
+       },
+       "additionalProperties": false
+      },
+      "burial": {
+       "type": "object",
+       "properties": {
+        "month": {
+         "enum": [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"
+         ]
+        }
+       },
+       "additionalProperties": false
+      },
+      "page": {
+       "type": [
+        "string"
+       ]
+      }
+     },
+     "additionalProperties": false,
+     "minProperties": 1
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_death": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "source_date_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_age_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "namesake": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "death": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "burial": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "cause_of_death": {
+     "anyOf": [
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      {
+       "$ref": "#/$defs/cause"
+      }
+     ]
+    },
+    "age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "book": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_divorce": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "divorce": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "husband": {
+     "type": "null"
+    },
+    "wife": {
+     "type": "null"
+    },
+    "husband_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "wife_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "marriage_date": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "children": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "initiator": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "context": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "divorce.month",
+       "case",
+       "year"
+      ]
+     },
+     "uniqueItems": true
+    },
+    "wrapper": {
+     "type": "object",
+     "properties": {
+      "divorce": {
+       "type": "object",
+       "properties": {
+        "month": {
+         "enum": [
+          "january",
+          "february",
+          "march",
+          "april",
+          "may",
+          "june",
+          "july",
+          "august",
+          "september",
+          "october",
+          "november",
+          "december"
+         ]
+        }
+       },
+       "additionalProperties": false
+      },
+      "page": {
+       "type": [
+        "string"
+       ]
+      },
+      "year": {
+       "type": [
+        "integer"
+       ]
+      }
+     },
+     "additionalProperties": false,
+     "minProperties": 1
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_divorce": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "divorce": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "husband_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "wife_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "marriage_date": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "children": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "initiator": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_member": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "person": {
+     "type": "null"
+    },
+    "role": {
+     "enum": [
+      "head",
+      "wife",
+      "husband",
+      "son",
+      "daughter",
+      "brother",
+      "uncle",
+      "grandson",
+      "granddaughter",
+      "daughter_in_law",
+      "son_in_law",
+      "brother_in_law",
+      "stepson",
+      "nephew",
+      "niece",
+      "cousin",
+      "mother",
+      "father",
+      "sister",
+      "stepdaughter",
+      "lodger",
+      "stepbrother",
+      "foster_son",
+      "foster_daughter",
+      null
+     ]
+    },
+    "ref_member": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "previous_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "marital_status": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "occupation": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "arrival": {
+     "type": "object",
+     "properties": {
+      "place": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "reason": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "departure": {
+     "type": "object",
+     "properties": {
+      "place": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "reason": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "record_number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "birth": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "parent_member": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "father_ref": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "secondary_role": {
+     "enum": [
+      "head",
+      "wife",
+      "husband",
+      "son",
+      "daughter",
+      "brother",
+      "uncle",
+      "grandson",
+      "granddaughter",
+      "daughter_in_law",
+      "son_in_law",
+      "brother_in_law",
+      "stepson",
+      "nephew",
+      "niece",
+      "cousin",
+      "mother",
+      "father",
+      "sister",
+      "stepdaughter",
+      "lodger",
+      "stepbrother",
+      "foster_son",
+      "foster_daughter",
+      null
+     ]
+    },
+    "secondary_ref_member": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "hidden": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "spouse_member": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "source_age_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "previous_age_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_member": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "role": {
+     "enum": [
+      "head",
+      "wife",
+      "husband",
+      "son",
+      "daughter",
+      "brother",
+      "uncle",
+      "grandson",
+      "granddaughter",
+      "daughter_in_law",
+      "son_in_law",
+      "brother_in_law",
+      "stepson",
+      "nephew",
+      "niece",
+      "cousin",
+      "mother",
+      "father",
+      "sister",
+      "stepdaughter",
+      "lodger",
+      "stepbrother",
+      "foster_son",
+      "foster_daughter",
+      null
+     ]
+    },
+    "age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "ref_member": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "marital_status": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "occupation": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "arrival": {
+     "type": "object",
+     "properties": {
+      "place": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "reason": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "departure": {
+     "type": "object",
+     "properties": {
+      "place": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "reason": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "previous_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "record_number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "birth": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      },
+      "year": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "parent_member": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "spouse_member": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "source_age_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "previous_age_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "father_ref": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "secondary_role": {
+     "enum": [
+      "head",
+      "wife",
+      "husband",
+      "son",
+      "daughter",
+      "brother",
+      "uncle",
+      "grandson",
+      "granddaughter",
+      "daughter_in_law",
+      "son_in_law",
+      "brother_in_law",
+      "stepson",
+      "nephew",
+      "niece",
+      "cousin",
+      "mother",
+      "father",
+      "sister",
+      "stepdaughter",
+      "lodger",
+      "stepbrother",
+      "foster_son",
+      "foster_daughter",
+      null
+     ]
+    },
+    "secondary_ref_member": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "hidden": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_household": {
+   "type": "object",
+   "properties": {
+    "family_id": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "record": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "context": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "case",
+       "reviewed",
+       "record.day",
+       "record.month"
+      ]
+     },
+     "uniqueItems": true
+    },
+    "wrapper": {
+     "type": "object",
+     "properties": {
+      "page": {
+       "type": [
+        "string"
+       ]
+      }
+     },
+     "additionalProperties": false,
+     "minProperties": 1
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_household": {
+   "type": "object",
+   "properties": {
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "record": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "family_id": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_listed_person": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "person": {
+     "type": "null"
+    },
+    "age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "context": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "reviewed"
+      ]
+     },
+     "uniqueItems": true
+    },
+    "wrapper": {
+     "type": "object",
+     "properties": {
+      "page": {
+       "type": [
+        "string"
+       ]
+      }
+     },
+     "additionalProperties": false,
+     "minProperties": 1
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_listed_person": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "index": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_external_record": {
+   "type": "object",
+   "properties": {
+    "verb": {
+     "enum": [
+      "criminal_record",
+      "wwi_record",
+      "wwii_record"
+     ]
+    },
+    "person": {
+     "type": "null"
+    },
+    "original_text": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "record_number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "birth_year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "bibliography": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_url": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "scan_file": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    "scan_content_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "labels": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "items": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "rank": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "military_unit": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "casualty_reason": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "document_type": {
+     "enum": [
+      "wwi_document_type.casualty_lists",
+      "wwi_document_type.casualty_card_lower",
+      "wwi_document_type.wounded_notice",
+      "wwi_document_type.arrival_card_higher",
+      "wwi_document_type.arrival_card_lower",
+      "wwi_document_type.award_lists",
+      "wwi_document_type.reporting_card",
+      "wwi_document_type.pow_card",
+      "wwii_document_type.nagradnoy_list",
+      "wwii_document_type.award_order",
+      "wwii_document_type.anniversary_award",
+      "wwii_document_type.casualty_report",
+      "wwii_document_type.memory_book",
+      "wwii_document_type.service_card",
+      "wwii_document_type.pow_card",
+      "wwii_document_type.award_card",
+      "wwii_document_type.casualty_clarification",
+      "wwii_document_type.wound_card",
+      "wwii_document_type.transit_point",
+      "wwii_document_type.unit_roster",
+      null
+     ]
+    },
+    "award": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "award_number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "marital_status": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "place_of_casualty": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "casualty_date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "archive_location": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "birth_date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "draft_board": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "draft_date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "feat_date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "context": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "reviewed"
+      ]
+     },
+     "uniqueItems": true
+    },
+    "wrapper": {
+     "type": "object",
+     "properties": {
+      "page": {
+       "type": [
+        "string"
+       ]
+      }
+     },
+     "additionalProperties": false,
+     "minProperties": 1
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_external_record": {
+   "type": "object",
+   "properties": {
+    "kind": {
+     "enum": [
+      "criminal",
+      "wwi",
+      "wwii",
+      null
+     ]
+    },
+    "citation": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/source_citation"
+      }
+     ]
+    },
+    "record_number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "index": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "birth_year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "birth_date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "rank": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "military_unit": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "casualty_reason": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "document_type": {
+     "enum": [
+      "wwi_document_type.casualty_lists",
+      "wwi_document_type.casualty_card_lower",
+      "wwi_document_type.wounded_notice",
+      "wwi_document_type.arrival_card_higher",
+      "wwi_document_type.arrival_card_lower",
+      "wwi_document_type.award_lists",
+      "wwi_document_type.reporting_card",
+      "wwi_document_type.pow_card",
+      "wwii_document_type.nagradnoy_list",
+      "wwii_document_type.award_order",
+      "wwii_document_type.anniversary_award",
+      "wwii_document_type.casualty_report",
+      "wwii_document_type.memory_book",
+      "wwii_document_type.service_card",
+      "wwii_document_type.pow_card",
+      "wwii_document_type.award_card",
+      "wwii_document_type.casualty_clarification",
+      "wwii_document_type.wound_card",
+      "wwii_document_type.transit_point",
+      "wwii_document_type.unit_roster",
+      null
+     ]
+    },
+    "award": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "award_number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "marital_status": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "place_of_casualty": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "casualty_date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "draft_board": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "draft_date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "feat_date": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/event_date"
+      }
+     ]
+    },
+    "labels": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "items": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     ]
+    },
+    "comment": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_births": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "defaults": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/record_defaults"
+      }
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_births": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_marriages": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "defaults": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/record_defaults"
+      }
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_marriages": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_deaths": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "defaults": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/record_defaults"
+      }
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_deaths": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "civil": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_divorces": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "defaults": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/record_defaults"
+      }
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_divorces": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "church": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_census": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "record": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "archive_suffix": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "suffix_in_res_names": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "prev_revision_year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "document_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "document_type_genitive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "district": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "volost": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "household_label": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "household_number_label": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "file_prefix": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "doc_res_prefix": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "single_age_column": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "record_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "defaults": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "$ref": "#/$defs/record_defaults"
+      }
+     ]
+    },
+    "female_previous_age": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_census": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "document_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "document_type_genitive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "district": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "volost": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "prev_revision_year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "record": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "archive_suffix": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "suffix_in_res_names": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "household_label": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "household_number_label": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "file_prefix": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "doc_res_prefix": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "single_age_column": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "female_previous_age": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "record_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_name_list": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "document_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "document_type_genitive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "district": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "volost": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "record": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "scan_file": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_url": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "labels": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "items": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "household_order": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_name_list": {
+   "type": "object",
+   "properties": {
+    "archive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "fund": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "case": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "document_type": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "document_type_genitive": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "district": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "volost": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "record": {
+     "type": "object",
+     "properties": {
+      "day": {
+       "type": [
+        "integer",
+        "null"
+       ]
+      },
+      "month": {
+       "enum": [
+        "january",
+        "february",
+        "march",
+        "april",
+        "may",
+        "june",
+        "july",
+        "august",
+        "september",
+        "october",
+        "november",
+        "december",
+        null
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "scan_file": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "source_url": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "labels": {
+     "anyOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "array",
+       "items": {
+        "type": [
+         "string",
+         "null"
+        ]
+       }
+      }
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
+    "household_order": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_external_sources": {
+   "type": "object",
+   "properties": {
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_external_sources": {
+   "type": "object",
+   "properties": {
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "link": {
+   "anyOf": [
+    {
+     "type": "object",
+     "properties": {
+      "written": {
+       "$ref": "#/$defs/written_relative"
+      },
+      "derived": {
+       "$ref": "#/$defs/derived_relative"
+      }
+     },
+     "additionalProperties": false,
+     "required": [
+      "derived"
+     ]
+    },
+    {
+     "type": "object",
+     "properties": {
+      "written": {
+       "$ref": "#/$defs/written_member"
+      },
+      "derived": {
+       "$ref": "#/$defs/derived_member"
+      }
+     },
+     "additionalProperties": false,
+     "required": [
+      "derived"
+     ]
+    }
+   ]
+  },
+  "persona": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "role": {
+     "type": "string"
+    },
+    "slot": {
+     "type": "integer"
+    },
+    "link": {
+     "$ref": "#/$defs/link"
+    },
+    "written": {
+     "$ref": "#/$defs/written_person"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_person"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "role",
+    "derived"
+   ]
+  },
+  "source_notes": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string"
+     },
+     "anchor": {
+      "type": "object",
+      "properties": {
+       "to": {
+        "enum": [
+         "file",
+         "record",
+         "argument",
+         "field",
+         "range",
+         "manual"
+        ]
+       },
+       "record": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "end": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "arg": {
+        "type": "string"
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "to"
+      ]
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "text",
+     "anchor"
+    ]
+   }
+  },
+  "record_birth": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "birth"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_birth"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_birth"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "record_christening": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "christening"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_christening"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_christening"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "record_marriage": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "marriage"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_marriage"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_marriage"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "record_death": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "death"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_death"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_death"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "record_divorce": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "divorce"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_divorce"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_divorce"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "record_household": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "household"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_household"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_household"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "record_listed_person": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "listed_person"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_listed_person"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_listed_person"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "record_external_record": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "external_record"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_external_record"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_external_record"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "document_births": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "variable": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "births"
+    },
+    "written": {
+     "$ref": "#/$defs/written_births"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_births"
+    },
+    "pages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "page": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "records": {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/$defs/record_birth"
+          },
+          {
+           "$ref": "#/$defs/record_christening"
+          }
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "page",
+       "records"
+      ]
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "variable",
+    "kind",
+    "derived",
+    "pages"
+   ]
+  },
+  "document_marriages": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "variable": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "marriages"
+    },
+    "written": {
+     "$ref": "#/$defs/written_marriages"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_marriages"
+    },
+    "pages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "page": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "records": {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/$defs/record_marriage"
+          }
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "page",
+       "records"
+      ]
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "variable",
+    "kind",
+    "derived",
+    "pages"
+   ]
+  },
+  "document_deaths": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "variable": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "deaths"
+    },
+    "written": {
+     "$ref": "#/$defs/written_deaths"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_deaths"
+    },
+    "pages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "page": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "records": {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/$defs/record_death"
+          }
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "page",
+       "records"
+      ]
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "variable",
+    "kind",
+    "derived",
+    "pages"
+   ]
+  },
+  "document_divorces": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "variable": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "divorces"
+    },
+    "written": {
+     "$ref": "#/$defs/written_divorces"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_divorces"
+    },
+    "pages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "page": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "records": {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/$defs/record_divorce"
+          }
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "page",
+       "records"
+      ]
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "variable",
+    "kind",
+    "derived",
+    "pages"
+   ]
+  },
+  "document_census": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "variable": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "census"
+    },
+    "written": {
+     "$ref": "#/$defs/written_census"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_census"
+    },
+    "pages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "page": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "records": {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/$defs/record_household"
+          }
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "page",
+       "records"
+      ]
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "variable",
+    "kind",
+    "derived",
+    "pages"
+   ]
+  },
+  "document_name_list": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "variable": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "name_list"
+    },
+    "written": {
+     "$ref": "#/$defs/written_name_list"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_name_list"
+    },
+    "pages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "page": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "records": {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/$defs/record_listed_person"
+          }
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "page",
+       "records"
+      ]
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "variable",
+    "kind",
+    "derived",
+    "pages"
+   ]
+  },
+  "document_external_sources": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "variable": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "external_sources"
+    },
+    "written": {
+     "$ref": "#/$defs/written_external_sources"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_external_sources"
+    },
+    "pages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "page": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "records": {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/$defs/record_external_record"
+          }
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "page",
+       "records"
+      ]
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "variable",
+    "kind",
+    "derived",
+    "pages"
+   ]
+  },
+  "alias": {
+   "type": "object",
+   "properties": {
+    "variable": {
+     "type": "string"
+    },
+    "alias_of": {
+     "type": "string"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "variable",
+    "alias_of"
+   ]
+  },
+  "file": {
+   "type": "object",
+   "properties": {
+    "schema": {
+     "const": "records-v1"
+    },
+    "village": {
+     "type": "string"
+    },
+    "file": {
+     "type": "string"
+    },
+    "sha256": {
+     "type": "string"
+    },
+    "vocabulary": {
+     "type": "object",
+     "properties": {
+      "plugin": {
+       "type": "string"
+      },
+      "version": {
+       "type": "integer",
+       "minimum": 1
+      }
+     },
+     "additionalProperties": false,
+     "required": [
+      "plugin",
+      "version"
+     ]
+    },
+    "lang": {
+     "type": "string"
+    },
+    "documents": {
+     "type": "array",
+     "items": {
+      "anyOf": [
+       {
+        "$ref": "#/$defs/document_births"
+       },
+       {
+        "$ref": "#/$defs/document_marriages"
+       },
+       {
+        "$ref": "#/$defs/document_deaths"
+       },
+       {
+        "$ref": "#/$defs/document_divorces"
+       },
+       {
+        "$ref": "#/$defs/document_census"
+       },
+       {
+        "$ref": "#/$defs/document_name_list"
+       },
+       {
+        "$ref": "#/$defs/document_external_sources"
+       },
+       {
+        "$ref": "#/$defs/alias"
+       }
+      ]
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "schema",
+    "village",
+    "file",
+    "sha256",
+    "documents"
+   ]
+  },
+  "index": {
+   "type": "object",
+   "properties": {
+    "schema": {
+     "const": "records-v1"
+    },
+    "village": {
+     "type": "string"
+    },
+    "files": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "skipped": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "inputs": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "schema",
+    "village",
+    "files",
+    "skipped",
+    "inputs"
+   ]
+  }
+ }
+}

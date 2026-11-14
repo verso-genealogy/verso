@@ -1,0 +1,8 @@
+
+census = census_records(
+    "ГАТО", "10", "4", "4044", "Маниловка", 1858,
+    *page("16об-17",
+        household("1", member(1, person("Егоръ"), CensusRole.HEAD), reviewed=True),
+        reviewed=True,
+    ),
+)

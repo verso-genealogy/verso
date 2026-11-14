@@ -1,0 +1,72 @@
+[album."Хлестаковка 1900"]
+frames = "side"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр6"
+part = 1
+record = 2
+box = [0, 0.8, 0.7, 0.95]
+gender = "м"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр7"
+part = 1
+record = 5
+box = [0.2, 0.74, 0.98, 0.9]
+gender = "м"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр8"
+part = 1
+record = 5
+box = [0, 0.74, 0.7, 0.9]
+gender = "м"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр9"
+part = 1
+record = 8
+box = [0.2, 0.79, 0.98, 0.95]
+gender = "м"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр9"
+part = 1
+record = 9
+box = [0.2, 0.34, 0.98, 0.49]
+gender = "ж"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр10"
+part = 1
+record = 8
+box = [0, 0.79, 0.7, 0.95]
+gender = "м"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр10"
+part = 1
+record = 9
+box = [0, 0.34, 0.7, 0.49]
+gender = "ж"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр45"
+part = 3
+record = 3
+box = [0.1, 0.585, 0.9, 0.645]
+gender = "ж"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр46"
+part = 3
+record = 7
+box = [0.2, 0.49, 0.99, 0.56]
+gender = "м"
+
+[[album."Хлестаковка 1900".box]]
+folio = "кадр49"
+part = 3
+record = 21
+box = [0.1, 0.82, 0.97, 0.875]
+gender = "м"

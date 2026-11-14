@@ -1,0 +1,10 @@
+from verso.ru.dsl import CensusRole, census_records, household, member
+from verso.ru.dsl import person
+rs = census_records(
+    "ГАВО", "431", "1", "100", "Нижняя Яичница", 1897,
+    household(
+        member(1, person("Пимен", "Савельев", "Индюшев"), CensusRole.HEAD, age=62),
+        member(2, person("Тимофей", last_name_orig="Индюшев"), CensusRole.SON, 1, age=33),
+        member(3, person("Дарья", "Егорова", "Индюшева"), CensusRole.DAUGHTER_IN_LAW, 2, age=26),
+    ),
+)

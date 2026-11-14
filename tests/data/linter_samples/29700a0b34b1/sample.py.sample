@@ -1,0 +1,6 @@
+from genealogy import person, RecordDefaults
+from births import birth, birth_records
+from statuses import ECON_PEASANT_MALE, ECON_PEASANT_FEMALE
+r = birth_records("A", "1", "1", "1", "V", "C", 1800,
+    birth(1, "муж", 1, 1, child=person("Иван"), father=person("Петр", "Иванов", residence="V")),
+    defaults=RecordDefaults(residence="V", status_male=ECON_PEASANT_MALE, status_female=ECON_PEASANT_FEMALE))

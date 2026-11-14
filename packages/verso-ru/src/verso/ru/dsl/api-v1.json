@@ -1,0 +1,3030 @@
+{
+ "api": 1,
+ "modules": {
+  "verso.ru.dsl": {
+   "CONFESSION_LIST": {
+    "kind": "constant",
+    "value": "{'document_type': 'Исповедная роспись', 'document_type_genitive': 'исповедной росписи', 'household_label': 'двор', 'household_number_label': '№ двора', 'file_prefix': 'ir', 'doc_res_prefix': 'confession_of_the_household_number', 'single_age_column': True, 'record_type': 'исповедная роспись'}"
+   },
+   "CensusRole": {
+    "kind": "enum",
+    "members": {
+     "HEAD": "'хозяин'",
+     "WIFE": "'жена'",
+     "HUSBAND": "'муж'",
+     "SON": "'сын'",
+     "DAUGHTER": "'дочь'",
+     "BROTHER": "'брат'",
+     "UNCLE": "'дядя'",
+     "GRANDSON": "'внук'",
+     "GRANDDAUGHTER": "'внучка'",
+     "DAUGHTER_IN_LAW": "'невестка'",
+     "SON_IN_LAW": "'зять'",
+     "BROTHER_IN_LAW": "'шурин'",
+     "STEPSON": "'пасынок'",
+     "NEPHEW": "'племянник'",
+     "NIECE": "'племянница'",
+     "COUSIN": "'двоюродный брат'",
+     "MOTHER": "'мать'",
+     "FATHER": "'отец'",
+     "SISTER": "'сестра'",
+     "STEPDAUGHTER": "'падчерица'",
+     "LODGER": "'прохожий'",
+     "STEPBROTHER": "'сводный брат'",
+     "FOSTER_SON": "'приёмный сын'",
+     "FOSTER_DAUGHTER": "'приёмная дочь'"
+    }
+   },
+   "EventDate": {
+    "kind": "class",
+    "params": [
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "year_end",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "month_end",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "day_end",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "circa",
+      "KEYWORD_ONLY",
+      "False"
+     ],
+     [
+      "circa_end",
+      "KEYWORD_ONLY",
+      "False"
+     ],
+     [
+      "date_range",
+      "KEYWORD_ONLY",
+      "None"
+     ]
+    ]
+   },
+   "Gender": {
+    "kind": "enum",
+    "members": {
+     "MALE": "'муж'",
+     "FEMALE": "'жен'"
+    }
+   },
+   "Month": {
+    "kind": "enum",
+    "members": {
+     "JANUARY": "1",
+     "FEBRUARY": "2",
+     "MARCH": "3",
+     "APRIL": "4",
+     "MAY": "5",
+     "JUNE": "6",
+     "JULY": "7",
+     "AUGUST": "8",
+     "SEPTEMBER": "9",
+     "OCTOBER": "10",
+     "NOVEMBER": "11",
+     "DECEMBER": "12"
+    }
+   },
+   "NOT_IN_DOCUMENT": {
+    "kind": "constant",
+    "value": ""
+   },
+   "RecordDefaults": {
+    "kind": "class",
+    "params": [
+     [
+      "residence",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "status_male",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "status_female",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "status_bride",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "status_groom",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "status_mother",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "cause_of_death",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "Relationship": {
+    "kind": "enum",
+    "members": {
+     "FATHER": "'отец'",
+     "MOTHER": "'мать'",
+     "HUSBAND": "'муж'",
+     "WIFE": "'жена'",
+     "SON": "'сын'",
+     "DAUGHTER": "'дочь'",
+     "FATHER_IN_LAW": "'свекор'",
+     "MOTHER_IN_LAW": "'свекровь'",
+     "SON_IN_LAW": "'зять'",
+     "DAUGHTER_IN_LAW": "'сноха'",
+     "FOSTER_FATHER": "'приемный отец'",
+     "FOSTER_MOTHER": "'приемная мать'",
+     "STEP_MOTHER": "'мачеха'",
+     "STEP_FATHER": "'отчим'"
+    }
+   },
+   "Side": {
+    "kind": "enum",
+    "members": {
+     "GROOM": "'по жениху'",
+     "BRIDE": "'по невесте'"
+    }
+   },
+   "Status": {
+    "kind": "class",
+    "params": [
+     [
+      "value",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "gender",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "WwiDocumentType": {
+    "kind": "enum",
+    "members": {
+     "CASUALTY_LISTS": "'Именные списки потерь'",
+     "CASUALTY_CARD_LOWER": "'Карточка на выбывших (нижние чины)'",
+     "WOUNDED_NOTICE": "'Уведомление о приеме раненого'",
+     "ARRIVAL_CARD_HIGHER": "'Карточка на прибывших (высшие чины)'",
+     "ARRIVAL_CARD_LOWER": "'Карточка на прибывших (нижние чины)'",
+     "AWARD_LISTS": "'Списки награжденных'",
+     "REPORTING_CARD": "'Отчетно-осведомительные карточки'",
+     "POW_CARD": "'Карточки военнопленных'"
+    }
+   },
+   "WwiiDocumentType": {
+    "kind": "enum",
+    "members": {
+     "NAGRADNOY_LIST": "'Наградной лист'",
+     "AWARD_ORDER": "'Приказ (указ) о награждении'",
+     "ANNIVERSARY_AWARD": "'Юбилейная картотека награждений'",
+     "CASUALTY_REPORT": "'Донесение о безвозвратных потерях'",
+     "MEMORY_BOOK": "'Книга памяти'",
+     "SERVICE_CARD": "'Учётно-послужная картотека'",
+     "POW_CARD": "'Картотека военнопленных'",
+     "AWARD_CARD": "'Картотека награждений'",
+     "CASUALTY_CLARIFICATION": "'Документ, уточняющий потери'",
+     "WOUND_CARD": "'Картотека ранений'",
+     "TRANSIT_POINT": "'Военно-пересыльные пункты и запасные полки'",
+     "UNIT_ROSTER": "'Именной список части'"
+    }
+   },
+   "birth": {
+    "kind": "function",
+    "params": [
+     [
+      "record_num",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "gender",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "b_day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "k_day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "b_month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "k_month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "child",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "father",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "mother",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "god_parent1",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "god_parent2",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "god_parent3",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "god_parent4",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "priest",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "deacon",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "dyachok",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "sexton",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "page",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "comment",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "relatives",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "k_year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "source_date_error",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "reviewed",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "calendar_note",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "birth_month": {
+    "kind": "function",
+    "params": [
+     [
+      "month",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "birth_month_year": {
+    "kind": "function",
+    "params": [
+     [
+      "month",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "birth_records": {
+    "kind": "function",
+    "params": [
+     [
+      "archive",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "fund",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "inventory",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "village",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "church",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ],
+     [
+      "defaults",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "True"
+     ],
+     [
+      "civil",
+      "KEYWORD_ONLY",
+      "False"
+     ]
+    ]
+   },
+   "book": {
+    "kind": "function",
+    "params": [
+     [
+      "name",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "priest_person",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "census_records": {
+    "kind": "function",
+    "params": [
+     [
+      "archive",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "fund",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "inventory",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "village",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "households",
+      "VAR_POSITIONAL",
+      null
+     ],
+     [
+      "record_day",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "record_month",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "archive_suffix",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "suffix_in_res_names",
+      "KEYWORD_ONLY",
+      "False"
+     ],
+     [
+      "prev_revision_year",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "document_type",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "document_type_genitive",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "district",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "volost",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "True"
+     ],
+     [
+      "household_label",
+      "KEYWORD_ONLY",
+      "'семья'"
+     ],
+     [
+      "household_number_label",
+      "KEYWORD_ONLY",
+      "'№ семьи / № Двора'"
+     ],
+     [
+      "file_prefix",
+      "KEYWORD_ONLY",
+      "'rs'"
+     ],
+     [
+      "doc_res_prefix",
+      "KEYWORD_ONLY",
+      "'census_of_the_family_number'"
+     ],
+     [
+      "single_age_column",
+      "KEYWORD_ONLY",
+      "False"
+     ],
+     [
+      "record_type",
+      "KEYWORD_ONLY",
+      "'ревизия'"
+     ],
+     [
+      "defaults",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "female_previous_age",
+      "KEYWORD_ONLY",
+      "None"
+     ]
+    ]
+   },
+   "christening": {
+    "kind": "function",
+    "params": [
+     [
+      "record_num",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "gender",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "k_day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "k_month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "age",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "child",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "father",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "mother",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "god_parent1",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "god_parent2",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "god_parent3",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "god_parent4",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "priest",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "deacon",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "dyachok",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "sexton",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "page",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "case",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "comment",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "relatives",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "year",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "calendar_note",
+      "KEYWORD_ONLY",
+      "None"
+     ]
+    ]
+   },
+   "criminal_record": {
+    "kind": "function",
+    "params": [
+     [
+      "person",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "original_text",
+      "KEYWORD_ONLY",
+      null
+     ],
+     [
+      "record_number",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "age",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "birth_year",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "date",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "page",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "bibliography",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "source_url",
+      "KEYWORD_ONLY",
+      null
+     ],
+     [
+      "archive",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "fund",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "inventory",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "case",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "scan_file",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "scan_content_type",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "labels",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "comment",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "True"
+     ]
+    ]
+   },
+   "death": {
+    "kind": "function",
+    "params": [
+     [
+      "record_num",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "gender",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "d_day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "b_day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "d_month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "b_month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "deceased",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "relatives",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "witness1",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "witness2",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "priest",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "deacon",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "dyachok",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "sexton",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "cause_of_death",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "page",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "comment",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "reviewed",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "source_age_error",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "source_date_error",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "namesake",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "death_month": {
+    "kind": "function",
+    "params": [
+     [
+      "month",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "death_month_year": {
+    "kind": "function",
+    "params": [
+     [
+      "month",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "death_records": {
+    "kind": "function",
+    "params": [
+     [
+      "archive",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "fund",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "inventory",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "village",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "church",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ],
+     [
+      "defaults",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "True"
+     ],
+     [
+      "civil",
+      "KEYWORD_ONLY",
+      "False"
+     ]
+    ]
+   },
+   "divorce": {
+    "kind": "function",
+    "params": [
+     [
+      "record_num",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "d_day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "d_month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "husband",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "wife",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "husband_age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "wife_age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "marriage_date",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "children",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "initiator",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "page",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "comment",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "divorce_month": {
+    "kind": "function",
+    "params": [
+     [
+      "month",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "divorce_records": {
+    "kind": "function",
+    "params": [
+     [
+      "archive",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "fund",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "inventory",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "village",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "church",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ],
+     [
+      "defaults",
+      "KEYWORD_ONLY",
+      "None"
+     ]
+    ]
+   },
+   "external_source_records": {
+    "kind": "function",
+    "params": [
+     [
+      "village",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "household": {
+    "kind": "function",
+    "params": [
+     [
+      "family_id",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "members",
+      "VAR_POSITIONAL",
+      null
+     ],
+     [
+      "page",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "comment",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "record_day",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "record_month",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "None"
+     ]
+    ]
+   },
+   "listed_person": {
+    "kind": "function",
+    "params": [
+     [
+      "number",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "person",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "age",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "comment",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "page",
+      "KEYWORD_ONLY",
+      "None"
+     ]
+    ]
+   },
+   "marriage": {
+    "kind": "function",
+    "params": [
+     [
+      "record_num",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "w_day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "w_month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "groom",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "bride",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "groom_marriage_num",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "bride_marriage_num",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "groom_age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "bride_age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "witness1",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "witness2",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "witness3",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "witness4",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "witness5",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "witness6",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "page",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "village",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "church",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "comment",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "priest",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "deacon",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "dyachok",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "sexton",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "relatives",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "bride_takes_groom_surname",
+      "POSITIONAL_OR_KEYWORD",
+      "True"
+     ],
+     [
+      "reviewed",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "source_kin_error",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "calendar_note",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "marriage_month": {
+    "kind": "function",
+    "params": [
+     [
+      "month",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "marriage_month_year": {
+    "kind": "function",
+    "params": [
+     [
+      "month",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ]
+    ]
+   },
+   "marriage_records": {
+    "kind": "function",
+    "params": [
+     [
+      "archive",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "fund",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "inventory",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "village",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "church",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ],
+     [
+      "defaults",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "True"
+     ],
+     [
+      "civil",
+      "KEYWORD_ONLY",
+      "False"
+     ]
+    ]
+   },
+   "member": {
+    "kind": "function",
+    "params": [
+     [
+      "number",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "person",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "role",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "ref_member",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "previous_age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "marital_status",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "occupation",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "origin",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "destination",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "arrival_year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "arrival_reason",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "departure_year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "departure_reason",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "record_number",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "birth_day",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "birth_month",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "birth_year",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "parent_member",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "father_ref",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "secondary_role",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "secondary_ref_member",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "hidden",
+      "POSITIONAL_OR_KEYWORD",
+      "False"
+     ],
+     [
+      "comment",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "spouse_member",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "source_age_error",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "previous_age_error",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "name_list_records": {
+    "kind": "function",
+    "params": [
+     [
+      "archive",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "fund",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "inventory",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "case",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "village",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "year",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "entries",
+      "VAR_POSITIONAL",
+      null
+     ],
+     [
+      "document_type",
+      "KEYWORD_ONLY",
+      null
+     ],
+     [
+      "document_type_genitive",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "district",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "volost",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "record_day",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "record_month",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "scan_file",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "source_url",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "labels",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "True"
+     ],
+     [
+      "household_order",
+      "KEYWORD_ONLY",
+      "False"
+     ]
+    ]
+   },
+   "page": {
+    "kind": "function",
+    "params": [
+     [
+      "num",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "records",
+      "VAR_POSITIONAL",
+      null
+     ],
+     [
+      "archive",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "fund",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "inventory",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "case",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "church",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "year",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "day",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "month",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "None"
+     ]
+    ]
+   },
+   "person": {
+    "kind": "function",
+    "params": [
+     [
+      "name_orig",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "patr_orig",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "last_name_orig",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "name_modern_orth",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "patr_old",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "last_name_modern_orth",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "residence",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "status",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "gender",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "side",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "comment",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "last_name_in_book",
+      "POSITIONAL_OR_KEYWORD",
+      "True"
+     ],
+     [
+      "birth_last_name_modern_orth",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "occupation",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "relative": {
+    "kind": "function",
+    "params": [
+     [
+      "person",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "relationship",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "relationship_ref",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ]
+    ]
+   },
+   "wwi_record": {
+    "kind": "function",
+    "params": [
+     [
+      "person",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "source_url",
+      "KEYWORD_ONLY",
+      null
+     ],
+     [
+      "record_number",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "age",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "birth_year",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "original_text",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "date",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "page",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "rank",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "military_unit",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "casualty_reason",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "document_type",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "award",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "award_number",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "marital_status",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "place_of_casualty",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "casualty_date",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "archive",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "fund",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "inventory",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "case",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "archive_location",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "scan_file",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "scan_content_type",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "bibliography",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "labels",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "comment",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "True"
+     ]
+    ]
+   },
+   "wwii_record": {
+    "kind": "function",
+    "params": [
+     [
+      "person",
+      "POSITIONAL_OR_KEYWORD",
+      null
+     ],
+     [
+      "source_url",
+      "KEYWORD_ONLY",
+      null
+     ],
+     [
+      "record_number",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "age",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "birth_date",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "original_text",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "date",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "page",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "rank",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "military_unit",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "casualty_reason",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "document_type",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "award",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "award_number",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "marital_status",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "place_of_casualty",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "casualty_date",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "draft_board",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "draft_date",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "feat_date",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "archive",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "fund",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "inventory",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "case",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "archive_location",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "scan_file",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "scan_content_type",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "bibliography",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "labels",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "comment",
+      "KEYWORD_ONLY",
+      "None"
+     ],
+     [
+      "reviewed",
+      "KEYWORD_ONLY",
+      "True"
+     ]
+    ]
+   }
+  },
+  "verso.ru.dsl.causes_of_death": {
+   "ALCOHOL": {
+    "kind": "constant",
+    "value": "от излишнего употребления вина"
+   },
+   "ANGINA": {
+    "kind": "constant",
+    "value": "стенокардия"
+   },
+   "APOPLEXY": {
+    "kind": "constant",
+    "value": "апликсеским ударом"
+   },
+   "BONE_CARIES": {
+    "kind": "constant",
+    "value": "костоеда"
+   },
+   "BURNED_IN_FIRE": {
+    "kind": "constant",
+    "value": "сгорел в пожаре"
+   },
+   "BURNED_IN_FIRE_F": {
+    "kind": "constant",
+    "value": "сгорела в пожаре"
+   },
+   "CHILDBIRTH": {
+    "kind": "constant",
+    "value": "роды"
+   },
+   "COLD": {
+    "kind": "constant",
+    "value": "простуда"
+   },
+   "COLD_FEVER": {
+    "kind": "constant",
+    "value": "простудная лихорадка"
+   },
+   "COLIC": {
+    "kind": "constant",
+    "value": "колика"
+   },
+   "CONSTIPATION": {
+    "kind": "constant",
+    "value": "запоромъ"
+   },
+   "CONSUMPTION": {
+    "kind": "constant",
+    "value": "чахотка"
+   },
+   "CONVULSIONS": {
+    "kind": "constant",
+    "value": "родимец"
+   },
+   "COUGH": {
+    "kind": "constant",
+    "value": "кашель"
+   },
+   "CRUSHED_BY_CART": {
+    "kind": "constant",
+    "value": "задавлен возом"
+   },
+   "DEBILITY": {
+    "kind": "constant",
+    "value": "слабосилие"
+   },
+   "DECREPITUDE": {
+    "kind": "constant",
+    "value": "дряхлость"
+   },
+   "DIARRHEA": {
+    "kind": "constant",
+    "value": "понос"
+   },
+   "DIFFICULT_BIRTH": {
+    "kind": "constant",
+    "value": "от трудного рождения младенца"
+   },
+   "DOG_BITE": {
+    "kind": "constant",
+    "value": "укус бешеной собаки"
+   },
+   "DROPSY": {
+    "kind": "constant",
+    "value": "водянка"
+   },
+   "DROWNED": {
+    "kind": "constant",
+    "value": "от воды скоропостижной смертью"
+   },
+   "FEVER": {
+    "kind": "constant",
+    "value": "горячка"
+   },
+   "FROZE": {
+    "kind": "constant",
+    "value": "замерз"
+   },
+   "HEADACHE": {
+    "kind": "constant",
+    "value": "головная боль"
+   },
+   "HERNIA": {
+    "kind": "constant",
+    "value": "грыжа"
+   },
+   "INTERNAL": {
+    "kind": "constant",
+    "value": "внутренней болезнью"
+   },
+   "KILLED": {
+    "kind": "constant",
+    "value": "убит"
+   },
+   "KILLED_BY_BELL": {
+    "kind": "constant",
+    "value": "убит упавшим колоколом"
+   },
+   "KILLED_BY_MILL": {
+    "kind": "constant",
+    "value": "от убития мельницей"
+   },
+   "MEASLES": {
+    "kind": "constant",
+    "value": "корь"
+   },
+   "MILL_COLLAPSE": {
+    "kind": "constant",
+    "value": "от сломания мельницы"
+   },
+   "NATURAL": {
+    "kind": "constant",
+    "value": "натуральная"
+   },
+   "NOT_IN_DOCUMENT": {
+    "kind": "constant",
+    "value": ""
+   },
+   "OLD_AGE": {
+    "kind": "constant",
+    "value": "от старости"
+   },
+   "PARALYSIS": {
+    "kind": "constant",
+    "value": "паралич"
+   },
+   "PLEURISY": {
+    "kind": "constant",
+    "value": "колотье"
+   },
+   "PNEUMONIA": {
+    "kind": "constant",
+    "value": "воспаление легких"
+   },
+   "SCABIES": {
+    "kind": "constant",
+    "value": "короста"
+   },
+   "SCARLATINA": {
+    "kind": "constant",
+    "value": "скарлатина"
+   },
+   "SCARLET_FEVER": {
+    "kind": "constant",
+    "value": "лихорадка"
+   },
+   "SEIZURE": {
+    "kind": "constant",
+    "value": "от припадка"
+   },
+   "SMALLPOX": {
+    "kind": "constant",
+    "value": "оспа"
+   },
+   "STOMACH": {
+    "kind": "constant",
+    "value": "ослаблением желудка"
+   },
+   "STRUCK": {
+    "kind": "constant",
+    "value": "от удара"
+   },
+   "STRUCK_BY_LIGHTNING": {
+    "kind": "constant",
+    "value": "от удара грома"
+   },
+   "SUDDEN_DEATH": {
+    "kind": "constant",
+    "value": "наглая смерть"
+   },
+   "SUFFOCATION": {
+    "kind": "constant",
+    "value": "удушьем"
+   },
+   "THROAT": {
+    "kind": "constant",
+    "value": "от горла"
+   },
+   "THROAT_CONSTRICTION": {
+    "kind": "constant",
+    "value": "стянание горла"
+   },
+   "THROAT_TIGHTNESS": {
+    "kind": "constant",
+    "value": "стеснение горла"
+   },
+   "TYPHOID_FEVER": {
+    "kind": "constant",
+    "value": "сыпная горячка"
+   },
+   "TYPHUS": {
+    "kind": "constant",
+    "value": "тиф"
+   },
+   "UNKNOWN": {
+    "kind": "constant",
+    "value": "неизвестно"
+   },
+   "WEAKNESS": {
+    "kind": "constant",
+    "value": "слабость"
+   },
+   "WHOOPING_COUGH": {
+    "kind": "constant",
+    "value": "коклюш"
+   },
+   "WOUNDS": {
+    "kind": "constant",
+    "value": "от ран"
+   }
+  },
+  "verso.ru.dsl.marital_status": {
+   "DIVORCED": {
+    "kind": "constant",
+    "value": "разведён"
+   },
+   "DIVORCED_FEMALE": {
+    "kind": "constant",
+    "value": "разведена"
+   },
+   "MARRIED": {
+    "kind": "constant",
+    "value": "женат"
+   },
+   "MARRIED_FEMALE": {
+    "kind": "constant",
+    "value": "замужем"
+   },
+   "SINGLE": {
+    "kind": "constant",
+    "value": "холост"
+   },
+   "SINGLE_FEMALE": {
+    "kind": "constant",
+    "value": "девица"
+   },
+   "WIDOW": {
+    "kind": "constant",
+    "value": "вдова"
+   },
+   "WIDOWER": {
+    "kind": "constant",
+    "value": "вдовец"
+   }
+  },
+  "verso.ru.dsl.statuses": {
+   "BUDNY_PEASANT": {
+    "kind": "constant",
+    "value": "будный крестьянин",
+    "gender": "MALE"
+   },
+   "DEACON": {
+    "kind": "constant",
+    "value": "диакон",
+    "gender": "MALE"
+   },
+   "DEACON_DAUGHTER": {
+    "kind": "constant",
+    "value": "дочь диакона",
+    "gender": "FEMALE"
+   },
+   "DYACHIKHA_WIDOW": {
+    "kind": "constant",
+    "value": "вдова дьячиха",
+    "gender": "FEMALE"
+   },
+   "DYACHOK": {
+    "kind": "constant",
+    "value": "дьячок",
+    "gender": "MALE"
+   },
+   "DYACHOK_SON": {
+    "kind": "constant",
+    "value": "сын дьячка",
+    "gender": "MALE"
+   },
+   "DYACHOK_WIFE": {
+    "kind": "constant",
+    "value": "жена дьячка",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_BOY": {
+    "kind": "constant",
+    "value": "отрок из экономических крестьян",
+    "gender": "MALE"
+   },
+   "ECON_PEASANT_DAUGHTER": {
+    "kind": "constant",
+    "value": "экономическая крестьянская дочь",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_DAUGHTER_MAIDEN": {
+    "kind": "constant",
+    "value": "дочь девица из экономических крестьян",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_DEVA": {
+    "kind": "constant",
+    "value": "дева из экономических крестьян",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_FEMALE": {
+    "kind": "constant",
+    "value": "экономическая крестьянка",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_GIRL": {
+    "kind": "constant",
+    "value": "девка из экономических крестьян",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_LEGAL_WIFE": {
+    "kind": "constant",
+    "value": "законная жена экономического крестьянина",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_MAIDEN": {
+    "kind": "constant",
+    "value": "девица из экономических крестьян",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_MALE": {
+    "kind": "constant",
+    "value": "экономический крестьянин",
+    "gender": "MALE"
+   },
+   "ECON_PEASANT_SON": {
+    "kind": "constant",
+    "value": "экономический крестьянский сын",
+    "gender": "MALE"
+   },
+   "ECON_PEASANT_WIDOW": {
+    "kind": "constant",
+    "value": "вдова из экономических крестьян",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_WIDOWER": {
+    "kind": "constant",
+    "value": "экономический крестьянин вдовец",
+    "gender": "MALE"
+   },
+   "ECON_PEASANT_WIFE": {
+    "kind": "constant",
+    "value": "жена из экономических крестьян",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_WIFE_OF": {
+    "kind": "constant",
+    "value": "жена экономического крестьянина",
+    "gender": "FEMALE"
+   },
+   "ECON_PEASANT_ZHONKA": {
+    "kind": "constant",
+    "value": "женка из экономических крестьян",
+    "gender": "FEMALE"
+   },
+   "GIRL": {
+    "kind": "constant",
+    "value": "девка",
+    "gender": "FEMALE"
+   },
+   "GOSUDARSTVENNYJ_PEASANT_FEMALE": {
+    "kind": "constant",
+    "value": "государственная крестьянка",
+    "gender": "FEMALE"
+   },
+   "GOSUDARSTVENNYJ_PEASANT_MALE": {
+    "kind": "constant",
+    "value": "государственный крестьянин",
+    "gender": "MALE"
+   },
+   "HIEREUS": {
+    "kind": "constant",
+    "value": "иерей",
+    "gender": "MALE"
+   },
+   "KAZENNYJ_PEASANT_BOY": {
+    "kind": "constant",
+    "value": "отрок из казенных крестьян",
+    "gender": "MALE"
+   },
+   "KAZENNYJ_PEASANT_DAUGHTER": {
+    "kind": "constant",
+    "value": "казенная крестьянская дочь",
+    "gender": "FEMALE"
+   },
+   "KAZENNYJ_PEASANT_DAUGHTER_MAIDEN": {
+    "kind": "constant",
+    "value": "дочь девица из казенных крестьян",
+    "gender": "FEMALE"
+   },
+   "KAZENNYJ_PEASANT_FEMALE": {
+    "kind": "constant",
+    "value": "казенная крестьянка",
+    "gender": "FEMALE"
+   },
+   "KAZENNYJ_PEASANT_GIRL": {
+    "kind": "constant",
+    "value": "девка из казенных крестьян",
+    "gender": "FEMALE"
+   },
+   "KAZENNYJ_PEASANT_LEGAL_WIFE": {
+    "kind": "constant",
+    "value": "законная жена казенного крестьянина",
+    "gender": "FEMALE"
+   },
+   "KAZENNYJ_PEASANT_MAIDEN": {
+    "kind": "constant",
+    "value": "девица из казенных крестьян",
+    "gender": "FEMALE"
+   },
+   "KAZENNYJ_PEASANT_MALE": {
+    "kind": "constant",
+    "value": "казенный крестьянин",
+    "gender": "MALE"
+   },
+   "KAZENNYJ_PEASANT_NEWCONVERT": {
+    "kind": "constant",
+    "value": "новокрещёный казенный крестьянин",
+    "gender": "MALE"
+   },
+   "KAZENNYJ_PEASANT_SON": {
+    "kind": "constant",
+    "value": "казенный крестьянский сын",
+    "gender": "MALE"
+   },
+   "KAZENNYJ_PEASANT_WIDOW": {
+    "kind": "constant",
+    "value": "вдова из казенных крестьян",
+    "gender": "FEMALE"
+   },
+   "KAZENNYJ_PEASANT_WIFE": {
+    "kind": "constant",
+    "value": "казенная крестьянская жена",
+    "gender": "FEMALE"
+   },
+   "LANDLORD": {
+    "kind": "constant",
+    "value": "помещик",
+    "gender": "MALE"
+   },
+   "LANDLORD_DAUGHTER": {
+    "kind": "constant",
+    "value": "дочь помещика",
+    "gender": "FEMALE"
+   },
+   "LANDLORD_FEMALE": {
+    "kind": "constant",
+    "value": "помещица",
+    "gender": "FEMALE"
+   },
+   "LANDLORD_SON": {
+    "kind": "constant",
+    "value": "сын помещика",
+    "gender": "MALE"
+   },
+   "MAIDEN": {
+    "kind": "constant",
+    "value": "девица",
+    "gender": "FEMALE"
+   },
+   "MERCHANT": {
+    "kind": "constant",
+    "value": "купец",
+    "gender": "MALE"
+   },
+   "MERCHANT_DAUGHTER": {
+    "kind": "constant",
+    "value": "купеческая дочь",
+    "gender": "FEMALE"
+   },
+   "MERCHANT_SON": {
+    "kind": "constant",
+    "value": "купеческий сын",
+    "gender": "MALE"
+   },
+   "MESHCHANIN": {
+    "kind": "constant",
+    "value": "мещанин",
+    "gender": "MALE"
+   },
+   "MESHCHANIN_DAUGHTER": {
+    "kind": "constant",
+    "value": "мещанская дочь",
+    "gender": "FEMALE"
+   },
+   "MESHCHANIN_FEMALE": {
+    "kind": "constant",
+    "value": "мещанка",
+    "gender": "FEMALE"
+   },
+   "MESHCHANIN_SON": {
+    "kind": "constant",
+    "value": "мещанский сын",
+    "gender": "MALE"
+   },
+   "MESHCHANIN_WIDOW": {
+    "kind": "constant",
+    "value": "вдова мещанка",
+    "gender": "FEMALE"
+   },
+   "MESHCHANIN_WIFE": {
+    "kind": "constant",
+    "value": "мещанская жена",
+    "gender": "FEMALE"
+   },
+   "ODNODVORETS": {
+    "kind": "constant",
+    "value": "однодворец",
+    "gender": "MALE"
+   },
+   "ODNODVORETS_DAUGHTER": {
+    "kind": "constant",
+    "value": "однодворческая дочь",
+    "gender": "FEMALE"
+   },
+   "ODNODVORETS_LEGAL_WIFE": {
+    "kind": "constant",
+    "value": "законная жена однодворца",
+    "gender": "FEMALE"
+   },
+   "ODNODVORETS_SON": {
+    "kind": "constant",
+    "value": "однодворческий сын",
+    "gender": "MALE"
+   },
+   "PEASANT_BOY": {
+    "kind": "constant",
+    "value": "отрок из крестьян",
+    "gender": "MALE"
+   },
+   "PEASANT_DAUGHTER": {
+    "kind": "constant",
+    "value": "крестьянская дочь",
+    "gender": "FEMALE"
+   },
+   "PEASANT_DAUGHTER_GIRL": {
+    "kind": "constant",
+    "value": "крестьянская дочь девка",
+    "gender": "FEMALE"
+   },
+   "PEASANT_DAUGHTER_MAIDEN": {
+    "kind": "constant",
+    "value": "крестьянская дочь девица",
+    "gender": "FEMALE"
+   },
+   "PEASANT_FEMALE": {
+    "kind": "constant",
+    "value": "крестьянка",
+    "gender": "FEMALE"
+   },
+   "PEASANT_GIRL": {
+    "kind": "constant",
+    "value": "девка из крестьян",
+    "gender": "FEMALE"
+   },
+   "PEASANT_MAIDEN": {
+    "kind": "constant",
+    "value": "крестьянская девица",
+    "gender": "FEMALE"
+   },
+   "PEASANT_MALE": {
+    "kind": "constant",
+    "value": "крестьянин",
+    "gender": "MALE"
+   },
+   "PEASANT_SON": {
+    "kind": "constant",
+    "value": "крестьянский сын",
+    "gender": "MALE"
+   },
+   "PEASANT_SPOUSE": {
+    "kind": "constant",
+    "value": "крестьянская жена",
+    "gender": "FEMALE"
+   },
+   "PEASANT_WIDOW": {
+    "kind": "constant",
+    "value": "вдова из крестьян",
+    "gender": "FEMALE"
+   },
+   "PEASANT_WIFE": {
+    "kind": "constant",
+    "value": "законная жена крестьянина",
+    "gender": "FEMALE"
+   },
+   "PEASANT_ZHONKA": {
+    "kind": "constant",
+    "value": "крестьянская женка",
+    "gender": "FEMALE"
+   },
+   "POPADIA": {
+    "kind": "constant",
+    "value": "попадья",
+    "gender": "FEMALE"
+   },
+   "PRIEST": {
+    "kind": "constant",
+    "value": "священник",
+    "gender": "MALE"
+   },
+   "PRIEST_DAUGHTER": {
+    "kind": "constant",
+    "value": "дочь священника",
+    "gender": "FEMALE"
+   },
+   "PRIEST_DAUGHTER_MAIDEN": {
+    "kind": "constant",
+    "value": "дочь девица священника",
+    "gender": "FEMALE"
+   },
+   "PRIVATE_SOLDIER": {
+    "kind": "constant",
+    "value": "рядовой",
+    "gender": "MALE"
+   },
+   "PROPRIETOR_PEASANT_MALE": {
+    "kind": "constant",
+    "value": "крестьянин собственник",
+    "gender": "MALE"
+   },
+   "RETIRED_SOLDIER": {
+    "kind": "constant",
+    "value": "отставной солдат",
+    "gender": "MALE"
+   },
+   "SEXTON": {
+    "kind": "constant",
+    "value": "пономарь",
+    "gender": "MALE"
+   },
+   "SEXTON_SON": {
+    "kind": "constant",
+    "value": "сын пономаря",
+    "gender": "MALE"
+   },
+   "SEXTON_WIFE": {
+    "kind": "constant",
+    "value": "жена пономаря",
+    "gender": "FEMALE"
+   },
+   "SOLDIER": {
+    "kind": "constant",
+    "value": "солдат",
+    "gender": "MALE"
+   },
+   "SOLDIER_DAUGHTER": {
+    "kind": "constant",
+    "value": "солдатская дочь",
+    "gender": "FEMALE"
+   },
+   "SOLDIER_GIRL": {
+    "kind": "constant",
+    "value": "солдатская девка",
+    "gender": "FEMALE"
+   },
+   "SOLDIER_SON": {
+    "kind": "constant",
+    "value": "солдатский сын",
+    "gender": "MALE"
+   },
+   "SOLDIER_SPOUSE": {
+    "kind": "constant",
+    "value": "солдатская жена",
+    "gender": "FEMALE"
+   },
+   "SOLDIER_WIDOW": {
+    "kind": "constant",
+    "value": "солдатская вдова",
+    "gender": "FEMALE"
+   },
+   "SOLDIER_WIFE": {
+    "kind": "constant",
+    "value": "солдатка",
+    "gender": "FEMALE"
+   },
+   "STATE_PEASANT_DAUGHTER": {
+    "kind": "constant",
+    "value": "государственная крестьянская дочь",
+    "gender": "FEMALE"
+   },
+   "STATE_PEASANT_FEMALE": {
+    "kind": "constant",
+    "value": "государственная крестьянка",
+    "gender": "FEMALE"
+   },
+   "STATE_PEASANT_LEGAL_WIFE": {
+    "kind": "constant",
+    "value": "законная жена государственного крестьянина",
+    "gender": "FEMALE"
+   },
+   "STATE_PEASANT_MALE": {
+    "kind": "constant",
+    "value": "государственный крестьянин",
+    "gender": "MALE"
+   },
+   "STATE_PEASANT_SON": {
+    "kind": "constant",
+    "value": "государственный крестьянский сын",
+    "gender": "MALE"
+   },
+   "STATE_PEASANT_WIFE": {
+    "kind": "constant",
+    "value": "жена из государственных крестьян",
+    "gender": "FEMALE"
+   },
+   "TEMP_OBLIGED_PEASANT_MALE": {
+    "kind": "constant",
+    "value": "временнообязанный крестьянин",
+    "gender": "MALE"
+   },
+   "UNTER_OFFICER": {
+    "kind": "constant",
+    "value": "унтер-офицер",
+    "gender": "MALE"
+   },
+   "WIDOW": {
+    "kind": "constant",
+    "value": "вдова",
+    "gender": "FEMALE"
+   },
+   "YASAK_PEASANT_BOY": {
+    "kind": "constant",
+    "value": "отрок из ясачных крестьян",
+    "gender": "MALE"
+   },
+   "YASAK_PEASANT_DAUGHTER": {
+    "kind": "constant",
+    "value": "ясачная крестьянская дочь",
+    "gender": "FEMALE"
+   },
+   "YASAK_PEASANT_DAUGHTER_MAIDEN": {
+    "kind": "constant",
+    "value": "дочь девица из ясачных крестьян",
+    "gender": "FEMALE"
+   },
+   "YASAK_PEASANT_FEMALE": {
+    "kind": "constant",
+    "value": "ясачная крестьянка",
+    "gender": "FEMALE"
+   },
+   "YASAK_PEASANT_GIRL": {
+    "kind": "constant",
+    "value": "девка из ясачных крестьян",
+    "gender": "FEMALE"
+   },
+   "YASAK_PEASANT_LEGAL_WIFE": {
+    "kind": "constant",
+    "value": "законная жена ясачного крестьянина",
+    "gender": "FEMALE"
+   },
+   "YASAK_PEASANT_MAIDEN": {
+    "kind": "constant",
+    "value": "девица из ясачных крестьян",
+    "gender": "FEMALE"
+   },
+   "YASAK_PEASANT_MALE": {
+    "kind": "constant",
+    "value": "ясачный крестьянин",
+    "gender": "MALE"
+   },
+   "YASAK_PEASANT_NEWCONVERT": {
+    "kind": "constant",
+    "value": "новокрещёный ясачный крестьянин",
+    "gender": "MALE"
+   },
+   "YASAK_PEASANT_SON": {
+    "kind": "constant",
+    "value": "ясачный крестьянский сын",
+    "gender": "MALE"
+   },
+   "YASAK_PEASANT_WIDOW": {
+    "kind": "constant",
+    "value": "вдова из ясачных крестьян",
+    "gender": "FEMALE"
+   },
+   "YASAK_PEASANT_WIFE": {
+    "kind": "constant",
+    "value": "ясачная крестьянская жена",
+    "gender": "FEMALE"
+   },
+   "YASAK_SOLDIER_WIFE": {
+    "kind": "constant",
+    "value": "ясачная солдатская жена",
+    "gender": "FEMALE"
+   },
+   "ZHONKA": {
+    "kind": "constant",
+    "value": "женка",
+    "gender": "FEMALE"
+   }
+  }
+ }
+}

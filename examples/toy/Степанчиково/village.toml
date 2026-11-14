@@ -1,0 +1,5 @@
+# The toy village's settings: the Geni project every profile joins.
+schema = 1
+
+[geni]
+projects = ["data.geni_project.stepanchikovo.id"]

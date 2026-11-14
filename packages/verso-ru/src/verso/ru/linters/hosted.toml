@@ -1,0 +1,715 @@
+# Each linter code's readiness for records JSON (L10 part 2; read by `hosted.py`).
+# class: written | derived | context | source (the form of the text alone; a redundant kwarg —
+# a written value equal to the one it inherits — is written + derived, and JSON keeps both); severity: refuse (hard) | warn (advisory);
+# needs (context; and any code that reads a table all the same — one that reads a name, or replays the file, which builds its
+# persons from the names table): names, places, estates, book, file; as: the keyword code a positional one folds into
+# (the rule of that code answers both); forms: the variants that say the form of an argument and nothing else (see hosted.py).
+# redundant: true on a derived code whose finding is a redundant argument (a written value equal to the one it
+# inherits), and on a positional code that folds into one (`as`); absent, false.
+# scope: where the code is answered (`hosted.py`): record (one record, or one двор, with its set's header —
+# `lint_record`; a finding the same rule addresses to the set itself is `lint_header`'s), set (the set's header
+# alone — `lint_header`), file (a record needs one fact of the whole file, `file_in_scope` — ULC001), source
+# (the text of the source: no JSON answers it), layer (a names layer's files, read in the sum of the layers under
+# it — no record is read: the LEX codes, `checks/lexicon.py`).
+# One row per code of codes.LINTER_CODES.
+
+[SLC001]
+class = "source"
+severity = "refuse"
+scope = "source"
+note = "a person() call spans several lines (line wrapping of the source)"
+
+[SLC002]
+class = "source"
+severity = "refuse"
+scope = "source"
+note = "a status, cause of death or marital status literal where a catalog constant exists"
+
+[SLC003]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+note = "a record's cause_of_death written equal to the book's default (redundant kwarg)"
+
+[SLC004]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+note = "a person's residence written equal to the book's default (redundant kwarg)"
+
+[SLC005]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a person's status written equal to the book's default for its slot (redundant kwarg)"
+
+[GND001]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["names"]
+note = "a person's sex (written, else from the name) contradicts its slot"
+
+[NAM001]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["names"]
+note = "a given name the names table does not hold"
+
+[NAM002]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["names"]
+note = "a patronymic the names table does not hold"
+
+[NAM003]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["names"]
+note = "the sex of the given name and of the patronymic disagree"
+
+[NAM004]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["names"]
+note = "the sex of the name disagrees with the status's (reads the status constant's name)"
+
+[NAM005]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "non-Cyrillic characters in a written name"
+
+[REL001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a relationship_ref misspelled, with a known correction (the library's allowlist)"
+
+[REL002]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a relationship_ref outside the library's allowlist"
+
+[AGE001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "an age spelling a whole number of years as a string"
+
+[AGE002]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a negative or unparseable age"
+
+[HID001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a member with a string record number (the old hidden sentinel)"
+
+[HID002]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a member's comment says absent from the roll but hidden=True is not written"
+
+[PM001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a child's parent_member equals its ref_member"
+
+[PM002]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a married-in spouse's parent_member equals the partner's parent (the household)"
+
+[BRD001]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a birth person's residence written equal to the one inherited (redundant kwarg)"
+
+[BRD002]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+needs = ["names"]
+as = "BRD001"
+forms = [{ said = "residence_positional", read = "residence" }]
+note = "as BRD001, the residence written positionally"
+
+[BRD003]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a birth person's surname written equal to the father's derived one (redundant kwarg)"
+
+[BRD004]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+needs = ["names"]
+as = "BRD003"
+forms = [{ said = "surname_positional", read = "surname" }]
+note = "as BRD003, the surname written positionally"
+
+[BRD005]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a birth person's modern surname written equal to the derived one (redundant kwarg)"
+
+[BRD006]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "last_name_in_book=False written on a person without a surname (redundant kwarg)"
+
+[DRA001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a death record's two written residences disagree"
+
+[DRA002]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+forms = [{ said = "redundant_positional", read = "redundant", unquote = ["val"] }]
+note = "a death relative's residence repeats the deceased's (redundant kwarg)"
+
+[DRL001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a death record names more than one relative"
+
+[DBD001]
+class = "derived"
+severity = "refuse"
+scope = "record"
+needs = ["names"]
+note = "a burial before the death; the month from the section, the year from the record or the book"
+
+[DBD002]
+class = "derived"
+severity = "refuse"
+scope = "record"
+needs = ["names"]
+note = "a death or burial day its month does not have; the month and the year derived"
+
+[MRA001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a party and its parent carry different written residences"
+
+[PSA001]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["estates", "book"]
+note = "parent and child, or spouses, state different estates (estate_of, the corpus's aliases)"
+
+[PSA002]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["estates", "book"]
+note = "one side states a status, the other inherits another estate from the book's defaults"
+
+[PSA003]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["book"]
+note = "a newborn with an adult status constant (reads the constant's name)"
+
+[PSA004]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["estates", "book"]
+note = "a wife with no status where the book names no estate and the husband's status does"
+
+[CRD001]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a member's modern surname equals the household's derived one (redundant kwarg)"
+
+[CRD002]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a member's surname kwarg equals the derived one (redundant kwarg)"
+
+[CRD003]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+needs = ["names"]
+as = "CRD002"
+forms = [{ said = "surname", read = "surname_orig", rename = { val = "orig_val" } }]
+note = "a member's positional surname equals the derived one (redundant arg)"
+
+[CRD004]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a daughter's maiden surname equals the derived one (redundant kwarg)"
+
+[CRD005]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a child's patronymic kwarg equals the one derived from the father (redundant kwarg)"
+
+[CRD006]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+needs = ["names"]
+as = "CRD005"
+forms = [{ said = "patronymic", read = "patronymic_orig" }]
+note = "a child's positional patronymic equals the derived one (redundant arg)"
+
+[CSR001]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a member's status equals the book's default (redundant kwarg)"
+
+[CAI001]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a birth day and month without a year, on a member of two or more"
+
+[CAI002]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["book"]
+note = "age minus previous age disagrees with the revision gap (the book's year, census_revisions)"
+
+[CAI003]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "age=0 as the sentinel of an age not stated"
+
+[CAI004]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a member who died or married out still carries a current age"
+
+[CAI005]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a member who died or married out carries a birth year without day and month"
+
+[CML001]
+class = "source"
+severity = "refuse"
+scope = "source"
+note = "a member() call does not begin its own line"
+
+[CPL001]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["names"]
+note = "a lineage role referring to a non-head that looks like the father (patronymic via the names table)"
+
+[CPL002]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a grandchild, nephew or niece referring to the head or nobody, with no parent_member (pilot)"
+
+[CPL003]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a daughter-in-law referring to the head with no deceased son and no hidden husband"
+
+[CPL004]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a married-in wife whose parent_member is her husband, his ancestor or sibling"
+
+[CPL005]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a hidden member with no link either way"
+
+[CPL006]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a recorded member referring to a hidden one"
+
+[CPL007]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a role=None member with ref_member and nothing saying what it means"
+
+[CPL008]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "secondary_ref_member equal to ref_member"
+
+[CPL009]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a reference to a member number the household lacks"
+
+[CPL010]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a member number used twice in one household"
+
+[CPL011]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["names"]
+note = "a hidden parent's reference makes a same-sex or head's-kin couple (sex from the name)"
+
+[CPL012]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["names"]
+note = "a written patronymic the linked father's name cannot give (names table)"
+
+[RTV001]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["estates", "book", "names"]
+note = "a status tied to one village, a residence in another (the corpus's estates)"
+
+[RTV002]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["estates", "book", "names"]
+note = "an owner's status in the state village, or the reverse, in a parish with that rule"
+
+[ULC001]
+class = "context"
+severity = "warn"
+scope = "file"
+needs = ["places", "book"]
+note = "a place the corpus's places do not hold, where the book's parish is one they hold (pilot)"
+
+[ESC001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a card's source_url host does not match its kind (the library's host tables)"
+
+[ESC002]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a criminal record with no original_text"
+
+[ESC003]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "casualty_reason on a card whose document is an award"
+
+[ESC004]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "an award on a card whose document is no award"
+
+[NLC001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a name list without document_type, or an age of zero or less"
+
+[PAF001]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["book"]
+note = "a full -ovich patronymic without a high status (reads the status constant's name and the book's year)"
+
+[NGA001]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["names"]
+note = "a surname in the other sex's form (sex written, else from the name)"
+
+[NGA002]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["names"]
+note = "a patronymic in the other sex's form (sex written, else from the name)"
+
+[MST001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a marital status outside the library's catalog"
+
+[VSR001]
+class = "derived"
+severity = "refuse"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "a status written equal to the book's default for its slot (redundant kwarg)"
+
+[SOR001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a status in the old orthography or capitalised (its constant variant is the source's)"
+
+[RLA001]
+class = "written"
+severity = "warn"
+scope = "record"
+needs = ["names"]
+note = "a relationship_ref naming a slot the record lacks or the translator never wires"
+
+[RLA002]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["names"]
+note = "a child's patronymic cannot come from the FATHER relative's name"
+
+[RLA003]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["names"]
+note = "a child's surname differs from the FATHER relative's"
+
+[RVR001]
+class = "derived"
+severity = "warn"
+scope = "record"
+redundant = true
+needs = ["names"]
+note = "reviewed= written equal to what it inherits (redundant flag); a page() flag equal to the set's leaves no trace in the export, True or False alike, and the export merges the page() calls of one label, so only a record outside every page is answered, and not a run of such records that all write the flag (nothing in it shows the set's value: the answer is the source's alone)"
+
+[RET001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "previous_age_error= on a member with no previous age"
+
+[RET002]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "source_age_error= or namesake= on an entry stating no age"
+
+[RET003]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "source_age_error and previous_age_error on one line"
+
+[WSD001]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "side= on a person who is not a marriage's witness"
+
+[WSD002]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "a witness's side= contradicts the words of the witness's comment"
+
+[WSD003]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a witness's side said only in a comment, or twice"
+
+[WSD004]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "some witnesses of one marriage carry side= and some do not"
+
+[WSD005]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a groom's surety in a later slot than a bride's"
+
+[WSD006]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "more than three sureties for one side"
+
+[ZGS001]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["book"]
+note = "a civil book holds a church-only slot (godparent, witness, clergy, christening)"
+
+[ZGS002]
+class = "context"
+severity = "refuse"
+scope = "record"
+needs = ["book"]
+note = "a civil registration before the birth (the section's month, the book's year)"
+
+[ZGS003]
+class = "context"
+severity = "warn"
+scope = "set"
+needs = ["book"]
+note = "a book of 1918 on with no church and no civil=True"
+
+[ZGS004]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["book"]
+note = "a civil book styles someone by an estate word"
+
+[ZGS005]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["book"]
+note = "a civil book writes a name in the old letters"
+
+[IMP001]
+class = "source"
+severity = "refuse"
+scope = "source"
+note = "an import outside the DSL's facade, its catalogs and the corpus's statuses"
+
+[LEX001]
+class = "context"
+severity = "refuse"
+scope = "layer"
+needs = ["names"]
+note = "a key of a names layer that is not one Cyrillic word, has a stress mark or a stray space, or a sex the table cannot hold"
+
+[LEX002]
+class = "context"
+severity = "refuse"
+scope = "layer"
+needs = ["names"]
+note = "a key written twice in one table of a names layer"
+
+[LEX003]
+class = "context"
+severity = "refuse"
+scope = "layer"
+needs = ["names"]
+note = "a base no names layer of the sum holds"
+
+[LEX004]
+class = "context"
+severity = "refuse"
+scope = "layer"
+needs = ["names"]
+note = "a base that is itself a variant — an error in the base (a fixed point), advice above it"
+
+[LEX005]
+class = "context"
+severity = "warn"
+scope = "layer"
+needs = ["names"]
+note = "a row of a names layer that answers as the layers under it (or the rule) do"
+
+[LEX006]
+class = "context"
+severity = "refuse"
+scope = "layer"
+needs = ["names"]
+note = "a row of the names base whose source is none of its closed list"
+
+[LEX007]
+class = "context"
+severity = "refuse"
+scope = "layer"
+needs = ["names"]
+note = "two names of a names layer's sum derive one patronymic and no pin settles it"
+
+[LEX008]
+class = "context"
+severity = "refuse"
+scope = "layer"
+needs = ["names"]
+note = "a transliteration rule of no profile, of a word that is not one Cyrillic word, or of an empty Latin spelling"
+
+[LEX009]
+class = "context"
+severity = "warn"
+scope = "layer"
+needs = ["names"]
+note = "a transliteration rule that spells as the sum without it does"
+
+[LEX010]
+class = "context"
+severity = "refuse"
+scope = "layer"
+needs = ["names"]
+note = "a transliteration rule whose Latin holds a character outside the Latin letters, the apostrophe, the space and the hyphen (advice for ru-v1)"

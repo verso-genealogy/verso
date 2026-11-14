@@ -1,0 +1,118 @@
+name: CI
+
+# The library (verso-core, verso-ru): what `make ci` runs, on every Python the classifiers name, then the
+# tests from the repository's own archive in a clean venv of its wheels (tools/standalone.py) and gitleaks.
+# A new push to a PR cancels the run it supersedes, a push to main never does: the Actions minutes
+# are a budget. For the same reason a PR runs
+# no standalone (about half of a run; the premerge target runs it before a merge), but a Dependabot PR, which
+# dependabot-automerge.yml merges without anyone running it; a push to main runs it. A tag runs nothing: it names a
+# «Release» commit main has just run, and the «Open X.Y.Z.dev0» commit after it says `[skip ci]` (AGENTS.md).
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: 'Tests (Python 3.14)'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.12.16"
+          enable-cache: true
+
+      - name: Install
+        run: make bootstrap
+
+      - name: Lint (ruff, pyright)
+        run: make lint
+
+      - name: Tests
+        run: make test
+
+      - name: Core alone
+        run: make test-core
+
+      # The interface's Cyrillic text only shrinks — against the base commit, counted by this commit's rules.
+      - name: UI text
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          if [ -n "${BASE:-}" ] && [ "$BASE" != "0000000000000000000000000000000000000000" ] \
+             && git cat-file -e "$BASE^{commit}" 2>/dev/null; then
+            make ui-ratchet base="$BASE"
+            make layering base="$BASE"
+            make dsl-surface base="$BASE"
+          else
+            make ui-ratchet
+            make layering
+            make dsl-surface
+          fi
+
+      - name: Reference and schemas are current
+        run: |
+          make reference-check
+          make records-schema
+          make ui-schema
+
+  standalone:
+    name: Standalone
+    if: github.event_name != 'pull_request' || github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.12.16"
+          enable-cache: true
+
+      - name: Tests from git archive HEAD, wheels only, the sentinel on
+        run: python3 tools/standalone.py
+
+  secrets:
+    name: Secrets (gitleaks)
+    runs-on: ubuntu-latest
+    env:
+      GITLEAKS_VERSION: 8.30.1
+      GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install gitleaks
+        run: |
+          set -euo pipefail
+          f="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSLo "$f" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/$f"
+          echo "${GITLEAKS_SHA256}  $f" | sha256sum -c -
+          tar -xzf "$f" gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+
+      - name: gitleaks over git archive HEAD
+        run: bash tools/secrets_check.sh

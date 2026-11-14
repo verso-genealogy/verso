@@ -1,0 +1,2 @@
+census_records("a", "f", "i", "c", "Горюхино", 1850,
+    household(member(1, person("Иван", "Петров", status=MANILOV_OV_PEASANT_MALE), CensusRole.HEAD, 60)))

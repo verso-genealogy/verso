@@ -1,0 +1,15 @@
+# Russian given names of Wikidata: an item that is a male or a female given name (P31) and has a Russian label.
+# CC0 data; `wikidata.py` runs this query and writes the snapshot — the only step that needs the network.
+# P282 («writing system») is NOT asked: the Russian-labelled items of Мария, Елена, Феодосия, Агриппина, Фёкла
+# are Latin-script ones. Cyrillic-ness is checked on the label in `wikidata.py`.
+# The public endpoint cuts a query at 60 s and this class is too big for one: `wikidata.py` runs the query once
+# per range of item numbers, @LO@ <= number < @HI@ (and splits a range in two when the endpoint cuts it), so the
+# file is one query, parametrised. The links come from `links.sparql`, so they do not multiply these rows.
+SELECT ?item ?label ?class
+WHERE {
+  VALUES ?class { wd:Q12308941 wd:Q11879590 }
+  ?item wdt:P31 ?class .
+  FILTER(xsd:integer(STRAFTER(STR(?item), "/entity/Q")) >= @LO@ && xsd:integer(STRAFTER(STR(?item), "/entity/Q")) < @HI@)
+  ?item rdfs:label ?label .
+  FILTER(LANG(?label) = "ru")
+}

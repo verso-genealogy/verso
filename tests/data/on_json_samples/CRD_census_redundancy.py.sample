@@ -1,0 +1,30 @@
+# Invented: a roll member writing what the household derives (CRD001-CRD006) — a surname the head's gives (the wife's
+# and a daughter-in-law's feminized, a son's and a grandson's as they are, through the son they name), a daughter's
+# maiden name, and a patronymic the father's first name gives (an exact old form, or one that only modernizes
+# to it). By keyword or by position the finding is one on JSON. The quiet cases: a hidden member, an adopted one, a
+# source who is a woman, a surname or patronymic that is not the derived one, a grandson naming nobody.
+from verso.ru.dsl import CensusRole, census_records, household, member, person
+
+roll = census_records(
+    "ГА Глуповской области", "10", "4", "4061", "Маниловка", 1858,
+    household("1",
+              member(1, person("Петръ", "Лукинъ", "Образцовъ"), CensusRole.HEAD, age=60),
+              member(2, person("Марія", "Ивановна", last_name_orig="Образцова"), CensusRole.WIFE, 1, age=55),
+              member(3, person("Иванъ", "Петровъ", "Образцовъ"), CensusRole.SON, 1, age=30),
+              member(4, person("Семенъ", patr_orig="Петровъ", last_name_modern_orth="Образцов"), CensusRole.SON, 1, age=20),
+              member(5, person("Анна", "Петрова", birth_last_name_modern_orth="Образцова"), CensusRole.DAUGHTER, 1, age=15),
+              member(6, person("Дарья", "Ивановна", last_name_modern_orth="Образцова"), CensusRole.DAUGHTER_IN_LAW, 3, age=28),
+              member(7, person("Лука", "Иванов"), CensusRole.GRANDSON, 3, age=5),
+              member(8, person("Фома", "Ивановъ", "Образцовъ"), CensusRole.GRANDSON, 3, age=2),
+              member(9, person("Никифоръ", "Петрович", "Другов"), CensusRole.SON, 1, age=10),
+              member(10, person("Агафья", "Петровна", "Образцова"), CensusRole.DAUGHTER, 1, age=12, comment="приемная дочь"),
+              member(11, person("Тимофей", "Петров", "Образцов"), CensusRole.SON, 1, age=8, hidden=True),
+              member(12, person("Тимофей", "Ивановъ", "Образцовъ"), CensusRole.GRANDSON, None, age=1)),
+    household("2",
+              member(1, person("Анна", "Петровна", "Лукина"), CensusRole.HEAD, age=50),
+              member(2, person("Семенъ", "Петров", "Лукинъ"), CensusRole.SON, 1, age=25),
+              member(3, person("Марья", "Петрова", birth_last_name_modern_orth="Лукина"), CensusRole.DAUGHTER, 1, age=20)),
+    household("3",
+              member(1, person("Петръ", "Лукинъ", "Образцовъ"), CensusRole.HEAD, age=60),
+              member(2, person("Иванъ"), CensusRole.SON, 1, age=30),
+              member(3, person("Лука", None, last_name_orig="Образцовъ"), CensusRole.GRANDSON, 2, age=5)))

@@ -1,0 +1,9 @@
+# Invented: a grandson whose reference is the head and who names no parent (CPL002).
+from verso.ru.dsl import CensusRole, census_records, household, member, page, person
+
+census = census_records(
+    "ГА Глуповской области", "10", "4", "4044", "Маниловка", 1858,
+    *page("16об",
+          household("3",
+                    member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),
+                    member(2, person("Ѳома", "Лукинъ"), CensusRole.GRANDSON, ref_member=1, age=7))))

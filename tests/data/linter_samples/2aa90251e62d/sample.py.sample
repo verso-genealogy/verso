@@ -1,0 +1,8 @@
+marriage_records("a", "f", "i", "c", "Маниловка", "Церковь", 1864,
+    marriage(4, 12, groom=person("Иванъ"), bride=person("Анна"),
+             witness1=person("Петръ"),
+             witness2=person("Петръ"),
+             witness3=person("Петръ"),
+             witness4=person("Петръ"),
+             comment='поручители 1 и 2 — по женихе, 3 и 4 — по невесте'),
+    defaults=RecordDefaults(residence="Маниловка"))

@@ -1,0 +1,22 @@
+# Invented: a relative's residence repeating the deceased's (DRA002), by keyword or by position (one finding on JSON).
+# The quiet cases: a residence only the relative states (the anchor the deceased inherits), one that differs
+# (DRA001's), an empty one, a deceased who states none.
+from verso.ru.dsl import Gender, Relationship, death, death_records, person, relative
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4064", "Маниловка", "Церковь", 1857,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука", residence="Ротозеево"),
+          relatives=[relative(person("Петръ", residence="Ротозеево"), Relationship.FATHER)]),
+    death(2, Gender.MALE, 5, 6, deceased=person("Иванъ", residence="Ротозеево"),
+          relatives=[relative(person("Петръ", None, None, None, None, None, "Ротозеево"), Relationship.FATHER)]),
+    death(3, Gender.FEMALE, 7, 8, deceased=person("Анна", residence="Ротозеево"),
+          relatives=[relative(person("Петръ", residence="Ротозеево"), Relationship.HUSBAND),
+                     relative(person("Иванъ", residence="Ротозеево"), Relationship.SON)]),
+    death(4, Gender.MALE, 9, 10, deceased=person("Семенъ"),
+          relatives=[relative(person("Петръ", residence="Ротозеево"), Relationship.FATHER)]),
+    death(5, Gender.MALE, 11, 12, deceased=person("Лука", residence="Ротозеево"),
+          relatives=[relative(person("Петръ", residence="Заманиловка"), Relationship.FATHER)]),
+    death(6, Gender.MALE, 13, 14, deceased=person("Лука", residence=""),
+          relatives=[relative(person("Петръ", residence=""), Relationship.FATHER)]),
+    death(7, Gender.MALE, 15, 16, deceased=person("Лука", residence="Ротозеево"),
+          relatives=[relative(person("Петръ"), Relationship.FATHER)]))

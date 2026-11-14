@@ -1,0 +1,84 @@
+# Invented: what a book's RecordDefaults would give, written again. SLC003 a cause of death equal to the
+# default (a constant, or a text no constant spells), SLC004 a residence equal to the default (a person, a
+# relative, the причт), SLC005 and VSR001 a status equal to the one its slot gets: the groom's and the
+# bride's own fields, the mother's, a godparent or witness by the sex of the first name, the deceased's.
+# A parent whose written status the child's rests on is kept (`newborn_status`), so is the deceased's when a
+# parent's derives it. The quiet cases: another value, another slot, a name or a book that gives nothing.
+from verso.ru.dsl import (
+    Gender, RecordDefaults, Relationship, birth, birth_records, death, death_records, marriage,
+    marriage_records, person, relative)
+
+DEFAULTS = RecordDefaults(residence="Ротозеево", status_male=YASAK_PEASANT_MALE, status_female=YASAK_PEASANT_FEMALE,
+                          status_mother=YASAK_PEASANT_LEGAL_WIFE, status_bride=KAZENNYJ_PEASANT_FEMALE,
+                          status_groom=KAZENNYJ_PEASANT_MALE, cause_of_death=CONSUMPTION)
+LITERAL = RecordDefaults(residence="Ротозеево", status_male="слободской житель", status_female="слободская жительница",
+                         cause_of_death="от неведомой причины")
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4051", "Маниловка", "Церковь", 1857,
+    birth(1, Gender.MALE, 3, 4, child=person("Иван", residence="Ротозеево"),
+          father=person("Петр", residence="Ротозеево", status=YASAK_PEASANT_MALE),
+          mother=person("Мария", status=YASAK_PEASANT_LEGAL_WIFE),
+          god_parent1=person("Петр", status=YASAK_PEASANT_MALE),
+          god_parent2=person("Анна", status=YASAK_PEASANT_FEMALE),
+          god_parent3=person("Мария", status=YASAK_PEASANT_FEMALE),
+          god_parent4=person("Иван", status=YASAK_PEASANT_MALE)),
+    birth(2, Gender.FEMALE, 5, 6, child=person("Анна"),
+          father=person("Петр", status=GOSUDARSTVENNYJ_PEASANT_MALE),
+          mother=person("Мария", status=YASAK_PEASANT_FEMALE),
+          god_parent1=person("Иван", status=YASAK_PEASANT_MALE),
+          god_parent2=person("Анна", status=KAZENNYJ_PEASANT_FEMALE)),
+    birth(3, Gender.MALE, 7, 8, child=person("Иван"), father=person("Петр", status=YASAK_PEASANT_MALE),
+          mother=person("Мария", status=YASAK_PEASANT_FEMALE)),
+    birth(4, Gender.MALE, 9, 10, child=person("Иван", status=YASAK_PEASANT_SON),
+          father=person("Петр", status=YASAK_PEASANT_MALE), mother=person("Мария", status=YASAK_PEASANT_LEGAL_WIFE)),
+    birth(5, Gender.FEMALE, 11, 12, child=person("Анна"), mother=person("Мария", status=YASAK_PEASANT_LEGAL_WIFE),
+          relatives=[relative(person("Петр", residence="Ротозеево"), Relationship.FATHER_IN_LAW),
+                     relative(person("Иван", residence="Заманиловка"), Relationship.STEP_FATHER)],
+          priest=person("Лука", residence="Ротозеево")),
+    birth(6, Gender.MALE, 13, 14, child=person("Иван"), father=person("Петр", status=YASAK_PEASANT_MALE),
+          mother=person("Мария", status=YASAK_PEASANT_LEGAL_WIFE)),
+    defaults=DEFAULTS)
+
+literal_births = birth_records(
+    "ГА Глуповской области", "10", "4", "4052", "Маниловка", "Церковь", 1858,
+    birth(1, Gender.MALE, 3, 4, child=person("Иван", residence="Ротозеево"),
+          father=person("Петр", status="слободской житель"),
+          mother=person("Мария", residence="Заманиловка", status="слободская жительница"),
+          god_parent1=person("Иван", status="слободской житель"), god_parent2=person("Анна", status="слободской житель"),
+          god_parent3=person("Мария", status="слободской житель"), god_parent4=person("Анна", status="слободская жительница")),
+    birth(2, Gender.MALE, 5, 6, child=person("Иван"), father=person("Петр", status="слободской житель"),
+          mother=person("Мария", status="мещанка")),
+    defaults=LITERAL)
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4053", "Маниловка", "Церковь", 1857,
+    marriage(1, 3, groom=person("Иван", status=KAZENNYJ_PEASANT_MALE, residence="Ротозеево"),
+             bride=person("Анна", status=KAZENNYJ_PEASANT_FEMALE, residence="Заманиловка"),
+             witness1=person("Петр", status=YASAK_PEASANT_MALE), witness2=person("Мария", status=YASAK_PEASANT_FEMALE),
+             witness3=person("Иван", status=YASAK_PEASANT_MALE), witness4=person("Мария", status=KAZENNYJ_PEASANT_FEMALE),
+             witness5=person("Лука", status=YASAK_PEASANT_MALE), witness6=person("Анна", status=YASAK_PEASANT_FEMALE),
+             relatives=[relative(person("Петр", residence="Ротозеево", status=YASAK_PEASANT_MALE), Relationship.FATHER,
+                                 "жениха")]),
+    marriage(2, 5, groom=person("Иван", status=YASAK_PEASANT_MALE), bride=person("Анна", status=YASAK_PEASANT_FEMALE)),
+    defaults=DEFAULTS)
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4054", "Маниловка", "Церковь", 1857,
+    death(1, Gender.MALE, 3, 4, deceased=person("Иван", residence="Ротозеево"), cause_of_death=CONSUMPTION,
+          witness1=person("Петр", status=YASAK_PEASANT_MALE), witness2=person("Анна", status=YASAK_PEASANT_FEMALE)),
+    death(2, Gender.FEMALE, 5, 6, deceased=person("Анна", status=YASAK_PEASANT_FEMALE), cause_of_death=COLD),
+    death(3, Gender.MALE, 7, 8, deceased=person("Иван", status=YASAK_PEASANT_MALE),
+          relatives=[relative(person("Петр", status=YASAK_PEASANT_MALE, residence="Ротозеево"), Relationship.FATHER)]),
+    death(4, Gender.FEMALE, 9, 10, deceased=person("Анна", status=YASAK_PEASANT_FEMALE),
+          relatives=[relative(person("Мария", status=YASAK_PEASANT_LEGAL_WIFE), Relationship.MOTHER)]),
+    death(5, Gender.FEMALE, 11, 12, deceased=person("Анна"), cause_of_death="от неведомой причины",
+          relatives=[relative(person("Петр", residence="Ротозеево"), Relationship.HUSBAND)]),
+    defaults=DEFAULTS)
+
+literal_deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4055", "Маниловка", "Церковь", 1858,
+    death(1, Gender.MALE, 3, 4, deceased=person("Иван"), cause_of_death="от неведомой причины",
+          witness1=person("Петр", status="слободской житель")),
+    death(2, Gender.MALE, 5, 6, deceased=person("Иван"), cause_of_death="от другой причины"),
+    defaults=LITERAL)

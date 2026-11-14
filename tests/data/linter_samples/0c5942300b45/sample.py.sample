@@ -1,0 +1,3 @@
+from census import CensusRole, member
+from genealogy import person
+m = member(4, person("Григорий"), CensusRole.NEPHEW, 2, ref_member=3, parent_member=3)

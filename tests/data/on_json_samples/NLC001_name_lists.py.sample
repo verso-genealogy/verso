@@ -1,0 +1,24 @@
+# Invented: a name list with no document_type (NLC001: none, or blank) and one whose entries state an age of
+# nought or less. A non-numeric age ("?"), a text age, `age=None` and a positive age are quiet.
+from verso.ru.dsl import listed_person, name_list_records, person
+
+blank = name_list_records(
+    "ГА Глуповской области", "10", "4", "4060", "Маниловка", 1917,
+    listed_person(1, person("Иванъ"), age=30),
+    listed_person(2, person("Петръ"), age=0),
+    listed_person(3, person("Лука"), age=-4),
+    listed_person(4, person("Василій"), age="?"),
+    listed_person(5, person("Даніилъ"), age=None),
+    listed_person(6, person("Анна")),
+    document_type="  ")
+
+absent = name_list_records(
+    "ГА Глуповской области", "10", "4", "4061", "Маниловка", 1917,
+    listed_person(1, person("Марія"), age=-1),
+    document_type=None)
+
+fine = name_list_records(
+    "ГА Глуповской области", "10", "4", "4062", "Маниловка", 1917,
+    listed_person(1, person("Дарья"), age=25),
+    listed_person(2, person("Петръ"), age="40"),
+    document_type="Список избирателей")

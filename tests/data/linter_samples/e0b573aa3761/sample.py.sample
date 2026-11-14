@@ -1,0 +1,3 @@
+death_records("a", "f", "i", "c", "Заманиловка", "Церковь", 1890,
+    *death_month(Month.JANUARY,
+                 death(1, Gender.MALE, 9, 8)))

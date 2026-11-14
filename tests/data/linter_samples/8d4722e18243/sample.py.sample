@@ -1,0 +1,2 @@
+death(1, 0, 1, 1, deceased=person("X"), age="6 м")
+death(2, 0, 1, 1, deceased=person("X"), age="19 лет 6 мес")

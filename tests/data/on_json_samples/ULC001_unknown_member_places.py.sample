@@ -1,0 +1,11 @@
+# Invented: a roll of a village the places know, a member who came from and went to places no table
+# knows (ULC001: origin, destination).
+from verso.ru.dsl import CensusRole, census_records, household, member, page, person
+
+census = census_records(
+    "ГА Глуповской области", "10", "4", "4044", "Заманиловка", 1858,
+    *page("16",
+          household("2",
+                    member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),
+                    member(2, person("Ѳома", "Лукинъ"), CensusRole.SON, ref_member=1, age=30,
+                           origin="Забытово", destination="Пропащево"))))

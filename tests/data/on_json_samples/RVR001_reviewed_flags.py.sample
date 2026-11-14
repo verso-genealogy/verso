@@ -1,0 +1,48 @@
+# Invented: a record's own reviewed= that restates the record set's (RVR001 inner_records_default, inner_records_set),
+# for each record the check reads — a birth, a christening, a marriage, a death, a household, a listed person. The JSON
+# answers a record outside every page() in a run that holds a record with no flag of its own. Quiet or source-form: a
+# flag that differs, a page() that wrote another flag or the set's own, the findings inside a page() and in a run of
+# explicit flags alone (the export cannot say what a page wrote, nor whether a page(None, …) lies over the run), a
+# label repeated by two page() calls or by two death_month sections.
+from verso.ru.dsl import (
+    CensusRole, Gender, Month, birth, birth_records, census_records, christening, death, death_month, death_records,
+    household, listed_person, marriage, marriage_records, member, name_list_records, page, person)
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4081", "Маниловка", "Церковь", 1857,
+    birth(1, Gender.MALE, 3, reviewed=True),
+    christening(2, Gender.MALE, 5, age=3, reviewed=True),
+    birth(3, Gender.MALE, 7, reviewed=False),
+    birth(4, Gender.MALE, 9),
+    *page("12", birth(5, Gender.MALE, 11), birth(6, Gender.MALE, 13, reviewed=True)),
+    *page("13", birth(7, Gender.MALE, 15, reviewed=False), birth(8, Gender.MALE, 17), reviewed=False),
+    *page("15", birth(9, Gender.MALE, 19, reviewed=True), reviewed=True),
+    birth(10, Gender.MALE, 21, reviewed=True))
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4082", "Маниловка", "Церковь", 1857,
+    marriage(1, 3, reviewed=True), marriage(2, 5, reviewed=False), marriage(3, 7),
+    reviewed=False)
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4083", "Маниловка", "Церковь", 1857,
+    death(1, Gender.MALE, 3, reviewed=True), death(2, Gender.MALE, 5),
+    *page("7", death(3, Gender.MALE, 9), death(4, Gender.MALE, 11, reviewed=True)),
+    death(5, Gender.MALE, 13, reviewed=True),
+    *page("5", death(6, Gender.MALE, 13, reviewed=True), reviewed=False),
+    *page("5", death(7, Gender.MALE, 15)),
+    *page("6", *death_month(Month.MAY, death(8, Gender.MALE, 17, reviewed=True)), reviewed=False),
+    *page("6", *death_month(Month.JUNE, death(9, Gender.MALE, 19))))
+
+census = census_records(
+    "ГА Глуповской области", "10", "4", "4084", "Маниловка", 1858,
+    household("1", member(1, person("Лука"), CensusRole.HEAD), reviewed=True),
+    household("4", member(1, person("Лука"), CensusRole.HEAD)),
+    *page("21", household("2", member(1, person("Лука"), CensusRole.HEAD)),
+          household("3", member(1, person("Лука"), CensusRole.HEAD), reviewed=True)))
+
+voters = name_list_records(
+    "ГА Глуповской области", "10", "4", "4085", "Маниловка", 1917,
+    listed_person(1, person("Лука"), reviewed=True), listed_person(2, person("Лука"), reviewed=False),
+    listed_person(3, person("Лука")),
+    document_type="список избирателей", reviewed=False)

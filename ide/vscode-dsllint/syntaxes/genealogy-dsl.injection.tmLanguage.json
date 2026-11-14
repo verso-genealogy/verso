@@ -1,0 +1,28 @@
+{
+  "scopeName": "source.python.genealogy-dsl",
+  "injectionSelector": "L:source.python",
+  "patterns": [
+    { "include": "#dsl-function-calls" },
+    { "include": "#gender-enum" },
+    { "include": "#month-enum" },
+    { "include": "#status-constants" }
+  ],
+  "repository": {
+    "dsl-function-calls": {
+      "match": "\\b(person|birth|death|marriage|page|book|relative|birth_month|death_month|marriage_month|birth_records|death_records|marriage_records|birth_month_year|death_month_year|marriage_month_year|name_list_records|listed_person|RecordDefaults)(?=\\s*\\()",
+      "name": "entity.name.function.dsl.genealogy"
+    },
+    "gender-enum": {
+      "match": "\\bGender\\.(MALE|FEMALE)\\b",
+      "name": "constant.other.enum.gender.genealogy"
+    },
+    "month-enum": {
+      "match": "\\bMonth\\.(JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER)\\b",
+      "name": "constant.other.enum.month.genealogy"
+    },
+    "status-constants": {
+      "match": "\\b[A-Z][A-Z_]{2,}\\b",
+      "name": "constant.other.status.genealogy"
+    }
+  }
+}

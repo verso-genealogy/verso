@@ -1,0 +1,6 @@
+# The toy corpus's one event, drawn behind every village's timeline.
+[[event]]
+from = 1861
+to = 1861
+label = "Отмена крепостного права"
+detail = "Крестьяне Степанчикова становятся временнообязанными"

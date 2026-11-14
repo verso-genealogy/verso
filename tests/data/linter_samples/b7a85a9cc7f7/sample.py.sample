@@ -1,0 +1,7 @@
+census = census_records("ГАТО", "1", "1", "1", "Маниловка", 1858,
+    household(
+        member(1, person("Савелій", "Пахомовъ"), CensusRole.HEAD, age=66),
+        member(2, person("Леонтій"), CensusRole.SON, ref_member=1, age=44),
+        member(3, person("Прокофій"), CensusRole.GRANDSON, ref_member=2, age=11),
+    family_id="1"),
+)

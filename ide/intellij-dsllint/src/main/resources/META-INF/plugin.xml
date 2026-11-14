@@ -1,0 +1,52 @@
+<idea-plugin>
+    <id>com.genealogy.dsllint</id>
+    <name>Genealogy DSL Lint</name>
+    <vendor url="https://github.com/verso-genealogy/verso">Dmitry Malchikov</vendor>
+
+    <description><![CDATA[
+        Inline linting and syntax highlighting for the verso genealogy DSL.
+        Shells out to <code>dsllint.py</code> in the workspace root and surfaces issues
+        as annotations on DSL Python files (<code>&lt;village&gt;_&lt;type&gt;_&lt;year&gt;.py</code>).
+        Provides quick fixes for redundant kwargs and string-literal-to-constant replacements,
+        plus accent colors for DSL function calls, Gender/Month enums, and status constants.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.python</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <externalAnnotator language="Python"
+                           implementationClass="com.genealogy.dsllint.lint.DslLintAnnotator"/>
+        <annotator language="Python"
+                   implementationClass="com.genealogy.dsllint.highlight.DslSyntaxAnnotator"/>
+        <applicationService
+                serviceImplementation="com.genealogy.dsllint.settings.DslLintSettings"/>
+        <applicationConfigurable
+                instance="com.genealogy.dsllint.settings.DslLintConfigurable"
+                displayName="DSL Lint"
+                id="dsllint.settings"
+                parentId="tools"/>
+        <notificationGroup id="DSL Lint"
+                           displayType="BALLOON"/>
+        <!-- Records last-edit timestamps for lint-timing telemetry (no-op unless the
+             "Log lint timing" diagnostics setting is on). -->
+        <postStartupActivity implementation="com.genealogy.dsllint.lint.DslLintTimingStartup"/>
+        <!-- Re-lints open DSL files when a linter dependency (e.g. statuses.py) changes,
+             so newly-added status constants are flagged without an IDE restart. -->
+        <postStartupActivity implementation="com.genealogy.dsllint.lint.DslLintDependencyWatcherStartup"/>
+    </extensions>
+
+    <actions>
+        <group id="DslLint.Group" text="DSL Lint" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <action id="dsllint.lint"
+                    class="com.genealogy.dsllint.actions.LintCurrentFileAction"
+                    text="Lint Current DSL File"
+                    description="Re-run dsllint.py on the current DSL file."/>
+            <action id="dsllint.lintAll"
+                    class="com.genealogy.dsllint.actions.LintAllAction"
+                    text="Lint All DSL Files"
+                    description="Re-run dsllint.py on every DSL file in the project."/>
+        </group>
+    </actions>
+</idea-plugin>

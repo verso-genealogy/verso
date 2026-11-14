@@ -1,0 +1,4 @@
+DEFAULTS = RecordDefaults(residence="Глуповы Горы", status_male=PEASANT_MALE, status_female=PEASANT_FEMALE)
+marriage_records("ГАВО", "600", "692", "283", "Глуповы Горы", "Покровская", 1842,
+    marriage(1, groom=person("Петръ", status="крестьянин Государственных имуществ")),
+    defaults=DEFAULTS)

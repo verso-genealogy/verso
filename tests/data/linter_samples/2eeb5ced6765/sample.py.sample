@@ -1,0 +1,2 @@
+death(1, 0, 1, 1, deceased=person("X"), age=None)
+marriage(2, 1, 1, groom=person("X"), bride=person("Y"))

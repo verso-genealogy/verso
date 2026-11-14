@@ -1,0 +1,3 @@
+marriage_records("a", "f", "i", "c", "Горюхино", "Церковь", 1830,
+    marriage(1, 7, groom=person("Иван", status=YASAK_PEASANT_MALE), bride=person("Дарья", status=MANILOV_KF_PEASANT_DAUGHTER)),
+    defaults=RecordDefaults(status_male=YASAK_PEASANT_MALE, status_female=YASAK_PEASANT_FEMALE))

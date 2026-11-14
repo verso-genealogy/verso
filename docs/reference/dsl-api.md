@@ -1,0 +1,233 @@
+<!-- Written by tools/reference.py from the code — do not edit; `make reference`. -->
+
+# DSL API v1
+
+What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only when a name goes or is renamed; a new keyword with a default is compatible.
+
+
+## `verso.ru.dsl`
+
+- `CONFESSION_LIST` = `{'document_type': 'Исповедная роспись', 'document_type_genitive': 'исповедной росписи', 'household_label': 'двор', 'household_number_label': '№ двора', 'file_prefix': 'ir', 'doc_res_prefix': 'confession_of_the_household_number', 'single_age_column': True, 'record_type': 'исповедная роспись'}`
+- `CensusRole` (enum): `HEAD`, `WIFE`, `HUSBAND`, `SON`, `DAUGHTER`, `BROTHER`, `UNCLE`, `GRANDSON`, `GRANDDAUGHTER`, `DAUGHTER_IN_LAW`, `SON_IN_LAW`, `BROTHER_IN_LAW`, `STEPSON`, `NEPHEW`, `NIECE`, `COUSIN`, `MOTHER`, `FATHER`, `SISTER`, `STEPDAUGHTER`, `LODGER`, `STEPBROTHER`, `FOSTER_SON`, `FOSTER_DAUGHTER`
+- `EventDate` (class)
+- `Gender` (enum): `MALE`, `FEMALE`
+- `Month` (enum): `JANUARY`, `FEBRUARY`, `MARCH`, `APRIL`, `MAY`, `JUNE`, `JULY`, `AUGUST`, `SEPTEMBER`, `OCTOBER`, `NOVEMBER`, `DECEMBER`
+- `NOT_IN_DOCUMENT` = `""`
+- `RecordDefaults` (class)
+- `Relationship` (enum): `FATHER`, `MOTHER`, `HUSBAND`, `WIFE`, `SON`, `DAUGHTER`, `FATHER_IN_LAW`, `MOTHER_IN_LAW`, `SON_IN_LAW`, `DAUGHTER_IN_LAW`, `FOSTER_FATHER`, `FOSTER_MOTHER`, `STEP_MOTHER`, `STEP_FATHER`
+- `Side` (enum): `GROOM`, `BRIDE`
+- `Status` (class)
+- `WwiDocumentType` (enum): `CASUALTY_LISTS`, `CASUALTY_CARD_LOWER`, `WOUNDED_NOTICE`, `ARRIVAL_CARD_HIGHER`, `ARRIVAL_CARD_LOWER`, `AWARD_LISTS`, `REPORTING_CARD`, `POW_CARD`
+- `WwiiDocumentType` (enum): `NAGRADNOY_LIST`, `AWARD_ORDER`, `ANNIVERSARY_AWARD`, `CASUALTY_REPORT`, `MEMORY_BOOK`, `SERVICE_CARD`, `POW_CARD`, `AWARD_CARD`, `CASUALTY_CLARIFICATION`, `WOUND_CARD`, `TRANSIT_POINT`, `UNIT_ROSTER`
+- `birth(record_num, gender, b_day=None, k_day=None, b_month=None, k_month=None, child=None, father=None, mother=None, god_parent1=None, god_parent2=None, god_parent3=None, god_parent4=None, priest=None, deacon=None, dyachok=None, sexton=None, page=None, case=None, comment=None, relatives=None, year=None, k_year=None, source_date_error=None, reviewed=None, calendar_note=None)`
+- `birth_month(month, *records)`
+- `birth_month_year(month, year, *records)`
+- `birth_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`
+- `book(name, priest_person, *records)`
+- `census_records(archive, fund, inventory, case, village, year, *households, record_day=None, record_month=None, archive_suffix=None, suffix_in_res_names=False, prev_revision_year=None, document_type=None, document_type_genitive=None, district=None, volost=None, reviewed=True, household_label='семья', household_number_label='№ семьи / № Двора', file_prefix='rs', doc_res_prefix='census_of_the_family_number', single_age_column=False, record_type='ревизия', defaults=None, female_previous_age=None)`
+- `christening(record_num, gender, k_day=None, k_month=None, *, age=None, child=None, father=None, mother=None, god_parent1=None, god_parent2=None, god_parent3=None, god_parent4=None, priest=None, deacon=None, dyachok=None, sexton=None, page=None, case=None, comment=None, relatives=None, year=None, reviewed=None, calendar_note=None)`
+- `criminal_record(person, *, original_text, record_number=None, age=None, birth_year=None, date=None, page=None, bibliography=None, source_url, archive=None, fund=None, inventory=None, case=None, scan_file=None, scan_content_type=None, labels=None, comment=None, reviewed=True)`
+- `death(record_num, gender, d_day=None, b_day=None, d_month=None, b_month=None, deceased=None, age=None, relatives=None, witness1=None, witness2=None, priest=None, deacon=None, dyachok=None, sexton=None, cause_of_death=None, page=None, case=None, comment=None, year=None, reviewed=None, source_age_error=None, source_date_error=None, namesake=None)`
+- `death_month(month, *records)`
+- `death_month_year(month, year, *records)`
+- `death_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`
+- `divorce(record_num, d_day=None, d_month=None, husband=None, wife=None, husband_age=None, wife_age=None, marriage_date=None, children=None, initiator=None, page=None, case=None, comment=None, year=None)`
+- `divorce_month(month, *records)`
+- `divorce_records(archive, fund, inventory, case, village, church, year, *records, defaults=None)`
+- `external_source_records(village, *records)`
+- `household(family_id, *members, page=None, comment=None, record_day=None, record_month=None, reviewed=None)`
+- `listed_person(number, person, *, age=None, comment=None, reviewed=None, page=None)`
+- `marriage(record_num, w_day=None, w_month=None, groom=None, bride=None, groom_marriage_num=None, bride_marriage_num=None, groom_age=None, bride_age=None, witness1=None, witness2=None, witness3=None, witness4=None, witness5=None, witness6=None, page=None, case=None, village=None, church=None, comment=None, priest=None, deacon=None, dyachok=None, sexton=None, relatives=None, year=None, bride_takes_groom_surname=True, reviewed=None, source_kin_error=None, calendar_note=None)`
+- `marriage_month(month, *records)`
+- `marriage_month_year(month, year, *records)`
+- `marriage_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`
+- `member(number, person, role, ref_member=None, age=None, previous_age=None, marital_status=None, occupation=None, origin=None, destination=None, arrival_year=None, arrival_reason=None, departure_year=None, departure_reason=None, record_number=None, birth_day=None, birth_month=None, birth_year=None, parent_member=None, father_ref=None, secondary_role=None, secondary_ref_member=None, hidden=False, comment=None, spouse_member=None, source_age_error=None, previous_age_error=None)`
+- `name_list_records(archive, fund, inventory, case, village, year, *entries, document_type, document_type_genitive=None, district=None, volost=None, record_day=None, record_month=None, scan_file=None, source_url=None, labels=None, reviewed=True, household_order=False)`
+- `page(num, *records, archive=None, fund=None, inventory=None, case=None, church=None, year=None, day=None, month=None, reviewed=None)`
+- `person(name_orig=None, patr_orig=None, last_name_orig=None, name_modern_orth=None, patr_old=None, last_name_modern_orth=None, residence=None, status=None, gender=None, side=None, comment=None, last_name_in_book=True, birth_last_name_modern_orth=None, occupation=None)`
+- `relative(person, relationship, relationship_ref=None)`
+- `wwi_record(person, *, source_url, record_number=None, age=None, birth_year=None, original_text=None, date=None, page=None, rank=None, military_unit=None, casualty_reason=None, document_type=None, award=None, award_number=None, marital_status=None, place_of_casualty=None, casualty_date=None, archive=None, fund=None, inventory=None, case=None, archive_location=None, scan_file=None, scan_content_type=None, bibliography=None, labels=None, comment=None, reviewed=True)`
+- `wwii_record(person, *, source_url, record_number=None, age=None, birth_date=None, original_text=None, date=None, page=None, rank=None, military_unit=None, casualty_reason=None, document_type=None, award=None, award_number=None, marital_status=None, place_of_casualty=None, casualty_date=None, draft_board=None, draft_date=None, feat_date=None, archive=None, fund=None, inventory=None, case=None, archive_location=None, scan_file=None, scan_content_type=None, bibliography=None, labels=None, comment=None, reviewed=True)`
+
+## `verso.ru.dsl.causes_of_death`
+
+- `ALCOHOL` = `от излишнего употребления вина`
+- `ANGINA` = `стенокардия`
+- `APOPLEXY` = `апликсеским ударом`
+- `BONE_CARIES` = `костоеда`
+- `BURNED_IN_FIRE` = `сгорел в пожаре`
+- `BURNED_IN_FIRE_F` = `сгорела в пожаре`
+- `CHILDBIRTH` = `роды`
+- `COLD` = `простуда`
+- `COLD_FEVER` = `простудная лихорадка`
+- `COLIC` = `колика`
+- `CONSTIPATION` = `запоромъ`
+- `CONSUMPTION` = `чахотка`
+- `CONVULSIONS` = `родимец`
+- `COUGH` = `кашель`
+- `CRUSHED_BY_CART` = `задавлен возом`
+- `DEBILITY` = `слабосилие`
+- `DECREPITUDE` = `дряхлость`
+- `DIARRHEA` = `понос`
+- `DIFFICULT_BIRTH` = `от трудного рождения младенца`
+- `DOG_BITE` = `укус бешеной собаки`
+- `DROPSY` = `водянка`
+- `DROWNED` = `от воды скоропостижной смертью`
+- `FEVER` = `горячка`
+- `FROZE` = `замерз`
+- `HEADACHE` = `головная боль`
+- `HERNIA` = `грыжа`
+- `INTERNAL` = `внутренней болезнью`
+- `KILLED` = `убит`
+- `KILLED_BY_BELL` = `убит упавшим колоколом`
+- `KILLED_BY_MILL` = `от убития мельницей`
+- `MEASLES` = `корь`
+- `MILL_COLLAPSE` = `от сломания мельницы`
+- `NATURAL` = `натуральная`
+- `NOT_IN_DOCUMENT` = `""`
+- `OLD_AGE` = `от старости`
+- `PARALYSIS` = `паралич`
+- `PLEURISY` = `колотье`
+- `PNEUMONIA` = `воспаление легких`
+- `SCABIES` = `короста`
+- `SCARLATINA` = `скарлатина`
+- `SCARLET_FEVER` = `лихорадка`
+- `SEIZURE` = `от припадка`
+- `SMALLPOX` = `оспа`
+- `STOMACH` = `ослаблением желудка`
+- `STRUCK` = `от удара`
+- `STRUCK_BY_LIGHTNING` = `от удара грома`
+- `SUDDEN_DEATH` = `наглая смерть`
+- `SUFFOCATION` = `удушьем`
+- `THROAT` = `от горла`
+- `THROAT_CONSTRICTION` = `стянание горла`
+- `THROAT_TIGHTNESS` = `стеснение горла`
+- `TYPHOID_FEVER` = `сыпная горячка`
+- `TYPHUS` = `тиф`
+- `UNKNOWN` = `неизвестно`
+- `WEAKNESS` = `слабость`
+- `WHOOPING_COUGH` = `коклюш`
+- `WOUNDS` = `от ран`
+
+## `verso.ru.dsl.marital_status`
+
+- `DIVORCED` = `разведён`
+- `DIVORCED_FEMALE` = `разведена`
+- `MARRIED` = `женат`
+- `MARRIED_FEMALE` = `замужем`
+- `SINGLE` = `холост`
+- `SINGLE_FEMALE` = `девица`
+- `WIDOW` = `вдова`
+- `WIDOWER` = `вдовец`
+
+## `verso.ru.dsl.statuses`
+
+- `BUDNY_PEASANT` = `будный крестьянин`
+- `DEACON` = `диакон`
+- `DEACON_DAUGHTER` = `дочь диакона`
+- `DYACHIKHA_WIDOW` = `вдова дьячиха`
+- `DYACHOK` = `дьячок`
+- `DYACHOK_SON` = `сын дьячка`
+- `DYACHOK_WIFE` = `жена дьячка`
+- `ECON_PEASANT_BOY` = `отрок из экономических крестьян`
+- `ECON_PEASANT_DAUGHTER` = `экономическая крестьянская дочь`
+- `ECON_PEASANT_DAUGHTER_MAIDEN` = `дочь девица из экономических крестьян`
+- `ECON_PEASANT_DEVA` = `дева из экономических крестьян`
+- `ECON_PEASANT_FEMALE` = `экономическая крестьянка`
+- `ECON_PEASANT_GIRL` = `девка из экономических крестьян`
+- `ECON_PEASANT_LEGAL_WIFE` = `законная жена экономического крестьянина`
+- `ECON_PEASANT_MAIDEN` = `девица из экономических крестьян`
+- `ECON_PEASANT_MALE` = `экономический крестьянин`
+- `ECON_PEASANT_SON` = `экономический крестьянский сын`
+- `ECON_PEASANT_WIDOW` = `вдова из экономических крестьян`
+- `ECON_PEASANT_WIDOWER` = `экономический крестьянин вдовец`
+- `ECON_PEASANT_WIFE` = `жена из экономических крестьян`
+- `ECON_PEASANT_WIFE_OF` = `жена экономического крестьянина`
+- `ECON_PEASANT_ZHONKA` = `женка из экономических крестьян`
+- `GIRL` = `девка`
+- `GOSUDARSTVENNYJ_PEASANT_FEMALE` = `государственная крестьянка`
+- `GOSUDARSTVENNYJ_PEASANT_MALE` = `государственный крестьянин`
+- `HIEREUS` = `иерей`
+- `KAZENNYJ_PEASANT_BOY` = `отрок из казенных крестьян`
+- `KAZENNYJ_PEASANT_DAUGHTER` = `казенная крестьянская дочь`
+- `KAZENNYJ_PEASANT_DAUGHTER_MAIDEN` = `дочь девица из казенных крестьян`
+- `KAZENNYJ_PEASANT_FEMALE` = `казенная крестьянка`
+- `KAZENNYJ_PEASANT_GIRL` = `девка из казенных крестьян`
+- `KAZENNYJ_PEASANT_LEGAL_WIFE` = `законная жена казенного крестьянина`
+- `KAZENNYJ_PEASANT_MAIDEN` = `девица из казенных крестьян`
+- `KAZENNYJ_PEASANT_MALE` = `казенный крестьянин`
+- `KAZENNYJ_PEASANT_NEWCONVERT` = `новокрещёный казенный крестьянин`
+- `KAZENNYJ_PEASANT_SON` = `казенный крестьянский сын`
+- `KAZENNYJ_PEASANT_WIDOW` = `вдова из казенных крестьян`
+- `KAZENNYJ_PEASANT_WIFE` = `казенная крестьянская жена`
+- `LANDLORD` = `помещик`
+- `LANDLORD_DAUGHTER` = `дочь помещика`
+- `LANDLORD_FEMALE` = `помещица`
+- `LANDLORD_SON` = `сын помещика`
+- `MAIDEN` = `девица`
+- `MERCHANT` = `купец`
+- `MERCHANT_DAUGHTER` = `купеческая дочь`
+- `MERCHANT_SON` = `купеческий сын`
+- `MESHCHANIN` = `мещанин`
+- `MESHCHANIN_DAUGHTER` = `мещанская дочь`
+- `MESHCHANIN_FEMALE` = `мещанка`
+- `MESHCHANIN_SON` = `мещанский сын`
+- `MESHCHANIN_WIDOW` = `вдова мещанка`
+- `MESHCHANIN_WIFE` = `мещанская жена`
+- `ODNODVORETS` = `однодворец`
+- `ODNODVORETS_DAUGHTER` = `однодворческая дочь`
+- `ODNODVORETS_LEGAL_WIFE` = `законная жена однодворца`
+- `ODNODVORETS_SON` = `однодворческий сын`
+- `PEASANT_BOY` = `отрок из крестьян`
+- `PEASANT_DAUGHTER` = `крестьянская дочь`
+- `PEASANT_DAUGHTER_GIRL` = `крестьянская дочь девка`
+- `PEASANT_DAUGHTER_MAIDEN` = `крестьянская дочь девица`
+- `PEASANT_FEMALE` = `крестьянка`
+- `PEASANT_GIRL` = `девка из крестьян`
+- `PEASANT_MAIDEN` = `крестьянская девица`
+- `PEASANT_MALE` = `крестьянин`
+- `PEASANT_SON` = `крестьянский сын`
+- `PEASANT_SPOUSE` = `крестьянская жена`
+- `PEASANT_WIDOW` = `вдова из крестьян`
+- `PEASANT_WIFE` = `законная жена крестьянина`
+- `PEASANT_ZHONKA` = `крестьянская женка`
+- `POPADIA` = `попадья`
+- `PRIEST` = `священник`
+- `PRIEST_DAUGHTER` = `дочь священника`
+- `PRIEST_DAUGHTER_MAIDEN` = `дочь девица священника`
+- `PRIVATE_SOLDIER` = `рядовой`
+- `PROPRIETOR_PEASANT_MALE` = `крестьянин собственник`
+- `RETIRED_SOLDIER` = `отставной солдат`
+- `SEXTON` = `пономарь`
+- `SEXTON_SON` = `сын пономаря`
+- `SEXTON_WIFE` = `жена пономаря`
+- `SOLDIER` = `солдат`
+- `SOLDIER_DAUGHTER` = `солдатская дочь`
+- `SOLDIER_GIRL` = `солдатская девка`
+- `SOLDIER_SON` = `солдатский сын`
+- `SOLDIER_SPOUSE` = `солдатская жена`
+- `SOLDIER_WIDOW` = `солдатская вдова`
+- `SOLDIER_WIFE` = `солдатка`
+- `STATE_PEASANT_DAUGHTER` = `государственная крестьянская дочь`
+- `STATE_PEASANT_FEMALE` = `государственная крестьянка`
+- `STATE_PEASANT_LEGAL_WIFE` = `законная жена государственного крестьянина`
+- `STATE_PEASANT_MALE` = `государственный крестьянин`
+- `STATE_PEASANT_SON` = `государственный крестьянский сын`
+- `STATE_PEASANT_WIFE` = `жена из государственных крестьян`
+- `TEMP_OBLIGED_PEASANT_MALE` = `временнообязанный крестьянин`
+- `UNTER_OFFICER` = `унтер-офицер`
+- `WIDOW` = `вдова`
+- `YASAK_PEASANT_BOY` = `отрок из ясачных крестьян`
+- `YASAK_PEASANT_DAUGHTER` = `ясачная крестьянская дочь`
+- `YASAK_PEASANT_DAUGHTER_MAIDEN` = `дочь девица из ясачных крестьян`
+- `YASAK_PEASANT_FEMALE` = `ясачная крестьянка`
+- `YASAK_PEASANT_GIRL` = `девка из ясачных крестьян`
+- `YASAK_PEASANT_LEGAL_WIFE` = `законная жена ясачного крестьянина`
+- `YASAK_PEASANT_MAIDEN` = `девица из ясачных крестьян`
+- `YASAK_PEASANT_MALE` = `ясачный крестьянин`
+- `YASAK_PEASANT_NEWCONVERT` = `новокрещёный ясачный крестьянин`
+- `YASAK_PEASANT_SON` = `ясачный крестьянский сын`
+- `YASAK_PEASANT_WIDOW` = `вдова из ясачных крестьян`
+- `YASAK_PEASANT_WIFE` = `ясачная крестьянская жена`
+- `YASAK_SOLDIER_WIFE` = `ясачная солдатская жена`
+- `ZHONKA` = `женка`

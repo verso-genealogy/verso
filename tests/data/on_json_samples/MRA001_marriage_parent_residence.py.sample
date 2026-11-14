@@ -1,0 +1,21 @@
+# Invented: a party's parent written in another village than the party (MRA001): the groom's father and
+# mother, the bride's father and mother — one variant each. Quiet: the same village, a residence left to
+# the book's default, a parent of neither party, a relationship that is no father or mother.
+from verso.ru.dsl import RecordDefaults, Relationship, marriage, marriage_records, person, relative
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4053", "Маниловка", "Церковь", 1858,
+    marriage(1, 12, groom=person("Иванъ", residence="Маниловка"), bride=person("Анна", residence="Маниловка"),
+             relatives=[relative(person("Петръ", residence="Заманиловка"), Relationship.FATHER, "жених"),
+                        relative(person("Марія", residence="Заманиловка"), Relationship.MOTHER, "жених"),
+                        relative(person("Лука", residence="Ротозеево"), Relationship.FATHER, "невеста"),
+                        relative(person("Дарья", residence="Ротозеево"), Relationship.MOTHER, "невеста")]),
+    marriage(2, 13, groom=person("Петръ", residence="Маниловка"), bride=person("Марія", residence="Маниловка"),
+             relatives=[relative(person("Лука", residence="Маниловка"), Relationship.FATHER, "жених"),
+                        relative(person("Марія"), Relationship.MOTHER, "невеста"),
+                        relative(person("Даніилъ", residence="Заманиловка"), Relationship.SON, "жених"),
+                        relative(person("Василій", residence="Заманиловка"), Relationship.FATHER, "поручитель")]),
+    marriage(3, 14, groom=person("Лука"), bride=person("Анна", residence="Маниловка"),
+             relatives=[relative(person("Петръ", residence="Заманиловка"), Relationship.FATHER, "жених"),
+                        relative(person("Даніилъ", residence="Заманиловка"), Relationship.FATHER, "невеста")]),
+    defaults=RecordDefaults(residence="Маниловка"))

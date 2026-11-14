@@ -1,0 +1,26 @@
+# Invented: the ages a member states (CAI001, CAI003, CAI004, CAI005).
+from verso.ru.dsl import CensusRole, Month, census_records, household, member, person
+
+ages = census_records(
+    "ГА Глуповской области", "10", "4", "4046", "Маниловка", 1858,
+    household("1",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age="43 года 11 мес", birth_day=6),
+              member(2, person("Ѳома"), CensusRole.SON, 1, 30.5, birth_month=Month.MARCH),
+              member(3, person("Семенъ"), CensusRole.SON, 1, age=0),
+              member(4, person("Иванъ"), CensusRole.SON, 1, age="6 мес", birth_day=2),
+              member(5, person("Никифоръ"), CensusRole.SON, 1, age=20, previous_age=19, departure_reason="умер",
+                     birth_year=1838),
+              member(6, person("Марья"), CensusRole.DAUGHTER, 1, age=12, previous_age=11,
+                     departure_reason="выдана замуж", birth_year=1846),
+              member(7, person("Агафья"), CensusRole.DAUGHTER, 1, previous_age=11, departure_reason="Умерла",
+                     birth_year=1840, birth_day=3),
+              member(8, person("Дарья"), CensusRole.DAUGHTER, 1, age=None, departure_reason="умер", birth_year=1840),
+              member(9, person("Анна"), CensusRole.DAUGHTER, 1, age="?", birth_day=4, hidden=True),
+              member(10, person("Лука"), CensusRole.UNCLE, 1, age=2, birth_day=4, birth_year=None),
+              member(11, person("Петръ"), CensusRole.SON, 1, age=2, birth_day=5),
+              member(12, person("Иванъ"), CensusRole.SON, 1, age="1 год 11 мес", birth_day=5),
+              member(13, person("Семенъ"), CensusRole.SON, 1, age=0.0)))
+undated = census_records(
+    "ГА Глуповской области", "10", "4", "4047", "Маниловка", 0,
+    household("1",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=40, birth_day=6)))

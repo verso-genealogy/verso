@@ -1,0 +1,25 @@
+# Invented: a roll member's status written equal to what the roll's defaults give it (CSR001) — a man's to the
+# male default, a woman's to the female one, a woman's to the male one when the book names no female default
+# (a literal here: a catalog constant of a man's status is refused for a woman). The quiet cases: a status that
+# is not the default's, a literal where the default is a constant, a hidden member, a member whose sex nothing says.
+from verso.ru.dsl import CensusRole, Gender, RecordDefaults, census_records, household, member, person
+from verso.ru.dsl.statuses import STATE_PEASANT_MALE, YASAK_PEASANT_FEMALE, YASAK_PEASANT_MALE
+
+both = census_records(
+    "ГА Глуповской области", "10", "4", "4062", "Маниловка", 1858,
+    household("1",
+              member(1, person("Петръ", "Лукинъ", "Образцовъ", status=YASAK_PEASANT_MALE), CensusRole.HEAD, age=60),
+              member(2, person("Марія", status=YASAK_PEASANT_FEMALE), CensusRole.WIFE, 1, age=55),
+              member(3, person("Иванъ", status=YASAK_PEASANT_MALE), CensusRole.SON, 1, age=30),
+              member(4, person("Семенъ", status="ясачный крестьянин"), CensusRole.SON, 1, age=20),
+              member(5, person("Никифоръ", status=STATE_PEASANT_MALE), CensusRole.SON, 1, age=10),
+              member(6, person("Дарья", status=YASAK_PEASANT_FEMALE), CensusRole.DAUGHTER_IN_LAW, 3, age=28, hidden=True),
+              member(7, person("Агафья", gender=Gender.FEMALE, status=YASAK_PEASANT_FEMALE), None, 1, age=40),
+              member(8, person("Анна", status=YASAK_PEASANT_FEMALE), CensusRole.DAUGHTER, 1, age=15, hidden=True)),
+    defaults=RecordDefaults(status_male=YASAK_PEASANT_MALE, status_female=YASAK_PEASANT_FEMALE))
+male_only = census_records(
+    "ГА Глуповской области", "10", "4", "4063", "Маниловка", 1859,
+    household("1",
+              member(1, person("Петръ", "Лукинъ", "Образцовъ", status="ясачный крестьянин"), CensusRole.HEAD, age=60),
+              member(2, person("Марія", status="ясачный крестьянин"), CensusRole.WIFE, 1, age=55)),
+    defaults=RecordDefaults(status_male="ясачный крестьянин"))

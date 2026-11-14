@@ -1,0 +1,4 @@
+DEFAULTS = RecordDefaults(residence="Глуповы Горы", status_male=PEASANT_MALE, status_female=PEASANT_FEMALE)
+birth_records("ГАВО", "600", "692", "283", "Глуповы Горы", "Покровская", 1815,
+    birth(1, Gender.FEMALE, god_parent2=person("Анна", residence="Горелово", status="крестьянская дочь девка г-на Ноздрева")),
+    defaults=DEFAULTS)

@@ -1,0 +1,3 @@
+from census import CensusRole, member
+from genealogy import person
+m = member(6, person("Иван"), CensusRole.SON, 4, ref_member=5)

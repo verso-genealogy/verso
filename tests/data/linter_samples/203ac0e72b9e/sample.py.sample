@@ -1,0 +1,5 @@
+
+book = birth_records(
+    "ГАРО", "637", "606", "847", "Хлестаковка", "Вознесенская", 1860,
+    christening(1, Gender.MALE, 5, age=20, reviewed=True),
+)

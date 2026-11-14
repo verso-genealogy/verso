@@ -1,0 +1,12 @@
+from verso.ru.dsl import birth, birth_month, birth_records
+from verso.ru.dsl import Gender, RecordDefaults, person
+from verso.ru.dsl import Relationship, relative
+mk = birth_records(
+    "ЦГАРМ", "57", "6", "1", "Горюхино", "Николаевская", 1842,
+    birth(1, Gender.MALE, 3, 5,
+          child=person("Иванъ"),
+          father=person("Тарасъ", "Ивановъ"),
+          relatives=[relative(person("Илья", "Абрамовъ", status=KAZ_MALE),
+                              Relationship.FATHER, "восприемника №2")]),
+    defaults=RecordDefaults(status_male=KAZ_MALE, status_female=KAZ_FEMALE),
+)

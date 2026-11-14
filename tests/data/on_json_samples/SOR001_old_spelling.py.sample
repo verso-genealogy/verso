@@ -1,0 +1,34 @@
+# Invented: classification fields in the old orthography — a person's status, a book's default status
+# and a member's reason for leaving (SOR001: the words, and a catalog constant when the modern text
+# is one); modern texts and catalog constants stay quiet.
+from verso.ru.dsl import (
+    CensusRole, Gender, RecordDefaults, birth, birth_records, census_records, death, death_records, household, member,
+    page, person)
+from verso.ru.dsl.statuses import PEASANT_FEMALE, PEASANT_MALE
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4047", "Маниловка", "Церковь", 1851,
+    birth(1, Gender.MALE, 3, 5, child=person("Лука"),
+          father=person("Ѳома", "Лукинъ", "Примеровъ", status="крестьянинъ"),
+          mother=person("Марія", status="солдатка")),
+    birth(2, Gender.FEMALE, 4, 6, child=person("Марія"),
+          father=person("Иван", "Петровъ", "Опискинъ", status="крестьянин вотчины Г-на Ноздрева"),
+          mother=person("Анфиса", status=PEASANT_FEMALE)),
+    defaults=RecordDefaults(status_male=PEASANT_MALE, status_mother="жена крестьянинъ"))
+
+census = census_records(
+    "ГА Глуповской области", "10", "4", "4044", "Маниловка", 1858,
+    *page("16",
+          household("3",
+                    member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),
+                    member(2, person("Ѳома", "Лукинъ"), CensusRole.SON, ref_member=1, age=20,
+                           departure_reason="отданъ въ рекруты"),
+                    member(3, person("Иван", "Лукинъ"), CensusRole.SON, ref_member=1, age=18,
+                           departure_reason="умер"))))
+
+# A book whose defaults write an old-spelling status_male and status_female: RecordDefaults derives
+# status_groom from status_male, which the author did not write (SOR001: two findings, not three).
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4049", "Маниловка", "Церковь", 1853,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука", "Ѳомичъ", "Примеровъ"), age=60),
+    defaults=RecordDefaults(status_male="крестьянинъ", status_female="крестьянка вотчины Г-на Ноздрева"))

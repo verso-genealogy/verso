@@ -1,0 +1,50 @@
+# Invented: a birth's person writing what the record derives (BRD001-BRD006) — a residence the family already has
+# (the mother at the father's, the child at the father's, else at the mother's), and a surname written beside
+# last_name_in_book=False that the father's gives (the mother's feminized, a son's, a daughter's from her mother's
+# else the father's feminized). The written-by-position forms (BRD002, BRD004) are the same findings by keyword
+# on JSON. The quiet cases: a surname that is in the book, a residence of another village, a father without a
+# surname, a christening, a daughter whose mother has a surname of her own.
+from verso.ru.dsl import Gender, birth, birth_records, christening, person
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4060", "Маниловка", "Церковь", 1857,
+    # 1: the mother and the son at the father's village, both surnames derived (BRD001 x2, BRD003 x2)
+    birth(1, Gender.MALE, 3, 4,
+          child=person("Иванъ", residence="Ротозеево", last_name_orig="Образцовъ", last_name_in_book=False),
+          father=person("Петръ", "Лукинъ", "Образцовъ", residence="Ротозеево"),
+          mother=person("Марія", residence="Ротозеево", last_name_orig="Образцова", last_name_in_book=False)),
+    # 2: the daughter at the mother's village (the father names none), her modern surname the father's feminized
+    # (BRD005), the mother with no surname beside last_name_in_book=False (BRD006)
+    birth(2, Gender.FEMALE, 5, 6,
+          child=person("Анна", residence="Заманиловка", last_name_modern_orth="Образцова", last_name_in_book=False),
+          father=person("Петръ", "Лукинъ", "Образцовъ"),
+          mother=person("Марія", residence="Заманиловка", last_name_in_book=False)),
+    # 3: the same forms by position (BRD002 x2, BRD004)
+    birth(3, Gender.MALE, 7, 8,
+          child=person("Семенъ", None, "Образцовъ", None, None, None, "Ротозеево", last_name_in_book=False),
+          father=person("Петръ", "Лукинъ", "Образцовъ", residence="Ротозеево"),
+          mother=person("Марія", None, None, None, None, None, "Ротозеево")),
+    # 4: the mother's own surname is what the daughter derives (BRD003 for the daughter, not for the mother)
+    birth(4, Gender.FEMALE, 9, 10,
+          child=person("Агафья", last_name_orig="Другова", last_name_in_book=False),
+          father=person("Петръ", "Лукинъ", "Образцовъ"),
+          mother=person("Марія", last_name_orig="Другова", last_name_in_book=False)),
+    # 5: quiet — the surname is in the book, the residences differ, the daughter's surname is not her mother's
+    birth(5, Gender.FEMALE, 11, 12,
+          child=person("Анна", residence="Заманиловка", last_name_orig="Образцова"),
+          father=person("Петръ", "Лукинъ", "Образцовъ", residence="Ротозеево"),
+          mother=person("Марія", residence="Неведомка", last_name_orig="Другова", last_name_in_book=False)),
+    birth(6, Gender.FEMALE, 13, 14,
+          child=person("Анна", last_name_orig="Образцова", last_name_in_book=False),
+          father=person("Петръ", "Лукинъ", "Образцовъ"),
+          mother=person("Марія", last_name_orig="Другова", last_name_in_book=False)),
+    # 7: quiet — no father surname to derive from; and a record with no father at all
+    birth(7, Gender.MALE, 15, 16,
+          child=person("Иванъ", last_name_orig="Образцовъ", last_name_in_book=False),
+          father=person("Петръ", "Лукинъ"),
+          mother=person("Марія", residence="Ротозеево", last_name_orig="Образцова", last_name_in_book=False)),
+    birth(8, Gender.MALE, 17, 18, child=person("Иванъ", residence="Ротозеево")),
+    # 9: quiet — a christening is no birth to this check
+    christening(9, Gender.MALE, 19,
+                child=person("Иванъ", residence="Ротозеево", last_name_orig="Образцовъ", last_name_in_book=False),
+                father=person("Петръ", "Лукинъ", "Образцовъ", residence="Ротозеево")))

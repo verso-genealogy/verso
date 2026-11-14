@@ -1,0 +1,4 @@
+death_records("a", "f", "i", "c", "Заманиловка", "Церковь", 1816,
+    death(1, Gender.MALE, 5, None, deceased=person("Иван"), age=2,
+          relatives=[relative(person("Пётр"), Relationship.FATHER),
+                     relative(person("Анна"), Relationship.MOTHER)]))

@@ -1,0 +1,8 @@
+
+births = birth_records(
+    "ГАРО", "637", "606", "847", "Хлестаковка", 1860,
+    *page("5",
+        birth(6, person("Тимонъ"), person("Харитонъ"), reviewed=True),
+        reviewed=True,
+    ),
+)

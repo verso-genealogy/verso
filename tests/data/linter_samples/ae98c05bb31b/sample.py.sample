@@ -1,0 +1,3 @@
+death_records("a", "f", "i", "c", "Горюхино", "Церковь", 1855,
+    death(1, Gender.FEMALE, deceased=person("Екатерина", status=MANILOV_KF_PEASANT_DAUGHTER), age=1, relatives=[relative(person("Ефим", "Иванов", status=MANILOV_KF_PEASANT_MALE), Relationship.FATHER)]),
+    defaults=RecordDefaults(residence="Горюхино"))

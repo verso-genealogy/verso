@@ -1,0 +1,7 @@
+death(1, 0, 1, 1, deceased=person("X"), age=1)
+death(2, 0, 1, 1, deceased=person("X"), age="19 лет 6 мес")
+death(3, 0, 1, 1, deceased=person("X"), age="1 мес")
+death(4, 0, 1, 1, deceased=person("X"), age="3 дн")
+death(5, 0, 1, 1, deceased=person("X"), age="полгода")
+death(6, 0, 1, 1, deceased=person("X"), age="полтора года")
+death(7, 0, 1, 1, deceased=person("X"), age=None)

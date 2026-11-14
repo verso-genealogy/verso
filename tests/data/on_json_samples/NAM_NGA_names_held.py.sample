@@ -1,0 +1,9 @@
+# Invented: a surname in the other sex's form (NGA001) and a plain-text status of the other sex than the name (NAM004),
+# on a birth that is held (reviewed=False) — a held record is linted like any other, by dsllint and by the walk alike.
+from verso.ru.dsl import Gender, birth, birth_records, person
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4048", "Маниловка", "Церковь", 1852,
+    birth(1, Gender.MALE, 3, 5, child=person("Иван", status="экономическая крестьянка"),
+          father=person("Петр", "Лукинъ", "Опискина"), mother=person("Анна", "Петрова", "Опискинъ"),
+          reviewed=False))

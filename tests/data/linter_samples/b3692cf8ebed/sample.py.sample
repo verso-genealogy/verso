@@ -1,0 +1,4 @@
+TENTETNIKOV_PEASANT = "крестьянин вотчины Г-на Тентетникова"
+death_records("a", "f", "i", "c", "Горюхино", "Церковь", 1830,
+    death(1, Gender.FEMALE, 5, 6, deceased=person("Анфиса"), age=27, relatives=[relative(person("Тимофей", status=TENTETNIKOV_PEASANT), Relationship.HUSBAND)]),
+    defaults=RecordDefaults(status_male=PEASANT_MALE, status_female=PEASANT_FEMALE))

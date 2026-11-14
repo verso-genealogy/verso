@@ -1,0 +1,39 @@
+# The toy's catalog, English: the source language.
+schema = 1
+
+[hello]
+plain = "Hello, {name}"
+braces = "a {{literal}} brace and {n}"
+only_en = "only in English"
+untranslated = "left in English"
+
+[hello.notes]
+one = "{count} note"
+other = "{count} notes"
+
+# The toy's labels of the interface's schema (tests/core/ui-hints.toml).
+[ui.kind]
+note = "Note"
+notes = "Book of notes"
+
+[ui.person]
+name = "name"
+gender = "sex"
+
+[ui.note]
+number = "No."
+page = "page"
+
+[ui.slot]
+who = "Person"
+
+[ui.enum.sex]
+male = "male"
+female = "female"
+
+[ui.book]
+village = "village"
+fund = "fund"
+inventory = "inventory"
+case = "case"
+year = "year"

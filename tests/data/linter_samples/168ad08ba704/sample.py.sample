@@ -1,0 +1,7 @@
+from census import CensusRole, household, member
+from genealogy import person
+household(
+  member(11, person("Яков"), CensusRole.GRANDSON, 23, ref_member=2, parent_member=19),
+  member(17, person("Пелагея"), CensusRole.WIFE, 25, ref_member=11, parent_member=19),
+  member(19, person("Михаил"), CensusRole.SON, 50, ref_member=2),
+)

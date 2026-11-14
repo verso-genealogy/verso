@@ -1,0 +1,9 @@
+# Invented: the groom's father written in another village than the groom (MRA001), on a marriage that is held
+# (reviewed=False) — a held record is linted like any other, by dsllint and by the walk alike.
+from verso.ru.dsl import Relationship, marriage, marriage_records, person, relative
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4054", "Маниловка", "Церковь", 1859,
+    marriage(1, 7, groom=person("Лука", residence="Маниловка"), bride=person("Дарья", residence="Маниловка"),
+             relatives=[relative(person("Петръ", residence="Заманиловка"), Relationship.FATHER, "жених")],
+             reviewed=False))

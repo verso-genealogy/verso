@@ -1,0 +1,112 @@
+{
+ "schema": "ui-v1",
+ "records": "records-v1",
+ "package": "tests.core",
+ "kinds": {
+  "note": {
+   "label": "ui.kind.note",
+   "fields": [
+    {
+     "path": "number",
+     "type": "age",
+     "label": "ui.note.number"
+    },
+    {
+     "path": "page",
+     "type": "text",
+     "label": "ui.note.page"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    }
+   ],
+   "slots": [
+    {
+     "role": "who",
+     "label": "ui.slot.who",
+     "gender": "of_record"
+    }
+   ],
+   "groups": [],
+   "events": [],
+   "draft": {
+    "creatable": true,
+    "slots": [
+     "who"
+    ]
+   },
+   "rules": []
+  }
+ },
+ "persona": {
+  "fields": [
+   {
+    "path": "full_name",
+    "type": "text",
+    "label": "ui.person.name"
+   },
+   {
+    "path": "gender",
+    "type": "enum",
+    "label": "ui.person.gender",
+    "enum": "sex"
+   }
+  ]
+ },
+ "enums": {
+  "sex": [
+   {
+    "code": "male",
+    "label": "ui.enum.sex.male",
+    "gender": "male"
+   },
+   {
+    "code": "female",
+    "label": "ui.enum.sex.female",
+    "gender": "female"
+   }
+  ]
+ },
+ "books": {
+  "notes": {
+   "label": "ui.kind.notes",
+   "fields": [
+    {
+     "path": "village",
+     "type": "text",
+     "label": "ui.book.village"
+    },
+    {
+     "path": "shelfmark.fund",
+     "type": "text",
+     "label": "ui.book.fund"
+    },
+    {
+     "path": "inventory",
+     "type": "text",
+     "label": "ui.book.inventory"
+    },
+    {
+     "path": "shelfmark.case",
+     "type": "text",
+     "label": "ui.book.case"
+    },
+    {
+     "path": "year",
+     "type": "integer",
+     "label": "ui.book.year"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
+    }
+   ],
+   "fills": [],
+   "flags": [],
+   "queue": false
+  }
+ }
+}

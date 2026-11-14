@@ -1,0 +1,585 @@
+"""Familio справочник submission exporter.
+
+A *справочник* is one Familio submission file (`.xlsx`) covering many years of a
+village's records, with one tab per record type (РОЖДЕНИЕ / БРАК / СМЕРТЬ). It is
+built by aggregating the per-year ``*_familio.csv`` files emitted by
+:mod:`verso.ru.exporters.csv_familio` and projecting them onto the official Familio
+**МК** template (``Shablon_MK.xlsx``) — see :mod:`verso.ru.exporters.familio_template`
+for the column mapping.
+
+This module is layered for testability:
+
+* **Domain** (pure, no I/O): :func:`build_sheet`, :func:`build_spravochnik` and the
+  :class:`Spravochnik` / :class:`SpravochnikSheet` / :class:`YearRecords` value
+  objects. Rows are concatenated in year order, projected onto the template's
+  columns, and given a continuous *сквозная нумерация* (template column "А").
+* **Infrastructure**: :func:`read_year_records` (CSV reader) and
+  :class:`FamilioTemplateWriter` (fills a copy of the template ``.xlsx`` — the only
+  ``openpyxl``-touching code).
+"""
+from __future__ import annotations
+
+import csv
+import re
+import xml.etree.ElementTree as ET
+import zipfile
+from copy import copy
+from dataclasses import dataclass
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from openpyxl.workbook.workbook import Workbook
+    from openpyxl.worksheet.worksheet import Worksheet
+
+from verso.ru.exporters.familio_template import (
+    TEMPLATE_DATA_START_ROW, TEMPLATE_MAPS, TEMPLATE_SHEET_TITLES, remap_row)
+
+# Record types in canonical справочник order.
+RECORD_TYPES: tuple[str, ...] = ("births", "marriages", "deaths")
+
+# Source CSV columns identifying the archival дело (Архив, Фонд, Опись, Дело),
+# used to group records of the same book together.
+_DELO_COLS: tuple[int, ...] = (1, 2, 3, 4)
+# Same fields in the filled template (columns B/C/D/E), for дело-boundary borders.
+_TEMPLATE_DELO_COLS: tuple[int, ...] = (2, 3, 4, 5)
+
+
+@dataclass(frozen=True)
+class YearRecords:
+    """One record type's source rows for a single year, read from a per-year CSV."""
+
+    year: int
+    rows: list[list[str]]
+
+
+@dataclass(frozen=True)
+class SpravochnikSheet:
+    """One tab of a справочник: a record type aggregated across all years and
+    already projected onto the template's columns (col "А" = сквозная)."""
+
+    record_type: str
+    title: str  # the template tab title, e.g. "РОЖДЕНИЕ"
+    rows: list[list[str]]
+
+
+@dataclass(frozen=True)
+class Spravochnik:
+    """A complete Familio submission: one village, a year range, several tabs."""
+
+    village: str
+    from_year: int
+    to_year: int
+    sheets: list[SpravochnikSheet]
+    years_label: str = ""  # human label for the year set ("1832-1840" or "1799, 1805")
+
+
+def _delo_id(row: list[str]) -> str:
+    """A row's дело as ``Фонд-Опись-Дело`` (e.g. ``64-9-956``), matching how cases
+    are written in archive references."""
+    return "-".join(row[i] if i < len(row) else "" for i in (2, 3, 4))
+
+
+def build_sheet(
+    record_type: str,
+    year_records: list[YearRecords],
+    cases: frozenset[str] | None = None,
+) -> SpravochnikSheet | None:
+    """Aggregate per-year records of one type into a single template-shaped sheet.
+
+    Records are grouped by дело, ordered by earliest year then дело identity, and
+    numbered continuously in column "А". When ``cases`` is given, only rows whose
+    дело (``Фонд-Опись-Дело``) is in the set are kept. Returns ``None`` when no
+    rows remain, so the caller can skip the tab.
+    """
+    col_map = TEMPLATE_MAPS[record_type]
+    # (year, original index, row) so records can be grouped by дело while keeping a
+    # stable order within each book.
+    indexed: list[tuple[int, int, list[str]]] = []
+    for yr in sorted(year_records, key=lambda y: y.year):
+        for row in yr.rows:
+            if cases is None or _delo_id(row) in cases:
+                indexed.append((yr.year, len(indexed), row))
+    if not indexed:
+        return None
+
+    def delo_key(row: list[str]) -> tuple[str, ...]:
+        return tuple(row[i] if i < len(row) else "" for i in _DELO_COLS)
+
+    # Group records of the same дело together; order дела by their earliest year
+    # (so a book spanning two years sits with the bulk of its records), then by
+    # дело identity, preserving record order within a book.
+    earliest: dict[tuple[str, ...], int] = {}
+    for yr, _, row in indexed:
+        key = delo_key(row)
+        earliest[key] = min(earliest.get(key, yr), yr)
+    ordered = sorted(indexed, key=lambda t: (earliest[delo_key(t[2])], delo_key(t[2]), t[1]))
+
+    template_rows = [remap_row(row, col_map, seq) for seq, (_, _, row) in enumerate(ordered, start=1)]
+    return SpravochnikSheet(
+        record_type=record_type,
+        title=TEMPLATE_SHEET_TITLES[record_type],
+        rows=template_rows,
+    )
+
+
+def build_spravochnik(
+    village: str,
+    from_year: int,
+    to_year: int,
+    records_by_type: dict[str, list[YearRecords]],
+    years_label: str = "",
+    cases: frozenset[str] | None = None,
+) -> Spravochnik:
+    """Build a :class:`Spravochnik` from per-type, per-year records.
+
+    Sheets are emitted in canonical order (РОЖДЕНИЕ, БРАК, СМЕРТЬ); a record type
+    with no rows is omitted entirely. ``years_label`` is the human label for the
+    year set (defaults to ``"{from_year}-{to_year}"``). ``cases`` optionally limits
+    output to the given дела (``Фонд-Опись-Дело``).
+    """
+    sheets: list[SpravochnikSheet] = []
+    for record_type in RECORD_TYPES:
+        sheet = build_sheet(record_type, records_by_type.get(record_type, []), cases=cases)
+        if sheet is not None:
+            sheets.append(sheet)
+    return Spravochnik(
+        village=village,
+        from_year=from_year,
+        to_year=to_year,
+        sheets=sheets,
+        years_label=years_label or f"{from_year}-{to_year}",
+    )
+
+
+def read_year_records(
+    village_dir: Path, village: str, year: int, record_type: str
+) -> YearRecords | None:
+    """Read one per-year familio CSV (dropping its header), or ``None`` if absent.
+
+    Looks for ``{village_dir}/{year}/{village}_{year}_{record_type}_familio.csv``.
+    """
+    path = village_dir / str(year) / f"{village}_{year}_{record_type}_familio.csv"
+    if not path.exists():
+        return None
+    with path.open(encoding="utf-8", newline="") as f:
+        all_rows = list(csv.reader(f))
+    if len(all_rows) <= 1:
+        return None
+    return YearRecords(year=year, rows=all_rows[1:])
+
+
+@dataclass(frozen=True)
+class LocationRow:
+    """One curated ``location`` sheet entry (the durable input columns)."""
+
+    place: str
+    type: str
+    region: str
+    district: str
+    volost: str
+    link: str
+
+
+def read_location_rows(path: Path) -> list[LocationRow] | None:
+    """Read a curated ``location.csv`` (header + place/type/region/district/volost/link
+    columns), or ``None`` if the file is absent."""
+    if not path.exists():
+        return None
+    with path.open(encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        return [
+            LocationRow(
+                place=(r.get("place") or "").strip(),
+                type=(r.get("type") or "").strip(),
+                region=(r.get("region") or "").strip(),
+                district=(r.get("district") or "").strip(),
+                volost=(r.get("volost") or "").strip(),
+                link=(r.get("link") or "").strip(),
+            )
+            for r in reader
+            if (r.get("place") or "").strip()
+        ]
+
+
+@dataclass(frozen=True)
+class AboutInfo:
+    """Values for the ``about`` (INFO) sheet of a Familio submission.
+
+    Per-village/author metadata; the года rows are derived from the year range.
+    String fields may contain ``{village}`` / ``{from_year}`` / ``{to_year}``
+    placeholders, substituted by :func:`read_about`.
+    """
+
+    spravochnik_name: str
+    description: str
+    author_name: str
+    author_familio_url: str
+    author_telegram: str
+    otchestvo_type: str  # "современный" | "старый"
+    is_update: bool
+    prior_catalog_url: str
+
+
+def read_about(
+    path: Path, village: str, from_year: int, to_year: int, years_label: str = ""
+) -> AboutInfo | None:
+    """Read a per-village ``about.json``, substituting village/year placeholders.
+
+    Returns ``None`` if the file is absent (the template's ``about`` sheet is then
+    left untouched). ``{years}`` expands to ``years_label`` (a contiguous range like
+    ``1832-1840`` or an explicit list like ``1799, 1805``).
+    """
+    import json
+
+    if not path.exists():
+        return None
+    with path.open(encoding="utf-8") as f:
+        data: dict[str, object] = json.load(f)
+
+    label = years_label or f"{from_year}-{to_year}"
+
+    def sub(value: str) -> str:
+        return (
+            value.replace("{village}", village)
+            .replace("{from_year}", str(from_year))
+            .replace("{to_year}", str(to_year))
+            .replace("{years}", label)
+        )
+
+    def s(key: str) -> str:
+        return sub(str(data.get(key, "")))
+
+    return AboutInfo(
+        spravochnik_name=s("spravochnik_name"),
+        description=s("description"),
+        author_name=s("author_name"),
+        author_familio_url=s("author_familio_url"),
+        author_telegram=s("author_telegram"),
+        otchestvo_type=s("otchestvo_type") or "современный",
+        is_update=bool(data.get("is_update", False)),
+        prior_catalog_url=s("prior_catalog_url"),
+    )
+
+
+def _coerce(value: str) -> str | int:
+    """Write purely-numeric cells as numbers so Excel doesn't flag them as text."""
+    return int(value) if value.isdigit() else value
+
+
+# Template helper columns that hold a place-name lookup. Each such column resolves
+# the Н.П. cell immediately to its left into a full location string via VLOOKUP
+# against the ``location`` sheet. Identified by their row-2 header (works across
+# all three record tabs and is robust to template column reordering).
+LOCATION_HELPER_HEADERS: frozenset[str] = frozenset({"full_location", "person_location"})
+
+# Column on the ``location`` sheet that VLOOKUP returns (col G, 1-based 7).
+_LOCATION_RESULT_COL = 7
+# The ``location`` sheet's first data row (rows 1–2 are the two header rows).
+_LOCATION_DATA_START_ROW = 3
+
+
+def _location_vlookup(src_col: str, row: int) -> str:
+    """VLOOKUP formula resolving the Н.П. cell at ``{src_col}{row}`` to its full
+    location string, blank when the source is empty (avoids ``#N/A``)."""
+    cell = f"{src_col}{row}"
+    return f'=IF({cell}="","",VLOOKUP({cell},location!$A:$I,{_LOCATION_RESULT_COL},FALSE))'
+
+
+def _capture_row_styles(ws: Worksheet, start_row: int) -> list[dict[int, object]]:
+    """Snapshot the per-column cell formatting of each template data row.
+
+    Returns one ``{column: style}`` dict per row from ``start_row`` to the sheet's
+    last row, so the formatting can be re-applied after the rows are cleared and
+    repopulated. Empty when the template has no data rows.
+    """
+    styles: list[dict[int, object]] = []
+    for r in range(start_row, ws.max_row + 1):
+        styles.append(
+            {c: copy(ws.cell(row=r, column=c)._style) for c in range(1, ws.max_column + 1)}
+        )
+    return styles
+
+
+def _apply_row_styles(ws: Worksheet, excel_row: int, r_off: int, styles: list[dict[int, object]]) -> None:
+    """Re-apply captured template formatting to a written data row.
+
+    Rows beyond the template's pre-formatted range reuse the last captured row's
+    style, so every generated row keeps the template's borders/fonts/number formats.
+    """
+    if not styles:
+        return
+    model = styles[min(r_off, len(styles) - 1)]
+    for c, style in model.items():
+        ws.cell(row=excel_row, column=c)._style = copy(style)
+
+
+def _extend_sqref(sqref: str, tpl_last: int, new_last: int) -> str:
+    """Extend a conditional-formatting ``sqref`` to the new last data row.
+
+    Each space-separated sub-range whose end row equals the template's last data
+    row (``tpl_last``) has that end row bumped to ``new_last``; single-cell refs
+    and ranges ending elsewhere are left untouched.
+    """
+    out: list[str] = []
+    for token in sqref.split():
+        if ":" in token:
+            start, end = token.split(":", 1)
+            m = re.match(r"([A-Z]+)(\d+)$", end)
+            if m and int(m.group(2)) == tpl_last:
+                end = f"{m.group(1)}{new_last}"
+            out.append(f"{start}:{end}")
+        else:
+            out.append(token)
+    return " ".join(out)
+
+
+class FamilioTemplateWriter:
+    """Fill a copy of the official Familio МК template with справочник data.
+
+    Preserves the template's helper sheets (name lists, etc.) and its two header
+    rows; data rows are written from :data:`TEMPLATE_DATA_START_ROW`. The
+    ``full_location`` / ``person_location`` helper columns are filled with VLOOKUP
+    formulas against the ``location`` sheet, which can optionally be (re)populated
+    from curated :class:`LocationRow` data.
+    """
+
+    def __init__(self, template_path: Path):
+        self.template_path = template_path
+
+    def write(
+        self,
+        spravochnik: Spravochnik,
+        out_path: Path,
+        location_rows: list[LocationRow] | None = None,
+        about: AboutInfo | None = None,
+    ) -> Path:
+        from openpyxl import load_workbook
+        from openpyxl.utils import get_column_letter
+
+        wb = load_workbook(self.template_path)
+        for sheet in spravochnik.sheets:
+            ws = wb[sheet.title]
+            # Columns whose value is a VLOOKUP formula rather than copied data.
+            helper_cols = {
+                c
+                for c in range(1, ws.max_column + 1)
+                if ws.cell(row=2, column=c).value in LOCATION_HELPER_HEADERS
+            }
+            # Capture the template's per-row data-row formatting before clearing, so
+            # generated rows keep the same borders/fonts/number formats.
+            styles = _capture_row_styles(ws, TEMPLATE_DATA_START_ROW)
+            tpl_last_row = ws.max_row
+            # Clear any sample/leftover data rows below the header.
+            if ws.max_row >= TEMPLATE_DATA_START_ROW:
+                ws.delete_rows(TEMPLATE_DATA_START_ROW, ws.max_row - TEMPLATE_DATA_START_ROW + 1)
+            for r_off, row in enumerate(sheet.rows):
+                excel_row = TEMPLATE_DATA_START_ROW + r_off
+                for c_off, value in enumerate(row, start=1):
+                    if c_off in helper_cols:
+                        src_col = get_column_letter(c_off - 1)
+                        ws.cell(row=excel_row, column=c_off, value=_location_vlookup(src_col, excel_row))
+                    elif value != "":
+                        ws.cell(row=excel_row, column=c_off, value=_coerce(value))
+                _apply_row_styles(ws, excel_row, r_off, styles)
+            # Stretch the template's conditional formatting over the generated rows.
+            new_last_row = TEMPLATE_DATA_START_ROW + len(sheet.rows) - 1
+            self._extend_conditional_formatting(ws, tpl_last_row, new_last_row)
+            # Thicken the bottom border at each дело boundary.
+            self._mark_delo_boundaries(ws, TEMPLATE_DATA_START_ROW, len(sheet.rows))
+
+        if location_rows is not None:
+            self._write_location_sheet(wb, location_rows)
+        if about is not None:
+            self._write_about_sheet(wb, about, spravochnik)
+
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        wb.save(out_path)
+        # openpyxl drops the template's x14 (extension) data-validation dropdowns
+        # on load; splice them back from the template so the dropdowns survive.
+        self._preserve_data_validations(self.template_path, out_path)
+        return out_path
+
+    @staticmethod
+    def _write_location_sheet(wb: Workbook, location_rows: list[LocationRow]) -> None:
+        """Replace the ``location`` sheet's data with curated rows.
+
+        Writes the durable input columns (place/type/region/district/volost in A–E,
+        Familio link in H) and rebuilds the derived columns as A1-style formulas:
+        ``F`` короткая сборка, ``G`` full_location (the VLOOKUP target), ``I`` URL.
+        Stale sample rows below the curated data are cleared so they can't match a
+        lookup.
+        """
+        ws = wb["location"]
+        start = _LOCATION_DATA_START_ROW
+        styles = _capture_row_styles(ws, start)
+        if ws.max_row >= start:
+            ws.delete_rows(start, ws.max_row - start + 1)
+        for i, loc in enumerate(location_rows):
+            r = start + i
+            ws.cell(row=r, column=1, value=loc.place)
+            ws.cell(row=r, column=2, value=loc.type)
+            ws.cell(row=r, column=3, value=loc.region)
+            ws.cell(row=r, column=4, value=loc.district)
+            ws.cell(row=r, column=5, value=loc.volost)
+            ws.cell(row=r, column=8, value=loc.link)
+            ws.cell(row=r, column=6, value=f'=CONCATENATE(B{r}," ",A{r})')
+            ws.cell(
+                row=r,
+                column=7,
+                value=(
+                    f'=CONCATENATE(B{r}," ",A{r},'
+                    f'IF(E{r}="","",", "),E{r},'
+                    f'IF(D{r}="","",", "),D{r},'
+                    f'IF(C{r}="","",", "),C{r})'
+                ),
+            )
+            ws.cell(row=r, column=9, value=f"=RIGHT(H{r},36)")
+            _apply_row_styles(ws, r, i, styles)
+
+    @staticmethod
+    def _write_about_sheet(wb: Workbook, about: AboutInfo, sp: Spravochnik) -> None:
+        """Fill the ``about`` sheet's value column (B) by matching row labels (A).
+
+        Labels and helper text shipped in the template are preserved; only the
+        per-submission values are written.
+        """
+        ws = wb["about"]
+        values: dict[str, str | int] = {
+            "Название справочника": about.spravochnik_name,
+            "Годы, охватываемые индексацией": sp.years_label,
+            "Наименьший год, охватываемый индексацией": sp.from_year,
+            "Описание, которое будет под названием справочника на сайте": about.description,
+            "Кем проведена индексация (авторство)": about.author_name,
+            "Ссылка на профиль автора на Familio": about.author_familio_url,
+            "Никнейм (имя пользователя) в мессенджере Telegram для ссылки на автора": about.author_telegram,
+            "Тип написания окончания отчества у людей (рождённых, умерших детей)": about.otchestvo_type,
+            "Это новый справочник или дополнительные данные к ранее начатому?": (
+                "обновление начатого ранее" if about.is_update else "новый справочник"
+            ),
+            "Ссылка на загруженный ранее справочник на сайте familio.org": about.prior_catalog_url,
+        }
+        for r in range(1, ws.max_row + 1):
+            label = ws.cell(row=r, column=1).value
+            if isinstance(label, str) and label.strip() in values:
+                value = values[label.strip()]
+                if value != "":
+                    ws.cell(row=r, column=2, value=value)
+
+    @staticmethod
+    def _extend_conditional_formatting(ws: Worksheet, tpl_last: int, new_last: int) -> None:
+        """Stretch the template's conditional-formatting ranges over generated rows.
+
+        The template's CF rules cover only its sample data range (ending at
+        ``tpl_last``); generated rows beyond that would otherwise be unformatted.
+        Re-add every rule with its ``sqref`` extended to ``new_last``.
+        """
+        from openpyxl.formatting.formatting import ConditionalFormattingList
+
+        if new_last <= tpl_last:
+            return
+        entries = [(str(cf.sqref), list(cf.rules)) for cf in ws.conditional_formatting]
+        ws.conditional_formatting = ConditionalFormattingList()
+        for sqref, rules in entries:
+            new_sqref = _extend_sqref(sqref, tpl_last, new_last)
+            for rule in rules:
+                ws.conditional_formatting.add(new_sqref, rule)
+
+    @staticmethod
+    def _mark_delo_boundaries(ws: Worksheet, start_row: int, n_rows: int) -> None:
+        """Thicken the bottom border of the last row of each дело (book) group.
+
+        Records are grouped by дело (contiguous after :func:`build_sheet`), so a
+        boundary is any row whose Архив/Фонд/Опись/Дело differs from the next row's
+        (and the final data row). Marks every column of that row.
+        """
+        from openpyxl.styles import Border, Side
+
+        if n_rows <= 0:
+            return
+        end = start_row + n_rows - 1
+
+        def key(r: int) -> tuple[object, ...]:
+            return tuple(ws.cell(row=r, column=c).value for c in _TEMPLATE_DELO_COLS)
+
+        for r in range(start_row, end + 1):
+            if r == end or key(r) != key(r + 1):
+                for c in range(1, ws.max_column + 1):
+                    b = ws.cell(row=r, column=c).border
+                    ws.cell(row=r, column=c).border = Border(
+                        left=b.left, right=b.right, top=b.top, bottom=Side(style="thick")
+                    )
+
+    @staticmethod
+    def _preserve_data_validations(template_path: Path, out_path: Path) -> None:
+        """Re-inject the template's x14 (extension) data-validation dropdowns.
+
+        openpyxl cannot represent x14 list validations (cross-sheet sources) and
+        silently drops them on load, so the saved workbook loses every template
+        dropdown (e.g. ``about!B13`` отчество type, Пол/статус/Н.П. columns). We
+        copy the ``<ext>`` blocks holding ``x14:dataValidations`` from the template
+        and splice them, by sheet name, into the saved file's worksheet XML.
+        """
+        _MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+        _REL = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+
+        def sheet_xml_by_name(zf: zipfile.ZipFile) -> dict[str, str]:
+            wb = ET.fromstring(zf.read("xl/workbook.xml"))
+            rels = ET.fromstring(zf.read("xl/_rels/workbook.xml.rels"))
+            relmap = {r.get("Id"): r.get("Target") for r in rels}
+            result: dict[str, str] = {}
+            sheets = wb.find(f"{{{_MAIN}}}sheets")
+            if sheets is None:
+                return result
+            for s in sheets:
+                target = relmap.get(s.get(f"{{{_REL}}}id", ""), "")
+                name = s.get("name")
+                if not target or not name:
+                    continue
+                if target.startswith("/"):
+                    target = target.lstrip("/")          # package-absolute (openpyxl)
+                elif not target.startswith("xl/"):
+                    target = "xl/" + target               # relative to xl/ (template)
+                result[name] = target
+            return result
+
+        def dv_exts(xml: str) -> str | None:
+            exts = [e for e in re.findall(r"<ext\b.*?</ext>", xml, re.S) if "x14:dataValidations" in e]
+            if not exts:
+                return None
+            return re.sub(r'\s+xr:uid="\{[^}]*\}"', "", "".join(exts))
+
+        with zipfile.ZipFile(template_path) as tz:
+            tmap = sheet_xml_by_name(tz)
+            dv_by_name: dict[str, str] = {}
+            for name, target in tmap.items():
+                try:
+                    block = dv_exts(tz.read(target).decode("utf-8"))
+                except KeyError:
+                    continue
+                if block:
+                    dv_by_name[name] = block
+        if not dv_by_name:
+            return
+
+        with zipfile.ZipFile(out_path) as oz:
+            omap = sheet_xml_by_name(oz)
+            names = oz.namelist()
+            data = {n: oz.read(n) for n in names}
+
+        for name, block in dv_by_name.items():
+            target = omap.get(name)
+            if target is None or target not in data:
+                continue
+            xml = data[target].decode("utf-8")
+            if "</extLst>" in xml:
+                xml = xml.replace("</extLst>", block + "</extLst>", 1)
+            else:
+                xml = xml.replace("</worksheet>", f"<extLst>{block}</extLst></worksheet>", 1)
+            data[target] = xml.encode("utf-8")
+
+        tmp = out_path.with_name(out_path.name + ".tmp")
+        with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zf:
+            for n in names:
+                zf.writestr(n, data[n])
+        tmp.replace(out_path)

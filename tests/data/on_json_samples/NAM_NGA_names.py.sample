@@ -1,0 +1,22 @@
+# Invented: the sex a name, a patronymic and a status give (NAM003, NAM004) — a patronymic written in one sex's
+# form beside a patr_old in the other's, a plain-text status of the other sex, a name the table does not read as a
+# sex (an ignore-list name) — and a surname or patronymic in the other sex's form (NGA001, NGA002).
+from verso.ru.dsl import Gender, birth, birth_records, person
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4047", "Маниловка", "Церковь", 1851,
+    # NAM003, NGA002: a man with a woman's short patronymic written, a man's patr_old beside it.
+    birth(1, Gender.MALE, 3, 5, child=person("Иван"), father=person("Ѳома", "Лукинъ", "Примеровъ"),
+          mother=person("Анна"), god_parent1=person("Иван", "Ѳомина", patr_old="Фомин")),
+    # NGA002, NAM003: a woman with a man's full patronymic written, a woman's patr_old beside it.
+    birth(2, Gender.FEMALE, 4, 6, child=person("Мария"), father=person("Петр", "Ѳомичъ", "Примеровъ"),
+          mother=person("Анфиса", "Ѳомичъ", patr_old="Фомина")),
+    # NGA001: a man with a feminine surname, a woman with a masculine one (a doubtful name says nothing).
+    birth(3, Gender.MALE, 5, 7, child=person("Иван"), father=person("Петр", "Лукинъ", "Опискина"),
+          mother=person("Анна", "Петрова", "Опискинъ"), god_parent1=person("?", "Петрова", "Опискина")),
+    # NAM004: a plain-text status of the other sex than the name; the name an ignore list holds, the sex the patronymic.
+    birth(4, Gender.MALE, 6, 8, child=person("Иван", status="экономическая крестьянка"),
+          father=person("Петр", "Лукинъ", status="экономическая крестьянка"),
+          mother=person("Анна", status="экономический крестьянин"),
+          god_parent1=person("Бурмяй", "Ѳомина", status="экономический крестьянин"),
+          god_parent2=person("Анфиса", status="экономическая крестьянка")))

@@ -1,0 +1,8 @@
+# A workspace of schema 4: its names are the old tables beside this file (names.csv and its two ignore lists) and
+# nothing under them — what the tests of the old format read. Invented names. A test that writes works on a copy.
+schema = 4
+villages = []
+plugins = ["ru"]
+
+[names]
+dir = "."

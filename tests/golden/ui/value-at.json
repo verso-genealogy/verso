@@ -1,0 +1,706 @@
+[
+ {
+  "record": {
+   "id": "r1:test/0",
+   "label": "Пахомъ",
+   "kind": "birth",
+   "review": "reviewed",
+   "written": {
+    "number": 4,
+    "gender": "male",
+    "birth": {
+     "day": 3
+    },
+    "baptism": {
+     "day": 4
+    }
+   },
+   "derived": {
+    "reviewed": true,
+    "birth": {
+     "month": "may"
+    },
+    "baptism": {
+     "month": "may"
+    }
+   },
+   "persons": [
+    {
+     "id": "r1:test/0/child",
+     "label": "Пахомъ",
+     "role": "child",
+     "written": {
+      "given": {
+       "original": "Пахомъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Пахом"
+      },
+      "surname": {
+       "modern": "Пересыпкин"
+      },
+      "status": {
+       "text": "крестьянский сын",
+       "gender": "male"
+      },
+      "gender": "male"
+     }
+    },
+    {
+     "id": "r1:test/0/father",
+     "label": "Кузьма Лукинъ Пересыпкинъ",
+     "role": "father",
+     "written": {
+      "given": {
+       "original": "Кузьма"
+      },
+      "patronymic": {
+       "original": "Лукинъ"
+      },
+      "surname": {
+       "original": "Пересыпкинъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Кузьма"
+      },
+      "patronymic": {
+       "old": "Лукин",
+       "modern": "Лукич"
+      },
+      "surname": {
+       "modern": "Пересыпкин"
+      },
+      "gender": "male"
+     }
+    },
+    {
+     "id": "r1:test/0/mother",
+     "label": "Ѳекла Петрова",
+     "role": "mother",
+     "written": {
+      "given": {
+       "original": "Ѳекла"
+      },
+      "patronymic": {
+       "original": "Петрова"
+      },
+      "status": {
+       "text": "законная жена крестьянина",
+       "gender": "female"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Фекла"
+      },
+      "patronymic": {
+       "old": "Петрова",
+       "modern": "Петровна"
+      },
+      "surname": {
+       "modern": "Пересыпкина",
+       "in_book": false
+      },
+      "gender": "female"
+     }
+    },
+    {
+     "id": "r1:test/0/godparent1",
+     "label": "Лука Ильинъ Пересыпкинъ",
+     "role": "godparent",
+     "slot": 1,
+     "written": {
+      "given": {
+       "original": "Лука"
+      },
+      "patronymic": {
+       "original": "Ильинъ"
+      },
+      "surname": {
+       "original": "Пересыпкинъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Лука"
+      },
+      "patronymic": {
+       "old": "Ильин",
+       "modern": "Ильич"
+      },
+      "surname": {
+       "modern": "Пересыпкин"
+      },
+      "gender": "male"
+     }
+    },
+    {
+     "id": "r1:test/0/godparent2",
+     "label": "Агнія Лукина",
+     "role": "godparent",
+     "slot": 2,
+     "written": {
+      "given": {
+       "original": "Агнія"
+      },
+      "patronymic": {
+       "original": "Лукина"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Агния"
+      },
+      "patronymic": {
+       "old": "Лукина",
+       "modern": "Лукинична"
+      },
+      "gender": "female"
+     }
+    }
+   ]
+  },
+  "cases": [
+   [
+    "number",
+    4
+   ],
+   [
+    "birth.day",
+    3
+   ],
+   [
+    "baptism.day",
+    4
+   ],
+   [
+    "birth.month",
+    "may"
+   ],
+   [
+    "gender",
+    "male"
+   ],
+   [
+    "father/given.original",
+    "Кузьма"
+   ],
+   [
+    "father/surname.original",
+    "Пересыпкинъ"
+   ],
+   [
+    "mother/status",
+    {
+     "text": "законная жена крестьянина",
+     "gender": "female"
+    }
+   ],
+   [
+    "godparent/2/given.original",
+    "Агнія"
+   ],
+   [
+    "godparent/2/patronymic.modern",
+    "Лукинична"
+   ],
+   [
+    "godparent/3/given.original",
+    null
+   ],
+   [
+    "child/surname.original",
+    null
+   ]
+  ]
+ },
+ {
+  "record": {
+   "id": "r1:test/1",
+   "label": "Васса",
+   "kind": "birth",
+   "review": "reviewed",
+   "written": {
+    "number": 5,
+    "gender": "female",
+    "birth": {
+     "day": 7
+    },
+    "baptism": {
+     "day": 8
+    }
+   },
+   "derived": {
+    "reviewed": true,
+    "birth": {
+     "month": "may"
+    },
+    "baptism": {
+     "month": "may"
+    }
+   },
+   "persons": [
+    {
+     "id": "r1:test/1/child",
+     "label": "Васса",
+     "role": "child",
+     "written": {
+      "given": {
+       "original": "Васса"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Васса"
+      },
+      "maiden_surname": {
+       "modern": "Перекатова"
+      },
+      "gender": "female"
+     }
+    },
+    {
+     "id": "r1:test/1/father",
+     "label": "Савва Ѳомичъ Перекатовъ",
+     "role": "father",
+     "written": {
+      "given": {
+       "original": "Савва"
+      },
+      "patronymic": {
+       "original": "Ѳомичъ"
+      },
+      "surname": {
+       "original": "Перекатовъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Савва"
+      },
+      "patronymic": {
+       "old": "Фомич",
+       "modern": "Фомич"
+      },
+      "surname": {
+       "modern": "Перекатов"
+      },
+      "gender": "male"
+     }
+    },
+    {
+     "id": "r1:test/1/mother",
+     "label": "Марѳа Саввина",
+     "role": "mother",
+     "written": {
+      "given": {
+       "original": "Марѳа"
+      },
+      "patronymic": {
+       "original": "Саввина"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Марфа"
+      },
+      "patronymic": {
+       "old": "Саввина",
+       "modern": "Саввична"
+      },
+      "surname": {
+       "modern": "Перекатова",
+       "in_book": false
+      },
+      "gender": "female"
+     }
+    },
+    {
+     "id": "r1:test/1/relative1",
+     "label": "Ѳома Ильинъ Перекатовъ",
+     "role": "relative",
+     "slot": 1,
+     "link": {
+      "written": {
+       "relationship": "father",
+       "relationship_ref": "мать"
+      },
+      "derived": {}
+     },
+     "written": {
+      "given": {
+       "original": "Ѳома"
+      },
+      "patronymic": {
+       "original": "Ильинъ"
+      },
+      "surname": {
+       "original": "Перекатовъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Фома"
+      },
+      "patronymic": {
+       "old": "Ильин",
+       "modern": "Ильич"
+      },
+      "surname": {
+       "modern": "Перекатов"
+      },
+      "gender": "male"
+     }
+    },
+    {
+     "id": "r1:test/1/relative2",
+     "label": "Ипатъ Ильинъ",
+     "role": "relative",
+     "slot": 2,
+     "link": {
+      "written": {
+       "relationship": "son",
+       "relationship_ref": "мать"
+      },
+      "derived": {}
+     },
+     "written": {
+      "given": {
+       "original": "Ипатъ"
+      },
+      "patronymic": {
+       "original": "Ильинъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Ипат"
+      },
+      "patronymic": {
+       "old": "Ильин",
+       "modern": "Ильич"
+      },
+      "gender": "male"
+     }
+    },
+    {
+     "id": "r1:test/1/relative3",
+     "label": "Аѳанасій",
+     "role": "relative",
+     "slot": 3,
+     "link": {
+      "written": {
+       "relationship": "son",
+       "relationship_ref": "мать"
+      },
+      "derived": {}
+     },
+     "written": {
+      "given": {
+       "original": "Аѳанасій"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Афанасий"
+      },
+      "gender": "male"
+     }
+    }
+   ]
+  },
+  "cases": [
+   [
+    "relatives/1/relationship",
+    "father"
+   ],
+   [
+    "relatives/2/relationship_ref",
+    "мать"
+   ],
+   [
+    "relatives/2/person/given.original",
+    "Ипатъ"
+   ],
+   [
+    "relatives/4/relationship",
+    null
+   ]
+  ]
+ },
+ {
+  "record": {
+   "id": "r1:test/0",
+   "label": "Кузьма Лукинъ Пересыпкинъ + Ѳекла Петрова",
+   "kind": "marriage",
+   "review": "reviewed",
+   "written": {
+    "number": 1,
+    "marriage": {
+     "day": 12
+    },
+    "groom_age": 24,
+    "bride_age": 19
+   },
+   "derived": {
+    "reviewed": true,
+    "marriage": {
+     "month": "may"
+    }
+   },
+   "persons": [
+    {
+     "id": "r1:test/0/groom",
+     "label": "Кузьма Лукинъ Пересыпкинъ",
+     "role": "groom",
+     "written": {
+      "given": {
+       "original": "Кузьма"
+      },
+      "patronymic": {
+       "original": "Лукинъ"
+      },
+      "surname": {
+       "original": "Пересыпкинъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Кузьма"
+      },
+      "patronymic": {
+       "old": "Лукин",
+       "modern": "Лукич"
+      },
+      "surname": {
+       "modern": "Пересыпкин"
+      },
+      "gender": "male"
+     }
+    },
+    {
+     "id": "r1:test/0/bride",
+     "label": "Ѳекла Петрова",
+     "role": "bride",
+     "written": {
+      "given": {
+       "original": "Ѳекла"
+      },
+      "patronymic": {
+       "original": "Петрова"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Фекла"
+      },
+      "patronymic": {
+       "old": "Петрова",
+       "modern": "Петровна"
+      },
+      "gender": "female"
+     }
+    },
+    {
+     "id": "r1:test/0/witness1",
+     "label": "Лука Ильинъ",
+     "role": "witness",
+     "slot": 1,
+     "written": {
+      "given": {
+       "original": "Лука"
+      },
+      "patronymic": {
+       "original": "Ильинъ"
+      },
+      "side": "groom"
+     },
+     "derived": {
+      "given": {
+       "modern": "Лука"
+      },
+      "patronymic": {
+       "old": "Ильин",
+       "modern": "Ильич"
+      },
+      "gender": "male"
+     }
+    }
+   ]
+  },
+  "cases": [
+   [
+    "groom_age",
+    24
+   ],
+   [
+    "witness/1/side",
+    "groom"
+   ],
+   [
+    "bride/given.original",
+    "Ѳекла"
+   ]
+  ]
+ },
+ {
+  "record": {
+   "id": "r1:test/0",
+   "label": "Кузьма Лукинъ Пересыпкинъ",
+   "kind": "household",
+   "review": "reviewed",
+   "written": {
+    "family_id": "1"
+   },
+   "derived": {
+    "reviewed": true
+   },
+   "persons": [
+    {
+     "id": "r1:test/0/member1",
+     "label": "Кузьма Лукинъ Пересыпкинъ",
+     "role": "member",
+     "slot": 1,
+     "link": {
+      "written": {
+       "number": 1,
+       "role": "head",
+       "age": 40
+      },
+      "derived": {
+       "record_number": 1
+      }
+     },
+     "written": {
+      "given": {
+       "original": "Кузьма"
+      },
+      "patronymic": {
+       "original": "Лукинъ"
+      },
+      "surname": {
+       "original": "Пересыпкинъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Кузьма"
+      },
+      "patronymic": {
+       "old": "Лукин",
+       "modern": "Лукич"
+      },
+      "surname": {
+       "modern": "Пересыпкин"
+      },
+      "residence": "Окуровка",
+      "gender": "male"
+     }
+    },
+    {
+     "id": "r1:test/0/member2",
+     "label": "Ѳекла Петрова",
+     "role": "member",
+     "slot": 2,
+     "link": {
+      "written": {
+       "number": 2,
+       "role": "wife",
+       "ref_member": 1,
+       "age": 35
+      },
+      "derived": {
+       "record_number": 2
+      }
+     },
+     "written": {
+      "given": {
+       "original": "Ѳекла"
+      },
+      "patronymic": {
+       "original": "Петрова"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Фекла"
+      },
+      "patronymic": {
+       "old": "Петрова",
+       "modern": "Петровна"
+      },
+      "surname": {
+       "modern": "Пересыпкина",
+       "in_book": false
+      },
+      "residence": "Окуровка",
+      "gender": "female"
+     }
+    },
+    {
+     "id": "r1:test/0/member3",
+     "label": "Пахомъ Кузьмин",
+     "role": "member",
+     "slot": 3,
+     "link": {
+      "written": {
+       "number": 3,
+       "role": "son",
+       "ref_member": 1,
+       "age": 6
+      },
+      "derived": {
+       "record_number": 3
+      }
+     },
+     "written": {
+      "given": {
+       "original": "Пахомъ"
+      }
+     },
+     "derived": {
+      "given": {
+       "modern": "Пахом"
+      },
+      "patronymic": {
+       "original": "Кузьмин",
+       "old": "Кузьмин",
+       "modern": "Кузьмич"
+      },
+      "surname": {
+       "modern": "Пересыпкин"
+      },
+      "residence": "Окуровка",
+      "gender": "male"
+     }
+    }
+   ]
+  },
+  "cases": [
+   [
+    "members/1/number",
+    1
+   ],
+   [
+    "members/2/role",
+    "wife"
+   ],
+   [
+    "members/3/ref_member",
+    1
+   ],
+   [
+    "members/3/person/given.original",
+    "Пахомъ"
+   ],
+   [
+    "members/3/person/patronymic.original",
+    "Кузьмин"
+   ]
+  ]
+ }
+]

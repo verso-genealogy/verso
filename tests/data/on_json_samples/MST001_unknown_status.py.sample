@@ -1,0 +1,13 @@
+# Invented: a marital status no catalog constant holds, on a roll's member and on a WWI card (MST001); a
+# catalog constant and its text stay quiet.
+from verso.ru.dsl import CensusRole, census_records, household, member, page, person, wwi_record
+from verso.ru.dsl.marital_status import MARRIED, SINGLE
+
+census = census_records(
+    "ГА Глуповской области", "10", "4", "4044", "Маниловка", 1858,
+    *page("16",
+          household("3",
+                    member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60, marital_status=MARRIED),
+                    member(2, person("Марія"), CensusRole.WIFE, ref_member=1, age=55, marital_status="замужняя"),
+                    member(3, person("Ѳома", "Лукинъ"), CensusRole.SON, ref_member=1, age=20, marital_status="холост"),
+                    member(4, person("Иван", "Лукинъ"), CensusRole.SON, ref_member=1, age=18, marital_status=SINGLE))))

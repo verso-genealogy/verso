@@ -1,0 +1,118 @@
+name: Dependabot auto-merge
+
+# Squash-merges every open Dependabot pull request whose head commit has
+# finished ALL its checks successfully, once a day: wait for green, merge.
+#
+# WHY NOT GitHub's native auto-merge. Native auto-merge waits for the checks a
+# branch-protection rule marks *required*, and this repo cannot name such a set:
+# its workflows are path-filtered, so on any given PR some of them never
+# report at all. A required check that never reports blocks the PR forever —
+# including the ones written by hand. This job
+# asks the opposite question, "has everything that DID start finished green".
+#
+# WHY A SCHEDULE AND NOT workflow_run. Run on workflow_run, such a job never
+# merges a single PR: every run for a Dependabot branch dies with `Resource not
+# accessible by integration (HTTP 403)` on its first API call, whatever the
+# job's `permissions:` say. A workflow_run started by a Dependabot-triggered run
+# counts as Dependabot-triggered, and gets Dependabot's read-only token. A scheduled run
+# is started by the workflow's author, so its token has the permissions below.
+# The price is latency (a green PR waits up to a day) and ~1 billed minute a run,
+# once a day (the project's rule: the minutes go to the long runs).
+#
+# A merge made with GITHUB_TOKEN does not trigger the push-side workflows on
+# main — deliberate here, since the same commits were just tested on the PR.
+
+on:
+  schedule:
+    - cron: "23 4 * * *"
+  workflow_dispatch:
+
+# A manual run and a scheduled one must not merge the same PR twice.
+concurrency:
+  group: dependabot-automerge
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    name: dependabot-automerge
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      # The check-runs API is its own scope; with a `permissions:` block every
+      # scope not named here is none.
+      checks: read
+    steps:
+      - name: Merge the Dependabot PRs whose head is green
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          # A head younger than this may still be registering its workflows, and
+          # a check run that does not exist yet cannot be counted as pending.
+          SETTLE_MINUTES: 15
+          # The dependencies whose bytes reach a corpus's output (dependabot.yml keeps
+          # each in a PR of its own): a corpus compares its output across such a bump, and no CI
+          # here sees a corpus, so it is merged by hand.
+          HELD_FOR_CORPUS_CHECK: python-dateutil openpyxl libcst
+        run: |
+          set -euo pipefail
+
+          mapfile -t prs < <(gh api "repos/$REPO/pulls?state=open&base=main&per_page=100" --jq '
+            .[] | select(.user.login == "dependabot[bot]") | "\(.number) \(.head.sha) \(.head.ref)"')
+          if [ "${#prs[@]}" -eq 0 ]; then
+            echo "No open Dependabot PR."
+            exit 0
+          fi
+
+          now=$(date -u +%s)
+          for line in "${prs[@]}"; do
+            read -r pr sha ref <<<"$line"
+
+            for pin in $HELD_FOR_CORPUS_CHECK; do
+              if [[ "$ref" == *"/$pin-"* ]]; then
+                echo "#$pr: $pin reaches a corpus's output — judged by a corpus's own output check, merged by hand."
+                continue 2
+              fi
+            done
+
+            pushed=$(gh api "repos/$REPO/commits/$sha" --jq '.commit.committer.date')
+            age=$(( now - $(date -u -d "$pushed" +%s) ))
+            if [ "$age" -lt $(( SETTLE_MINUTES * 60 )) ]; then
+              echo "#$pr: head $sha is ${age}s old — the next run decides."
+              continue
+            fi
+
+            # Every check run on the head must have finished, and finished well.
+            # skipped/neutral count as well: a path-filtered job that did not
+            # apply is not a failure. No check run at all is not green.
+            runs=$(gh api "repos/$REPO/commits/$sha/check-runs?per_page=100" --jq '.check_runs')
+            total=$(jq 'length' <<<"$runs")
+            pending=$(jq '[.[] | select(.status != "completed")] | length' <<<"$runs")
+            bad=$(jq -r '[.[] | select(.conclusion != "success" and .conclusion != "skipped"
+                                        and .conclusion != "neutral") | .name] | join(", ")' <<<"$runs")
+            if [ "$total" -eq 0 ]; then
+              echo "#$pr: no check run on $sha — the next run decides."
+              continue
+            fi
+            if [ "$pending" -gt 0 ]; then
+              echo "#$pr: $pending of $total check(s) still running on $sha."
+              continue
+            fi
+            if [ -n "$bad" ]; then
+              echo "#$pr: not green — failing or cancelled: $bad"
+              continue
+            fi
+            # REST, with the sha the checks were read off: a Dependabot
+            # force-push landing between the sweep and the merge makes GitHub
+            # refuse (409) rather than ship a head nobody tested. A refusal of
+            # any kind — a github-actions bump GITHUB_TOKEN may not write into
+            # .github/workflows/ among them — leaves the PR for a hand merge
+            # and a warning, and the other PRs are still tried.
+            echo "#$pr: all $total check(s) green on $sha; squash-merging."
+            if out=$(gh api -X PUT "repos/$REPO/pulls/$pr/merge" \
+                  --raw-field merge_method=squash --raw-field sha="$sha" 2>&1); then
+              echo "#$pr: $(jq -r '"\(.message) (\(.sha))"' <<<"$out")"
+            else
+              echo "::warning::#$pr: merge at $sha refused: $out"
+            fi
+          done

@@ -1,0 +1,2 @@
+birth_records("a", "f", "i", "c", "Нижняя Яичница", "Ц", 1900,
+    birth(1, Gender.MALE, father=person("Иван", residence="с. Ляхова")))

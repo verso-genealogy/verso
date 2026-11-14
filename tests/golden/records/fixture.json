@@ -1,0 +1,1467 @@
+{
+ "schema": "records-v1",
+ "village": "Маниловка",
+ "file": "1900/fixture.py",
+ "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+ "vocabulary": {
+  "plugin": "ru",
+  "version": 1
+ },
+ "lang": "ru-Cyrl",
+ "documents": [
+  {
+   "id": "r1:Маниловка/47-9-755/1900/birth",
+   "variable": "births",
+   "kind": "births",
+   "written": {
+    "archive": "ЦГА",
+    "fund": "47",
+    "inventory": "9",
+    "case": "755",
+    "village": "Маниловка",
+    "church": "Церковь",
+    "year": 1900,
+    "defaults": {
+     "residence": "Маниловка",
+     "status_male": {
+      "text": "крестьянин",
+      "gender": "male"
+     },
+     "status_female": "крестьянка",
+     "status_groom": {
+      "text": "крестьянин",
+      "gender": "male"
+     },
+     "status_mother": {
+      "text": "крестьянская жена",
+      "gender": "female"
+     }
+    }
+   },
+   "derived": {},
+   "pages": [
+    {
+     "page": "1",
+     "records": [
+      {
+       "id": "r1:Маниловка/47-9-755/1900/birth/m1",
+       "label": "Иванъ",
+       "kind": "birth",
+       "review": "reviewed",
+       "written": {
+        "number": 1,
+        "gender": "male",
+        "birth": {
+         "day": 3,
+         "month": "january"
+        },
+        "baptism": {
+         "day": 4,
+         "month": "january"
+        },
+        "comment": "строка с \r и «\"»",
+        "reviewed": true,
+        "context": [
+         "reviewed",
+         "birth.month",
+         "baptism.month"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m1/child",
+         "label": "Иванъ",
+         "role": "child",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "surname": {
+           "modern": "Сидоров"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянский сын",
+           "gender": "male"
+          },
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m1/father",
+         "label": "Петръ Ивановъ Сидоровъ",
+         "role": "father",
+         "written": {
+          "given": {
+           "original": "Петръ"
+          },
+          "patronymic": {
+           "original": "Ивановъ"
+          },
+          "surname": {
+           "original": "Сидоровъ"
+          },
+          "status": {
+           "text": "крестьянин",
+           "gender": "male"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "patronymic": {
+           "old": "Иванов",
+           "modern": "Иванович"
+          },
+          "surname": {
+           "modern": "Сидоров"
+          },
+          "residence": "Маниловка",
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m1/mother",
+         "label": "Марья Петрова",
+         "role": "mother",
+         "written": {
+          "given": {
+           "original": "Марья"
+          },
+          "patronymic": {
+           "original": "Петрова"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Марья"
+          },
+          "patronymic": {
+           "old": "Петрова",
+           "modern": "Петровна"
+          },
+          "surname": {
+           "modern": "Сидорова",
+           "in_book": false
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянская жена",
+           "gender": "female"
+          },
+          "status_defaulted": true,
+          "gender": "female"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m1/godparent1",
+         "label": "Василій Петровъ",
+         "role": "godparent",
+         "slot": 1,
+         "written": {
+          "given": {
+           "original": "Василій"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Василий"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "surname": {
+           "modern": "Сидоров",
+           "in_book": false
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянин",
+           "gender": "male"
+          },
+          "status_defaulted": true,
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m1/relative1",
+         "label": "Иванъ Петровъ Сидоровъ",
+         "role": "relative",
+         "slot": 1,
+         "link": {
+          "written": {
+           "relationship": "father",
+           "relationship_ref": "восприемника №1"
+          },
+          "derived": {}
+         },
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          },
+          "surname": {
+           "original": "Сидоровъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "surname": {
+           "modern": "Сидоров"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянин",
+           "gender": "male"
+          },
+          "status_defaulted": true,
+          "gender": "male"
+         }
+        }
+       ]
+      },
+      {
+       "id": "r1:Маниловка/47-9-755/1900/birth/f2",
+       "label": "Анна",
+       "kind": "birth",
+       "review": "held",
+       "written": {
+        "number": 2,
+        "gender": "female",
+        "birth": {
+         "day": 5,
+         "month": "january"
+        },
+        "baptism": {
+         "day": 6,
+         "month": "january"
+        },
+        "reviewed": false,
+        "context": [
+         "birth.month",
+         "baptism.month"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/f2/child",
+         "label": "Анна",
+         "role": "child",
+         "written": {
+          "given": {
+           "original": "Анна"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Анна"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянская дочь",
+           "gender": "female"
+          },
+          "status_defaulted": true,
+          "gender": "female"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/f2/father",
+         "label": "Петръ",
+         "role": "father",
+         "written": {
+          "given": {
+           "original": "Петръ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянин",
+           "gender": "male"
+          },
+          "status_defaulted": true,
+          "gender": "male"
+         }
+        }
+       ]
+      },
+      {
+       "id": "r1:Маниловка/47-9-755/1900/birth/f3",
+       "label": "Марья",
+       "kind": "birth",
+       "review": "on_geni",
+       "written": {
+        "number": 3,
+        "gender": "female",
+        "birth": {
+         "day": 7,
+         "month": "january"
+        },
+        "baptism": {
+         "day": 8,
+         "month": "january"
+        },
+        "reviewed": false,
+        "context": [
+         "birth.month",
+         "baptism.month"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/f3/child",
+         "label": "Марья",
+         "role": "child",
+         "written": {
+          "given": {
+           "original": "Марья"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Марья"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянская дочь",
+           "gender": "female"
+          },
+          "status_defaulted": true,
+          "gender": "female"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/f3/father",
+         "label": "Иванъ",
+         "role": "father",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянин",
+           "gender": "male"
+          },
+          "status_defaulted": true,
+          "gender": "male"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "page": "1об",
+     "records": [
+      {
+       "id": "r1:Маниловка/47-9-755/1900/birth/m4",
+       "label": "Петръ",
+       "kind": "christening",
+       "review": "reviewed",
+       "written": {
+        "number": 4,
+        "gender": "male",
+        "baptism": {
+         "day": 9,
+         "month": "january",
+         "age": 11
+        },
+        "reviewed": true,
+        "context": [
+         "reviewed"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m4/child",
+         "label": "Петръ",
+         "role": "child",
+         "written": {
+          "given": {
+           "original": "Петръ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянский сын",
+           "gender": "male"
+          },
+          "status_defaulted": true,
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m4/father",
+         "label": "Иванъ",
+         "role": "father",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянин",
+           "gender": "male"
+          },
+          "status_defaulted": true,
+          "gender": "male"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "page": "1",
+     "records": [
+      {
+       "id": "r1:Маниловка/47-9-755/1900/birth/m4а",
+       "label": "Василій",
+       "kind": "birth",
+       "review": "reviewed",
+       "written": {
+        "number": "4а",
+        "gender": "male",
+        "birth": {
+         "day": 10,
+         "month": "february"
+        },
+        "baptism": {
+         "day": 11,
+         "month": "february"
+        },
+        "reviewed": true,
+        "context": [
+         "reviewed"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m4а/child",
+         "label": "Василій",
+         "role": "child",
+         "written": {
+          "given": {
+           "original": "Василій"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Василий"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянский сын",
+           "gender": "male"
+          },
+          "status_defaulted": true,
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/birth/m4а/father",
+         "label": "Иванъ",
+         "role": "father",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "residence": "Маниловка",
+          "status": {
+           "text": "крестьянин",
+           "gender": "male"
+          },
+          "status_defaulted": true,
+          "gender": "male"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r1:Маниловка/47-9-755/1900/marriage",
+   "variable": "marriages",
+   "kind": "marriages",
+   "written": {
+    "archive": "ЦГА",
+    "fund": "47",
+    "inventory": "9",
+    "case": "755",
+    "village": "Маниловка",
+    "church": "Церковь",
+    "year": 1900
+   },
+   "derived": {},
+   "pages": [
+    {
+     "page": "2",
+     "records": [
+      {
+       "id": "r1:Маниловка/47-9-755/1900/marriage/1",
+       "label": "Иванъ Петровъ + Анна Иванова",
+       "kind": "marriage",
+       "review": "reviewed",
+       "written": {
+        "number": 1,
+        "marriage": {
+         "day": 9,
+         "month": "january"
+        },
+        "groom_age": "17 л 2 мес",
+        "bride_age": 18,
+        "reviewed": true,
+        "context": [
+         "reviewed"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Маниловка/47-9-755/1900/marriage/1/groom",
+         "label": "Иванъ Петровъ",
+         "role": "groom",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/marriage/1/bride",
+         "label": "Анна Иванова",
+         "role": "bride",
+         "written": {
+          "given": {
+           "original": "Анна"
+          },
+          "patronymic": {
+           "original": "Иванова"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Анна"
+          },
+          "patronymic": {
+           "old": "Иванова",
+           "modern": "Ивановна"
+          },
+          "gender": "female"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/marriage/1/witness1",
+         "label": "Петръ Ивановъ",
+         "role": "witness",
+         "slot": 1,
+         "written": {
+          "given": {
+           "original": "Петръ"
+          },
+          "patronymic": {
+           "original": "Ивановъ"
+          },
+          "side": "groom"
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "patronymic": {
+           "old": "Иванов",
+           "modern": "Иванович"
+          },
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Маниловка/47-9-755/1900/marriage/1/witness2",
+         "label": "Василій Петровъ",
+         "role": "witness",
+         "slot": 2,
+         "written": {
+          "given": {
+           "original": "Василій"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          },
+          "side": "bride"
+         },
+         "derived": {
+          "given": {
+           "modern": "Василий"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "gender": "male"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r1:Хлестаковка/47-9-755/1913/death",
+   "variable": "hlestakovka_deaths_1913",
+   "kind": "deaths",
+   "written": {
+    "archive": "ЦГА",
+    "fund": "47",
+    "inventory": "9",
+    "case": "755",
+    "village": "Хлестаковка",
+    "church": "Церковь",
+    "year": 1913,
+    "defaults": {
+     "cause_of_death": {
+      "text": "натуральная",
+      "type": "cause"
+     }
+    }
+   },
+   "derived": {},
+   "pages": [
+    {
+     "page": "3",
+     "records": [
+      {
+       "id": "r1:Хлестаковка/47-9-755/1913/death/m1",
+       "label": "Иванъ",
+       "kind": "death",
+       "review": "reviewed",
+       "written": {
+        "number": 1,
+        "gender": "male",
+        "death": {
+         "day": 2,
+         "month": "march"
+        },
+        "burial": {
+         "day": 4,
+         "month": "march"
+        },
+        "age": 5,
+        "cause_of_death": {
+         "text": "",
+         "type": "cause"
+        },
+        "reviewed": true,
+        "context": [
+         "reviewed"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Хлестаковка/47-9-755/1913/death/m1/deceased",
+         "label": "Иванъ",
+         "role": "deceased",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "gender": "male"
+         }
+        }
+       ]
+      },
+      {
+       "id": "r1:Хлестаковка/47-9-755/1913/death/f2",
+       "label": "Анна",
+       "kind": "death",
+       "review": "reviewed",
+       "written": {
+        "number": 2,
+        "gender": "female",
+        "death": {
+         "day": 3,
+         "month": "march"
+        },
+        "burial": {
+         "day": 5,
+         "month": "march"
+        },
+        "age": 0.5,
+        "cause_of_death": {
+         "text": "натуральная",
+         "type": "cause"
+        },
+        "reviewed": true,
+        "context": [
+         "reviewed"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Хлестаковка/47-9-755/1913/death/f2/deceased",
+         "label": "Анна",
+         "role": "deceased",
+         "written": {
+          "given": {
+           "original": "Анна"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Анна"
+          },
+          "gender": "female"
+         }
+        }
+       ]
+      },
+      {
+       "id": "r1:Хлестаковка/47-9-755/1913/death/m3",
+       "label": "Петръ",
+       "kind": "death",
+       "review": "reviewed",
+       "written": {
+        "number": 3,
+        "gender": "male",
+        "death": {
+         "day": 4,
+         "month": "march"
+        },
+        "burial": {
+         "day": 6,
+         "month": "march"
+        },
+        "age": "15.5",
+        "reviewed": true,
+        "context": [
+         "reviewed"
+        ]
+       },
+       "derived": {
+        "cause_of_death": {
+         "text": "натуральная",
+         "type": "cause"
+        }
+       },
+       "persons": [
+        {
+         "id": "r1:Хлестаковка/47-9-755/1913/death/m3/deceased",
+         "label": "Петръ",
+         "role": "deceased",
+         "written": {
+          "given": {
+           "original": "Петръ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "patronymic": {
+           "old": "Иванов",
+           "modern": "Иванович"
+          },
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Хлестаковка/47-9-755/1913/death/m3/relative1",
+         "label": "Иванъ",
+         "role": "relative",
+         "slot": 1,
+         "link": {
+          "written": {
+           "relationship": "father"
+          },
+          "derived": {}
+         },
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "gender": "male"
+         }
+        }
+       ]
+      },
+      {
+       "id": "r1:Хлестаковка/47-9-755/1913/death/m4",
+       "label": "Василій",
+       "kind": "death",
+       "review": "reviewed",
+       "written": {
+        "number": 4,
+        "gender": "male",
+        "death": {
+         "day": 5,
+         "month": "march"
+        },
+        "burial": {
+         "day": 7,
+         "month": "march"
+        },
+        "age": 5.0,
+        "cause_of_death": "горячка",
+        "reviewed": true,
+        "context": [
+         "reviewed"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Хлестаковка/47-9-755/1913/death/m4/deceased",
+         "label": "Василій",
+         "role": "deceased",
+         "written": {
+          "given": {
+           "original": "Василій"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Василий"
+          },
+          "gender": "male"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r1:Заманиловка/1605-59-59/1923/divorce",
+   "variable": "divorces",
+   "kind": "divorces",
+   "written": {
+    "archive": "ГАПО",
+    "fund": "1605",
+    "inventory": "59",
+    "case": "59",
+    "village": "Заманиловка",
+    "church": "",
+    "year": 1923
+   },
+   "derived": {},
+   "pages": [
+    {
+     "page": "?",
+     "records": [
+      {
+       "id": "r1:Заманиловка/1605-59-59/1923/divorce/1",
+       "label": "Иванъ Петровъ + Анна Иванова",
+       "kind": "divorce",
+       "review": "reviewed",
+       "written": {
+        "number": 1,
+        "divorce": {
+         "day": 3,
+         "month": "july"
+        },
+        "husband_age": 24,
+        "wife_age": 29,
+        "page": "?"
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Заманиловка/1605-59-59/1923/divorce/1/husband",
+         "label": "Иванъ Петровъ",
+         "role": "husband",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Заманиловка/1605-59-59/1923/divorce/1/wife",
+         "label": "Анна Иванова",
+         "role": "wife",
+         "written": {
+          "given": {
+           "original": "Анна"
+          },
+          "patronymic": {
+           "original": "Иванова"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Анна"
+          },
+          "patronymic": {
+           "old": "Иванова",
+           "modern": "Ивановна"
+          },
+          "gender": "female"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r1:Заманиловка/735-265-53;стр-80/1828/household",
+   "variable": "confessions",
+   "kind": "census",
+   "written": {
+    "archive": "ГАРО",
+    "fund": "735",
+    "inventory": "265",
+    "case": "53",
+    "village": "Заманиловка",
+    "year": 1828,
+    "document_type": "Исповедная роспись",
+    "document_type_genitive": "исповедной росписи",
+    "household_label": "двор",
+    "household_number_label": "№ двора",
+    "file_prefix": "ir",
+    "doc_res_prefix": "confession_of_the_household_number",
+    "single_age_column": true,
+    "record_type": "исповедная роспись",
+    "record": {
+     "month": "march"
+    },
+    "archive_suffix": "стр-80"
+   },
+   "derived": {},
+   "pages": [
+    {
+     "page": "80",
+     "records": [
+      {
+       "id": "r1:Заманиловка/735-265-53;стр-80/1828/household/94",
+       "label": "Иванъ Петровъ",
+       "kind": "household",
+       "review": "reviewed",
+       "written": {
+        "family_id": "94",
+        "reviewed": true,
+        "record": {
+         "month": "march"
+        },
+        "context": [
+         "reviewed",
+         "record.month"
+        ]
+       },
+       "derived": {},
+       "persons": [
+        {
+         "id": "r1:Заманиловка/735-265-53;стр-80/1828/household/94/member1",
+         "label": "Иванъ Петровъ",
+         "role": "member",
+         "slot": 1,
+         "link": {
+          "written": {
+           "number": 1,
+           "role": "head",
+           "age": 40
+          },
+          "derived": {
+           "record_number": 1
+          }
+         },
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          },
+          "status": {
+           "text": "крестьянин",
+           "gender": "male"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "residence": "Заманиловка",
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Заманиловка/735-265-53;стр-80/1828/household/94/member2",
+         "label": "Марья",
+         "role": "member",
+         "slot": 2,
+         "link": {
+          "written": {
+           "number": 2,
+           "role": "wife",
+           "age": 35
+          },
+          "derived": {
+           "record_number": 2
+          }
+         },
+         "written": {
+          "given": {
+           "original": "Марья"
+          },
+          "status": {
+           "text": "крестьянка",
+           "gender": "female"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Марья"
+          },
+          "residence": "Заманиловка",
+          "gender": "female"
+         }
+        },
+        {
+         "id": "r1:Заманиловка/735-265-53;стр-80/1828/household/94/member3",
+         "label": "Петръ Иванов",
+         "role": "member",
+         "slot": 3,
+         "link": {
+          "written": {
+           "number": 3,
+           "role": "son",
+           "ref_member": 1,
+           "age": "6 мес"
+          },
+          "derived": {
+           "record_number": 3
+          }
+         },
+         "written": {
+          "given": {
+           "original": "Петръ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "patronymic": {
+           "original": "Иванов",
+           "old": "Иванов",
+           "modern": "Иванович"
+          },
+          "residence": "Заманиловка",
+          "gender": "male"
+         }
+        },
+        {
+         "id": "r1:Заманиловка/735-265-53;стр-80/1828/household/94/member-1",
+         "label": "Петръ",
+         "role": "member",
+         "slot": -1,
+         "link": {
+          "written": {
+           "number": -1,
+           "role": "father",
+           "hidden": true
+          },
+          "derived": {}
+         },
+         "written": {
+          "given": {
+           "original": "Петръ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "residence": "Заманиловка",
+          "gender": "male"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r1:Горюхино/1978-5-9700/1917/listed",
+   "variable": "voters",
+   "kind": "name_list",
+   "written": {
+    "archive": "ГАТО",
+    "fund": "1978",
+    "inventory": "5",
+    "case": "9700",
+    "village": "Горюхино",
+    "year": 1917,
+    "document_type": "Список избирателей",
+    "labels": [
+     "Other"
+    ]
+   },
+   "derived": {},
+   "pages": [
+    {
+     "page": "5",
+     "records": [
+      {
+       "id": "r1:Горюхино/1978-5-9700/1917/listed/1",
+       "label": "Иванъ Петровъ Сидоровъ",
+       "kind": "listed_person",
+       "review": "reviewed",
+       "written": {
+        "number": 1,
+        "age": 40
+       },
+       "derived": {
+        "index": 1
+       },
+       "persons": [
+        {
+         "id": "r1:Горюхино/1978-5-9700/1917/listed/1/person",
+         "label": "Иванъ Петровъ Сидоровъ",
+         "role": "person",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          },
+          "surname": {
+           "original": "Сидоровъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "surname": {
+           "modern": "Сидоров"
+          },
+          "residence": "Горюхино",
+          "gender": "male"
+         }
+        }
+       ]
+      },
+      {
+       "id": "r1:Горюхино/1978-5-9700/1917/listed/2",
+       "label": "Петръ Ивановъ Сидоровъ",
+       "kind": "listed_person",
+       "review": "reviewed",
+       "written": {
+        "number": 2
+       },
+       "derived": {
+        "index": 2
+       },
+       "persons": [
+        {
+         "id": "r1:Горюхино/1978-5-9700/1917/listed/2/person",
+         "label": "Петръ Ивановъ Сидоровъ",
+         "role": "person",
+         "written": {
+          "given": {
+           "original": "Петръ"
+          },
+          "patronymic": {
+           "original": "Ивановъ"
+          },
+          "surname": {
+           "original": "Сидоровъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "patronymic": {
+           "old": "Иванов",
+           "modern": "Иванович"
+          },
+          "surname": {
+           "modern": "Сидоров"
+          },
+          "residence": "Горюхино",
+          "gender": "male"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "r1:Маниловка/card/cards",
+   "variable": "cards",
+   "kind": "external_sources",
+   "written": {
+    "village": "Маниловка"
+   },
+   "derived": {},
+   "pages": [
+    {
+     "page": null,
+     "records": [
+      {
+       "id": "r1:Маниловка/card/wwi/chelovek_plen1",
+       "label": "Иванъ Петровъ",
+       "kind": "external_record",
+       "review": "reviewed",
+       "written": {
+        "verb": "wwi_record",
+        "source_url": "https://gwar.mil.ru/heroes/chelovek_plen1/",
+        "document_type": "wwi_document_type.pow_card",
+        "date": {
+         "year": 1915,
+         "month": "may",
+         "day": 3
+        }
+       },
+       "derived": {
+        "kind": "wwi",
+        "citation": {
+         "catalog": "Списки участников Первой мировой войны (проект Памяти героев Великой войны 1914–1918)",
+         "source_url": "https://gwar.mil.ru/heroes/chelovek_plen1/"
+        },
+        "index": 1,
+        "labels": [
+         "Military"
+        ]
+       },
+       "persons": [
+        {
+         "id": "r1:Маниловка/card/wwi/chelovek_plen1/person",
+         "label": "Иванъ Петровъ",
+         "role": "person",
+         "written": {
+          "given": {
+           "original": "Иванъ"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Иван"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "gender": "male"
+         }
+        }
+       ]
+      },
+      {
+       "id": "r1:Маниловка/card/wwii/memorial-chelovek_donesenie2",
+       "label": "Петръ Ивановъ",
+       "kind": "external_record",
+       "review": "reviewed",
+       "written": {
+        "verb": "wwii_record",
+        "source_url": "https://pamyat-naroda.ru/heroes/memorial-chelovek_donesenie2/",
+        "document_type": "wwii_document_type.pow_card",
+        "date": {
+         "year": 1943,
+         "date_range": "after"
+        }
+       },
+       "derived": {
+        "kind": "wwii",
+        "citation": {
+         "catalog": "Память народа (проект Минобороны РФ)",
+         "source_url": "https://pamyat-naroda.ru/heroes/memorial-chelovek_donesenie2/"
+        },
+        "index": 2,
+        "labels": [
+         "Military"
+        ]
+       },
+       "persons": [
+        {
+         "id": "r1:Маниловка/card/wwii/memorial-chelovek_donesenie2/person",
+         "label": "Петръ Ивановъ",
+         "role": "person",
+         "written": {
+          "given": {
+           "original": "Петръ"
+          },
+          "patronymic": {
+           "original": "Ивановъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Петр"
+          },
+          "patronymic": {
+           "old": "Иванов",
+           "modern": "Иванович"
+          },
+          "gender": "male"
+         }
+        }
+       ]
+      },
+      {
+       "id": "r1:Маниловка/card/criminal/rsl01001234567-page-12",
+       "label": "Василій Петровъ",
+       "kind": "external_record",
+       "review": "reviewed",
+       "written": {
+        "verb": "criminal_record",
+        "original_text": "судим",
+        "source_url": "https://viewer.rsl.ru/ru/rsl01001234567?page=12",
+        "bibliography": "Ведомости, вып. 1"
+       },
+       "derived": {
+        "kind": "criminal",
+        "citation": {
+         "catalog": "Ведомости справок о судимости 1870–1927",
+         "source_url": "https://viewer.rsl.ru/ru/rsl01001234567?page=12",
+         "original_text": "судим",
+         "bibliography": "Ведомости, вып. 1"
+        },
+        "index": 3,
+        "labels": [
+         "Other"
+        ]
+       },
+       "persons": [
+        {
+         "id": "r1:Маниловка/card/criminal/rsl01001234567-page-12/person",
+         "label": "Василій Петровъ",
+         "role": "person",
+         "written": {
+          "given": {
+           "original": "Василій"
+          },
+          "patronymic": {
+           "original": "Петровъ"
+          }
+         },
+         "derived": {
+          "given": {
+           "modern": "Василий"
+          },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
+          "gender": "male"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "variable": "zamanilovka_deaths_1913",
+   "alias_of": "hlestakovka_deaths_1913"
+  }
+ ]
+}

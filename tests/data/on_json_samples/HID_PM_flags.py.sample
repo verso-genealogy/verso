@@ -1,0 +1,28 @@
+# Invented: the legacy hidden sentinels (HID001, HID002) and parent_member (PM001, PM002).
+from verso.ru.dsl import CensusRole, census_records, household, member, person
+
+roll = census_records(
+    "ГА Глуповской области", "10", "4", "4045", "Маниловка", 1858,
+    household("1",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),
+              member(2, person("Ѳома"), CensusRole.SON, ref_member=1, age=30, parent_member=1),
+              member(3, person("Анна"), CensusRole.WIFE, ref_member=2, age=28, parent_member=1),
+              member(4, person("Семенъ"), CensusRole.GRANDSON, ref_member=2, age=3, parent_member=2),
+              member(5, person("Иванъ"), CensusRole.BROTHER, 1, age=50, record_number="2-3"),
+              member(6, person("Марья"), CensusRole.MOTHER, age=80, comment="  Отсутствует в РС; добавлена"),
+              member(-1, person("Никифоръ"), CensusRole.FATHER, hidden=True, comment="Отсутствует в РС"),
+              member(8, person("Иванъ"), CensusRole.SON, ref_member=1, age=2, record_number=9),
+              member(7, person("Петръ"), CensusRole.HUSBAND, ref_member=3, age=20, parent_member=3)),
+    household("2",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=40),
+              member(2, person("Ѳома"), CensusRole.SON, ref_member=1, age=20),
+              member(3, person("Анна"), CensusRole.WIFE, ref_member=2, age=18, parent_member=1),
+              member(4, person("Агафья"), CensusRole.DAUGHTER, ref_member=1, age=9, parent_member=3),
+              member(5, person("Семенъ"), CensusRole.SON_IN_LAW, ref_member=1, age=30),
+              member(6, person("Дарья"), CensusRole.WIFE, ref_member=5, age=25, parent_member=1),
+              member(7, person("Марья"), CensusRole.WIFE, ref_member=9, age=25, parent_member=1)),
+    household("3",
+              member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=40),
+              member(-1, person("Никифоръ"), CensusRole.FATHER, hidden=True),
+              member(2, person("Ѳома"), CensusRole.SON, ref_member=1, age=20, parent_member=-1),
+              member(3, person("Анна"), CensusRole.WIFE, ref_member=2, age=18, parent_member=-1)))

@@ -1,0 +1,4 @@
+DEFAULTS = RecordDefaults(residence="Глуповы Горы", status_male=PEASANT_MALE, status_female=PEASANT_FEMALE)
+death_records("ГАВО", "600", "692", "283", "Горюхино", "Церковь", 1826,
+    death(8, Gender.FEMALE, 21, 23, deceased=person("Евпраксія", "Игнатьева", residence="Горелово", status=KAZENNYJ_PEASANT_FEMALE)),
+    defaults=DEFAULTS)

@@ -1,0 +1,18 @@
+# Ruff for the library: the root's rules (ruff.toml at the root) without the villages' —
+# a nested config replaces the root's for every file under it, so the [lint] tables are repeated
+# here, and tests/test_projects.py keeps them equal to the root's.
+target-version = "py314"
+line-length = 200
+
+exclude = [
+    "ide/*/node_modules",
+]
+
+[lint]
+select = ["E", "F", "W", "UP", "B", "ARG", "RUF"]
+ignore = ["E501", "E701", "E741", "UP015", "B026", "RUF001", "RUF002", "RUF003", "RUF005", "RUF013", "ARG005"]
+
+[lint.per-file-ignores]
+# Test files can have more relaxed rules. ARG too: a fixture, a fake and a
+# monkeypatch all take arguments to match a signature, not to use them.
+"tests/test_*.py" = ["S101", "ARG"]

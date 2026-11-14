@@ -1,0 +1,23 @@
+# Invented: a death's written residences (DRA001: a relative's village against the deceased's, else against
+# the first relative's own, an empty deceased's residence being an anchor of its own) and a death naming more
+# relatives than the translator keeps (DRL001: each after the first, labelled by its relationship, `#n` when
+# the relationship is none). The quiet cases: one village, one relative, no residence to compare.
+from verso.ru.dsl import Gender, Relationship, death, death_records, person, relative
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4051", "Маниловка", "Церковь", 1857,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука", residence="Маниловка"),
+          relatives=[relative(person("Петръ", residence="Заманиловка"), Relationship.FATHER),
+                     relative(person("Марія", residence="Маниловка"), Relationship.MOTHER)]),
+    death(2, Gender.FEMALE, 5, 6, deceased=person("Анна"),
+          relatives=[relative(person("Петръ", residence="Маниловка"), Relationship.HUSBAND),
+                     relative(person("Иванъ", residence="Ротозеево"), Relationship.SON),
+                     relative(person("Марія", residence="Ротозеево"), None)]),
+    death(3, Gender.MALE, 7, 8, deceased=person("Лука", residence=""),
+          relatives=[relative(person("Петръ", residence="Маниловка"), Relationship.FATHER)]),
+    death(4, Gender.MALE, 9, 10, deceased=person("Иванъ", residence="Маниловка"),
+          relatives=[relative(person("Лука", residence="Маниловка"), Relationship.FATHER_IN_LAW)]),
+    death(5, Gender.FEMALE, 11, 12, deceased=person("Анна", residence="Маниловка"),
+          relatives=[relative(person("Лука"), Relationship.FATHER), relative(person("Марія"), Relationship.MOTHER)]),
+    death(6, Gender.MALE, 13, 14, deceased=person("Петръ", residence="Маниловка")),
+    defaults=RecordDefaults(residence="Маниловка"))

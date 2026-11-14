@@ -1,0 +1,5 @@
+
+book = marriage_records(
+    "ГАРО", "637", "606", "847", "Хлестаковка", "Вознесенская", 1860,
+    marriage(1, 7, reviewed=True),
+)

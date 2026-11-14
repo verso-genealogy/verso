@@ -1,0 +1,9 @@
+
+records = name_list_records(
+    "ГАТО", "1978", "5", "9700", "Горюхино", 1917,
+    *page("6 об.",
+        listed_person(214, person("Нилъ", "Пахомов", "Ладаев"), reviewed=True),
+        reviewed=True,
+    ),
+    reviewed=False,
+)

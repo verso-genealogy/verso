@@ -1,0 +1,34 @@
+# The toy's hints for the interface's schema: what its vocabulary does not say — the order,
+# the labels (keys of tests.core's catalog), the slots' gender — and nothing the vocabulary does.
+schema = 1
+
+[person]
+fields = [
+  { path = "full_name", label = "ui.person.name" },
+  { path = "gender", label = "ui.person.gender" },
+]
+
+[kinds.note]
+label = "ui.kind.note"
+fields = [
+  { path = "number", label = "ui.note.number" },
+  { path = "page", label = "ui.note.page" },
+]
+hidden = ["reviewed"]
+slots = [{ role = "who", label = "ui.slot.who", gender = "of_record" }]
+draft = { creatable = true, slots = ["who"] }
+
+[enums.sex]
+label = "ui.enum.sex"
+gender = { male = "male", female = "female" }
+
+[books.notes]
+label = "ui.kind.notes"
+fields = [
+  { path = "village", label = "ui.book.village" },
+  { path = "shelfmark.fund", label = "ui.book.fund" },
+  { path = "inventory", label = "ui.book.inventory" },
+  { path = "shelfmark.case", label = "ui.book.case" },
+  { path = "year", label = "ui.book.year" },
+]
+hidden = ["reviewed"]

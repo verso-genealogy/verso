@@ -1,0 +1,9 @@
+from verso.ru.dsl import marriage, marriage_records
+from verso.ru.dsl import RecordDefaults, person
+from verso.ru.dsl import Relationship, relative
+mk = marriage_records(
+    "ЦГАРМ", "57", "6", "1", "Горюхино", "Николаевская", 1842,
+    marriage(4, 23,
+             groom=person("Мартынъ", "Фоминъ", status=KAZ_GROOM)),
+    defaults=RecordDefaults("Горюхино", KAZ_MALE, KAZ_FEMALE, KAZ_MAIDEN, KAZ_GROOM),
+)

@@ -1,0 +1,1 @@
+marriage(1, 1, 1, groom=person("X"), bride=person("Y"), groom_age=True)

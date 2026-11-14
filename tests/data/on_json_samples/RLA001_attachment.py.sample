@@ -1,0 +1,36 @@
+# Invented: relatives whose reference attaches to nobody (RLA001): a godmother with no number whose
+# slot the record settles by her name (the sole female godparent), one it cannot settle, a witness slot
+# the record lacks, a mother not in the record and a death relative that names a slot.
+from verso.ru.dsl import Gender, Month, Relationship, birth, birth_records, death, death_records, marriage, marriage_records, person, relative
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4047", "Маниловка", "Церковь", 1851,
+    birth(1, Gender.MALE, 3, 5, child=person("Лука"), father=person("Ѳома", "Лукинъ", "Примеровъ"),
+          god_parent1=person("Сергій", "Косьминъ", "Опискинъ"), god_parent2=person("Анфиса"),
+          relatives=[relative(person("Петр", "Ѳомичъ"), Relationship.FATHER, "восприемница"),
+                     relative(person("Марія"), Relationship.MOTHER, "мать"),
+                     relative(person("Иван", "Ѳомичъ"), Relationship.FATHER, "восприемника №3")]),
+    birth(2, Gender.FEMALE, 4, 6, child=person("Марія"), father=person("Ѳома", "Лукинъ", "Примеровъ"),
+          mother=person("Анфиса"), god_parent1=person("Сергій"), god_parent2=person("Иван"),
+          god_parent3=person("Марія", gender=Gender.FEMALE),
+          relatives=[relative(person("Петр", "Ѳомичъ"), Relationship.FATHER, "восприемница"),
+                     relative(person("Лука", "Ѳомичъ"), Relationship.FATHER, "мать")]),
+    birth(3, Gender.MALE, 5, 7, child=person("Иван"), father=person("Ѳома", "Лукинъ", "Примеровъ"),
+          god_parent1=person("Сергій"), god_parent2=person("Иван"),
+          relatives=[relative(person("Петр", "Ѳомичъ"), Relationship.FATHER, "восприемница"),
+                     relative(person("Лука", "Ѳомичъ"), Relationship.FATHER)]))
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4048", "Маниловка", "Церковь", 1852,
+    marriage(1, 7, Month.FEBRUARY, groom=person("Лука", "Ѳомичъ", "Примеровъ"), bride=person("Марія", "Ивановна"),
+             witness1=person("Петр", "Ивановъ"),
+             relatives=[relative(person("Сергій", "Петровъ"), Relationship.FATHER, "поручитель №2"),
+                        relative(person("Ѳома", "Петровъ"), Relationship.FATHER, "поручитель №1"),
+                        relative(person("Иван", "Петровъ"), Relationship.FATHER, "жених"),
+                        relative(person("Анфиса"), Relationship.MOTHER, "мать")]))
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4049", "Маниловка", "Церковь", 1853,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука", "Ѳомичъ", "Примеровъ"), age=60,
+          relatives=[relative(person("Марія"), Relationship.WIFE, "жених"),
+                     relative(person("Анфиса"), Relationship.MOTHER)]))

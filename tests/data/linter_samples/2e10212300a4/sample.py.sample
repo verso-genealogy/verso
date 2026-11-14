@@ -1,0 +1,10 @@
+
+birth_records("A", "F", "I", "C", "Заманиловка", "Ц", 1800,
+    *page("1",
+        *birth_month(Month.JANUARY,
+            birth(1, Gender.MALE, 1, 2,
+                father=person("Петр", "Иванов", residence="Заманиловка")),
+        ),
+    ),
+    defaults=RecordDefaults(residence="Заманиловка"),
+)

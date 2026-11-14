@@ -1,0 +1,4 @@
+TENTETNIKOV_PEASANT = "крестьянин вотчины Г-на Тентетникова"
+birth_records("a", "f", "i", "c", "Горюхино", "Церковь", 1830,
+    birth(1, Gender.MALE, father=person("Петр", status=TENTETNIKOV_PEASANT), mother=person("Мария")),
+    defaults=RecordDefaults(status_male=PEASANT_MALE, status_female=PEASANT_FEMALE))

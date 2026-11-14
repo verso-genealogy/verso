@@ -1,0 +1,10 @@
+from verso.ru.dsl import death, death_records
+from verso.ru.dsl import Gender, RecordDefaults, person
+from verso.ru.dsl import Relationship, relative
+mk = death_records(
+    "ЦГАРМ", "57", "6", "1", "Горюхино", "Николаевская", 1842,
+    death(1, Gender.FEMALE, 3, 5,
+          deceased=person("Марья"),
+          relatives=[relative(person("Мартынъ", "Фоминъ", status=KAZENNYJ_PEASANT_MALE), Relationship.HUSBAND)]),
+    defaults=RecordDefaults(status_male=KAZENNYJ_PEASANT_MALE, status_female=KAZENNYJ_PEASANT_FEMALE, status_mother=KAZENNYJ_PEASANT_LEGAL_WIFE),
+)

@@ -1,0 +1,503 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "records-v1",
+ "title": "Verso records v1",
+ "description": "The built DSL records as JSON: documents, page runs, records, personas; `written` is what a DSL call wrote, `derived` what the objects hold besides.",
+ "oneOf": [
+  {
+   "$ref": "#/$defs/file"
+  },
+  {
+   "$ref": "#/$defs/index"
+  }
+ ],
+ "$defs": {
+  "id": {
+   "type": "string",
+   "pattern": "^r1:[^/]+(?:/[^/]+)+$"
+  },
+  "written_who": {
+   "type": "object",
+   "properties": {
+    "full_name": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_who": {
+   "type": "object",
+   "properties": {
+    "full_name": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "gender": {
+     "enum": [
+      "male",
+      "female",
+      null
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_note": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "person": {
+     "type": "null"
+    },
+    "page": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_note": {
+   "type": "object",
+   "properties": {
+    "number": {
+     "type": [
+      "integer",
+      "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "written_notes": {
+   "type": "object",
+   "properties": {
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "shelfmark": {
+     "type": "object",
+     "properties": {
+      "fund": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "case": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "derived_notes": {
+   "type": "object",
+   "properties": {
+    "village": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "shelfmark": {
+     "type": "object",
+     "properties": {
+      "fund": {
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "case": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     "additionalProperties": false
+    },
+    "inventory": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "year": {
+     "type": [
+      "integer",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    }
+   },
+   "additionalProperties": false
+  },
+  "link": {
+   "not": {}
+  },
+  "persona": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "role": {
+     "type": "string"
+    },
+    "slot": {
+     "type": "integer"
+    },
+    "link": {
+     "$ref": "#/$defs/link"
+    },
+    "written": {
+     "$ref": "#/$defs/written_who"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_who"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "role",
+    "derived"
+   ]
+  },
+  "source_notes": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string"
+     },
+     "anchor": {
+      "type": "object",
+      "properties": {
+       "to": {
+        "enum": [
+         "file",
+         "record",
+         "argument",
+         "field",
+         "range",
+         "manual"
+        ]
+       },
+       "record": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "end": {
+        "type": "integer",
+        "minimum": 0
+       },
+       "arg": {
+        "type": "string"
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "to"
+      ]
+     }
+    },
+    "additionalProperties": false,
+    "required": [
+     "text",
+     "anchor"
+    ]
+   }
+  },
+  "record_note": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "label": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "note"
+    },
+    "key": {
+     "type": "string",
+     "minLength": 1,
+     "pattern": "^[^/]+$"
+    },
+    "review": {
+     "enum": [
+      "reviewed",
+      "held",
+      "on_geni"
+     ]
+    },
+    "written": {
+     "$ref": "#/$defs/written_note"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_note"
+    },
+    "persons": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/persona"
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "review",
+    "derived",
+    "persons"
+   ]
+  },
+  "document_notes": {
+   "type": "object",
+   "properties": {
+    "id": {
+     "$ref": "#/$defs/id"
+    },
+    "variable": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "notes"
+    },
+    "written": {
+     "$ref": "#/$defs/written_notes"
+    },
+    "derived": {
+     "$ref": "#/$defs/derived_notes"
+    },
+    "pages": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "properties": {
+       "page": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "records": {
+        "type": "array",
+        "items": {
+         "anyOf": [
+          {
+           "$ref": "#/$defs/record_note"
+          }
+         ]
+        }
+       }
+      },
+      "additionalProperties": false,
+      "required": [
+       "page",
+       "records"
+      ]
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "variable",
+    "kind",
+    "derived",
+    "pages"
+   ]
+  },
+  "alias": {
+   "type": "object",
+   "properties": {
+    "variable": {
+     "type": "string"
+    },
+    "alias_of": {
+     "type": "string"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "variable",
+    "alias_of"
+   ]
+  },
+  "file": {
+   "type": "object",
+   "properties": {
+    "schema": {
+     "const": "records-v1"
+    },
+    "village": {
+     "type": "string"
+    },
+    "file": {
+     "type": "string"
+    },
+    "sha256": {
+     "type": "string"
+    },
+    "vocabulary": {
+     "type": "object",
+     "properties": {
+      "plugin": {
+       "type": "string"
+      },
+      "version": {
+       "type": "integer",
+       "minimum": 1
+      }
+     },
+     "additionalProperties": false,
+     "required": [
+      "plugin",
+      "version"
+     ]
+    },
+    "lang": {
+     "type": "string"
+    },
+    "documents": {
+     "type": "array",
+     "items": {
+      "anyOf": [
+       {
+        "$ref": "#/$defs/document_notes"
+       },
+       {
+        "$ref": "#/$defs/alias"
+       }
+      ]
+     }
+    },
+    "note": {
+     "$ref": "#/$defs/source_notes"
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "schema",
+    "village",
+    "file",
+    "sha256",
+    "documents"
+   ]
+  },
+  "index": {
+   "type": "object",
+   "properties": {
+    "schema": {
+     "const": "records-v1"
+    },
+    "village": {
+     "type": "string"
+    },
+    "files": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "skipped": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "inputs": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    }
+   },
+   "additionalProperties": false,
+   "required": [
+    "schema",
+    "village",
+    "files",
+    "skipped",
+    "inputs"
+   ]
+  }
+ }
+}

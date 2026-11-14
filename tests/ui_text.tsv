@@ -1,0 +1,4 @@
+# The interface's Cyrillic text (tests/ui_text.py): per file, the lines of code where a string
+# holds Cyrillic. Only shrinks — a new message goes through a catalog (t(…)); content and the
+# sources' vocabulary are declared in tests/ui_content.toml or marked `# i18n: content`.
+# file	lines

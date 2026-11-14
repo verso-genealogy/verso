@@ -1,0 +1,7 @@
+
+from verso.ru.dsl import listed_person, name_list_records, person
+x = name_list_records(
+    "ГАРО", "F", "I", "C", "Маниловка", 1917,
+    listed_person(1, person("Савва", "Фомич", "Телятников"), age=-5),
+    document_type="Список избирателей",
+)

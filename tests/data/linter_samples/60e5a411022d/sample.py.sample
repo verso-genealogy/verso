@@ -1,0 +1,4 @@
+census_records("a", "f", "i", "d", "Нижняя Яичница", 1850,
+  household(
+member(3, person("Михаил"), CensusRole.SON, age=26, previous_age=8),
+    family_id="1"))

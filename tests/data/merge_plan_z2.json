@@ -1,0 +1,2129 @@
+{
+ "_source": "A synthetic plan: a fast plan cut to the forgotten profiles, the unions the plan changes, and the profiles they name; documents reduced to their actions",
+ "move_list": {
+  "_1816_03_00_prokofij_nikanorovich_rs_45_4_family_member": "prokofij_nikanorovich",
+  "_1817_01_17_prokofij_mk_marriages_2_groom": "prokofij_nikanorovich",
+  "_1817_10_25_prokofij_nikanorovich_mk_births_56_father": "prokofij_nikanorovich",
+  "_1818_09_01_prokofij_nikanorovich_mk_deaths_18_relative": "prokofij_nikanorovich",
+  "_1819_10_12_paraskeva_nestorovna_mk_births_42_child": "paraskeva_nestorovna_1819",
+  "_1819_10_12_nestor_lavrentievich_mk_births_42_father": "nestor_lavrentievich_1780",
+  "_1822_03_25_prokofij_nikanorovich_mk_births_18_father": "prokofij_nikanorovich",
+  "_1823_06_19_prokofij_nikanorovich_mk_births_41_god_parent_1": "prokofij_nikanorovich",
+  "_1823_08_27_prokofij_nikanorovich_mk_deaths_15_relative": "prokofij_nikanorovich",
+  "_1824_04_26_prokofij_nikanorovich_mk_births_21_father": "prokofij_nikanorovich",
+  "_1827_07_01_aksinja_savelievna_mk_marriages_6_bride": "aksinja_savelievna_1811",
+  "_1827_07_01_avdej_nestorovich_mk_marriages_6_groom": "avdej_nestorovich_1811",
+  "_1828_07_11_prokofij_nikanorovich_mk_deaths_21_relative": "prokofij_nikanorovich",
+  "_1829_08_13_prokofij_nikanorovich_mk_births_42_father": "prokofij_nikanorovich",
+  "_1833_06_01_prokofij_nikanorovich_mk_births_17_father": "prokofij_nikanorovich",
+  "_1834_04_01_prokofij_nikanorovich_rs_49_10_family_member": "prokofij_nikanorovich",
+  "_1838_06_28_aksinja_savelievna_ir_53_245_family_member": "aksinja_savelievna_1811",
+  "_1838_06_28_paraskeva_nestorovna_ir_53_243_family_member": "paraskeva_nestorovna_1819",
+  "_1838_06_28_prokofij_nikanorovich_ir_20_95_family_member": "prokofij_nikanorovich",
+  "_1838_06_28_nestor_lavrentievich_ir_53_230_family_member": "nestor_lavrentievich_1780",
+  "_1838_06_28_lukjan_jakimovich_ir_19_94_family_member": "lukjan_jakimovich",
+  "_1838_06_28_avdej_nestorovich_ir_53_231_family_member": "avdej_nestorovich_1811",
+  "_1839_04_02_paraskeva_nestorovna_mk_marriages_8_bride": "paraskeva_nestorovna_1819",
+  "_1842_01_04_avdej_nestorovich_mk_births_1_god_parent_1": "avdej_nestorovich_1811",
+  "_1842_01_17_prokofij_nikanorovich_mk_births_2_god_parent_1": "prokofij_nikanorovich",
+  "_1842_09_13_prokofij_nikanorovich_mk_deaths_38_relative": "prokofij_nikanorovich",
+  "_1842_11_12_prokofij_nikanorovich_mk_births_35_god_parent_1": "prokofij_nikanorovich",
+  "_1850_09_07_prokofij_nikanorovich_rs_45_16_family_member": "prokofij_nikanorovich",
+  "_1850_09_07_lukjan_jakimovich_rs_45_26_family_member": "lukjan_jakimovich",
+  "_1855_09_04_prokofij_nikanorovich_ir_23_113_family_member": "prokofij_nikanorovich",
+  "_1855_09_04_lukjan_ir_22_109_family_member": "lukjan_jakimovich",
+  "_1858_01_18_agafja_evgrafovna_rs_21_11_family_member": "agafja_avdeevna_1852",
+  "_1858_01_18_aksinja_savelievna_rs_21_10_family_member": "aksinja_savelievna_1811",
+  "_1858_01_18_prokofij_nikanorovich_rs_42_18_family_member": "prokofij_nikanorovich",
+  "_1858_01_18_tit_evgrafovich_rs_21_3_family_member": "tit_avdeevich_1844",
+  "_1858_01_18_ermil_evgrafovich_rs_21_4_family_member": "ermil_avdeevich_1847",
+  "_1858_01_18_nestor_lavrentievich_rs_21_1_family_member": "nestor_lavrentievich_1780",
+  "_1858_01_18_lukjan_jakimovich_rs_42_29_family_member": "lukjan_jakimovich",
+  "_1858_01_18_evgraf_nestorovich_rs_21_2_family_member": "avdej_nestorovich_1811",
+  "_1872_04_08_agafja_avdeevna_mk_births_19_god_parent_2": "agafja_avdeevna_1852",
+  "_1872_04_08_tit_avdeevich_mk_births_19_father": "tit_avdeevich_1844",
+  "_1872_04_08_lukjan_jakimovich_mk_births_19_god_parent_1": "lukjan_jakimovich",
+  "_1872_12_24_ermil_avdeevich_mk_births_68_god_parent_1": "ermil_avdeevich_1847",
+  "_1872_12_24_lukjan_jakimovich_mk_births_68_father": "lukjan_jakimovich",
+  "_1873_01_01_lukjan_jakimovich_mk_deaths_3_relative": "lukjan_jakimovich",
+  "_1873_01_08_lukjan_jakimovich_mk_deaths_3_relative": "lukjan_jakimovich",
+  "_1873_04_15_lukjan_jakimovich_mk_marriages_4_groom": "lukjan_jakimovich",
+  "_1874_01_07_agafja_kondratievna_mk_marriages_1_bride": "agafja_kondratievna",
+  "_1874_01_07_silantij_jakimovich_mk_marriages_1_groom": "silantij_jakimovich_1874",
+  "_1874_03_18_lukjan_jakimovich_mk_births_20_father": "lukjan_jakimovich",
+  "_1875_08_05_agafja_kondratievna_mk_births_36_mother": "agafja_kondratievna",
+  "_1875_08_05_silantij_jakimovich_mk_births_36_father": "silantij_jakimovich_1874",
+  "_1876_11_15_lukjan_jakimovich_mk_births_70_father": "lukjan_jakimovich",
+  "_1877_07_02_agafja_kondratievna_mk_births_46_mother": "agafja_kondratievna",
+  "_1877_07_02_silantij_jakimovich_mk_births_46_father": "silantij_jakimovich_1874",
+  "_1879_12_08_agafja_kondratievna_mk_births_74_mother": "agafja_kondratievna",
+  "_1879_12_08_silantij_jakimovich_mk_births_74_father": "silantij_jakimovich_1874",
+  "_1879_12_18_lukjan_jakimovich_mk_births_75_father": "lukjan_jakimovich",
+  "_1880_02_05_lukjan_jakimovich_vidopljasov_mk_births_13_god_parent_1": "lukjan_jakimovich",
+  "_1884_09_12_lukjan_jakimovich_mk_births_56_god_parent_1": "lukjan_jakimovich",
+  "_1897_00_00_lukjan_jakimovich_vidopljasev_rs_6_1_family_member_100-1-1": "lukjan_jakimovich",
+  "_1901_08_25_lukjan_jakimovich_vidopljasov_mk_deaths_37_deceased": "lukjan_jakimovich"
+ },
+ "plan": {
+  "resource_changes": [
+   {
+    "address": "geni_profile._1839_04_02_paraskeva_nestorovna_mk_marriages_8_bride",
+    "type": "geni_profile",
+    "name": "_1839_04_02_paraskeva_nestorovna_mk_marriages_8_bride",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000064",
+      "gender": "female",
+      "unions": [
+       "union-200028"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1839_04_02_naum_nikanorovich_mk_marriages_8_groom",
+    "type": "geni_profile",
+    "name": "_1839_04_02_naum_nikanorovich_mk_marriages_8_groom",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000031",
+      "gender": "male",
+      "unions": [
+       "union-200028"
+      ]
+     },
+     "after": {
+      "id": "profile-1000031",
+      "gender": "male",
+      "unions": [
+       "union-200028"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1842_01_04_avdej_nestorovich_mk_births_1_god_parent_1",
+    "type": "geni_profile",
+    "name": "_1842_01_04_avdej_nestorovich_mk_births_1_god_parent_1",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000062",
+      "gender": "male",
+      "unions": null
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1842_09_13_prokofij_nikanorovich_mk_deaths_38_relative",
+    "type": "geni_profile",
+    "name": "_1842_09_13_prokofij_nikanorovich_mk_deaths_38_relative",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000017",
+      "gender": "male",
+      "unions": [
+       "union-200034"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_nazar_rs_21_14_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_nazar_rs_21_14_family_member",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000063",
+      "gender": "male",
+      "unions": [
+       "union-200031",
+       "union-200035"
+      ]
+     },
+     "after": {
+      "id": "profile-1000063",
+      "gender": "male",
+      "unions": [
+       "union-200031",
+       "union-200035"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_agrafena_savelievna_rs_21_10_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_agrafena_savelievna_rs_21_10_family_member",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000072",
+      "gender": "female",
+      "unions": [
+       "union-200023"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_kondrat_evgrafovich_rs_21_5_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_kondrat_evgrafovich_rs_21_5_family_member",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000057",
+      "gender": "male",
+      "unions": [
+       "union-200023"
+      ]
+     },
+     "after": {
+      "id": "profile-1000057",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_ustin_spiridonovich_rs_41_10_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_ustin_spiridonovich_rs_41_10_family_member",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000069",
+      "gender": "male",
+      "unions": [
+       "union-200018"
+      ]
+     },
+     "after": {
+      "id": "profile-1000069",
+      "gender": "male",
+      "unions": [
+       "union-200018"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_gleb_lavrentievich_rs_41_1_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_gleb_lavrentievich_rs_41_1_family_member",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000070",
+      "gender": "male",
+      "unions": [
+       "union-200022",
+       "union-200018",
+       "union-200026"
+      ]
+     },
+     "after": {
+      "id": "profile-1000070",
+      "gender": "male",
+      "unions": [
+       "union-200022",
+       "union-200018",
+       "union-200026"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_averkij_spiridonovich_rs_41_8_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_averkij_spiridonovich_rs_41_8_family_member",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000076",
+      "gender": "male",
+      "unions": [
+       "union-200018",
+       "union-200008"
+      ]
+     },
+     "after": {
+      "id": "profile-1000076",
+      "gender": "male",
+      "unions": [
+       "union-200018",
+       "union-200008"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_nestor_lavrentievich_rs_21_1_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_nestor_lavrentievich_rs_21_1_family_member",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000044",
+      "gender": "male",
+      "unions": [
+       "union-200031",
+       "union-200033"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_evgraf_nestorovich_rs_21_2_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_evgraf_nestorovich_rs_21_2_family_member",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000035",
+      "gender": "male",
+      "unions": [
+       "union-200033",
+       "union-200023"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_spiridon_rs_41_-1_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_spiridon_rs_41_-1_family_member",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000065",
+      "gender": "male",
+      "unions": [
+       "union-200022",
+       "union-200018"
+      ]
+     },
+     "after": {
+      "id": "profile-1000065",
+      "gender": "male",
+      "unions": [
+       "union-200022",
+       "union-200018"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_leontij_spiridonovich_rs_41_7_family_member",
+    "type": "geni_profile",
+    "name": "_1858_01_18_leontij_spiridonovich_rs_41_7_family_member",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000022",
+      "gender": "male",
+      "unions": [
+       "union-200018"
+      ]
+     },
+     "after": {
+      "id": "profile-1000022",
+      "gender": "male",
+      "unions": [
+       "union-200018"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1858_01_18_unknown_rs_21_not_recorded_head_of_family",
+    "type": "geni_profile",
+    "name": "_1858_01_18_unknown_rs_21_not_recorded_head_of_family",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000034",
+      "gender": "male",
+      "unions": [
+       "union-200031"
+      ]
+     },
+     "after": {
+      "id": "profile-1000034",
+      "gender": "male",
+      "unions": [
+       "union-200031"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_01_13_matvej_silantievich_mk_births_5_child",
+    "type": "geni_profile",
+    "name": "_1872_01_13_matvej_silantievich_mk_births_5_child",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000061",
+      "gender": "male",
+      "unions": [
+       "union-200011"
+      ]
+     },
+     "after": {
+      "id": "profile-1000061",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_01_13_serafima_glebovna_mk_births_5_mother",
+    "type": "geni_profile",
+    "name": "_1872_01_13_serafima_glebovna_mk_births_5_mother",
+    "previous_address": "geni_profile._1872_01_13_olga_nikanorovna_mk_births_5_mother",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000055",
+      "gender": "female",
+      "unions": [
+       "union-200011"
+      ]
+     },
+     "after": {
+      "id": "profile-1000055",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_01_13_silantij_tarasovich_mk_births_5_father",
+    "type": "geni_profile",
+    "name": "_1872_01_13_silantij_tarasovich_mk_births_5_father",
+    "previous_address": "geni_profile._1872_01_13_silantij_jakimovich_mk_births_5_father",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000033",
+      "gender": "male",
+      "unions": [
+       "union-200011"
+      ]
+     },
+     "after": {
+      "id": "profile-1000033",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_04_08_agafja_avdeevna_mk_births_19_god_parent_2",
+    "type": "geni_profile",
+    "name": "_1872_04_08_agafja_avdeevna_mk_births_19_god_parent_2",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000024",
+      "gender": "female",
+      "unions": null
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1872_04_08_tit_lukjanovich_kuvshinnikov_mk_births_19_god_parent_1",
+    "type": "geni_profile",
+    "name": "_1872_04_08_tit_lukjanovich_kuvshinnikov_mk_births_19_god_parent_1",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000075",
+      "gender": "male",
+      "unions": null
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1872_04_08_tit_avdeevich_mk_births_19_father",
+    "type": "geni_profile",
+    "name": "_1872_04_08_tit_avdeevich_mk_births_19_father",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000037",
+      "gender": "male",
+      "unions": [
+       "union-200017"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1872_04_08_rufina_silantievna_mk_births_19_mother",
+    "type": "geni_profile",
+    "name": "_1872_04_08_rufina_silantievna_mk_births_19_mother",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000040",
+      "gender": "female",
+      "unions": [
+       "union-200017"
+      ]
+     },
+     "after": {
+      "id": "profile-1000040",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_04_08_savelij_titovich_mk_births_19_child",
+    "type": "geni_profile",
+    "name": "_1872_04_08_savelij_titovich_mk_births_19_child",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000052",
+      "gender": "male",
+      "unions": [
+       "union-200017"
+      ]
+     },
+     "after": {
+      "id": "profile-1000052",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_09_12_nikanor_titovich_mk_births_48_child",
+    "type": "geni_profile",
+    "name": "_1872_09_12_nikanor_titovich_mk_births_48_child",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000026",
+      "gender": "male",
+      "unions": [
+       "union-200021"
+      ]
+     },
+     "after": {
+      "id": "profile-1000026",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_09_12_tit_sidorovich_mk_births_48_father",
+    "type": "geni_profile",
+    "name": "_1872_09_12_tit_sidorovich_mk_births_48_father",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000042",
+      "gender": "male",
+      "unions": [
+       "union-200021"
+      ]
+     },
+     "after": {
+      "id": "profile-1000042",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_09_12_glikerija_kirillovna_mk_births_48_mother",
+    "type": "geni_profile",
+    "name": "_1872_09_12_glikerija_kirillovna_mk_births_48_mother",
+    "previous_address": "geni_profile._1872_09_12_glikeria_kirillovna_mk_births_48_mother",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000058",
+      "gender": "female",
+      "unions": [
+       "union-200021"
+      ]
+     },
+     "after": {
+      "id": "profile-1000058",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1872_12_24_ermil_avdeevich_mk_births_68_god_parent_1",
+    "type": "geni_profile",
+    "name": "_1872_12_24_ermil_avdeevich_mk_births_68_god_parent_1",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000019",
+      "gender": "male",
+      "unions": null
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile._1875_08_05_nestor_silantievich_mk_births_36_child",
+    "type": "geni_profile",
+    "name": "_1875_08_05_nestor_silantievich_mk_births_36_child",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000039",
+      "gender": "male",
+      "unions": [
+       "union-200010"
+      ]
+     },
+     "after": {
+      "id": "profile-1000039",
+      "gender": "male",
+      "unions": [
+       "union-200010"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1877_07_02_uljana_silantievna_mk_births_46_child",
+    "type": "geni_profile",
+    "name": "_1877_07_02_uljana_silantievna_mk_births_46_child",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000080",
+      "gender": "female",
+      "unions": [
+       "union-200016"
+      ]
+     },
+     "after": {
+      "id": "profile-1000080",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile._1879_12_08_zahar_silantievich_mk_births_74_child",
+    "type": "geni_profile",
+    "name": "_1879_12_08_zahar_silantievich_mk_births_74_child",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000032",
+      "gender": "male",
+      "unions": [
+       "union-200016"
+      ]
+     },
+     "after": {
+      "id": "profile-1000032",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.agrafena_avdeevna",
+    "type": "geni_profile",
+    "name": "agrafena_avdeevna",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000066",
+      "gender": "female",
+      "unions": [
+       "union-200025"
+      ]
+     },
+     "after": {
+      "id": "profile-1000066",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.agafja_kondratievna",
+    "type": "geni_profile",
+    "name": "agafja_kondratievna",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000051",
+      "gender": "female",
+      "unions": [
+       "union-200010"
+      ]
+     },
+     "after": {
+      "id": "profile-1000051",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.agafja_avdeevna_1852",
+    "type": "geni_profile",
+    "name": "agafja_avdeevna_1852",
+    "previous_address": "geni_profile._1858_01_18_agafja_evgrafovna_rs_21_11_family_member",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000045",
+      "gender": "female",
+      "unions": [
+       "union-200023"
+      ]
+     },
+     "after": {
+      "id": "profile-1000045",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.aksinja_savelievna_1811",
+    "type": "geni_profile",
+    "name": "aksinja_savelievna_1811",
+    "previous_address": "geni_profile._1827_07_01_aksinja_savelievna_mk_marriages_6_bride",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000074",
+      "gender": "female",
+      "unions": [
+       "union-200013"
+      ]
+     },
+     "after": {
+      "id": "profile-1000074",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.terentij_prokofievich_1817",
+    "type": "geni_profile",
+    "name": "terentij_prokofievich_1817",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000025",
+      "gender": "male",
+      "unions": [
+       "union-200012"
+      ]
+     },
+     "after": {
+      "id": "profile-1000025",
+      "gender": "male",
+      "unions": [
+       "union-200012"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile.paraskeva_prokofievna_1820",
+    "type": "geni_profile",
+    "name": "paraskeva_prokofievna_1820",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000020",
+      "gender": "female",
+      "unions": [
+       "union-200009",
+       "union-200012"
+      ]
+     },
+     "after": {
+      "id": "profile-1000020",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.paraskeva_nestorovna_1819",
+    "type": "geni_profile",
+    "name": "paraskeva_nestorovna_1819",
+    "previous_address": "geni_profile._1819_10_12_paraskeva_nestorovna_mk_births_42_child",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000056",
+      "gender": "female",
+      "unions": [
+       "union-200020"
+      ]
+     },
+     "after": {
+      "id": "profile-1000056",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.lukerja_prokofievna_1827",
+    "type": "geni_profile",
+    "name": "lukerja_prokofievna_1827",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000021",
+      "gender": "female",
+      "unions": [
+       "union-200012"
+      ]
+     },
+     "after": {
+      "id": "profile-1000021",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.ustinja_titovna_1817",
+    "type": "geni_profile",
+    "name": "ustinja_titovna_1817",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000036",
+      "gender": "female",
+      "unions": [
+       "union-200012"
+      ]
+     },
+     "after": {
+      "id": "profile-1000036",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.nikanor_prokofievich_1833",
+    "type": "geni_profile",
+    "name": "nikanor_prokofievich_1833",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000053",
+      "gender": "male",
+      "unions": [
+       "union-200027",
+       "union-200012"
+      ]
+     },
+     "after": {
+      "id": "profile-1000053",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.sidor_prokofievich_1829",
+    "type": "geni_profile",
+    "name": "sidor_prokofievich_1829",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000071",
+      "gender": "male",
+      "unions": [
+       "union-200012",
+       "union-200019"
+      ]
+     },
+     "after": {
+      "id": "profile-1000071",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.dorofej_prokofievich_1822",
+    "type": "geni_profile",
+    "name": "dorofej_prokofievich_1822",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000078",
+      "gender": "male",
+      "unions": [
+       "union-200012"
+      ]
+     },
+     "after": {
+      "id": "profile-1000078",
+      "gender": "male",
+      "unions": [
+       "union-200012"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile.prokofij_nikanorovich",
+    "type": "geni_profile",
+    "name": "prokofij_nikanorovich",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000054",
+      "gender": "male",
+      "unions": [
+       "union-200007",
+       "union-200012"
+      ]
+     },
+     "after": {
+      "id": "profile-1000054",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.gleb_matveevich_1818",
+    "type": "geni_profile",
+    "name": "gleb_matveevich_1818",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000023",
+      "gender": "male",
+      "unions": [
+       "union-200032",
+       "union-200029"
+      ]
+     },
+     "after": {
+      "id": "profile-1000023",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.tit_avdeevich_1844",
+    "type": "geni_profile",
+    "name": "tit_avdeevich_1844",
+    "previous_address": "geni_profile._1858_01_18_tit_evgrafovich_rs_21_3_family_member",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000081",
+      "gender": "male",
+      "unions": [
+       "union-200023"
+      ]
+     },
+     "after": {
+      "id": "profile-1000081",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.ermil_glebovich_1840",
+    "type": "geni_profile",
+    "name": "ermil_glebovich_1840",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000018",
+      "gender": "male",
+      "unions": [
+       "union-200029"
+      ]
+     },
+     "after": {
+      "id": "profile-1000018",
+      "gender": "male",
+      "unions": [
+       "union-200029"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile.ermil_avdeevich_1847",
+    "type": "geni_profile",
+    "name": "ermil_avdeevich_1847",
+    "previous_address": "geni_profile._1858_01_18_ermil_evgrafovich_rs_21_4_family_member",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000030",
+      "gender": "male",
+      "unions": [
+       "union-200023"
+      ]
+     },
+     "after": {
+      "id": "profile-1000030",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.nestor_lavrentievich_1780",
+    "type": "geni_profile",
+    "name": "nestor_lavrentievich_1780",
+    "previous_address": "geni_profile._1819_10_12_nestor_lavrentievich_mk_births_42_father",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000050",
+      "gender": "male",
+      "unions": [
+       "union-200020"
+      ]
+     },
+     "after": {
+      "id": "profile-1000050",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.vera_romanovna_1783",
+    "type": "geni_profile",
+    "name": "vera_romanovna_1783",
+    "previous_address": "geni_profile._1819_10_12_vera_romanovna_mk_births_42_mother",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000027",
+      "gender": "female",
+      "unions": [
+       "union-200020"
+      ]
+     },
+     "after": {
+      "id": "profile-1000027",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.praskovja_nestorovna_1807",
+    "type": "geni_profile",
+    "name": "praskovja_nestorovna_1807",
+    "previous_address": "geni_profile._1858_01_18_praskovja_nestorovna_rs_21_9_family_member",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000079",
+      "gender": "female",
+      "unions": [
+       "union-200033"
+      ]
+     },
+     "after": {
+      "id": "profile-1000079",
+      "gender": "female",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.olga_kondratievna_1877",
+    "type": "geni_profile",
+    "name": "olga_kondratievna_1877",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000059",
+      "gender": "female",
+      "unions": [
+       "union-200016"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile.lukjan_jakimovich",
+    "type": "geni_profile",
+    "name": "lukjan_jakimovich",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000047",
+      "gender": "male",
+      "unions": [
+       "union-200014",
+       "union-200024",
+       "union-200025"
+      ]
+     },
+     "after": {
+      "id": "profile-1000047",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.avdej_nestorovich_1811",
+    "type": "geni_profile",
+    "name": "avdej_nestorovich_1811",
+    "previous_address": "geni_profile._1827_07_01_avdej_nestorovich_mk_marriages_6_groom",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000077",
+      "gender": "male",
+      "unions": [
+       "union-200013"
+      ]
+     },
+     "after": {
+      "id": "profile-1000077",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.savelij_prokofievich_1824",
+    "type": "geni_profile",
+    "name": "savelij_prokofievich_1824",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000068",
+      "gender": "male",
+      "unions": [
+       "union-200012"
+      ]
+     },
+     "after": {
+      "id": "profile-1000068",
+      "gender": "male",
+      "unions": [
+       "union-200012"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_profile.nifont_prokofievich_1836",
+    "type": "geni_profile",
+    "name": "nifont_prokofievich_1836",
+    "previous_address": "geni_profile._1842_09_13_nifont_prokofievich_mk_deaths_38_deceased",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000041",
+      "gender": "male",
+      "unions": [
+       "union-200034"
+      ]
+     },
+     "after": {
+      "id": "profile-1000041",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.feofan_nestorovich_1814",
+    "type": "geni_profile",
+    "name": "feofan_nestorovich_1814",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000060",
+      "gender": "male",
+      "unions": [
+       "union-200030",
+       "union-200033"
+      ]
+     },
+     "after": {
+      "id": "profile-1000060",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.silantij_jakimovich_1874",
+    "type": "geni_profile",
+    "name": "silantij_jakimovich_1874",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "profile-1000043",
+      "gender": "male",
+      "unions": [
+       "union-200010"
+      ]
+     },
+     "after": {
+      "id": "profile-1000043",
+      "gender": "male",
+      "unions": null
+     }
+    }
+   },
+   {
+    "address": "geni_profile.silantij_jakimovich_1877",
+    "type": "geni_profile",
+    "name": "silantij_jakimovich_1877",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "profile-1000028",
+      "gender": "male",
+      "unions": [
+       "union-200016"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_profile.silantij_prokofievich_1839",
+    "type": "geni_profile",
+    "name": "silantij_prokofievich_1839",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "profile-1000067",
+      "gender": "male",
+      "unions": [
+       "union-200012",
+       "union-200036"
+      ]
+     },
+     "after": {
+      "id": "profile-1000067",
+      "gender": "male",
+      "unions": [
+       "union-200012",
+       "union-200036"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union._1839_04_02_naum_nikanorovich_mk_marriages_8_groom_and_paraskeva_nestorovna_1819",
+    "type": "geni_union",
+    "name": "_1839_04_02_naum_nikanorovich_mk_marriages_8_groom_and_paraskeva_nestorovna_1819",
+    "previous_address": "geni_union.naum_nikanorovich_and_paraskeva_nestorovna_m8_1839",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200028",
+      "partners": [
+       "profile-1000064",
+       "profile-1000031"
+      ],
+      "children": null
+     },
+     "after": {
+      "id": "union-200028",
+      "partners": [
+       "profile-1000031",
+       "profile-1000056"
+      ],
+      "children": null
+     }
+    }
+   },
+   {
+    "address": "geni_union._1858_01_18_nestor_lavrentievich_rs_21_1_family_member",
+    "type": "geni_union",
+    "name": "_1858_01_18_nestor_lavrentievich_rs_21_1_family_member",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "union-200033",
+      "partners": [
+       "profile-1000044"
+      ],
+      "children": [
+       "profile-1000060",
+       "profile-1000035",
+       "profile-1000079"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_union._1858_01_18_unknown_rs_21_not_recorded_head_of_family",
+    "type": "geni_union",
+    "name": "_1858_01_18_unknown_rs_21_not_recorded_head_of_family",
+    "previous_address": "geni_union.head_of_family_21_1858",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200031",
+      "partners": [
+       "profile-1000034"
+      ],
+      "children": [
+       "profile-1000063",
+       "profile-1000044"
+      ]
+     },
+     "after": {
+      "id": "union-200031",
+      "partners": [
+       "profile-1000034"
+      ],
+      "children": [
+       "profile-1000050",
+       "profile-1000063"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.prokofij_nikanorovich_and_ustinja_titovna_1817",
+    "type": "geni_union",
+    "name": "prokofij_nikanorovich_and_ustinja_titovna_1817",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200012",
+      "partners": [
+       "profile-1000054",
+       "profile-1000036"
+      ],
+      "children": [
+       "profile-1000025",
+       "profile-1000068",
+       "profile-1000053",
+       "profile-1000078",
+       "profile-1000071",
+       "profile-1000021",
+       "profile-1000020",
+       "profile-1000067"
+      ]
+     },
+     "after": {
+      "id": "union-200012",
+      "partners": [
+       "profile-1000054",
+       "profile-1000036"
+      ],
+      "children": [
+       "profile-1000041",
+       "profile-1000025",
+       "profile-1000068",
+       "profile-1000053",
+       "profile-1000078",
+       "profile-1000071",
+       "profile-1000021",
+       "profile-1000020",
+       "profile-1000067"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.gleb_matveevich_1818_and__1838_06_28_zinaida_nikanorovna_ir_19_103_family_member",
+    "type": "geni_union",
+    "name": "gleb_matveevich_1818_and__1838_06_28_zinaida_nikanorovna_ir_19_103_family_member",
+    "previous_address": "geni_union.gleb_matveevich_1818",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200029",
+      "partners": [
+       "profile-1000023"
+      ],
+      "children": [
+       "profile-1000018"
+      ]
+     },
+     "after": {
+      "id": "union-200029",
+      "partners": [
+       "profile-1000023",
+       null
+      ],
+      "children": [
+       "profile-1000018"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.tit_sidorovich_and_glikerija_kirillovna_48_1872",
+    "type": "geni_union",
+    "name": "tit_sidorovich_and_glikerija_kirillovna_48_1872",
+    "previous_address": "geni_union.tit_sidorovich_and_glikeria_kirillovna_48_1872",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "union-200021",
+      "partners": [
+       "profile-1000042",
+       "profile-1000058"
+      ],
+      "children": [
+       "profile-1000026"
+      ]
+     },
+     "after": {
+      "id": "union-200021",
+      "partners": [
+       "profile-1000042",
+       "profile-1000058"
+      ],
+      "children": [
+       "profile-1000026"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.tit_avdeevich_1844_and__1872_04_08_rufina_silantievna_mk_births_19_mother",
+    "type": "geni_union",
+    "name": "tit_avdeevich_1844_and__1872_04_08_rufina_silantievna_mk_births_19_mother",
+    "previous_address": "geni_union.tit_avdeevich_and_rufina_silantievna_19_1872",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200017",
+      "partners": [
+       "profile-1000037",
+       "profile-1000040"
+      ],
+      "children": [
+       "profile-1000052"
+      ]
+     },
+     "after": {
+      "id": "union-200017",
+      "partners": [
+       "profile-1000040",
+       "profile-1000081"
+      ],
+      "children": [
+       "profile-1000052"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.nestor_lavrentievich_1780_and_vera_romanovna_1783",
+    "type": "geni_union",
+    "name": "nestor_lavrentievich_1780_and_vera_romanovna_1783",
+    "previous_address": "geni_union.nestor_lavrentievich_and_vera_romanovna_42_1819",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200020",
+      "partners": [
+       "profile-1000027",
+       "profile-1000050"
+      ],
+      "children": [
+       "profile-1000056"
+      ]
+     },
+     "after": {
+      "id": "union-200020",
+      "partners": [
+       "profile-1000027",
+       "profile-1000050"
+      ],
+      "children": [
+       "profile-1000077",
+       "profile-1000056",
+       "profile-1000060",
+       "profile-1000079",
+       null
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.praskovja_nestorovna_1807",
+    "type": "geni_union",
+    "name": "praskovja_nestorovna_1807",
+    "change": {
+     "actions": [
+      "create"
+     ],
+     "before": null,
+     "after": {
+      "id": null,
+      "partners": [
+       "profile-1000079"
+      ],
+      "children": [
+       null
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.evgraf_nestorovich_rs2_1858",
+    "type": "geni_union",
+    "name": "evgraf_nestorovich_rs2_1858",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "union-200023",
+      "partners": [
+       "profile-1000072",
+       "profile-1000035"
+      ],
+      "children": [
+       "profile-1000030",
+       "profile-1000045",
+       "profile-1000081",
+       "profile-1000057"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_union.avdej_nestorovich_1811_and_aksinja_savelievna_1811",
+    "type": "geni_union",
+    "name": "avdej_nestorovich_1811_and_aksinja_savelievna_1811",
+    "previous_address": "geni_union.avdej_nestorovich_and_aksinja_savelievna_m6_1827",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200013",
+      "partners": [
+       "profile-1000077",
+       "profile-1000074"
+      ],
+      "children": null
+     },
+     "after": {
+      "id": "union-200013",
+      "partners": [
+       "profile-1000077",
+       "profile-1000074"
+      ],
+      "children": [
+       "profile-1000066",
+       "profile-1000030",
+       "profile-1000045",
+       "profile-1000081",
+       "profile-1000057"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.nifont_prokofievich_and_prokofij_nikanorovich_d38_1842",
+    "type": "geni_union",
+    "name": "nifont_prokofievich_and_prokofij_nikanorovich_d38_1842",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "union-200034",
+      "partners": [
+       "profile-1000017"
+      ],
+      "children": [
+       "profile-1000041"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_union.spiridon__rs41--1_1858",
+    "type": "geni_union",
+    "name": "spiridon__rs41--1_1858",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200018",
+      "partners": [
+       "profile-1000070",
+       "profile-1000065"
+      ],
+      "children": [
+       "profile-1000069",
+       "profile-1000022",
+       "profile-1000076"
+      ]
+     },
+     "after": {
+      "id": "union-200018",
+      "partners": [
+       "profile-1000065"
+      ],
+      "children": [
+       "profile-1000069",
+       "profile-1000022",
+       "profile-1000076"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.silantij_jakimovich_1874_and_agafja_kondratievna",
+    "type": "geni_union",
+    "name": "silantij_jakimovich_1874_and_agafja_kondratievna",
+    "change": {
+     "actions": [
+      "update"
+     ],
+     "before": {
+      "id": "union-200010",
+      "partners": [
+       "profile-1000051",
+       "profile-1000043"
+      ],
+      "children": [
+       "profile-1000039"
+      ]
+     },
+     "after": {
+      "id": "union-200010",
+      "partners": [
+       "profile-1000051",
+       "profile-1000043"
+      ],
+      "children": [
+       "profile-1000039",
+       "profile-1000080",
+       "profile-1000032"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_union.silantij_jakimovich_1877_and_olga_kondratievna_1877",
+    "type": "geni_union",
+    "name": "silantij_jakimovich_1877_and_olga_kondratievna_1877",
+    "change": {
+     "actions": [
+      "forget"
+     ],
+     "before": {
+      "id": "union-200016",
+      "partners": [
+       "profile-1000059",
+       "profile-1000028"
+      ],
+      "children": [
+       "profile-1000080",
+       "profile-1000032"
+      ]
+     },
+     "after": null
+    }
+   },
+   {
+    "address": "geni_union.silantij_tarasovich_and_serafima_glebovna_5_1872",
+    "type": "geni_union",
+    "name": "silantij_tarasovich_and_serafima_glebovna_5_1872",
+    "previous_address": "geni_union.silantij_jakimovich_and_olga_nikanorovna_5_1872",
+    "change": {
+     "actions": [
+      "no-op"
+     ],
+     "before": {
+      "id": "union-200011",
+      "partners": [
+       "profile-1000055",
+       "profile-1000033"
+      ],
+      "children": [
+       "profile-1000061"
+      ]
+     },
+     "after": {
+      "id": "union-200011",
+      "partners": [
+       "profile-1000055",
+       "profile-1000033"
+      ],
+      "children": [
+       "profile-1000061"
+      ]
+     }
+    }
+   },
+   {
+    "address": "geni_document.birth_of_glafira_gerasimovna_84_1869",
+    "type": "geni_document",
+    "name": "birth_of_glafira_gerasimovna_84_1869",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_glafira_silantievna_60_1871",
+    "type": "geni_document",
+    "name": "birth_of_glafira_silantievna_60_1871",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_matvej_silantievich_5_1872",
+    "type": "geni_document",
+    "name": "birth_of_matvej_silantievich_5_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_zahar_silantievich_74_1879",
+    "type": "geni_document",
+    "name": "birth_of_zahar_silantievich_74_1879",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_fekla_titovna_16_1871",
+    "type": "geni_document",
+    "name": "birth_of_fekla_titovna_16_1871",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_olimpiada_silantievna_22_1869",
+    "type": "geni_document",
+    "name": "birth_of_olimpiada_silantievna_22_1869",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_nikanor_titovich_48_1872",
+    "type": "geni_document",
+    "name": "birth_of_nikanor_titovich_48_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_evstafij_prohorovich_3_1872",
+    "type": "geni_document",
+    "name": "birth_of_evstafij_prohorovich_3_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_averkij_martynovich_73_1871",
+    "type": "geni_document",
+    "name": "birth_of_averkij_martynovich_73_1871",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_uljana_silantievna_46_1877",
+    "type": "geni_document",
+    "name": "birth_of_uljana_silantievna_46_1877",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_ermolaj_nestorovich_29_1872",
+    "type": "geni_document",
+    "name": "birth_of_ermolaj_nestorovich_29_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_savelij_titovich_19_1872",
+    "type": "geni_document",
+    "name": "birth_of_savelij_titovich_19_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_martyn_prohorovich_1_1872",
+    "type": "geni_document",
+    "name": "birth_of_martyn_prohorovich_1_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_nifont_nestorovich_1_1869",
+    "type": "geni_document",
+    "name": "birth_of_nifont_nestorovich_1_1869",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_melanija_zaharovna_75_1871",
+    "type": "geni_document",
+    "name": "birth_of_melanija_zaharovna_75_1871",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_melanija_ustinovna_75_1869",
+    "type": "geni_document",
+    "name": "birth_of_melanija_ustinovna_75_1869",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_alevtina_nestorovna_3_1871",
+    "type": "geni_document",
+    "name": "birth_of_alevtina_nestorovna_3_1871",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_zoja_danilovna_83_1869",
+    "type": "geni_document",
+    "name": "birth_of_zoja_danilovna_83_1869",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_silantij_ustinovich_9_1872",
+    "type": "geni_document",
+    "name": "birth_of_silantij_ustinovich_9_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_silantij_panfilovich_1_1871",
+    "type": "geni_document",
+    "name": "birth_of_silantij_panfilovich_1_1871",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.birth_of_silantij_lukjanovich_68_1872",
+    "type": "geni_document",
+    "name": "birth_of_silantij_lukjanovich_68_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.census_of_the_family_number_21_1858",
+    "type": "geni_document",
+    "name": "census_of_the_family_number_21_1858",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.death_of_jakim_vlasovich_d14_1872",
+    "type": "geni_document",
+    "name": "death_of_jakim_vlasovich_d14_1872",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.death_of_silantij_panfilovich_d8_1871",
+    "type": "geni_document",
+    "name": "death_of_silantij_panfilovich_d8_1871",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.marriage_of_prohor_nifontovich_and_agrippina_rodionovna_m22_1869",
+    "type": "geni_document",
+    "name": "marriage_of_prohor_nifontovich_and_agrippina_rodionovna_m22_1869",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   },
+   {
+    "address": "geni_document.marriage_of_gordej_nestorovich_and_lidija_kirillovna_m20_1871",
+    "type": "geni_document",
+    "name": "marriage_of_gordej_nestorovich_and_lidija_kirillovna_m20_1871",
+    "change": {
+     "actions": [
+      "delete",
+      "create"
+     ]
+    }
+   }
+  ]
+ }
+}

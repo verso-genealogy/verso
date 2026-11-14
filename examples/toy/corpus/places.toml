@@ -1,0 +1,12 @@
+# The toy corpus's places: a key as the DSL writes it, the location the translator renders.
+["Степанчиково"]
+city = "село Степанчиково"
+county = "Тульский уезд"
+state = "Тульская губерния"
+country = "Россия"
+
+["Капустино"]
+city = "деревня Капустино"
+county = "Тульский уезд"
+state = "Тульская губерния"
+country = "Россия"

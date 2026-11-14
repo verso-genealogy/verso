@@ -1,0 +1,4 @@
+from toy_test_the_dsl_names_the_corpus_0.statuses import TOY_PEASANT_MALE
+from verso.ru.dsl import person
+
+x = 1

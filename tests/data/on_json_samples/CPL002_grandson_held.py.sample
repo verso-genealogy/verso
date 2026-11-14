@@ -1,0 +1,12 @@
+# Invented: the same grandson on a leaf that is held (reviewed=False) — a held record is linted
+# like any other (CPL002).
+from verso.ru.dsl import CensusRole, census_records, household, member, page, person
+
+census = census_records(
+    "ГА Глуповской области", "10", "4", "4044", "Маниловка", 1858,
+    *page("17",
+          household("5",
+                    member(1, person("Сергій", "Косьминъ", "Опискинъ"), CensusRole.HEAD, age=55),
+                    member(2, person("Марія"), CensusRole.WIFE, ref_member=1, age=50),
+                    member(3, person("Іоаннъ", "Сергіевъ"), CensusRole.GRANDSON, ref_member=1, age=6)),
+          reviewed=False))

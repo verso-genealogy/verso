@@ -1,0 +1,7 @@
+# Invented: a death record of a parish village the places know, whose deceased lived in a place no table knows
+# (ULC001), held (reviewed=False) — a held record is linted like any other, by dsllint and by the walk alike.
+from verso.ru.dsl import Gender, death, death_records, person
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4049", "Заманиловка", "Церковь", 1862,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука", residence="Забытово"), age=70, reviewed=False))

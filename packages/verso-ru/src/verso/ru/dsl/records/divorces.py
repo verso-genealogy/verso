@@ -1,0 +1,144 @@
+from __future__ import annotations
+
+import copy
+from calendar import Month
+from typing import TYPE_CHECKING
+
+from verso.ru.domain import Person, Gender, RecordDefaults
+from verso.ru.naming import get_gender_from_name
+from verso.core.written import captures_written, shadow
+
+if TYPE_CHECKING:
+    from verso.ru.exporters.base import RecordsExporter
+
+
+class Divorce:
+    def __init__(
+            self,
+            record_num: int,
+            d_day: int | None = None,
+            d_month: Month | None = None,
+            husband: Person | None = None,
+            wife: Person | None = None,
+            husband_age: int | None = None,
+            wife_age: int | None = None,
+            marriage_date: str | None = None,
+            children: str | None = None,
+            initiator: str | None = None,
+            page: str | None = None,
+            case: str | None = None,
+            comment: str | None = None,
+            year: int | None = None,
+    ):
+        self.record_num = record_num
+        self.d_day = d_day
+        self.d_month = d_month
+        self.husband = husband
+        self.wife = wife
+        self.husband_age = husband_age
+        self.wife_age = wife_age
+        self.marriage_date = marriage_date
+        self.children = children
+        self.initiator = initiator
+        self.page = page
+        self.case = case
+        self.comment = comment
+        self.year = year
+
+        if self.husband and not self.husband.gender:
+            self.husband.gender = get_gender_from_name(self.husband.name_modern) or Gender.MALE
+        if self.wife and not self.wife.gender:
+            self.wife.gender = get_gender_from_name(self.wife.name_modern) or Gender.FEMALE
+
+
+class DivorceRecords:
+    def __init__(
+            self,
+            archive: str,
+            fund: str,
+            inventory: str,
+            case: str,
+            village: str,
+            church: str,
+            year: int,
+            records: list[Divorce],
+    ):
+        self.archive = archive
+        self.fund = fund
+        self.inventory = inventory
+        self.case = case
+        self.village = village
+        self.church = church
+        self.year = year
+        self.records = records
+
+    def export(self, exporter: RecordsExporter) -> str:
+        return exporter.export(self)
+
+
+@captures_written
+def divorce(
+        record_num: int,
+        d_day: int | None = None,
+        d_month: Month | None = None,
+        husband: Person | None = None,
+        wife: Person | None = None,
+        husband_age: int | None = None,
+        wife_age: int | None = None,
+        marriage_date: str | None = None,
+        children: str | None = None,
+        initiator: str | None = None,
+        page: str | None = None,
+        case: str | None = None,
+        comment: str | None = None,
+        year: int | None = None,
+) -> Divorce:
+    return Divorce(
+        record_num,
+        d_day,
+        d_month,
+        husband,
+        wife,
+        husband_age,
+        wife_age,
+        marriage_date,
+        children,
+        initiator,
+        page=page,
+        case=case,
+        comment=comment,
+        year=year,
+    )
+
+
+@captures_written
+def divorce_records(
+        archive: str,
+        fund: str,
+        inventory: str,
+        case: str,
+        village: str,
+        church: str,
+        year: int,
+        *records: Divorce,
+        defaults: RecordDefaults | None = None,
+) -> DivorceRecords:
+    if defaults is not None:
+        for record in records:
+            if record.husband and not record.husband.residence and defaults.residence:
+                record.husband.residence = defaults.residence
+            if record.wife and not record.wife.residence and defaults.residence:
+                record.wife.residence = defaults.residence
+    return DivorceRecords(archive, fund, inventory, case, village, church, year, list(records))
+
+
+def divorce_month(month: Month, *records: Divorce) -> list[Divorce]:
+    def copy_with_month(record: Divorce) -> Divorce:
+        r = copy.deepcopy(record)
+        if r.d_month is None:
+            r.d_month = month
+        else:
+            shadow(r, "d_month", month)        # the record writes its own: the section's is kept beside it
+        return r
+
+    return [copy_with_month(record) for record in records]

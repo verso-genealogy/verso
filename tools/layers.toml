@@ -1,0 +1,91 @@
+# Слои библиотеки, снизу вверх.
+# Модуль импортирует свой пакет и пакеты НИЖНИХ слоёв; пакеты одного слоя друг друга
+# не импортируют. Считаются импорты верхнего уровня и в функциях; под `if TYPE_CHECKING:` —
+# нет. Читает tools/layers.py, держит tests/test_layering.py.
+# Таблица в новых именах (schema 2). Пакет модуля — самый длинный пакет таблицы, под
+# которым он лежит; корень стороны (`verso.core`, `verso.ru`) — только свой
+# __init__. Ярусы ядра ниже ярусов ru: ru импортирует ядро, ядро ru — нет (LAY006).
+schema = 2
+
+[[tier]]
+# The catalogs' mechanism, which imports nothing of verso, and the core's messages above it —
+# under the workspace, which tells the mechanism where the language comes from.
+name = "core.i18n"
+packages = ["verso.core.i18n"]
+[[tier]]
+name = "core.messages"
+packages = ["verso.core.messages"]
+[[tier]]
+name = "core.leaves"
+packages = ["verso.core", "verso.core.workspace", "verso.core.written"]
+[[tier]]
+# The plugin registry under the corpus's data — a village.toml's and places.toml's tables
+# beyond the core's are the plugins' (their hooks), so the readers ask the registry.
+name = "core.registry"
+packages = ["verso.core.plugins"]
+[[tier]]
+# What reads the workspace's corpus data and tools — above the workspace, below every reader.
+name = "core.data"
+packages = ["verso.core.tools", "verso.core.corpus_data", "verso.core.places"]
+[[tier]]
+name = "core.targets"
+packages = ["verso.core.targets"]
+[[tier]]
+name = "core.records"
+packages = ["verso.core.records"]
+[[tier]]
+# The ratchet reads the record sets (verso.core.records.sets) — above the records.
+name = "core.ratchet"
+packages = ["verso.core.ratchet"]
+[[tier]]
+name = "core.pipeline"
+packages = ["verso.core.pipeline"]
+[[tier]]
+# `verso <команда>` — the commands' entry; it names each command's module by a string.
+name = "core.entry"
+packages = ["verso.core.cli"]
+[[tier]]
+# The plugin's messages — under everything of the plugin that speaks.
+name = "ru.messages"
+packages = ["verso.ru.messages"]
+[[tier]]
+name = "ru.leaves"
+packages = ["verso.ru", "verso.ru.gender", "verso.ru.corpus_data", "verso.ru.ages", "verso.ru.census_revisions", "verso.ru.search", "verso.ru.archives"]
+[[tier]]
+name = "ru.names"
+packages = ["verso.ru.naming", "verso.ru.relationship"]
+[[tier]]
+name = "ru.domain"
+packages = ["verso.ru.domain", "verso.ru.church_calendar", "verso.ru.notes"]
+[[tier]]
+name = "ru.dsl"
+packages = ["verso.ru.dsl"]
+[[tier]]
+name = "ru.readers"
+packages = ["verso.ru.exporters", "verso.ru.linters", "verso.ru.targets", "verso.ru.records"]
+[[tier]]
+name = "ru.analysis"
+packages = ["verso.ru.facts", "verso.ru.importers", "verso.ru.timeline"]
+[[tier]]
+# What conducts the plugin's work over a village — the translation and its consolidation,
+# the facts read off the records — moved out of the core.
+name = "ru.pipeline"
+packages = ["verso.ru.pipeline"]
+[[tier]]
+name = "ru.consolidation"
+packages = ["verso.ru.consolidation"]
+[[tier]]
+name = "ru.projections"
+packages = ["verso.ru.familio", "verso.ru.persons"]
+[[tier]]
+name = "ru.entry"
+packages = ["verso.ru.cli", "verso.ru.plugin"]
+
+[overrides]
+# Модуль не в слое своего пакета: инструмент репо, а не линтер DSL (переехал до 0.1.0).
+"verso.ru.linters.dead_code" = "ru.entry"
+
+# The corpus's package. The library and the App do not import it (LAY005) — they
+# read the corpus's data through the workspace. The DSL imports it (`corpus.statuses`).
+[corpus]
+package = "corpus"

@@ -1,0 +1,28 @@
+# Invented: the slots GND001 reads — the groom and the bride, the child and the deceased against the record's sex,
+# a father and a mother, a relative against the sex its relationship implies — filled as a Person and a record
+# allow (they refuse a person of the other sex in such a slot). The check finds a mismatch only where the linting
+# workspace's names table reads a name as the other sex, which the oracle asks of a table that does
+# (`tests/thin_dictionary.py`).
+from verso.ru.dsl import Gender, Month, Relationship, birth, birth_records, death, death_records, marriage, marriage_records, person, relative
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4047", "Маниловка", "Церковь", 1851,
+    birth(1, Gender.FEMALE, 3, 5, child=person("Мария"), father=person("Петр"), mother=person("Анна"),
+          relatives=[relative(person("Иван"), Relationship.FATHER, "мать"),
+                     relative(person("Анфиса"), Relationship.MOTHER),
+                     relative(person("Анна"), Relationship.WIFE)]),
+    birth(2, Gender.MALE, 4, 6, child=person("Иван"), father=person("Ѳома", gender=Gender.MALE),
+          mother=person("Анна", gender=Gender.FEMALE),
+          relatives=[relative(person("Петр"), Relationship.SON), relative(person("Анна"), Relationship.MOTHER_IN_LAW)]))
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4048", "Маниловка", "Церковь", 1852,
+    marriage(1, 7, Month.FEBRUARY, groom=person("Иван"), bride=person("Мария")),
+    marriage(2, 8, Month.FEBRUARY, groom=person("Петр", gender=Gender.MALE), bride=person("Анна", gender=Gender.FEMALE)))
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4049", "Маниловка", "Церковь", 1853,
+    death(1, Gender.MALE, 3, 4, deceased=person("Иван"), age=60,
+          relatives=[relative(person("Анна"), Relationship.WIFE), relative(person("Анфиса"), Relationship.MOTHER)]),
+    death(2, Gender.FEMALE, 4, 5, deceased=person("Мария"), age=40,
+          relatives=[relative(person("Иван"), Relationship.HUSBAND), relative(person("Петр"), Relationship.SON)]))

@@ -1,0 +1,43 @@
+# Invented: the two dates of a death. DBD001 a burial before the death — every hint (past New Year, swapped
+# days in December and in another month, a month override that left the burial on the block's month, a burial in
+# an earlier month) and a civil register's registration; DBD002 a day its month does not have, with and without
+# a month, for the death and for the burial, February by the Julian and the Gregorian rule. The months come
+# from the section (`death_month`, `death_month_year`) or the record; the year from the record, the section or
+# the book. The quiet cases: a declared `source_date_error`, a month nobody states, an empty day column (0).
+from verso.ru.dsl import Gender, Month, death, death_month, death_month_year, death_records
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4061", "Маниловка", "Церковь", 1857,
+    *death_month(Month.DECEMBER,
+                 death(1, Gender.MALE, 31, 2, b_month=Month.JANUARY),
+                 death(2, Gender.FEMALE, 20, 10),
+                 death(3, Gender.MALE, 15, 16, source_date_error="погребён раньше смерти — так в подлиннике")),
+    *death_month(Month.MAY,
+                 death(4, Gender.MALE, 9, 8),
+                 death(5, Gender.FEMALE, 6, 1, d_month=Month.SEPTEMBER),
+                 death(6, Gender.MALE, 31, 1, b_month=Month.JUNE),
+                 death(7, Gender.MALE, 31, 32),
+                 death(8, Gender.FEMALE, 10, 0)),
+    *death_month(Month.FEBRUARY,
+                 death(9, Gender.MALE, 29, 1),
+                 death(10, Gender.MALE, 30, 1, b_month=Month.MARCH),
+                 death(11, Gender.FEMALE, 28, 29, year=1860)),
+    *death_month_year(Month.FEBRUARY, 1904,
+                      death(12, Gender.MALE, 29, 29),
+                      death(13, Gender.FEMALE, 5, 30)),
+    *death_month_year(Month.NOVEMBER, 1900, death(14, Gender.MALE, 31, 2)),
+    *death_month(None, death(15, Gender.MALE, 9, 8), death(16, Gender.MALE, 32, 33)),
+    death(17, Gender.FEMALE, 4, 3, d_month=Month.AUGUST, b_month=Month.AUGUST),
+    death(18, Gender.MALE, 20, 3, d_month=Month.AUGUST, b_month=Month.JULY),
+    death(19, Gender.MALE, 3, None, d_month=Month.APRIL),
+    death(20, Gender.MALE, 31, 31, d_month=Month.JUNE, b_month=Month.JULY),
+    death(21, Gender.MALE, 0, 0, d_month=Month.JUNE, b_month=Month.MAY),
+)
+
+civil = death_records(
+    "ГА Глуповской области", "10", "4", "4062", "Маниловка", "Церковь", 1925,
+    *death_month(Month.APRIL,
+                 death(1, Gender.MALE, 11, 2),
+                 death(2, Gender.FEMALE, 5, 5),
+                 death(3, Gender.MALE, 30, 31)),
+    civil=True)

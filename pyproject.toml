@@ -1,0 +1,17 @@
+# The library's tests: `cd lib && python -m pytest tests`. lib/ is no distribution — its two
+# are lib/packages/verso-core and lib/packages/verso-ru.
+[tool.pytest.ini_options]
+# openpyxl warns on READ that it cannot represent the Familio template's x14
+# (extension) dropdowns and conditional formatting, and will drop them on save.
+# That is true and already repaired on WRITE: FamilioTemplateWriter splices the
+# `<ext>` blocks back into the saved workbook (familio_spravochnik.py), and
+# `test_preserves_template_dropdowns` / `test_conditional_formatting_extends_to_data_end`
+# fail if they ever stop surviving. Silence the two exact messages only — a
+# different openpyxl warning still surfaces.
+filterwarnings = [
+    "ignore:Data Validation extension is not supported and will be removed:UserWarning",
+    "ignore:Conditional Formatting extension is not supported and will be removed:UserWarning",
+]
+# No marker is declared: a library test reads no corpus but the synthetic one its workspace names
+# (tests/fixtures/workspace), so a `corpus` mark here fails collection.
+addopts = "--strict-markers"

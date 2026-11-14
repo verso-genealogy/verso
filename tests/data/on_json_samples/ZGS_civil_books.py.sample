@@ -1,0 +1,95 @@
+# Invented: books of the civil registry (ZGS001-ZGS005). ZGS001 a civil book holding what only a church writes -- a
+# godparent, a wedding's surety, a priest, a christening() entry, in a birth, a marriage and a death book; ZGS002 a
+# registration before the birth (an explicit month, an explicit year, a section's month, a December section whose
+# registration crosses into the next year; the quiet cases are a registration the section advances itself, a
+# registration after the birth, a birth with no month); ZGS003 a book of 1918 on that names no church and is not
+# civil; ZGS004 a civil book styling someone by an estate of the old order (a status of a person, a default of the
+# book, a constant); ZGS005 a name written with the letters the 1918 reform removed.
+from verso.ru.dsl import (
+    Gender, Month, RecordDefaults, birth, birth_month, birth_month_year, birth_records, christening, death,
+    death_month, death_records, marriage, marriage_records, person)
+from verso.ru.dsl.statuses import PEASANT_MALE, STATE_PEASANT_MALE
+
+civil_births = birth_records(
+    "Госархив Примерской области", "21", "3", "104", "Примерово", "", 1926,
+    birth(1, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH,
+          father=person("Иван", "Петров", "Примеров"), mother=person("Анна", "Петрова"),
+          child=person("Лука"), god_parent1=person("Семен", "Лукин"), priest=person("Фома", "Иванов")),
+    christening(2, Gender.FEMALE, 10, Month.APRIL, child=person("Анфиса"),
+                father=person("Иван", "Фомин"), god_parent2=person("Мария", "Петрова")),
+    birth(17, Gender.MALE, 1, 2, Month.MARCH, Month.MARCH, None, None, None, person("Лука"), person("Анна")),
+    birth(3, Gender.MALE, 20, 3, Month.MAY, Month.MAY, child=person("Фома")),
+    birth(4, Gender.FEMALE, 12, 10, Month.JUNE, Month.MAY, child=person("Анна")),
+    birth(5, Gender.MALE, 12, 10, Month.JUNE, k_year=1925, child=person("Лука")),
+    birth(6, Gender.MALE, 12, None, Month.JUNE, Month.JUNE, child=person("Иван")),
+    birth(7, Gender.MALE, None, 2, Month.JUNE, Month.JUNE, child=person("Семен")),
+    birth(8, Gender.MALE, 12, 13, k_month=Month.JULY, child=person("Петр")),
+    birth(9, Gender.FEMALE, 5, 3, Month.JULY, Month.AUGUST, year=1927, k_year=1926, child=person("Мария")),
+    *birth_month(Month.AUGUST,
+                 birth(10, Gender.MALE, 25, 2, child=person("Лука")),
+                 birth(11, Gender.MALE, 25, 2, k_month=Month.JULY, child=person("Фома")),
+                 birth(12, Gender.MALE, 10, 12, child=person("Иван"), k_year=1925),
+                 birth(13, Gender.MALE, 10, 12, Month.JULY, child=person("Семен"), k_year=1927)),
+    *birth_month_year(Month.DECEMBER, 1927,
+                      birth(14, Gender.MALE, 28, 3, child=person("Петр")),
+                      birth(15, Gender.MALE, 28, 3, k_year=1926, child=person("Фома"))),
+    *birth_month_year(None, 1927,
+                      birth(16, Gender.MALE, 4, 2, k_year=1926, child=person("Лука"))),
+    defaults=RecordDefaults(residence="Примерово", status_male="казенный крестьянин", status_female="крестьянка"),
+    civil=True,
+)
+
+civil_marriages = marriage_records(
+    "Госархив Примерской области", "21", "3", "105", "Примерово", "", 1926,
+    marriage(1, 3, Month.MAY, groom=person("Лука", "Иванов", "Примеров"), bride=person("Анна", "Фомина"),
+             witness1=person("Семен", "Петров"), priest=person("Иван", "Фомин")),
+    marriage(2, 9, Month.MAY, groom=person("Петр", "Лукин"), bride=person("Мария"),
+             witness3=person("Фома", "Иванов"), deacon=person("Лука"), dyachok=None),
+    marriage(3, 9, Month.MAY, None, None, None, None, None, None, person("Семен"), person("Фома")),
+    civil=True,
+)
+
+civil_deaths = death_records(
+    "Госархив Примерской области", "21", "3", "106", "Примерово", "", 1926,
+    *death_month(Month.MAY,
+                 death(1, Gender.MALE, 4, 6, deceased=person("Иван", "Лукин"), sexton=person("Фома"),
+                       witness1=person("Семен")),
+                 death(2, Gender.FEMALE, 7, 7, deceased=person("Анна"), priest=person("Лука", "Иванов"))),
+    civil=True,
+)
+
+# ZGS003: a ZAGS book of 1918 on, read as a parish one.
+unflagged_births = birth_records(
+    "Госархив Примерской области", "21", "3", "107", "Примерово", "", 1919,
+    birth(1, Gender.MALE, 1, 2, Month.JANUARY, Month.JANUARY, child=person("Лука")))
+unflagged_deaths = death_records(
+    "Госархив Примерской области", "21", "3", "108", "Примерово", "", 1930,
+    death(1, Gender.MALE, 1, 2, deceased=person("Иван")))
+church_births = birth_records(
+    "Госархив Примерской области", "21", "3", "109", "Примерово", "Никольская", 1919,
+    birth(1, Gender.MALE, 1, 2, Month.JANUARY, Month.JANUARY, child=person("Лука")))
+early_births = birth_records(
+    "Госархив Примерской области", "21", "3", "110", "Примерово", "", 1850,
+    birth(1, Gender.MALE, 1, 2, Month.JANUARY, Month.JANUARY, child=person("Лука")))
+
+# ZGS004: old estates -- a constant, a text of a person, a default of the book; plain «крестьянин» is quiet.
+old_estates = birth_records(
+    "Госархив Примерской области", "21", "3", "111", "Примерово", "", 1925,
+    birth(1, Gender.MALE, 1, 2, Month.JANUARY, Month.JANUARY,
+          father=person("Иван", "Петров", status=PEASANT_MALE), mother=person("Анна", status="мещанка"),
+          child=person("Лука", status="дворянский сын"), god_parent1=person("Семен", status="крестьянин")),
+    defaults=RecordDefaults(status_male=STATE_PEASANT_MALE, status_female="помещичья крестьянка",
+                            status_mother="крестьянка"),
+    civil=True,
+)
+
+# ZGS005: old letters (ѣ, і, ѳ, ѵ, a final ъ) in a name -- one finding a person.
+old_letters = death_records(
+    "Госархив Примерской области", "21", "3", "112", "Примерово", "", 1925,
+    death(1, Gender.MALE, 1, 2, deceased=person("Ѳома", "Лукинъ", "Примеровъ")),
+    death(2, Gender.FEMALE, 3, 4, deceased=person("Анна", "Петрова", "Примерова")),
+    death(3, Gender.MALE, 5, 6, deceased=person("Иванъ")),
+    death(4, Gender.MALE, 7, 8, deceased=person(name_orig="Лука", last_name_orig="Лѣсовщиковъ")),
+    death(5, Gender.FEMALE, 9, 10, deceased=person("Анна", patr_orig="Петровна", last_name_orig="Виѵина")),
+    civil=True,
+)

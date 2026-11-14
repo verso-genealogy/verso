@@ -1,0 +1,39 @@
+// The library: verso-core, verso-ru and their tests — `pyright -p lib/pyrightconfig.json`. The
+// switches are the root's (tests/test_projects.py keeps the three equal).
+{
+  "pythonVersion": "3.14",
+  "typeCheckingMode": "strict",
+  "include": ["packages/verso-core/src", "packages/verso-ru/src", "tests", "tools"],
+  "exclude": ["**/__pycache__", "**/node_modules", "**/.*", "ide"],
+  // Top level, not an execution environment's: the imports of a file outside this project
+  // (the library's, which the App imports) resolve through them too.
+  "extraPaths": ["packages/verso-core/src", "packages/verso-ru/src", "tests/fixtures/workspace", "."],
+
+  // Strict mode for its real-bug checks (incompatible overrides, possibly-unbound,
+  // unnecessary comparisons, constant redefinition, etc.). The annotation-completeness
+  // family below is OFF: this is a large historically-untyped codebase, and requiring
+  // full annotations everywhere is 15k+ nags, not bugs.
+  "reportUnknownMemberType": false,
+  "reportUnknownArgumentType": false,
+  "reportUnknownVariableType": false,
+  "reportUnknownParameterType": false,
+  "reportMissingParameterType": false,
+  "reportUntypedFunctionDecorator": false,
+  "reportUntypedClassDecorator": false,
+  "reportUntypedBaseClass": false,
+  "reportUntypedNamedTuple": false,
+  // Tests and intra-package code access "private" (_-prefixed) members legitimately.
+  "reportPrivateUsage": false,
+  // Private (underscore) helpers are intentionally split across cohesive
+  // package submodules and consumed by siblings / the package API; pyright's
+  // reportUnusedFunction only counts same-file use, so it false-positives here.
+  "reportUnusedFunction": false,
+  // ruff F401 (+ noqa) owns unused imports — it handles intentional re-exports; pyright's
+  // version false-positives on them. Optional deps (gspread) aren't always installed.
+  "reportUnusedImport": false,
+  "reportMissingImports": false,
+  "reportUnusedVariable": true,
+  // High-noise on untyped libs / ast / re.match — warnings (visible, non-blocking).
+  "reportOptionalMemberAccess": "warning",
+  "reportArgumentType": "warning"
+}

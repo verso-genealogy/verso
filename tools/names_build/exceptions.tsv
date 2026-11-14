@@ -1,0 +1,108 @@
+# The maintainer's exceptions to the names base (source «editor»): written as grammar, by the maintainer.
+# names: a link of the sources that is plainly wrong — base empty: the name is a name of its own.
+# forms: a form the rules of verso.ru.naming.forms do not give; an empty cell is the rule's.
+# drop: a Wikidata label that is no given name (left out of the base) — note: why.
+# patronymics: a short form the rules give two names — name: the form, base: its father, patronymic_m (a man's)
+#   or patronymic_f (a woman's): its modern form.
+table	sex	name	base	genitive	patronymic_m	patronymic_f	old_patronymic_m	old_patronymic_f	note
+names	F	Алина							Wikidata P460 joins two different names (Галина)
+names	F	Гармония							Wikidata P460 joins two different names (Ермиония)
+names	F	Линда							Wikidata P460 joins two different names (Людмила)
+names	F	Мирлинда							Wikidata P460 joins two different names (Людмила)
+names	F	Эрлинда							Wikidata P460 joins two different names (Людмила)
+names	F	Эллина							Wikidata P460 joins two different names (Елена)
+names	F	Хоуп							a calque, not the same name (Wikidata P460) (Надежда)
+names	M	Абель							Wikidata P460 joins two different names (Авраам)
+names	M	Владислав							Wikidata P460 joins two different names (Владимир)
+names	M	Мирчо							Wikidata P460 joins two different names (Владимир)
+names	M	Луций							Wikidata P460 joins two different names (Лука)
+names	M	Амадео							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Амадеу							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Амадеус							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Амадеуш							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Амадио							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Амеде							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Амедео							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Богумил							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Готлиб							a calque, not the same name (Wikidata P460) (Феофил)
+names	M	Матвей	Матфей						the Russian form of Матфей; the books' pairs reach Матфий (another apostle) too
+names	M	Матьфей	Матфей						a spelling of Матвей, the Russian form of Матфей
+forms	M	Лев		Льва	Львович	Львовна	Львов	Львова	a fleeting vowel
+forms	M	Павел		Павла	Павлович	Павловна	Павлов	Павлова	a fleeting vowel
+forms	M	Пётр		Петра	Петрович	Петровна	Петров	Петрова	ё only in the nominative
+forms	M	Илья				Ильинична			the daughter's patronymic in -инична
+forms	M	Кузьма				Кузьминична			the daughter's patronymic in -инична
+forms	M	Лука				Лукинична			the daughter's patronymic in -инична
+forms	M	Фома				Фоминична			the daughter's patronymic in -инична
+forms	M	Илия			Ильич	Ильинична	Ильин	Ильина	the church form of Илья: Илья's patronymics
+forms	M	Анастасий			Анастасьевич	Анастасьевна	Анастасьев	Анастасьева	-ий after one consonant softens: -ьевич
+forms	M	Анатолий			Анатольевич	Анатольевна	Анатольев	Анатольева	-ий after one consonant softens: -ьевич
+forms	M	Аркадий			Аркадьевич	Аркадьевна	Аркадьев	Аркадьева	-ий after one consonant softens: -ьевич
+forms	M	Арсений			Арсеньевич	Арсеньевна	Арсеньев	Арсеньева	-ий after one consonant softens: -ьевич
+forms	M	Артемий			Артемьевич	Артемьевна	Артемьев	Артемьева	-ий after one consonant softens: -ьевич
+forms	M	Афанасий			Афанасьевич	Афанасьевна	Афанасьев	Афанасьева	-ий after one consonant softens: -ьевич
+forms	M	Валерий			Валерьевич	Валерьевна	Валерьев	Валерьева	-ий after one consonant softens: -ьевич
+forms	M	Василий			Васильевич	Васильевна	Васильев	Васильева	-ий after one consonant softens: -ьевич
+forms	M	Викентий			Викентьевич	Викентьевна	Викентьев	Викентьева	-ий after one consonant softens: -ьевич
+forms	M	Виталий			Витальевич	Витальевна	Витальев	Витальева	-ий after one consonant softens: -ьевич
+forms	M	Власий			Власьевич	Власьевна	Власьев	Власьева	-ий after one consonant softens: -ьевич
+forms	M	Геннадий			Геннадьевич	Геннадьевна	Геннадьев	Геннадьева	-ий after one consonant softens: -ьевич
+forms	M	Григорий			Григорьевич	Григорьевна	Григорьев	Григорьева	-ий after one consonant softens: -ьевич
+forms	M	Гурий			Гурьевич	Гурьевна	Гурьев	Гурьева	-ий after one consonant softens: -ьевич
+forms	M	Евгений			Евгеньевич	Евгеньевна	Евгеньев	Евгеньева	-ий after one consonant softens: -ьевич
+forms	M	Евсевий			Евсевьевич	Евсевьевна	Евсевьев	Евсевьева	-ий after one consonant softens: -ьевич
+forms	M	Евстафий			Евстафьевич	Евстафьевна	Евстафьев	Евстафьева	-ий after one consonant softens: -ьевич
+forms	M	Евстратий			Евстратьевич	Евстратьевна	Евстратьев	Евстратьева	-ий after one consonant softens: -ьевич
+forms	M	Зиновий			Зиновьевич	Зиновьевна	Зиновьев	Зиновьева	-ий after one consonant softens: -ьевич
+forms	M	Игнатий			Игнатьевич	Игнатьевна	Игнатьев	Игнатьева	-ий after one consonant softens: -ьевич
+forms	M	Ипатий			Ипатьевич	Ипатьевна	Ипатьев	Ипатьева	-ий after one consonant softens: -ьевич
+forms	M	Лаврентий			Лаврентьевич	Лаврентьевна	Лаврентьев	Лаврентьева	-ий after one consonant softens: -ьевич
+forms	M	Леонтий			Леонтьевич	Леонтьевна	Леонтьев	Леонтьева	-ий after one consonant softens: -ьевич
+forms	M	Макарий			Макарьевич	Макарьевна	Макарьев	Макарьева	-ий after one consonant softens: -ьевич
+forms	M	Меркурий			Меркурьевич	Меркурьевна	Меркурьев	Меркурьева	-ий after one consonant softens: -ьевич
+forms	M	Мефодий			Мефодьевич	Мефодьевна	Мефодьев	Мефодьева	-ий after one consonant softens: -ьевич
+forms	M	Парфений			Парфеньевич	Парфеньевна	Парфеньев	Парфеньева	-ий after one consonant softens: -ьевич
+forms	M	Пафнутий			Пафнутьевич	Пафнутьевна	Пафнутьев	Пафнутьева	-ий after one consonant softens: -ьевич
+forms	M	Порфирий			Порфирьевич	Порфирьевна	Порфирьев	Порфирьева	-ий after one consonant softens: -ьевич
+forms	M	Прокопий			Прокопьевич	Прокопьевна	Прокопьев	Прокопьева	-ий after one consonant softens: -ьевич
+forms	M	Софроний			Софроньевич	Софроньевна	Софроньев	Софроньева	-ий after one consonant softens: -ьевич
+forms	M	Терентий			Терентьевич	Терентьевна	Терентьев	Терентьева	-ий after one consonant softens: -ьевич
+forms	M	Юрий			Юрьевич	Юрьевна	Юрьев	Юрьева	-ий after one consonant softens: -ьевич
+forms	M	Михаил			Михайлович	Михайловна	Михайлов	Михайлова	Михаил takes -йлович (Гавриил, Даниил keep the rule's -иилович)
+forms	M	Яков			Яковлевич	Яковлевна	Яковлев	Яковлева	-ов takes -лев: Яковлевич
+forms	M	Иаков			Иаковлевич	Иаковлевна	Иаковлев	Иаковлева	-ов takes -лев: Яковлевич
+forms	M	Арсентий			Арсентьевич	Арсентьевна	Арсентьев	Арсентьева	-ий after one consonant softens: -ьевич
+forms	M	Ефимий			Ефимьевич	Ефимьевна	Ефимьев	Ефимьева	-ий after one consonant softens: -ьевич
+forms	M	Захарий			Захарьевич	Захарьевна	Захарьев	Захарьева	-ий after one consonant softens: -ьевич
+forms	M	Клементий			Клементьевич	Клементьевна	Клементьев	Клементьева	-ий after one consonant softens: -ьевич
+forms	M	Климентий			Климентьевич	Климентьевна	Климентьев	Климентьева	-ий after one consonant softens: -ьевич
+forms	M	Кондратий			Кондратьевич	Кондратьевна	Кондратьев	Кондратьева	-ий after one consonant softens: -ьевич
+forms	M	Корнелий			Корнельевич	Корнельевна	Корнельев	Корнельева	-ий after one consonant softens: -ьевич
+forms	M	Панкратий			Панкратьевич	Панкратьевна	Панкратьев	Панкратьева	-ий after one consonant softens: -ьевич
+forms	M	Прокофий			Прокофьевич	Прокофьевна	Прокофьев	Прокофьева	-ий after one consonant softens: -ьевич
+forms	M	Савватий			Савватьевич	Савватьевна	Савватьев	Савватьева	-ий after one consonant softens: -ьевич
+forms	M	Савелий			Савельевич	Савельевна	Савельев	Савельева	-ий after one consonant softens: -ьевич
+forms	M	Федосий			Федосьевич	Федосьевна	Федосьев	Федосьева	-ий after one consonant softens: -ьевич
+forms	M	Феодосий			Феодосьевич	Феодосьевна	Феодосьев	Феодосьева	-ий after one consonant softens: -ьевич
+forms	M	Харлампий			Харлампьевич	Харлампьевна	Харлампьев	Харлампьева	-ий after one consonant softens: -ьевич
+forms	M	Юлий			Юльевич	Юльевна	Юльев	Юльева	-ий after one consonant softens: -ьевич
+forms	M	Гаврила					Гаврилов	Гаврилова	-ила, -йла take -ович by the rule; the short form follows the church name: -ов (Гаврилов)
+forms	M	Данила					Данилов	Данилова	-ила, -йла take -ович by the rule; the short form follows the church name: -ов (Гаврилов)
+forms	M	Кирила					Кирилов	Кирилова	-ила, -йла take -ович by the rule; the short form follows the church name: -ов (Гаврилов)
+forms	M	Михайла					Михайлов	Михайлова	-ила, -йла take -ович by the rule; the short form follows the church name: -ов (Гаврилов)
+forms	M	Михаила			Михайлович	Михайловна	Михайлов	Михайлова	the books' nominative Михаила (a head of a roll), Михаил's folk form: the church name's forms, Михайлович
+forms	M	Михайло			Михайлович	Михайловна	Михайлов	Михайлова	-ила, -йла, -йло take -ович (Гаврилович), as the church name
+forms	M	Акила			Акилич	Акилична			a svyatcy name on -ила keeps its own -а: -ич, as Никита (Акилич)
+forms	M	Арпила			Арпилич	Арпилична			a svyatcy name on -ила keeps its own -а: -ич, as Никита (Акилич)
+forms	M	Вавила			Вавилич	Вавилична			a svyatcy name on -ила keeps its own -а: -ич, as Никита (Акилич)
+forms	M	Папила			Папилич	Папилична			a svyatcy name on -ила keeps its own -а: -ич, as Никита (Акилич)
+forms	M	Сила			Силич	Силична			a svyatcy name on -ила keeps its own -а: -ич, as Никита (Акилич)
+forms	M	Иов			Иович	Иовна			Иов takes -ович without a second «ов»: Иович
+forms	M	Франц			Францевич	Францевна	Францев	Францева	after ц an unstressed -евич
+forms	F	Андреа		Андреа					a woman's name on -еа does not decline
+forms	F	Изабель		Изабель					a foreign woman's name on -ль does not decline (Любовь does)
+forms	F	Николь		Николь					a foreign woman's name on -ль does not decline (Любовь does)
+patronymics	M	Андрин	Андрия		Андриевич				the rule gives it to Андра (a Romanian name) and to Андрия (a Slavonic form of Андрей): pinned to the Slavonic one
+patronymics	F	Андрина	Андрия			Андриевна			the same, a daughter's
+drop	M	Кристов							a surname form (Христов), not a given name
+drop	M	Ленин							a surname taken as a given name abroad; in Russian a surname

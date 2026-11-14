@@ -1,0 +1,6 @@
+from __future__ import annotations
+import os
+from verso.ru.domain.person import person
+from calendar import Month
+
+x = 1

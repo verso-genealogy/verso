@@ -1,0 +1,3 @@
+marriage_records("a", "f", "i", "c", "Горюхино", "Церковь", 1855,
+    marriage(1, groom=person("Гр", "Петров", residence="Собакевичево", status=MANILOV_OV_PEASANT_MALE), witness1=person("Ви", "Иванов", residence="Усть-Неурожайка", status=MANILOV_OV_PEASANT_MALE)),
+    defaults=RecordDefaults(residence="Горюхино"))

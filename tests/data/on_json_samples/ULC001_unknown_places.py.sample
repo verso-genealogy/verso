@@ -1,0 +1,14 @@
+# Invented: a death record of a parish village the places know (ULC001 reads only such files),
+# with a default residence and a residence of its own that no place table knows
+# (ULC001: default_residence, residence), and a second book of a village no table knows
+# (ULC001: parish_village).
+from verso.ru.dsl import Gender, RecordDefaults, death, death_records, person
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4045", "Заманиловка", "Церковь", 1860,
+    death(1, Gender.MALE, 3, 4, deceased=person("Лука", residence="Забытово"), age=70),
+    defaults=RecordDefaults(residence="Пропащево"))
+
+deaths_elsewhere = death_records(
+    "ГА Глуповской области", "10", "4", "4046", "Неведомка", "Церковь", 1861,
+    death(1, Gender.FEMALE, 5, 6, deceased=person("Марія"), age=60))

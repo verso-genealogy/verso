@@ -1,0 +1,162 @@
+# Invented: a status against the household's (PSA001-PSA003) and against where its bearer lives (RTV001, RTV002),
+# a full patronymic (PAF001) and a roll's two ages (CAI002). PSA: a parent and a child of two estates, a husband and
+# a wife (the clergy is compared there), a statusless side on the book's default (PSA002), a newborn styled
+# by an adult role (PSA003, with and without a child form to offer), a status in free text, a death's father, mother
+# and husband, a wedding's parents of the groom and of the bride; quiet: a child whose status derives from the
+# parent. RTV001: a landlord's peasant or a state peasant living elsewhere, in words and by constant, by the book's
+# residence, by the parent's, by the census village; quiet: a godparent, a residence stated at a wedding. RTV002: the
+# село of the owners and the state's деревня of a parish, a status written and given by the book, a soldier. PAF001:
+# a patronymic of the full form in a book before and after 1918, on a card and on a list. CAI002: the gap of the
+# revision, in numbers, in text, in a comment; quiet: the two columns alike, a departed or hidden member, a gap
+# within a year.
+from corpus.statuses import (
+    GOLOVLEV_PEASANT, MANILOV_KF_PEASANT_MALE, MANILOV_KF_PEASANT_SON, MANILOV_PS_PEASANT_FEMALE,
+    MANILOV_PS_PEASANT_MALE, MANILOV_SP_DVOROVY, NOZDREV_PEASANT, NOZDREV_PEASANT_FEMALE)
+from verso.ru.dsl import (
+    CensusRole, Gender, Month, RecordDefaults, Relationship, birth, birth_records, census_records, death,
+    death_records, external_source_records, household, listed_person, marriage, marriage_records, member,
+    name_list_records, person, relative, wwi_record)
+from verso.ru.dsl.statuses import (
+    BUDNY_PEASANT, KAZENNYJ_PEASANT_FEMALE, KAZENNYJ_PEASANT_MALE, MERCHANT, MESHCHANIN_FEMALE, PEASANT_FEMALE,
+    PEASANT_MALE, PRIEST,
+    STATE_PEASANT_MALE, YASAK_PEASANT_FEMALE, YASAK_PEASANT_MALE, YASAK_PEASANT_SON)
+
+hills_births = birth_records(
+    "Госархив Примерской области", "21", "3", "201", "Горюхино", "Никольская", 1850,
+    birth(1, Gender.MALE, 3, 5,
+          father=person("Иван", "Петров", status=MANILOV_PS_PEASANT_MALE),
+          mother=person("Анна", "Петрова", status=MANILOV_PS_PEASANT_FEMALE),
+          child=person("Лука", status=YASAK_PEASANT_SON)),
+    birth(2, Gender.FEMALE, 4, 6, child=person("Мария", status=MESHCHANIN_FEMALE)),
+    birth(17, Gender.MALE, 4, 6, child=person("Фома", status=MERCHANT)),
+    birth(3, Gender.MALE, 5, 7, child=person("Фома", status=BUDNY_PEASANT)),
+    birth(4, Gender.MALE, 6, 8, father=person("Семен", "Лукин"),
+          mother=person("Анфиса", "Лукина", status=MANILOV_PS_PEASANT_FEMALE)),
+    birth(5, Gender.MALE, 7, 9, mother=person("Анна", "Лукина"),
+          child=person("Фома", status=MANILOV_KF_PEASANT_SON)),
+    birth(6, Gender.MALE, 8, 10, father=person("Иван", "Лукин", status="крестьянин помещика Саввы Пантелеевича Манилова"),
+          child=person("Петр")),
+    birth(7, Gender.MALE, 9, 11, father=person("Иван", "Лукин", status="крестьянин помещика Саввы Пантелеевича Манилова"),
+          child=person("Петр", status=MANILOV_KF_PEASANT_SON)),
+    birth(8, Gender.MALE, 10, 12, father=person("Лука", "Фомин", status=PRIEST),
+          mother=person("Анфиса", "Фомина", status=PEASANT_FEMALE)),
+    birth(9, Gender.MALE, 11, 13, father=person("Лука", "Фомин", status=MANILOV_SP_DVOROVY),
+          mother=person("Анфиса", "Фомина")),
+    birth(10, Gender.MALE, 12, 14, father=person("Лука", "Фомин", status=PEASANT_MALE),
+          mother=person("Анфиса", "Фомина"), child=person("Фома")),
+    birth(11, Gender.MALE, 13, 15, father=person("Фома", "Лукин", status=MANILOV_KF_PEASANT_MALE)),
+    birth(12, Gender.MALE, 14, 16, father=person("Фома", "Лукин", status=MANILOV_KF_PEASANT_MALE,
+                                                   residence="Собакевичево")),
+    birth(13, Gender.MALE, 15, 17, mother=person("Анна", "Лукина",
+                                                   status="крестьянка помещика Кузьмы Филипповича Манилова")),
+    birth(14, Gender.MALE, 16, 18, father=person("Фома", "Лукин", status=KAZENNYJ_PEASANT_MALE, residence="Неелово")),
+    birth(15, Gender.MALE, 17, 19, father=person("Петр", "Лукин"),
+          god_parent1=person("Фома", status=MANILOV_KF_PEASANT_MALE)),
+    birth(16, Gender.MALE, 18, 20, father=person("Петр", "Лукин", status=KAZENNYJ_PEASANT_MALE),
+          mother=person("Анна", "Лукина", status=PEASANT_FEMALE),
+          relatives=[relative(person("Фома", status=STATE_PEASANT_MALE), Relationship.FATHER, "отец")]),
+    defaults=RecordDefaults(residence="Горюхино", status_male=YASAK_PEASANT_MALE, status_female=YASAK_PEASANT_FEMALE))
+
+hills_deaths = death_records(
+    "Госархив Примерской области", "21", "3", "202", "Горюхино", "Никольская", 1850,
+    death(1, Gender.MALE, 3, 5, deceased=person("Лука", status=YASAK_PEASANT_SON),
+          relatives=[relative(person("Иван", "Петров", status=MANILOV_PS_PEASANT_MALE), Relationship.FATHER, "отец")]),
+    death(2, Gender.FEMALE, 4, 6, deceased=person("Анна", status=YASAK_PEASANT_FEMALE),
+          relatives=[relative(person("Фома", status=MANILOV_PS_PEASANT_MALE), Relationship.HUSBAND, "муж")]),
+    death(3, Gender.FEMALE, 5, 7, deceased=person("Мария"),
+          relatives=[relative(person("Иван", "Петров", status=MANILOV_PS_PEASANT_MALE), Relationship.FATHER, "отец")]),
+    death(4, Gender.MALE, 6, 8, deceased=person("Семен"),
+          relatives=[relative(person("Анна", "Петрова", status=MANILOV_PS_PEASANT_FEMALE), Relationship.MOTHER, "мать")]),
+    death(5, Gender.MALE, 7, 9, deceased=person("Семен", status=MANILOV_KF_PEASANT_MALE),
+          relatives=[relative(person("Фома", residence="Собакевичево"), Relationship.FATHER, "отец")]),
+    death(6, Gender.MALE, 8, 10, deceased=person("Семен", status=MANILOV_KF_PEASANT_MALE)),
+    death(7, Gender.FEMALE, 9, 11, deceased=person("Анна"),
+          relatives=[relative(person("Петр", status=PRIEST), Relationship.HUSBAND, "муж")]),
+    defaults=RecordDefaults(residence="Горюхино", status_male=YASAK_PEASANT_MALE, status_female=YASAK_PEASANT_FEMALE))
+
+hills_marriages = marriage_records(
+    "Госархив Примерской области", "21", "3", "203", "Горюхино", "Никольская", 1850,
+    marriage(1, 3, Month.MAY, groom=person("Иван", "Петров", status=MANILOV_PS_PEASANT_MALE),
+             bride=person("Анна", status=MANILOV_PS_PEASANT_FEMALE),
+             relatives=[relative(person("Фома", "Иванов", status=YASAK_PEASANT_MALE), Relationship.FATHER, "отец жениха"),
+                        relative(person("Мария", status=KAZENNYJ_PEASANT_FEMALE), Relationship.MOTHER, "мать невесты"),
+                        relative(person("Лука", status=YASAK_PEASANT_MALE), Relationship.FATHER, "отец свидетеля")]),
+    marriage(2, 4, Month.MAY, groom=person("Лука", status=MANILOV_KF_PEASANT_MALE), bride=person("Анна"),
+             witness1=person("Семен", status=MANILOV_KF_PEASANT_MALE)),
+    marriage(3, 5, Month.MAY, groom=person("Лука", status=MANILOV_KF_PEASANT_MALE, residence="Собакевичево"),
+             bride=person("Анна"), witness1=person("Семен", status=MANILOV_KF_PEASANT_MALE, residence="Неелово")),
+    defaults=RecordDefaults(residence="Горюхино", status_male=YASAK_PEASANT_MALE, status_female=YASAK_PEASANT_FEMALE))
+
+hills_census = census_records(
+    "Госархив Примерской области", "21", "3", "204", "Горюхино", 1858,
+    household("1",
+              member(1, person("Фома", "Лукин", status=MANILOV_KF_PEASANT_MALE), CensusRole.HEAD, None, 50, 30),
+              member(2, person("Анна", status=KAZENNYJ_PEASANT_FEMALE), CensusRole.WIFE, 1, "43 года", "30 лет"),
+              member(3, person("Иван", "Фомин", residence="Собакевичево", status=MANILOV_KF_PEASANT_MALE),
+                     CensusRole.SON, 1, 20, 20),
+              member(4, person("Петр", "Фомин"), CensusRole.SON, 1, 20, "20"),
+              member(5, person("Лука", "Фомин"), CensusRole.SON, 1, 30, comment="прошлая РС: 12"),
+              member(6, person("Семен", "Фомин"), CensusRole.SON, 1, 30, comment="прошлая РС: 22"),
+              member(7, person("Мария"), CensusRole.DAUGHTER, 1, 32, 22),
+              member(8, person("Анфиса"), CensusRole.DAUGHTER, 1, 31, 22),
+              member(9, person("Фома", "Фомин"), CensusRole.SON, 1, 40, 10, departure_reason="умер"),
+              member(10, person("Лука"), CensusRole.SON, 1, 40, 10, hidden=True),
+              member(11, person("Петр", status=MANILOV_KF_PEASANT_MALE), CensusRole.SON, 1, 22.5, 14.0, hidden=True),
+              member(12, person("Семен"), CensusRole.SON, 1, "?", 14),
+              member(13, person("Иван"), CensusRole.SON, 1, 14, None, comment="прошлая РС: 5")))
+
+parish_births = birth_records(
+    "Госархив Примерской области", "21", "3", "205", "Глуповы Горы", "Троицкая", 1830,
+    birth(1, Gender.MALE, 3, 5, father=person("Иван", "Петров", status=NOZDREV_PEASANT, residence="Горелово"),
+          mother=person("Анна", "Петрова"), child=person("Лука")),
+    birth(2, Gender.MALE, 4, 6, father=person("Фома", "Лукин", status=STATE_PEASANT_MALE, residence="Глуповы Горы")),
+    birth(3, Gender.MALE, 5, 7, father=person("Фома", "Лукин", status=STATE_PEASANT_MALE, residence="Горелово")),
+    birth(4, Gender.MALE, 6, 8, father=person("Семен", "Лукин", status="сторож казённого бора, рядовой солдат",
+                                              residence="Глуповы Горы")),
+    birth(5, Gender.MALE, 7, 9, father=person("Семен", "Лукин", residence="Горелово")),
+    birth(6, Gender.MALE, 8, 10, god_parent1=person("Лука", status=GOLOVLEV_PEASANT, residence="Горелово"),
+          relatives=[relative(person("Петр", status="помещик Тентетников", residence="Горелово"),
+                              Relationship.FATHER, "отец")]),
+    defaults=RecordDefaults(residence="Глуповы Горы", status_female=NOZDREV_PEASANT_FEMALE))
+
+parish_default_births = birth_records(
+    "Госархив Примерской области", "21", "3", "206", "Глуповы Горы", "Троицкая", 1831,
+    birth(1, Gender.MALE, 3, 5, father=person("Иван", "Петров"), mother=person("Анна", "Петрова")),
+    birth(2, Gender.MALE, 4, 6, father=person("Фома", "Лукин", residence="Горелово"),
+          mother=person("Анфиса", "Лукина", residence="Горелово")),
+    defaults=RecordDefaults(residence="Глуповы Горы", status_male=KAZENNYJ_PEASANT_MALE))
+
+state_births = birth_records(
+    "Госархив Примерской области", "21", "3", "207", "Глуповы Горы", "Троицкая", 1832,
+    birth(1, Gender.MALE, 3, 5, father=person("Иван", "Петров"), mother=person("Анна", "Петрова"),
+          child=person("Лука")),
+    birth(2, Gender.MALE, 4, 6, father=person("Фома", "Лукин", status=NOZDREV_PEASANT),
+          mother=person("Анфиса", "Лукина")),
+    defaults=RecordDefaults(residence="Горелово", status_male=NOZDREV_PEASANT, status_female=NOZDREV_PEASANT_FEMALE))
+
+# RTV002 in a roll: the census book's RecordDefaults gives a member with no status the owners' estate (and a status
+# of its own stays as written).
+parish_census = census_records(
+    "Госархив Примерской области", "21", "3", "211", "Глуповы Горы", 1858,
+    household("1",
+              member(1, person("Иван", "Петров", residence="Горелово"), CensusRole.HEAD, None, 30),
+              member(2, person("Анна", "Петрова", residence="Горелово"), CensusRole.WIFE, 1, 28),
+              member(3, person("Лука", "Иванов", residence="Горелово", status=PEASANT_MALE), CensusRole.SON, 1, 5)),
+    defaults=RecordDefaults(status_male=NOZDREV_PEASANT, status_female=NOZDREV_PEASANT_FEMALE))
+
+# PAF001: a book before 1918 and one after, an old patronymic given as patr_old, and a card and a list.
+patronymics = birth_records(
+    "Госархив Примерской области", "21", "3", "208", "Горюхино", "Никольская", 1917,
+    birth(1, Gender.MALE, 3, 5, father=person("Иван", "Петрович", status=PEASANT_MALE),
+          mother=person("Анна", "Петровна", status=PEASANT_FEMALE), child=person("Лука"),
+          god_parent1=person("Фома", "Лукич"), god_parent2=person("Анфиса", patr_old="Лукинична")))
+soviet = birth_records(
+    "Госархив Примерской области", "21", "3", "209", "Горюхино", "Никольская", 1920,
+    birth(1, Gender.MALE, 3, 5, father=person("Иван", "Петрович")))
+cards = external_source_records(
+    "Горюхино",
+    wwi_record(person("Иван", "Петрович"), source_url="https://gwar.mil.ru/heroes/p1"))
+roll = name_list_records(
+    "Госархив Примерской области", "21", "3", "210", "Горюхино", 1917,
+    listed_person(1, person("Иван", "Петрович"), age=30),
+    document_type="Список избирателей")

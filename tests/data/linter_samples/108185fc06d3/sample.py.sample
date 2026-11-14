@@ -1,0 +1,2 @@
+death_records("a", "f", "i", "c", "Заманиловка", "Церковь", 1890,
+    death(1, Gender.MALE, 9, 8, d_month=Month.MAY, b_month=Month.MAY))

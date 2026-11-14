@@ -1,0 +1,3 @@
+from census import CensusRole, member
+from genealogy import person
+m = member(12, person("Трофим"), CensusRole.BROTHER, "?", record_number="27-12")

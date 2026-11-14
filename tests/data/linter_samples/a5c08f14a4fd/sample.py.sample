@@ -1,0 +1,5 @@
+from genealogy import person
+p = person(
+    "Иван",
+    "Петров",
+)

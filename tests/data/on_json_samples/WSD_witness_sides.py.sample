@@ -1,0 +1,40 @@
+# Invented: the side a wedding's surety stood for. WSD001: a side on a groom, a relative, a birth's
+# godparent. WSD002: a side against the words of the same witness's comment. WSD003: a side said in
+# words only, or twice; the record's own comment naming a side while a witness has none. WSD004: some
+# declared, some not. WSD005: a groom's surety after a bride's. WSD006: a fourth surety for one side
+# (either).
+# A side that is no `Side.X` (`None`) counts as written, declared nothing.
+from verso.ru.dsl import Gender, RecordDefaults, Relationship, Side, birth, birth_records, marriage, marriage_records, person, relative
+
+marriages = marriage_records(
+    "ГА Глуповской области", "10", "4", "4054", "Маниловка", "Церковь", 1859,
+    marriage(1, 12, groom=person("Иванъ", side=Side.GROOM), bride=person("Анна"),
+             relatives=[relative(person("Петръ", side=Side.BRIDE), Relationship.FATHER, "жених")],
+             witness1=person("Василій", side=Side.GROOM, comment="поручитель по невесте"),
+             witness2=person("Даніилъ", side=Side.BRIDE, comment="поручитель по жениху"),
+             witness3=person("Лука", side=Side.GROOM, comment="по жениху"),
+             witness4=person("Петръ", comment="со стороны невесты"),
+             witness5=person("Марія", comment="по жениху и по невесте")),
+    marriage(2, 13, groom=person("Петръ"), bride=person("Марія"), comment="поручители по жениху и по невесте",
+             witness1=person("Василій", side=Side.GROOM), witness2=person("Даніилъ")),
+    marriage(3, 14, groom=person("Лука"), bride=person("Анна"),
+             witness1=person("Иванъ", side=Side.BRIDE), witness2=person("Петръ", side=Side.GROOM),
+             witness4=person("Василій", side=Side.BRIDE), witness6=person("Даніилъ", side=None)),
+    marriage(4, 15, groom=person("Иванъ"), bride=person("Марія"),
+             witness1=person("Лука", side=Side.GROOM), witness2=person("Петръ", side=Side.GROOM),
+             witness3=person("Василій", side=Side.GROOM), witness4=person("Даніилъ", side=Side.GROOM),
+             witness5=person("Иванъ", side=Side.BRIDE), witness6=person("Петръ", side=Side.BRIDE)),
+    marriage(5, 16, groom=person("Лука"), bride=person("Анна"),
+             witness1=person("Василій", side=None, comment="по жениху"), witness2=person("Даніилъ", comment="поручитель")),
+    marriage(6, 17, groom=person("Иванъ"), bride=person("Анна")),
+    marriage(7, 18, groom=person("Петръ"), bride=person("Марія"),
+             witness1=person("Лука", side=Side.BRIDE, comment="поручитель по невесте"),
+             witness2=person("Василій", side=Side.BRIDE), witness3=person("Даніилъ", side=Side.BRIDE),
+             witness4=person("Иванъ", side=Side.BRIDE)),
+    defaults=RecordDefaults(residence="Маниловка"))
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4055", "Маниловка", "Церковь", 1859,
+    birth(1, Gender.MALE, 3, 4, child=person("Иванъ"), father=person("Петръ", side=Side.GROOM), mother=person("Анна"),
+          god_parent1=person("Лука", side=Side.BRIDE)),
+    defaults=RecordDefaults(residence="Маниловка"))

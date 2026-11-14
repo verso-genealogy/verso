@@ -1,0 +1,36 @@
+# Invented: the external cards. ESC001: a source_url on another host than the verb's (a gwar card filed as a
+# criminal record, a criminal-gazette page on a WWII card, a pamyat page on a WWI card). ESC002: a criminal record
+# with a blank original_text. ESC003: casualty_reason on an award document (WWI and WWII). ESC004: an award or an
+# award number on a card whose document is no award, typed and untyped. The quiet cases: the right host, a blank
+# casualty_reason on an award, an award on an award document, `award=None`.
+from verso.ru.dsl import (
+    WwiDocumentType, WwiiDocumentType, criminal_record, external_source_records, person, wwi_record, wwii_record)
+
+cards = external_source_records(
+    "Маниловка",
+    criminal_record(person("Иванъ"), source_url="https://gwar.mil.ru/heroes/a1", original_text="Иванъ, 30 лет, кража"),
+    criminal_record(person("Петръ"), source_url="https://viewer.rsl.ru/ru/rsl01/p2", original_text="  "),
+    criminal_record(person("Лука"), source_url="https://familio.org/catalogs/vss/c3", original_text=""),
+    criminal_record(person("Даніилъ"), source_url="https://familio.org/catalogs/vss/c4", original_text="Даніилъ, 40 лет"),
+    wwi_record(person("Василій"), source_url="https://pamyat-naroda.ru/heroes/b1",
+               document_type=WwiDocumentType.AWARD_LISTS, casualty_reason="убит", award="Георгиевский крест"),
+    wwi_record(person("Иванъ"), source_url="https://gwar.mil.ru/heroes/b2",
+               document_type=WwiDocumentType.AWARD_LISTS, casualty_reason="  ", award="Георгиевский крест",
+               award_number=77),
+    wwi_record(person("Петръ"), source_url="https://gwar.mil.ru/heroes/b3",
+               document_type=WwiDocumentType.CASUALTY_LISTS, casualty_reason="ранен", award="Георгиевский крест",
+               award_number="12"),
+    wwi_record(person("Лука"), source_url="https://gwar.mil.ru/heroes/b4", award_number=5, award=None),
+    wwi_record(person("Даніилъ"), source_url="https://gwar.mil.ru/heroes/b5", document_type=None, casualty_reason=None,
+               award="Георгиевская медаль"),
+    wwii_record(person("Василій"), source_url="https://viewer.rsl.ru/ru/rsl01/p3",
+                document_type=WwiiDocumentType.NAGRADNOY_LIST, casualty_reason="убит", award="Орден Красной Звезды"),
+    wwii_record(person("Иванъ"), source_url="https://podvignaroda.ru/heroes/c2",
+                document_type=WwiiDocumentType.AWARD_CARD, casualty_reason="погиб", award_number="9"),
+    wwii_record(person("Петръ"), source_url="https://obd-memorial.ru/heroes/c3",
+                document_type=WwiiDocumentType.CASUALTY_REPORT, award="Медаль за отвагу"),
+    wwii_record(person("Лука"), source_url="https://pamyat-naroda.ru/heroes/c4",
+                document_type=WwiiDocumentType.AWARD_ORDER, award="Орден Славы", award_number="3"),
+    wwii_record(person("Даніилъ"), source_url="https://obd-memorial.ru/heroes/c5",
+                document_type=WwiiDocumentType.MEMORY_BOOK, casualty_reason="убит"),
+)

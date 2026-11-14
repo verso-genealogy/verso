@@ -1,0 +1,3 @@
+birth_records("a", "f", "i", "c", "Маниловка", "Церковь", 1864,
+    birth(1, Gender.MALE, 1, 2, child=person("Иванъ"),
+          god_parent1=person("Петръ", side=Side.BRIDE)))

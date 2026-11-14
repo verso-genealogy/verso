@@ -1,0 +1,20 @@
+Verso
+Copyright 2026 Dmitry Malchikov
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+verso-ru includes verso/ru/church_calendar/data/svyatcy_1906.tsv, derived from the
+«Алфавитъ именъ всѣхъ святыхъ» of the 1906 Требник as digitised in
+https://github.com/slavonic/cu-md-sandbox — Copyright (c) 2018 Slavonic Computing
+Initiative, MIT License; the full text is in verso/ru/church_calendar/data/LICENSE.svyatcy.
+The names base (verso/ru/naming/data/base/) takes its canonical names from that table.
+
+The names base also takes given names and their «said to be the same as» links from Wikidata
+(https://www.wikidata.org), whose data is CC0 — no attribution is required; it is given as a
+courtesy. Its other rows are the maintainer's own: the spellings the metric books write, paired
+with their bases (a name and its base — no record is carried), and the forms written as grammar.
+The sources of each row: verso/ru/naming/data/base/SOURCES.md.
+
+verso-app includes icons from Lucide (https://lucide.dev) — Copyright (c) Lucide Icons and
+Contributors, ISC License; the icons derived from Feather, Copyright (c) Cole Bemis, MIT License;
+the full text is in verso/app/static/LICENSE.lucide.

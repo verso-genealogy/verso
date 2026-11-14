@@ -1,0 +1,3 @@
+death_records("a", "f", "i", "c", "Горюхино", "Церковь", 1855,
+    death(1, Gender.MALE, deceased=person("Де", "Петров", status=YASAK_PEASANT_MALE), witness1=person("Ви", "Иванов", status=MANILOV_OV_PEASANT_MALE), relatives=[relative(person("Ро", "Сидоров", status=MANILOV_OV_PEASANT_MALE), None)]),
+    defaults=RecordDefaults(residence="Горюхино"))

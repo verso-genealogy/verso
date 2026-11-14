@@ -1,0 +1,3 @@
+# The toy corpus's one landlord: his peasants live in his village (RTV001).
+[landlords]
+ROSTANEV_EI = { villages = ["Степанчиково"], token = "Егора Ильича Ростанева" }

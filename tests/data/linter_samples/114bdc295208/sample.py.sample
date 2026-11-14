@@ -1,0 +1,6 @@
+from genealogy import person, Gender
+from births import birth
+b = birth(1, Gender.MALE, 1, 2,
+          child=person("Иван"),
+          father=person("Петр", last_name_orig="Пошлепкин"),
+          mother=person("Мария", last_name_orig="Пошлепкина", last_name_in_book=False))

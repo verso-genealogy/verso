@@ -1,0 +1,5 @@
+from genealogy import person
+from marriages import marriage
+m = marriage(1, 10,
+             groom=person("Иван", last_name_orig="Пошлепкин"),
+             bride=person("Мария", last_name_orig="Пошлепкина", last_name_in_book=False))

@@ -1,0 +1,10 @@
+from verso.ru.dsl import marriage, marriage_records
+from verso.ru.dsl import person
+from verso.ru.dsl import Relationship, relative
+mk = marriage_records(
+    "ЦГАРМ", "57", "6", "1", "Горюхино", "Николаевская", 1842,
+    marriage(1, 11,
+             witness1=person("Дарья", "Григорьева"),
+             relatives=[relative(person("Григорій", "Ефимовъ"),
+                                 Relationship.HUSBAND, "поручитель №6")]),
+)

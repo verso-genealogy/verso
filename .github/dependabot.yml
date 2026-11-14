@@ -1,0 +1,48 @@
+# verso-genealogy/verso.
+#
+# Weekly, on Monday, and not daily: every Dependabot PR runs the whole CI, and the Actions minutes are a budget. The groups still make one PR a
+# week for pip, npm and gradle.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+  - package-ecosystem: "pip"
+    # The dev tools (requirements-dev.txt) and both distributions; verso-* are this repo's own.
+    directories:
+      - "/"
+      - "/packages/verso-core"
+      - "/packages/verso-ru"
+    ignore:
+      - dependency-name: "verso-*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    # The dependencies whose bytes reach a corpus's output (pinned exactly in verso-ru's
+    # pyproject.toml) come in a PR of their own each: a corpus compares its output byte for byte across one such bump at a time.
+    groups:
+      python:
+        patterns: ["*"]
+        exclude-patterns: ["python-dateutil", "openpyxl", "libcst"]
+  - package-ecosystem: "npm"
+    directory: "/ide/vscode-dsllint"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    ignore:
+      # The API's types follow engines.vscode and are raised with it, by hand: a newer range lets the
+      # code call what the oldest VS Code it supports lacks, and vsce refuses to package it.
+      - dependency-name: "@types/vscode"
+    groups:
+      web:
+        patterns: ["*"]
+  - package-ecosystem: "gradle"
+    directory: "/ide/intellij-dsllint"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      gradle:
+        patterns: ["*"]

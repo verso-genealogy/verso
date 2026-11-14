@@ -1,0 +1,3 @@
+birth_records("a", "f", "i", "c", "Горюхино", "Церковь", 1830,
+    birth(1, Gender.FEMALE, father=person("Петр", status="дворовый человек"), mother=person("Анна")),
+    defaults=RecordDefaults(status_male=ECON_PEASANT_MALE, status_female=ECON_PEASANT_FEMALE))

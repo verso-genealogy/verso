@@ -1,0 +1,4 @@
+DEFAULTS = RecordDefaults(residence="Глуповы Горы", status_male=PEASANT_MALE, status_female=PEASANT_FEMALE)
+census = census_records("ГАВО", "1", "1", "1", "Глуповы Горы", 1816,
+    household("1", member(1, person("Иванъ", status="крестьянин Государственных имуществ"), CensusRole.HEAD, 60, hidden=True)),
+    defaults=DEFAULTS)

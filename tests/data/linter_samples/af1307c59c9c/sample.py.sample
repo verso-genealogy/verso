@@ -1,0 +1,4 @@
+birth_records("a", "f", "i", "c", "Горюхино", "Церковь", 1855,
+    birth(1, Gender.MALE, father=person("Эк", "Петров", residence="Ротозейск", status=ECON_PEASANT_MALE)),
+    birth(2, Gender.MALE, father=person("Эк", "Петров", residence="Ротозейск", status="экономический крестьянин")),
+    defaults=RecordDefaults(residence="Горюхино"))

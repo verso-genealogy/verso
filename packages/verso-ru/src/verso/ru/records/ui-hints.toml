@@ -1,0 +1,653 @@
+# The Russian books' hints for the review page's schema (verso.core.records.ui): what the
+# vocabulary does not say — the order of a record's fields, their labels (keys of verso.ru's
+# catalogs, `ui.*`), the slot a record's field is drawn beside, the dates, the references inside a
+# record, the slots' gender, the drafts, a book's defaults — and nothing the vocabulary does: a
+# field's type is its row's. `python -m verso.core.records.ui --write` builds ui-v1.json beside it.
+schema = 1
+
+[person]
+fields = [
+  { path = "given.original", label = "ui.field.given_original", column = true, suggest = true },
+  { path = "patronymic.original", label = "ui.field.patronymic_original", column = true, suggest = true },
+  { path = "surname.original", label = "ui.field.surname_original", column = true, suggest = true },
+  { path = "status", label = "ui.field.status", line = true, suggest = true },
+  { path = "residence", label = "ui.field.residence", line = true, suggest = true },
+  { path = "given.modern", label = "ui.field.given_modern" },
+  { path = "patronymic.old", label = "ui.field.patronymic_old" },
+  { path = "surname.modern", label = "ui.field.surname_modern" },
+  { path = "gender", label = "ui.field.gender" },
+  { path = "side", label = "ui.field.side" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "surname.in_book", label = "ui.field.surname_in_book", auto = true },
+  { path = "maiden_surname.modern", label = "ui.field.maiden_surname_modern", offer = { gender = "female", not_in = ["child"] } },
+  { path = "occupation", label = "ui.field.occupation" },
+]
+hidden = [
+  "patronymic.modern",
+  "status_defaulted",
+]
+
+[kinds.birth]
+label = "ui.kind.birth"
+fields = [
+  { path = "number", label = "ui.field.number" },
+  { path = "gender", label = "ui.field.gender" },
+  { path = "birth.day", label = "ui.field.birth_day" },
+  { path = "baptism.day", label = "ui.field.baptism_day" },
+  { path = "birth.month", label = "ui.field.birth_month" },
+  { path = "baptism.month", label = "ui.field.baptism_month" },
+  { path = "page", label = "ui.field.page" },
+  { path = "case", label = "ui.field.case" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "year", label = "ui.field.year" },
+  { path = "baptism.year", label = "ui.field.baptism_year" },
+  { path = "source_date_error", label = "ui.field.source_date_error", checks = true },
+  { path = "calendar_note", label = "ui.field.calendar_note_birth", checks = true },
+]
+hidden = [
+  "civil",
+  "reviewed",
+  "baptism.age",
+  "inventory",
+  "book",
+]
+slots = [
+  { role = "child", label = "ui.slot.child", gender = "of_record" },
+  { role = "father", label = "ui.slot.father", gender = "male" },
+  { role = "mother", label = "ui.slot.mother", gender = "female" },
+  { role = "godparent", label = "ui.slot.godparent", quick = "ui.quick.godparent" },
+  { role = "priest", label = "ui.slot.priest", gender = "male" },
+  { role = "deacon", label = "ui.slot.deacon", gender = "male" },
+  { role = "dyachok", label = "ui.slot.dyachok", gender = "male" },
+  { role = "sexton", label = "ui.slot.sexton", gender = "male" },
+]
+
+[[kinds.birth.groups]]
+name = "relatives"
+label = "ui.group.relatives"
+orderable = true
+fields = [
+  { path = "relationship", label = "ui.field.relationship" },
+  { path = "relationship_ref", label = "ui.field.relationship_ref", ref = { to = "slot", choices = [{ role = "mother", word = "мать", label = "ui.ref.mother" }, { role = "godparent", word = "восприемника №{n}", label = "ui.ref.godparent" }] } },
+]
+hidden = []
+
+[[kinds.birth.events]]
+label = "ui.event.birth"
+of = "ui.event.of_birth"
+day = "birth.day"
+month = "birth.month"
+year = "year"
+
+[[kinds.birth.events]]
+label = "ui.event.baptism"
+day = "baptism.day"
+month = "baptism.month"
+year = "baptism.year"
+
+[kinds.birth.draft]
+creatable = true
+slots = ["child", "father", "mother"]
+
+[kinds.christening]
+label = "ui.kind.christening"
+fields = [
+  { path = "number", label = "ui.field.number" },
+  { path = "gender", label = "ui.field.gender" },
+  { path = "baptism.day", label = "ui.field.baptism_day" },
+  { path = "baptism.month", label = "ui.field.baptism_month" },
+  { path = "baptism.age", label = "ui.field.baptism_age" },
+  { path = "page", label = "ui.field.page" },
+  { path = "case", label = "ui.field.case" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "year", label = "ui.field.year" },
+  { path = "calendar_note", label = "ui.field.calendar_note_birth", checks = true },
+]
+hidden = [
+  "civil",
+  "reviewed",
+  "source_date_error",
+  "birth.day",
+  "birth.month",
+  "baptism.year",
+  "inventory",
+  "book",
+]
+slots = [
+  { role = "child", label = "ui.slot.child", gender = "of_record" },
+  { role = "father", label = "ui.slot.father", gender = "male" },
+  { role = "mother", label = "ui.slot.mother", gender = "female" },
+  { role = "godparent", label = "ui.slot.godparent", quick = "ui.quick.godparent" },
+  { role = "priest", label = "ui.slot.priest", gender = "male" },
+  { role = "deacon", label = "ui.slot.deacon", gender = "male" },
+  { role = "dyachok", label = "ui.slot.dyachok", gender = "male" },
+  { role = "sexton", label = "ui.slot.sexton", gender = "male" },
+]
+
+[[kinds.christening.groups]]
+name = "relatives"
+label = "ui.group.relatives"
+orderable = true
+fields = [
+  { path = "relationship", label = "ui.field.relationship" },
+  { path = "relationship_ref", label = "ui.field.relationship_ref", ref = { to = "slot", choices = [{ role = "mother", word = "мать", label = "ui.ref.mother" }, { role = "godparent", word = "восприемника №{n}", label = "ui.ref.godparent" }] } },
+]
+hidden = []
+
+[[kinds.christening.events]]
+label = "ui.event.baptism"
+day = "baptism.day"
+month = "baptism.month"
+
+[kinds.marriage]
+label = "ui.kind.marriage"
+fields = [
+  { path = "number", label = "ui.field.number" },
+  { path = "marriage.day", label = "ui.field.marriage_day" },
+  { path = "marriage.month", label = "ui.field.marriage_month" },
+  { path = "groom_marriage_number", label = "ui.field.groom_marriage_number" },
+  { path = "bride_marriage_number", label = "ui.field.bride_marriage_number" },
+  { path = "groom_age", label = "ui.field.groom_age" },
+  { path = "bride_age", label = "ui.field.bride_age" },
+  { path = "page", label = "ui.field.page" },
+  { path = "case", label = "ui.field.case" },
+  { path = "village", label = "ui.field.village" },
+  { path = "church", label = "ui.field.church" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "year", label = "ui.field.year" },
+  { path = "bride_takes_groom_surname", label = "ui.field.bride_takes_groom_surname" },
+  { path = "source_kin_error", label = "ui.field.source_kin_error", checks = true },
+  { path = "calendar_note", label = "ui.field.calendar_note_marriage", checks = true },
+]
+hidden = [
+  "civil",
+  "reviewed",
+  "archive",
+  "fund",
+  "inventory",
+  "book",
+]
+slots = [
+  { role = "groom", label = "ui.slot.groom", gender = "male", row = ["groom_age", "groom_marriage_number"] },
+  { role = "bride", label = "ui.slot.bride", gender = "female", row = ["bride_age", "bride_marriage_number"] },
+  { role = "witness", label = "ui.slot.witness", party = "side", quick = "ui.quick.witness" },
+  { role = "priest", label = "ui.slot.priest", gender = "male" },
+  { role = "deacon", label = "ui.slot.deacon", gender = "male" },
+  { role = "dyachok", label = "ui.slot.dyachok", gender = "male" },
+  { role = "sexton", label = "ui.slot.sexton", gender = "male" },
+]
+
+[[kinds.marriage.groups]]
+name = "relatives"
+label = "ui.group.relatives"
+orderable = true
+fields = [
+  { path = "relationship", label = "ui.field.relationship" },
+  { path = "relationship_ref", label = "ui.field.relationship_ref", ref = { to = "slot", choices = [{ role = "groom", word = "жених", label = "ui.ref.groom" }, { role = "bride", word = "невеста", label = "ui.ref.bride" }, { role = "witness", word = "поручитель №{n}", label = "ui.ref.witness" }] } },
+]
+hidden = []
+
+[[kinds.marriage.events]]
+label = "ui.event.marriage"
+day = "marriage.day"
+month = "marriage.month"
+
+[kinds.marriage.draft]
+creatable = true
+slots = ["groom", "bride"]
+
+[kinds.death]
+label = "ui.kind.death"
+fields = [
+  { path = "number", label = "ui.field.number" },
+  { path = "gender", label = "ui.field.gender" },
+  { path = "death.day", label = "ui.field.death_day" },
+  { path = "burial.day", label = "ui.field.burial_day" },
+  { path = "death.month", label = "ui.field.death_month" },
+  { path = "burial.month", label = "ui.field.burial_month" },
+  { path = "age", label = "ui.field.age" },
+  { path = "cause_of_death", label = "ui.field.cause_of_death", quick = "ui.quick.cause_of_death" },
+  { path = "page", label = "ui.field.page" },
+  { path = "case", label = "ui.field.case" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "year", label = "ui.field.year" },
+  { path = "source_age_error", label = "ui.field.source_age_error", checks = true },
+  { path = "source_date_error", label = "ui.field.source_date_error", checks = true },
+  { path = "namesake", label = "ui.field.namesake", checks = true },
+]
+hidden = [
+  "civil",
+  "reviewed",
+  "archive",
+  "fund",
+  "inventory",
+  "church",
+  "book",
+]
+slots = [
+  { role = "deceased", label = "ui.slot.deceased", gender = "of_record", row = ["age", "cause_of_death"] },
+  { role = "witness", label = "ui.slot.witness_death" },
+  { role = "priest", label = "ui.slot.priest", gender = "male" },
+  { role = "deacon", label = "ui.slot.deacon", gender = "male" },
+  { role = "dyachok", label = "ui.slot.dyachok", gender = "male" },
+  { role = "sexton", label = "ui.slot.sexton", gender = "male" },
+]
+
+[[kinds.death.groups]]
+name = "relatives"
+label = "ui.group.relatives"
+orderable = true
+fields = [
+  { path = "relationship", label = "ui.field.relationship" },
+  { path = "relationship_ref", label = "ui.field.relationship_ref" },
+]
+hidden = []
+
+[[kinds.death.events]]
+label = "ui.event.death"
+of = "ui.event.of_death"
+day = "death.day"
+month = "death.month"
+
+[[kinds.death.events]]
+label = "ui.event.burial"
+day = "burial.day"
+month = "burial.month"
+
+[kinds.death.draft]
+creatable = true
+slots = ["deceased"]
+
+[kinds.household]
+label = "ui.kind.household"
+fields = [
+  { path = "family_id", label = "ui.field.family_id" },
+  { path = "page", label = "ui.field.page" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "record.day", label = "ui.field.record_day" },
+  { path = "record.month", label = "ui.field.record_month" },
+]
+hidden = [
+  "reviewed",
+  "case",
+]
+slots = []
+
+[[kinds.household.groups]]
+name = "members"
+label = "ui.group.members"
+orderable = true
+fields = [
+  { path = "number", label = "ui.field.number" },
+  { path = "role", label = "ui.field.role" },
+  { path = "ref_member", label = "ui.field.ref_member", ref = { to = "item" } },
+  { path = "age", label = "ui.field.age" },
+  { path = "previous_age", label = "ui.field.previous_age" },
+  { path = "marital_status", label = "ui.field.marital_status", catalog = "marital" },
+  { path = "occupation", label = "ui.field.occupation" },
+  { path = "arrival.place", label = "ui.field.arrival_place" },
+  { path = "departure.place", label = "ui.field.departure_place" },
+  { path = "arrival.year", label = "ui.field.arrival_year" },
+  { path = "arrival.reason", label = "ui.field.arrival_reason" },
+  { path = "departure.year", label = "ui.field.departure_year" },
+  { path = "departure.reason", label = "ui.field.departure_reason" },
+  { path = "record_number", label = "ui.field.record_number" },
+  { path = "birth.day", label = "ui.field.birth_day" },
+  { path = "birth.month", label = "ui.field.birth_month" },
+  { path = "birth.year", label = "ui.field.birth_year" },
+  { path = "parent_member", label = "ui.field.parent_member", ref = { to = "item" } },
+  { path = "father_ref", label = "ui.field.father_ref" },
+  { path = "secondary_role", label = "ui.field.secondary_role" },
+  { path = "secondary_ref_member", label = "ui.field.secondary_ref_member", ref = { to = "item" } },
+  { path = "hidden", label = "ui.field.hidden" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "spouse_member", label = "ui.field.spouse_member", ref = { to = "item" } },
+  { path = "source_age_error", label = "ui.field.source_age_error", checks = true },
+  { path = "previous_age_error", label = "ui.field.previous_age_error", checks = true },
+]
+hidden = []
+layout = [
+  ["number", "role", "ref_member"],
+  ["previous_age", "age"],
+  ["arrival.year", "arrival.reason", "arrival.place"],
+  ["departure.year", "departure.reason", "departure.place"],
+]
+
+[kinds.listed_person]
+label = "ui.kind.listed_person"
+fields = [
+  { path = "number", label = "ui.field.number" },
+  { path = "age", label = "ui.field.age" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "page", label = "ui.field.page" },
+]
+hidden = [
+  "reviewed",
+  "index",
+]
+slots = [
+  { role = "person", label = "ui.slot.person" },
+]
+
+[kinds.divorce]
+label = "ui.kind.divorce"
+fields = [
+  { path = "number", label = "ui.field.number" },
+  { path = "divorce.day", label = "ui.field.divorce_day" },
+  { path = "divorce.month", label = "ui.field.divorce_month" },
+  { path = "husband_age", label = "ui.field.husband_age" },
+  { path = "wife_age", label = "ui.field.wife_age" },
+  { path = "marriage_date", label = "ui.field.marriage_date" },
+  { path = "children", label = "ui.field.children" },
+  { path = "initiator", label = "ui.field.initiator" },
+  { path = "page", label = "ui.field.page" },
+  { path = "case", label = "ui.field.case" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "year", label = "ui.field.year" },
+]
+hidden = []
+slots = [
+  { role = "husband", label = "ui.slot.husband", gender = "male" },
+  { role = "wife", label = "ui.slot.wife", gender = "female" },
+]
+
+[[kinds.divorce.events]]
+label = "ui.event.divorce"
+day = "divorce.day"
+month = "divorce.month"
+
+[kinds.external_record]
+label = "ui.kind.external_record"
+fields = [
+  { path = "record_number", label = "ui.field.record_number" },
+  { path = "age", label = "ui.field.age" },
+  { path = "birth_year", label = "ui.field.birth_year" },
+  { path = "page", label = "ui.field.page" },
+  { path = "comment", label = "ui.field.comment", widget = "wide" },
+  { path = "rank", label = "ui.field.rank" },
+  { path = "military_unit", label = "ui.field.military_unit" },
+  { path = "casualty_reason", label = "ui.field.casualty_reason" },
+  { path = "document_type", label = "ui.field.document_type" },
+  { path = "award", label = "ui.field.award" },
+  { path = "award_number", label = "ui.field.award_number" },
+  { path = "marital_status", label = "ui.field.marital_status" },
+  { path = "place_of_casualty", label = "ui.field.place_of_casualty" },
+  { path = "draft_board", label = "ui.field.draft_board" },
+]
+hidden = [
+  "date",
+  "labels",
+  "reviewed",
+  "casualty_date",
+  "birth_date",
+  "draft_date",
+  "feat_date",
+  "kind",
+  "citation",
+  "index",
+]
+slots = [
+  { role = "person", label = "ui.slot.person" },
+]
+
+[enums.gender]
+label = "ui.enum.gender"
+gender = { male = "male", female = "female" }
+
+[enums.relationship]
+label = "ui.enum.relationship"
+gender = { father = "male", mother = "female", husband = "male", wife = "female", son = "male", daughter = "female", father_in_law = "male", mother_in_law = "female", son_in_law = "male", daughter_in_law = "female" }
+
+[enums.census_role]
+label = "ui.enum.census_role"
+gender = { wife = "female", husband = "male", son = "male", daughter = "female", brother = "male", uncle = "male", grandson = "male", granddaughter = "female", daughter_in_law = "female", son_in_law = "male", brother_in_law = "male", stepson = "male", nephew = "male", niece = "female", cousin = "male", mother = "female", father = "male", sister = "female", stepdaughter = "female", foster_son = "male", foster_daughter = "female" }
+
+[enums.side]
+label = "ui.enum.side"
+
+[enums.external_source_kind]
+label = "ui.enum.external_source_kind"
+
+[enums."wwi_document_type|wwii_document_type"]
+label = "ui.enum.document_type"
+
+[enums.month]
+label = "ui.enum.month"
+forms = ["nom", "gen"]
+
+[books.births]
+label = "ui.set.births"
+# A filter of the review queue: its records are read there.
+queue = true
+forms = ["title", "word", "plural"]
+fields = [
+  { path = "archive", label = "ui.field.archive" },
+  { path = "fund", label = "ui.field.fund" },
+  { path = "inventory", label = "ui.field.inventory" },
+  { path = "case", label = "ui.field.case" },
+  { path = "village", label = "ui.field.village" },
+  { path = "church", label = "ui.field.church" },
+  { path = "year", label = "ui.field.year" },
+]
+# A book of the civil registry (ЗАГС): its second date registers, never christens or buries.
+flags = [
+  { field = "civil", label = "ui.book.civil" },
+]
+hidden = [
+  "reviewed",
+]
+fills = [
+  { field = "residence", label = "ui.default.residence" },
+  { field = "status_male", label = "ui.default.status_male", gender = "male" },
+  { field = "status_female", label = "ui.default.status_female", gender = "female" },
+  { field = "status_mother", label = "ui.default.status_mother", gender = "female", fallback = "status_female" },
+]
+
+[books.marriages]
+label = "ui.set.marriages"
+# A filter of the review queue: its records are read there.
+queue = true
+forms = ["title", "word", "plural"]
+fields = [
+  { path = "archive", label = "ui.field.archive" },
+  { path = "fund", label = "ui.field.fund" },
+  { path = "inventory", label = "ui.field.inventory" },
+  { path = "case", label = "ui.field.case" },
+  { path = "village", label = "ui.field.village" },
+  { path = "church", label = "ui.field.church" },
+  { path = "year", label = "ui.field.year" },
+]
+# A book of the civil registry (ЗАГС): its second date registers, never christens or buries.
+flags = [
+  { field = "civil", label = "ui.book.civil" },
+]
+hidden = [
+  "reviewed",
+]
+fills = [
+  { field = "residence", label = "ui.default.residence" },
+  { field = "status_male", label = "ui.default.status_male", gender = "male" },
+  { field = "status_female", label = "ui.default.status_female", gender = "female" },
+  { field = "status_groom", label = "ui.default.status_groom", gender = "male", fallback = "status_male" },
+  { field = "status_bride", label = "ui.default.status_bride", gender = "female", fallback = "status_female" },
+]
+
+[books.deaths]
+label = "ui.set.deaths"
+# A filter of the review queue: its records are read there.
+queue = true
+forms = ["title", "word", "plural"]
+fields = [
+  { path = "archive", label = "ui.field.archive" },
+  { path = "fund", label = "ui.field.fund" },
+  { path = "inventory", label = "ui.field.inventory" },
+  { path = "case", label = "ui.field.case" },
+  { path = "village", label = "ui.field.village" },
+  { path = "church", label = "ui.field.church" },
+  { path = "year", label = "ui.field.year" },
+]
+# A book of the civil registry (ЗАГС): its second date registers, never christens or buries.
+flags = [
+  { field = "civil", label = "ui.book.civil" },
+]
+hidden = [
+  "reviewed",
+]
+fills = [
+  { field = "residence", label = "ui.default.residence" },
+  { field = "status_male", label = "ui.default.status_male", gender = "male" },
+  { field = "status_female", label = "ui.default.status_female", gender = "female" },
+  { field = "cause_of_death", label = "ui.default.cause_of_death" },
+]
+
+[books.census]
+label = "ui.set.census"
+# A filter of the review queue: its records are read there.
+queue = true
+forms = ["title", "word", "plural"]
+fields = [
+  { path = "archive", label = "ui.field.archive" },
+  { path = "fund", label = "ui.field.fund" },
+  { path = "inventory", label = "ui.field.inventory" },
+  { path = "case", label = "ui.field.case" },
+  { path = "village", label = "ui.field.village" },
+  { path = "year", label = "ui.field.year" },
+  { path = "record.day", label = "ui.field.record_day" },
+  { path = "record.month", label = "ui.field.record_month" },
+  { path = "archive_suffix", label = "ui.field.archive_suffix" },
+  { path = "prev_revision_year", label = "ui.field.prev_revision_year" },
+  { path = "document_type", label = "ui.field.document_type" },
+  { path = "document_type_genitive", label = "ui.field.document_type_genitive" },
+  { path = "district", label = "ui.field.district" },
+  { path = "volost", label = "ui.field.volost" },
+  { path = "household_label", label = "ui.field.household_label" },
+  { path = "household_number_label", label = "ui.field.household_number_label" },
+  { path = "record_type", label = "ui.field.record_type" },
+]
+hidden = [
+  "suffix_in_res_names",
+  "reviewed",
+  "file_prefix",
+  "doc_res_prefix",
+  "single_age_column",
+]
+flags = [
+  { field = "female_previous_age", label = "ui.book.female_previous_age" },
+]
+fills = [
+  { field = "status_male", label = "ui.default.status_male", gender = "male" },
+  { field = "status_female", label = "ui.default.status_female", gender = "female" },
+]
+
+[books.name_list]
+label = "ui.set.name_list"
+# A filter of the review queue: its records are read there.
+queue = true
+forms = ["title", "word", "plural"]
+fields = [
+  { path = "archive", label = "ui.field.archive" },
+  { path = "fund", label = "ui.field.fund" },
+  { path = "inventory", label = "ui.field.inventory" },
+  { path = "case", label = "ui.field.case" },
+  { path = "village", label = "ui.field.village" },
+  { path = "year", label = "ui.field.year" },
+  { path = "document_type", label = "ui.field.document_type" },
+  { path = "document_type_genitive", label = "ui.field.document_type_genitive" },
+  { path = "district", label = "ui.field.district" },
+  { path = "volost", label = "ui.field.volost" },
+  { path = "record.day", label = "ui.field.record_day" },
+  { path = "record.month", label = "ui.field.record_month" },
+  { path = "source_url", label = "ui.field.source_url" },
+]
+hidden = [
+  "scan_file",
+  "labels",
+  "reviewed",
+  "household_order",
+]
+
+[books.divorces]
+label = "ui.set.divorces"
+forms = ["title", "word", "plural"]
+fields = [
+  { path = "archive", label = "ui.field.archive" },
+  { path = "fund", label = "ui.field.fund" },
+  { path = "inventory", label = "ui.field.inventory" },
+  { path = "case", label = "ui.field.case" },
+  { path = "village", label = "ui.field.village" },
+  { path = "church", label = "ui.field.church" },
+  { path = "year", label = "ui.field.year" },
+]
+hidden = []
+
+[books.external_sources]
+label = "ui.set.external_sources"
+forms = ["title", "word", "plural"]
+fields = [
+  { path = "village", label = "ui.field.village" },
+]
+hidden = []
+
+# ---------------------------------------------------------------- the page's rules
+# What the page computes as the reader types — a pure function of the record's own fields — declared
+# here and held to the library's own answer (verso-app: tests/golden/ui/rules.json, docs/derived.md).
+# Anything that needs the corpus, the book or the library's derivations is the server's (`derived`).
+
+# The christening's month follows the birth's until the reader sets it — the next month when its day
+# is the smaller (`Birth.__init__`); a burial's follows the death's, and never advances (the library's).
+[[kinds.birth.rules]]
+rule = "follows"
+from = "birth.month"
+to = "baptism.month"
+advance = { day_from = "birth.day", day_to = "baptism.day" }
+
+[[kinds.death.rules]]
+rule = "follows"
+from = "death.month"
+to = "burial.month"
+
+# A christening twelve days or more after the birth, a burial four or more after the death: the
+# baptism-lag and burial-lag checks' thresholds (`verso.ru.facts.checks.lags`).
+[[kinds.birth.rules]]
+rule = "late"
+after = 0
+event = 1
+days = 12
+
+[[kinds.death.rules]]
+rule = "late"
+after = 0
+event = 1
+days = 4
+
+# Whose relative one is: the people the record holds, as the source words it (`ref.choices`).
+[[kinds.birth.rules]]
+rule = "ref_choices"
+group = "relatives"
+path = "relationship_ref"
+
+[[kinds.christening.rules]]
+rule = "ref_choices"
+group = "relatives"
+path = "relationship_ref"
+
+[[kinds.marriage.rules]]
+rule = "ref_choices"
+group = "relatives"
+path = "relationship_ref"
+party = "side"  # the field holding the party a surety stood for
+
+# A roll's member is asked the previous revision's age where the roll writes it — a woman only where
+# the roll writes it for women (`census_records(female_previous_age=)`, the book's reading).
+[[kinds.household.rules]]
+rule = "shown_when"
+group = "members"
+path = "previous_age"
+when = { book = "previous_age", women = "female_previous_age", gender_of = "role" }
+
+# A member renumbered takes the references naming it along.
+[[kinds.household.rules]]
+rule = "renumber"
+group = "members"
+number = "number"
+refs = ["ref_member", "parent_member", "spouse_member", "secondary_ref_member"]

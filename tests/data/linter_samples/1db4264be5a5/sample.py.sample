@@ -1,0 +1,4 @@
+marriage_records("a", "f", "i", "c", "Горюхино", "Церковь", 1839,
+    marriage(17, 8,
+        bride=person("Агафія", "Константинова", status=SOBAKEVICH_TL_PEASANT_MAIDEN)),
+    defaults=RecordDefaults(residence="Горюхино"))

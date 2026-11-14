@@ -1,0 +1,8 @@
+# The Russian label and the sex (the given-name class) of items the snapshot only links to (P460, P1560).
+# `wikidata.py` fills @ITEMS@ with a batch of `wd:Q…` and asks batch by batch: the second query file.
+SELECT ?item ?label ?class
+WHERE {
+  VALUES ?item { @ITEMS@ }
+  OPTIONAL { ?item rdfs:label ?label . FILTER(LANG(?label) = "ru") }
+  OPTIONAL { ?item wdt:P31 ?class . FILTER(?class IN (wd:Q12308941, wd:Q11879590)) }
+}

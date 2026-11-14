@@ -1,0 +1,85 @@
+name: IntelliJ plugin build
+
+# A new push to a PR cancels the run it supersedes, a push to main never does: the Actions minutes
+# are a budget.
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'ide/intellij-dsllint/**'
+      - '.github/workflows/ide-intellij.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'ide/intellij-dsllint/**'
+      - '.github/workflows/ide-intellij.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build & test (Gradle, Kotlin)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: ide/intellij-dsllint
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      # The build IDE plus the two PyCharm builds verifyPlugin downloads fill
+      # the runner's disk: on 2026-09-28 the Gradle cache save failed with "No
+      # space left on device", and on 2026-09-30 the job died inside Verify
+      # plugin without a log. The preinstalled Android SDK, .NET, GHC and
+      # CodeQL are not used here.
+      - name: Free disk space
+        working-directory: .
+        run: |
+          df -h /
+          sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          build-root-directory: ide/intellij-dsllint
+
+      - name: Build and test
+        run: ./gradlew check buildPlugin --stacktrace
+
+      # Against every PyCharm in pluginVerifyVersions (gradle.properties): the
+      # since-build floor and the newest EAP. Fails on compatibility problems only.
+      - name: Verify plugin
+        run: ./gradlew verifyPlugin --stacktrace
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: ide/intellij-dsllint/build/test-results/test/**/*.xml
+          check_name: Kotlin Test Results
+          comment_mode: off
+
+      - name: Upload plugin artifact
+        if: success()
+        uses: actions/upload-artifact@v7
+        with:
+          name: intellij-dsllint-plugin
+          path: ide/intellij-dsllint/build/distributions/*.zip
+          if-no-files-found: error

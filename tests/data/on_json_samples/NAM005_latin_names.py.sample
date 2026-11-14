@@ -1,0 +1,11 @@
+# Invented: a surname and a modern-orthography surname written in Latin letters (NAM005); a `?`
+# stays unflagged.
+from verso.ru.dsl import Gender, birth, birth_records, person
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4047", "Маниловка", "Церковь", 1851,
+    birth(1, Gender.MALE, 3, 5, child=person("Лука"),
+          father=person("Ѳома", "Лукинъ", "Primerov"),
+          mother=person("Марія", last_name_orig="?")),
+    birth(2, Gender.FEMALE, 4, 6, child=person("Анфиса", last_name_orig="Опискинъ", last_name_modern_orth="Opiskin"),
+          father=person("Сергій", "Косьминъ", "Опискинъ"), mother=person("Марія")))

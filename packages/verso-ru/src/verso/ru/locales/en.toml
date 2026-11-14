@@ -1,0 +1,1729 @@
+# verso.ru's messages, English — the source language (verso.core.i18n).
+schema = 1
+
+[baseline]
+v1 = "baseline v1 — verso dsllint --baseline FILE --update-baseline --villages"
+
+[corpus_data]
+expected_list = "expected a list"
+expected_order_tables = "expected a list of tables {{ year, suffix }}"
+expected_integer = "expected an integer"
+expected_string = "expected a string"
+expected_prev_revision = "expected a table {{ year = year | false }}"
+expected_year = "expected a year"
+expected_year_or_false = "expected a year or false"
+csv_skip_missing = "{path}: [csv] skip: no file {name}"
+expected_table = "expected a table"
+expected_landlord = "expected a table {{ villages, token }}"
+unknown_landlord_key = "{path}: unknown key «landlords.{key}.{unknown}»"
+expected_entries = "expected a list of tables [[{table}]]"
+expected_side = "expected a table {{ village, in }}"
+
+[CML001]
+numbered = "member {number} does not start its line — put every member() on its own line (one person per row, as the revision list reads)"
+unnumbered = "member does not start its line — put every member() on its own line (one person per row, as the revision list reads)"
+
+[SYN001]
+bare = "SyntaxError"
+detail = "SyntaxError: {detail}"
+
+[SYN002]
+detail = "parse error: {detail}"
+
+[LNT001]
+crashed = "{linter} linter crashed: {error}: {detail}"
+
+[DRL001]
+dropped = "relative {relative} is silently dropped — death() emits only relatives[0] ({kept}); split the record or extend add_death_records"
+
+[MST001]
+unknown = "unknown marital_status \"{value}\" — use a verso.ru.dsl.marital_status constant (MARRIED, SINGLE, WIDOWER, WIDOW, …)"
+
+[NLC001]
+age = "listed_person age must be a positive integer, got {age}"
+document_type = "name_list_records requires a non-empty document_type"
+
+[SOR001]
+literal_constant = "{kwarg}=\"{text}\" is not in modern orthography — classification fields (status=, departure_reason=) are written modern so they can be parsed and standardized; names and the source's own words in comment= keep the scribe's spelling. Write the catalog constant {constant} (\"{modern}\")."
+literal_words = "{kwarg}=\"{text}\" is not in modern orthography — classification fields (status=, departure_reason=) are written modern so they can be parsed and standardized; names and the source's own words in comment= keep the scribe's spelling. Write \"{modern}\"."
+bound_constant = "{kwarg}={name} (= \"{text}\") is not in modern orthography — classification fields (status=, departure_reason=) are written modern so they can be parsed and standardized; names and the source's own words in comment= keep the scribe's spelling. Write the catalog constant {constant} (\"{modern}\")."
+bound_words = "{kwarg}={name} (= \"{text}\") is not in modern orthography — classification fields (status=, departure_reason=) are written modern so they can be parsed and standardized; names and the source's own words in comment= keep the scribe's spelling. Write \"{modern}\"."
+
+[VSR001]
+redundant = "redundant status={status} ({slot} status matches {verb} default {field})"
+
+[CSR001]
+redundant = "redundant status={status} ({role} status matches census default {field})"
+
+[RET001]
+no_previous = "previous_age_error= on a line with no previous figure (no previous_age= and no «прошлая РС:») — nothing to withdraw"
+
+[RET002]
+no_age = "source_age_error= on a line that states no age — nothing to withdraw"
+burial_source_age_error = "source_age_error= on a burial that states no age — nothing to withdraw"
+burial_namesake = "namesake= on a burial that states no age — nothing to excuse"
+
+[RET003]
+both = "previous_age_error= beside source_age_error= — the whole-line retraction already withdraws the previous figure; drop one"
+
+[RVR001]
+page_labelled_default = "redundant reviewed={value} on page(\"{label}\") — {records} defaults to reviewed={level_set}"
+page_labelled_set = "redundant reviewed={value} on page(\"{label}\") — {records} already sets reviewed={level_set}"
+page_bare_default = "redundant reviewed={value} on page() — {records} defaults to reviewed={level_set}"
+page_bare_set = "redundant reviewed={value} on page() — {records} already sets reviewed={level_set}"
+inner_records_default = "redundant reviewed={value} on {func}() — {records} defaults to reviewed={effective}"
+inner_records_set = "redundant reviewed={value} on {func}() — {records} already sets reviewed={effective}"
+inner_page_labelled = "redundant reviewed={value} on {func}() — page(\"{label}\") already sets reviewed={effective}"
+inner_page_bare = "redundant reviewed={value} on {func}() — page() already sets reviewed={effective}"
+
+[census]
+member = "member {number}"
+member_named = "member {number} ({name})"
+died = "died"
+married_out = "married out"
+surname_matches_head = "({role} surname matches head's family surname; advisory — removal changes the document text)"
+patronymic_advisory = "; advisory — removal drops pre-reform orthography from the doc text"
+
+[CAI003]
+zero = "{who}: age=0 puts the birth in the census year — if the source states no age, omit age= (a missing age is treated as unknown and emits no birth event)"
+
+[CAI004]
+departed = "{who}: {why} before the revision and so left the parish — the source states no current age. Move the figure to previous_age= or drop it (age= here asserts a column the сказка leaves empty)"
+
+[CAI005]
+departed = "{who}: {why} before the revision, so the source gives no birth year — drop birth_year= and let previous_age= carry it (the derived estimate spells the two-year window the age really means)"
+
+[CAI001]
+with_year = "{who}: birth_day/birth_month set without birth_year, so the birth defaults to the census year {year} — but age {age} makes the member ~{years} yrs old (born ~{born}). Add birth_year= or drop birth_day/birth_month."
+without_year = "{who}: birth_day/birth_month set without birth_year, so the birth defaults to the census year — but age {age} makes the member ~{years} yrs old. Add birth_year= or drop birth_day/birth_month."
+
+[CAI002]
+gap = "{who}: age {age} vs previous_age {previous} differ by {diff} years, but the {year} census is {gap} years after the previous ({previous_year}) revision — check the transcribed ages."
+
+[CPL008]
+same_ref = "{who}: secondary_ref_member={sec} names the same member as ref_member={ref}. The secondary axis is for a relationship the source's own role does NOT describe; aimed at the member `ref_member` already names it restates one, and it restates it the expensive way — the translator mints a geni_union from that axis, duplicating the one the `ref_member` path already emits. Use {axis}={ref} instead: same claim, read by the facts extractor, and no generated byte moves."
+
+[CPL007]
+role_none = "{who}: role=None with ref_member={ref} and nothing saying what {ref} IS. Without a role the reference is read as a spouse by one pass of the generator and as a parent by another, so the meaning survives only in a comment. Add spouse_member={ref} (husband/wife) or parent_member={ref} (father/mother) beside it — `ref_member` stays as it is and no generated byte moves. `secondary_role=<role>` + secondary_ref_member={ref} also settles it, and additionally emits the union for that relationship — use it when you want the union, not merely to say what the reference means."
+
+[CPL011]
+hidden_partner = "{who}: hidden parent of member(s) {numbers} with ref_member={ref} — the translator makes {partner} the CO-PARENT of those children (the hidden-ancestor pass reads a hidden parent's ref_member as his spouse for every role but SON/DAUGHTER/STEPSON/STEPDAUGHTER), {why}. An absent brother of the head needs no ref_member (the head-of-family stub makes them siblings); a dead husband whose widow is listed is role=None with ref_member and spouse_member naming HER."
+one_sex = "and the two are of one sex"
+head_blood = "and the role makes this member the head's {role}, not the head's spouse"
+
+[CPL009]
+no_such_member = "{who}: {kw}={ref} names a member number that does not exist in this household (it has {numbers}) — member references resolve against the household's OWN numbering, so the translator looks {ref} up, finds nothing and emits no union: the link is a silent no-op, and no sibling check sees it either — each of those reads the reference's resolved TARGET, and a number that misses has none. If that member number belongs to a NEIGHBOURING household, the reference is a copy-paste or a survivor of a household split — a parent who genuinely lives in another household is linked with father_ref=\"<consolidated profile name>\"; otherwise remove it."
+
+[CPL010]
+number_taken = "{who}: the number is already taken by {earlier}, earlier in this household — a household's member numbers are the keys every reference resolves through, and the map keeps the LAST member of a number: a reference to it reaches this one, the earlier member drops out of every check that walks the household (CPL001–CPL009 included), and the facts layer reads both as ONE appearance with two names. Renumber from the roll's own numbering on the scan, and move any reference that meant the other member."
+
+[CPL006]
+ref_hidden = "{who}: ref_member={ref} points at a HIDDEN member — `ref_member` states the relationship the SOURCE records, so it can only name someone the source wrote down. Point it at the visible relative the document names and add parent_member={ref} for the reconstructed lineage."
+
+[CPL005]
+hidden_leaf = "{who}: hidden=True member that links to nobody — nothing references them as parent/spouse and they reference no in-household relative. A hidden member is only justified by the connection it makes, so this one adds an unattested person for no purpose (the shape of a member invented to father someone, left dangling once that link was corrected). Verify they are attested elsewhere in the corpus — the «добавлена вручную по другим материалам» comment is NOT evidence, fabricated and well-sourced members carry it alike — otherwise remove them."
+
+[CPL004]
+invented_parent = "{who}: married-in {role} with parent_member={pm}, which is {rel} — this makes her a blood relative of the man she married. A woman who married INTO the household has no parent here; her patronymic matching a household member's name is NOT evidence (that coincidence is what produced the mis-links this check exists for). Drop parent_member unless he is genuinely her own father living in this household."
+own_husband = "her own husband"
+husband_ancestor = "an ancestor of her husband (member {husband})"
+husband_sibling = "a sibling of her husband (member {husband})"
+
+[CPL001]
+no_parent_link = "{who}: {role} with ref_member={rm} resolves to NO parent link — the parent-child union is silently dropped (only SON/DAUGHTER treat ref_member as the parent), yet {target_txt} looks like the father ({evidence}). Fix one: (a) source says «сынъ»/«дочь» → the role should be SON/DAUGHTER; (b) {target_txt} IS the father → add parent_member={rm}; (c) ref_member names a relationship anchor and the match is a coincidence → keep as-is."
+evidence_patronymic = "patronymic «{patronymic}» matches a patronymic derived from «{father}»"
+evidence_comment = "the comment says «сын/дочь»"
+evidence_derived = "the patronymic is auto-derived from member {member}"
+
+[CPL002]
+no_father = "{who}: {role} has no father in the household and no parent_member — the profile is emitted attached to NO union. If the father is identifiable{hint}, add a hidden=True intermediary member and point parent_member= at it; otherwise keep as-is."
+hint = " — the patronymic «{patronymic}» names him"
+
+[CPL003]
+no_husband = "{who}: DAUGHTER_IN_LAW («сноха») with no husband in the household — her marriage is not represented (Rule A needs exactly one deceased SON of HEAD; found {dead_sons}). Add a hidden=True husband with ref_member={my_num}, or keep as-is if he is unidentifiable."
+
+[CPL012]
+patronymic = "Member {number} ({name}): the patronymic «{patronymic}» does not come from «{father}», whom {kw}={ref} names as the father. Check the patronymic on the scan, or correct {kw}."
+
+[DRA001]
+contradicts = "relative residence {val} contradicts the household residence {anchor} — one household, two villages"
+
+[DRA002]
+redundant = "redundant residence=\"{val}\" (relative lives at the deceased's residence)"
+redundant_positional = "relative residence {val} is redundant (auto-derived from the deceased's residence)"
+
+[PAF001]
+full_form = "full patronymic «{patr}» on a non-high-rank person — the full «-вич» form was a privilege of nobility/officers/clergy; peasants used the short полуотчество («Абрамовъ»). Keep it only if the source records it (e.g. a gwar WWI card)."
+
+[BRD001]
+residence = "redundant residence=\"{val}\" ({reason})"
+
+[BRD002]
+residence_positional = "residence \"{val}\" is redundant ({reason})"
+
+[BRD003]
+surname = "redundant last_name_orig=\"{orig_val}\" ({role} surname auto-derived from parent; not in book)"
+
+[BRD004]
+surname_positional = "{role} surname \"{orig_val}\" is redundant (auto-derived from parent; not in book)"
+
+[BRD005]
+modern_surname = "redundant last_name_modern_orth=\"{eff}\" ({role} surname auto-derived from parent; not in book)"
+
+[BRD006]
+in_book = "redundant last_name_in_book=False ({role} surname auto-derived from parent)"
+
+[CRD001]
+modern_surname = "redundant last_name_modern_orth=\"{derived}\" {suffix}"
+
+[CRD002]
+surname_orig = "redundant last_name_orig=\"{orig_val}\" {suffix}"
+
+[CRD003]
+surname = "redundant surname \"{val}\" {suffix}"
+
+[CRD004]
+modern_birth_surname = "redundant birth_last_name_modern_orth=\"{derived}\" (daughter maiden surname auto-derived from head; advisory)"
+
+[CRD005]
+patronymic_orig = "redundant patr_orig=\"{val}\" ({role} patronymic auto-derived from parent{adv})"
+
+[CRD006]
+patronymic = "redundant patronymic \"{val}\" ({role} auto-derived from parent{adv})"
+
+[birth]
+mother_at_father = "mother lives at father's residence"
+child_at_family = "child born at family residence"
+
+[MRA001]
+father_groom = "residence {parent} (отец) contradicts {party} (жених) — one household before the wedding, two villages"
+father_bride = "residence {parent} (отец) contradicts {party} (невеста) — one household before the wedding, two villages"
+mother_groom = "residence {parent} (мать) contradicts {party} (жених) — one household before the wedding, two villages"
+mother_bride = "residence {parent} (мать) contradicts {party} (невеста) — one household before the wedding, two villages"
+
+[NGA001]
+surname_man = "«{full}»: a man's name with the surname «{surname}» in the other gender's form — a slip, or a correction of the name that stopped short of the surname"
+surname_woman = "«{full}»: a woman's name with the surname «{surname}» in the other gender's form — a slip, or a correction of the name that stopped short of the surname"
+
+[NGA002]
+patronymic_man = "«{full}»: a man's name with the patronymic «{patronymic}» in the other gender's form"
+patronymic_woman = "«{full}»: a woman's name with the patronymic «{patronymic}» in the other gender's form"
+
+[RLA001]
+no_subject = "relationship_ref=\"{ref}\" names no subject in this {verb} record — the relative is left unattached"
+unwired_godmother = "relationship_ref=\"{ref}\" attaches to {kwarg} but builds no relationship edge — use \"восприемника №{godparent}\""
+unwired = "relationship_ref=\"{ref}\" attaches to {kwarg} but builds no relationship edge — the translator does not wire this ref"
+
+[RLA002]
+patronymic = "patronymic \"{raw}\" ({written}) does not come from the father's name {father_name} (which yields {derived})"
+
+[RLA003]
+surname = "surname {child_surname} does not match the father's {father_surname} (expected {expected})"
+
+[WSD002]
+says_groom = "witness{n} is side=Side.{side} but its comment says «по жениху» — one of the two is a misreading"
+says_bride = "witness{n} is side=Side.{side} but its comment says «по невесте» — one of the two is a misreading"
+
+[WSD003]
+undeclared_groom = "witness{n}'s comment says «по жениху» — declare side=Side.GROOM and drop the words"
+repeated_groom = "witness{n}'s comment repeats «по жениху» of side=Side.GROOM — drop the words, the export writes them"
+undeclared_bride = "witness{n}'s comment says «по невесте» — declare side=Side.BRIDE and drop the words"
+repeated_bride = "witness{n}'s comment repeats «по невесте» of side=Side.BRIDE — drop the words, the export writes them"
+record_comment = "the record's comment names the sureties' sides — declare side= on each witness it names"
+
+[WSD006]
+too_many_groom = "{count} sureties «по жениху» — the Familio справочник has {columns} columns per side, the rest are not exported"
+too_many_bride = "{count} sureties «по невесте» — the Familio справочник has {columns} columns per side, the rest are not exported"
+
+[WSD001]
+outside = "side= outside a marriage's witness1..6 — a side says whom a поручитель stood surety for and means nothing elsewhere"
+
+[WSD004]
+half_declared = "some witnesses carry side= and {missing} does not — declare it, or leave the record without sides"
+
+[WSD005]
+order = "a groom's surety (witness{groom}) follows a bride's (witness{bride}) — the books write the groom's first; check the reading, but never renumber an applied slot"
+
+[ESC001]
+host = "source_url host should contain {expected} for {func}(); got {url}"
+
+[ESC003]
+award = "casualty_reason set on an award document (document_type=WwiDocumentType.{member}) — an award is not a casualty, drop «причина выбытия»"
+
+[ESC002]
+empty = "original_text is empty — a criminal_record() must carry the verbatim gazette entry as proof"
+
+[ESC004]
+award_typed = "award («награда») set on a non-award document (document_type=WwiDocumentType.{member}) — set document_type=WwiDocumentType.AWARD_LISTS"
+award_untyped = "award («награда») set on a non-award document (no document_type) — set document_type=WwiDocumentType.AWARD_LISTS"
+award_number_typed = "award_number («Номер награждения») set on a non-award document (document_type=WwiDocumentType.{member}) — set document_type=WwiDocumentType.AWARD_LISTS"
+award_number_untyped = "award_number («Номер награждения») set on a non-award document (no document_type) — set document_type=WwiDocumentType.AWARD_LISTS"
+
+[DBD002]
+death_no_month = "death day {day}: no month has day {day}"
+death_month = "death day {day}: {month} has no day {day} — a misread day, or a record under the wrong month block (if the book itself writes it, declare source_date_error=)"
+burial_no_month = "burial day {day}: no month has day {day}"
+burial_month = "burial day {day}: {month} has no day {day} — a misread day, or a record under the wrong month block (if the book itself writes it, declare source_date_error=)"
+
+[DBD001]
+precedes = "burial {burial} precedes death {death}: {hint}"
+registration_precedes = "registration {registration} precedes death {death} in a civil registry book — swapped days, or a registration in a later month the record does not state (b_month=)"
+hint_new_year = "a death() has one year for both dates (there is no burial year, unlike birth(k_year=)), so a burial past New Year reads as January of the SAME year, before the death — leave the date that falls outside the record's year undated and state it in comment="
+hint_swapped_december = "swapped days? — or a burial past New Year, which a death() has one year for both dates (there is no burial year, unlike birth(k_year=)), so a burial past New Year reads as January of the SAME year, before the death: leave b_day=None and state the burial in comment="
+hint_swapped = "swapped days? — or a burial in the next month the record does not state: b_month=Month.{month} (if the book itself buries first, declare source_date_error=)"
+hint_override = "d_month=Month.{death_month} overrides the block but b_month still inherits Month.{burial_month} — if the override belongs to the burial, move it to b_month= (if the book itself buries first, declare source_date_error=)"
+hint_before = "b_month=Month.{month} names a month before the death's (if the book itself buries first, declare source_date_error=)"
+
+[GND001]
+mismatch = "expected {expected} for {role}, got {actual}"
+
+[REL001]
+suggest = "relationship_ref=\"{ref}\" is not allowed; did you mean \"{suggestion}\"?"
+
+[REL002]
+allowed = "relationship_ref=\"{ref}\" is not allowed; use one of: {allowed}, or \"восприемника №N\""
+
+[AGE002]
+unrecognized = "{kwarg}={literal} is not a recognized age; use an integer (years) or a string like \"19 лет 6 мес\", \"6 мес\", \"1 нед\", \"3 дн\"."
+
+[AGE001]
+quoted_number = "{kwarg}=\"{literal}\" is a number in quotes — write {kwarg}={digits}. The integer is the DSL form for a whole-year age; the output is identical either way."
+unit = "{kwarg}=\"{literal}\" spells a whole number of years as a string — write {kwarg}={digits}. split_age() yields the same (Лет, Месяцев, Недель, Дней) tuple."
+unit_death = "{kwarg}=\"{literal}\" spells a whole number of years as a string — write {kwarg}={digits}. split_age() yields the same (Лет, Месяцев, Недель, Дней) tuple. The string form also makes the death document render «Умерший: … {literal} лет»."
+
+[SLC001]
+spans = "{func}() spans lines {start}-{end}"
+
+[SLC002]
+constant = "use constant {constant} instead of string literal {kwarg}=\"{literal}\""
+
+[SLC003]
+default = "redundant cause_of_death=\"{value}\" (already in RecordDefaults)"
+
+[SLC004]
+default = "redundant residence=\"{value}\" (already in RecordDefaults)"
+
+[SLC005]
+default = "redundant status=\"{value}\" (already in RecordDefaults)"
+
+[NAM001]
+unknown = "Unknown first name '{name}' (from '{written}')"
+
+[NAM002]
+unknown = "Unknown patronymic '{patronymic}' (from '{written}')"
+
+[NAM003]
+mismatch = "name-patronymic gender mismatch: name '{name}' implies {name_gender}, but patronymic '{patronymic}' implies {patronymic_gender}"
+
+[NAM004]
+mismatch = "gender-status mismatch: name '{name}' implies {name_gender}, but status {status} implies {status_gender}"
+
+[NAM005]
+latin = "non-Cyrillic characters in {field} '{value}'"
+
+[HID001]
+string_number = "record_number must be int (use hidden=True for placeholder members; drop the string sentinel)"
+
+[HID002]
+absent_not_hidden = "comment starting with \"Отсутствует в РС\" requires hidden=True on the same member() call"
+
+[PM001]
+redundant = "parent_member={member} is redundant — it equals ref_member; drop parent_member (ref_member alone encodes the parent)"
+
+[PM002]
+partners_parent = "parent_member={member} on a {role} role duplicates the partner's parent (member {partner} also descends from member {member}) — a married-in spouse's parents are in another household; drop parent_member (use father_ref for a cross-household parent link)"
+
+[ULC001]
+residence = "residence: «{place}» is not among the corpus's places — it goes to TF without a location block. Add the place or write a known one."
+origin = "came from: «{place}» is not among the corpus's places — it goes to TF without a location block. Add the place or write a known one."
+destination = "left for: «{place}» is not among the corpus's places — it goes to TF without a location block. Add the place or write a known one."
+parish_village = "parish: «{place}» is not among the corpus's places — it goes to TF without a location block. Add the place or write a known one."
+default_residence = "the book's default place: «{place}» is not among the corpus's places — it goes to TF without a location block. Add the place or write a known one."
+
+[IMP001]
+outside = "an import from outside the DSL's facade: {module}"
+upgrade = "an import from outside the DSL's facade: {module} — verso upgrade-dsl {path}"
+
+[forms.role.father]
+nom = "father"
+nom_capital = "Father"
+
+[forms.role.mother]
+nom = "mother"
+nom_capital = "Mother"
+
+[forms.role.husband]
+nom = "husband"
+nom_capital = "Husband"
+
+[forms.role.wife]
+nom = "wife"
+nom_capital = "Wife"
+
+[forms.role.son]
+nom = "son"
+nom_capital = "Son"
+
+[forms.role.daughter]
+nom = "daughter"
+nom_capital = "Daughter"
+
+[forms.role.brother]
+nom = "brother"
+nom_capital = "Brother"
+
+[forms.role.sister]
+nom = "sister"
+nom_capital = "Sister"
+
+[forms.role.child]
+nom = "child"
+nom_capital = "Child"
+
+[forms.role.newborn_male]
+nom = "the newborn"
+nom_capital = "The newborn"
+
+[forms.role.newborn_female]
+nom = "the newborn"
+nom_capital = "The newborn"
+
+[forms.role.deceased_male]
+nom = "the deceased"
+nom_capital = "The deceased"
+
+[forms.role.deceased_female]
+nom = "the deceased"
+nom_capital = "The deceased"
+
+[forms.role.groom]
+nom = "groom"
+nom_capital = "Groom"
+
+[forms.role.bride]
+nom = "bride"
+nom_capital = "Bride"
+
+[forms.role.godfather]
+nom = "godfather"
+nom_capital = "Godfather"
+
+[forms.role.godmother]
+nom = "godmother"
+nom_capital = "Godmother"
+
+[forms.role.surety]
+nom = "surety"
+nom_capital = "Surety"
+
+[forms.role.witness]
+nom = "witness"
+nom_capital = "Witness"
+
+[forms.role.relative]
+nom = "relative"
+nom_capital = "Relative"
+
+[forms.role.household_member]
+nom = "household member"
+nom_capital = "Household member"
+
+[words]
+who = "{role} ({name})"
+offer = "«{words}» ({constant})"
+either = "{some} or {last}"
+
+[residence]
+census_village = "the census's village"
+book_default = "the book's default"
+written = "written in the record"
+like = "as the {role}'s"
+
+[RTV001]
+elsewhere = "{who} — «{words}»: {estate} lived in {villages}, and the residence here is {village} ({source}). Check the status or set residence=."
+
+[RTV002]
+owner_in_state_village = "{who} lives {lives} ({source}), and the status is «{words}»: state peasants lived {state}, the owners' — {owners}. Check the status or the place."
+state_in_owners_village = "{who} lives {lives} ({source}), and the status is «{words}»: the owners' peasants lived {owners}, the state's — {state}. Check the status or the place."
+owner_in_state_village_default = "{who} lives {lives} ({source}), and the status is «{words}» (the book's default): state peasants lived {state}, the owners' — {owners}. Check the status or the place."
+state_in_owners_village_default = "{who} lives {lives} ({source}), and the status is «{words}» (the book's default): the owners' peasants lived {owners}, the state's — {state}. Check the status or the place."
+
+[PSA001]
+spouses = "{child} — «{child_words}», and {parent} — «{parent_words}». Spouses share one estate — check which status is right."
+generations = "{child} — «{child_words}», and {parent} — «{parent_words}». Parents and children share one estate — check which status is right."
+
+[PSA002]
+female_spouses = "The {silent} states no estate — by the book's default she is «{default}», and the {stated} — «{stated_words}». Spouses share one estate: {fix}."
+male_spouses = "The {silent} states no estate — by the book's default he is «{default}», and the {stated} — «{stated_words}». Spouses share one estate: {fix}."
+female_generations = "The {silent} states no estate — by the book's default she is «{default}», and the {stated} — «{stated_words}». Parents and children share one estate: {fix}."
+male_generations = "The {silent} states no estate — by the book's default he is «{default}», and the {stated} — «{stated_words}». Parents and children share one estate: {fix}."
+
+[PSA004]
+female_spouses = "The {silent} states no estate — by the book's default she is just «{default}», and the {stated} — «{stated_words}». Spouses share one estate: {fix}."
+male_spouses = "The {silent} states no estate — by the book's default he is just «{default}», and the {stated} — «{stated_words}». Spouses share one estate: {fix}."
+female_generations = "The {silent} states no estate — by the book's default she is just «{default}», and the {stated} — «{stated_words}». Parents and children share one estate: {fix}."
+male_generations = "The {silent} states no estate — by the book's default he is just «{default}», and the {stated} — «{stated_words}». Parents and children share one estate: {fix}."
+
+[parent_status]
+fix_offer = "give the {role} {offer}"
+fix_like = "give the {role} an estate, as the {stated} has"
+fix_offer_mother = "give the {role} {offer} — or status_mother= in DEFAULTS, if the whole book says so"
+fix_like_mother = "give the {role} an estate, as the {stated} has — or status_mother= in DEFAULTS, if the whole book says so"
+
+[PSA003]
+offer = "{newborn} is given an adult status «{words}» — a child's form is needed, e.g. {offer}."
+forms = "{newborn} is given an adult status «{words}» — a child's form is needed ({base}_SON / {base}_DAUGHTER / {base}_BOY / {base}_GIRL)."
+
+[NCSV006]
+empty = "an empty «Имя»"
+
+[NCSV005]
+gender = "«Пол» = {gender}, and it must be М or Ж"
+
+[NCSV002]
+repeats = "«Имя-основа» repeats «Имя» — a canonical row leaves it empty"
+
+[NCSV001]
+unknown_base = "«Имя-основа» = {base}, but the table holds no such «Имя»"
+
+[NCSV003]
+chain = "«Имя-основа» = {base} — but {base} is a variant itself, and canonicalization does not follow a chain"
+
+[NCSV004]
+duplicate = "the row repeats an earlier one whole"
+
+[statuses]
+imported_elsewhere = "{name}: imported from {found}, but the workspace is {path}; run from the tree's root (PYTHONPATH)"
+not_a_module = "{path}: does not load as a module"
+both_forms = "{toml} and {py}: the corpus holds its statuses twice — keep one"
+expected_aliases = "expected a table of «constant» = «constant»"
+expected_constant = "expected a table {{ text, gender }} named by an upper-case constant"
+expected_gender = "«male», «female» or no gender"
+# Deprecated in 0.1.20, no longer called (corpus_data.unknown_key says it); kept until 0.2.
+unknown_key = "{path}: unknown key «{key}»"
+
+[lexicon]
+conflict = "the lexicon derives two answers for {index} «{key}»: {candidates} — pin one in the layer's patronymics"
+unknown_kind = "no lexicon index «{kind}»: one of {kinds}"
+read_only = "the names layer «{layer}» is read-only"
+unsexed_patronymic = "the names layer «{layer}»: the patronymic «{form}» has no sex but a father, a modern or a short form — only a patronymic tied to nothing may have none"
+
+[legacy]
+no_column = "{path}: a column the names table needs is missing from its header"
+bad_row = "{path}, line {line}: a row without «Имя» or with «Пол» other than «М» or «Ж»"
+ignored_sex_contradicts = "{path}: the ignore list gives «{name}» a sex the names table's rows do not share"
+form_both_ways = "«{form}» is both a short and a modern patronymic of one sex: the names table cannot be read as one layer"
+
+[layer_files]
+header = "{file}: not the table's header — it must be «{columns}»"
+width = "{file}, line {line}: the wrong number of cells"
+sex = "{file}, line {line}: the sex «{sex}» is neither M, F nor empty"
+forms_sex = "{file}, line {line}: the forms of «{name}» give no sex"
+duplicate = "{file}, line {line}: the key «{key}» is written above already"
+bad_value = "the value {value} cannot be held by a TSV cell"
+
+[LEX001]
+not_cyrillic = "«{key}»: the key is not one Cyrillic word"
+not_russian = "«{key}»: a key of the base with a letter outside the Russian alphabet"
+stress = "«{key}»: the key carries a stress mark"
+space = "«{key}»: a stray space in the key"
+no_sex = "«{key}»: the forms give no sex"
+bad_sex = "«{key}»: the sex «{sex}» is neither M, F nor empty"
+
+[LEX002]
+duplicate = "«{key}»: the key is written on line {first} already"
+
+[LEX003]
+unknown_base = "«{key}»: no layer holds the base «{base}»"
+removed_base = "«{key}»: the removal of «{base}» leaves this name's base in no layer"
+
+[LEX004]
+chain = "«{key}»: the base «{base}» is itself a variant of «{next}»"
+
+[LEX005]
+names = "«{key}»: the row answers as the layers under it do — it is redundant"
+forms = "«{key}»: {column} = «{value}» is what the rule gives — the cell is redundant"
+removal = "«{key}»: the row removes a key no layer under it holds — it is redundant"
+patronymics = "«{key}»: the pin answers as the derivation without it does — it is redundant"
+
+[LEX006]
+source = "«{key}»: the source «{source}» is none of the base's sources"
+removal = "«{key}»: a base row removes nothing — the base has no layer under it («-» in bases)"
+
+[LEX007]
+conflict = "«{key}»: two derivations for {index} — {candidates}; pin one in patronymics.tsv"
+
+[LEX008]
+profile = "«{key}»: no transliteration profile «{profile}»; there are: {known}"
+word = "«{key}»: the word of a rule is not one Cyrillic word"
+empty = "«{key}»: the rule spells the word as nothing — «-» takes a rule away"
+
+[LEX009]
+redundant = "«{key}»: «{latin}» is what the sum without the rule gives — it is redundant"
+removal = "«{key}»: the row takes away a rule no layer under it holds — it is redundant"
+
+[LEX010]
+latin = "«{key}»: «{latin}» holds a character outside the Latin letters, the apostrophe, the space and the hyphen"
+
+[translit_edit]
+minted = "«{word}»: {count} Terraform addresses of the workspace spell it so already ({example}) — a rule of the addresses' profile would rename them; spell it for display: --profile {display}"
+minted_same = "«{word}»: {count} Terraform addresses of the workspace spell it so already ({example}) — a rule of the addresses' profile would rename them; the names a person reads take the same profile, so give display a profile of its own first ([translit] display)"
+no_rule = "«{word}»: no layer holds a rule of {profile} for it"
+needs_schema_7 = "{config}: the rules are rows of the names layers from schema 7 — [translit]"
+no_old_file = "{config}: the corpus holds no transliteration.toml to move"
+
+[names_layers]
+unknown_base = "{config}: «names.base» — no base «{base}»: one of {known}, or false"
+no_directory = "the names layer «{layer}»: no directory {path}"
+legacy_layer = "the names layer «{layer}» is the old table ({path}): it is read as a layer until 0.2 — write it as names.tsv, forms.tsv and patronymics.tsv (verso names layer-diff)"
+
+[names_edit]
+no_layers = "{config}: schema ≤ 5 — the names are the old tables, there are no layers"
+no_writable = "{config}: no writable names layer — name one of [names] layers in [names] writable"
+not_a_layer = "{path} is none of the [names] layers of {config}"
+not_writable = "{path} is not the writable names layer: add and remove write only {writable} ([names] writable of {config}) — change [names] to edit another layer"
+old_format = "the names layer «{layer}» is the old table (names.csv): write it as three TSV files first (verso names layer-diff)"
+exists = "«{name}» ({sex}) is in {table}.tsv of «{layer}» already — remove it first: a key has one row"
+no_such_name = "no layer holds «{name}» ({sex})"
+
+[oracle]
+cannot_write = "the names oracle cannot write the answer {value} ({type}) in its notation"
+unknown_function = "the names oracle asks no function «{function}»: one of {known}"
+
+[layer_diff]
+unresolved = "{count} questions no entry of the old tables settles — not a name, a pin, a «-» cell or a removal:\n{rows}"
+conflict = "two names the layer derives one key from, {index} «{key}» ({candidates}), and the old tables give no answer to pin: no layer is written"
+
+[names_registry]
+no_file = "no file {path}: check [names] dir in verso.toml"
+
+[names_table]
+empty_name = "«Имя» is empty"
+row_exists = "the table already holds this row for {name}"
+base_repeats_name = "«Имя-основа» repeats «Имя» ({name}) — a canonical row leaves it empty"
+base_missing = "the table holds no «Имя» {base} for the base"
+base_is_variant = "{base} is itself a variant — the chain does not canonicalize; give --base {ultimate}"
+
+[transliteration]
+not_toml = "{path}: does not read as TOML: {e}"
+unknown_key = "{path}: unknown key «{unknown}»"
+names_not_table = "{path}: «names» — expected a table"
+name_not_string = "{path}: «names.{name}» — expected a string"
+profile_spells = "{path}: «{name}» is spelled by the profile {profile}'s table — not the corpus's"
+unknown_profile = "{config}: «{key}» = «{profile}» — no such transliteration profile; there are: {known}"
+moved_to_layer = "{path}: the transliteration's rules are rows of the names layers now — verso translit migrate"
+no_writable_layer = "{config}: no names layer to write a rule to — [names] writable"
+
+# The review page's labels — the keys of ui-hints.toml and of the page (ui-v1.json).
+
+[ui.field]
+given_original = "given name"
+patronymic_original = "patronymic"
+surname_original = "surname"
+given_modern = "given name (modern)"
+patronymic_old = "patronymic (modern)"
+surname_modern = "surname (modern)"
+residence = "place"
+status = "status"
+gender = "sex"
+side = "side"
+comment = "comment"
+surname_in_book = "surname in the book"
+maiden_surname_modern = "birth surname"
+occupation = "occupation"
+number = "No."
+birth_day = "birth day"
+baptism_day = "baptism day"
+birth_month = "birth month"
+baptism_month = "baptism month"
+page = "leaf"
+case = "file"
+year = "year"
+baptism_year = "baptism year"
+source_date_error = "date error in the original"
+calendar_note_birth = "a name out of the calendar — it is right"
+relationship = "relation"
+relationship_ref = "whose relative"
+baptism_age = "age at baptism"
+marriage_day = "wedding day"
+marriage_month = "wedding month"
+groom_marriage_number = "groom's marriage no."
+bride_marriage_number = "bride's marriage no."
+groom_age = "groom's age"
+bride_age = "bride's age"
+village = "village"
+church = "church"
+bride_takes_groom_surname = "the bride takes the groom's surname"
+source_kin_error = "kinship error in the original"
+calendar_note_marriage = "a wedding on a forbidden day — it is right"
+death_day = "death day"
+burial_day = "burial day"
+death_month = "death month"
+burial_month = "burial month"
+age = "age"
+cause_of_death = "cause of death"
+source_age_error = "age error in the original"
+namesake = "namesake (the age is another's)"
+family_id = "household"
+record_day = "day of the entry"
+record_month = "month of the entry"
+role = "role"
+ref_member = "to member no."
+previous_age = "age at the previous revision"
+marital_status = "marital status"
+arrival_place = "from"
+departure_place = "to"
+arrival_year = "year of arrival"
+arrival_reason = "reason of arrival"
+departure_year = "year of departure"
+departure_reason = "reason of departure"
+record_number = "entry no."
+birth_year = "birth year"
+parent_member = "parent no."
+father_ref = "father (reference)"
+secondary_role = "second role"
+secondary_ref_member = "second reference no."
+hidden = "hidden"
+spouse_member = "spouse no."
+previous_age_error = "previous age error"
+divorce_day = "divorce day"
+divorce_month = "divorce month"
+husband_age = "husband's age"
+wife_age = "wife's age"
+marriage_date = "date of the marriage"
+children = "children"
+initiator = "initiator"
+rank = "rank"
+military_unit = "military unit"
+casualty_reason = "reason of departure"
+document_type = "kind of document"
+award = "award"
+award_number = "award no."
+place_of_casualty = "place of departure"
+draft_board = "draft board"
+archive = "archive"
+fund = "fond"
+inventory = "inventory"
+archive_suffix = "shelfmark suffix"
+prev_revision_year = "year of the previous revision"
+document_type_genitive = "kind of document (genitive)"
+district = "district"
+volost = "volost"
+household_label = "the word for a household"
+household_number_label = "the word for a household's number"
+record_type = "record type"
+source_url = "source URL"
+
+[ui.ref]
+groom = "the groom's"
+bride = "the bride's"
+witness = "surety no. {n}'s"
+mother = "the mother's"
+godparent = "godparent no. {n}'s"
+
+[ui.event]
+birth = "birth"
+of_birth = "the birth"
+baptism = "baptism"
+death = "death"
+of_death = "the death"
+burial = "burial"
+marriage = "wedding"
+divorce = "divorce"
+
+[ui.row]
+groom_age = "age"
+bride_age = "age"
+groom_marriage_number = "marriage no."
+bride_marriage_number = "marriage no."
+age = "age"
+cause_of_death = "cause of death"
+
+[ui.quick]
+cause_of_death = "+ cause of death"
+godparent = "+ godparent"
+witness = "+ surety"
+
+[ui.kind]
+birth = "Birth"
+christening = "Baptism"
+marriage = "Marriage"
+death = "Death"
+household = "Household"
+listed_person = "List"
+divorce = "Divorce"
+external_record = "Card"
+
+[ui.slot]
+child = "Infant"
+father = "Father"
+mother = "Mother"
+godparent = "Godparent"
+priest = "Priest"
+deacon = "Deacon"
+dyachok = "Psalm reader"
+sexton = "Sexton"
+groom = "Groom"
+bride = "Bride"
+witness = "Surety"
+deceased = "Deceased"
+witness_death = "Witness"
+person = "Person"
+husband = "Husband"
+wife = "Wife"
+
+[ui.group]
+relatives = "Relative"
+members = "Member"
+
+[ui.enum.gender]
+male = "male"
+female = "female"
+
+[ui.enum.relationship]
+father = "father"
+mother = "mother"
+husband = "husband"
+wife = "wife"
+son = "son"
+daughter = "daughter"
+father_in_law = "father-in-law"
+mother_in_law = "mother-in-law"
+son_in_law = "son-in-law"
+daughter_in_law = "daughter-in-law"
+foster_father = "foster father"
+foster_mother = "foster mother"
+step_mother = "stepmother"
+step_father = "stepfather"
+
+[ui.enum.census_role]
+head = "head"
+wife = "wife"
+husband = "husband"
+son = "son"
+daughter = "daughter"
+brother = "brother"
+uncle = "uncle"
+grandson = "grandson"
+granddaughter = "granddaughter"
+daughter_in_law = "daughter-in-law"
+son_in_law = "son-in-law"
+brother_in_law = "brother-in-law"
+stepson = "stepson"
+nephew = "nephew"
+niece = "niece"
+cousin = "cousin"
+mother = "mother"
+father = "father"
+sister = "sister"
+stepdaughter = "stepdaughter"
+lodger = "lodger"
+stepbrother = "stepbrother"
+foster_son = "foster son"
+foster_daughter = "foster daughter"
+
+[ui.enum.side]
+groom = "the groom's"
+bride = "the bride's"
+
+[ui.enum.external_source_kind]
+criminal = "criminal record"
+wwi = "military service"
+wwii = "Great Patriotic War"
+
+[ui.enum.document_type.wwi_document_type]
+casualty_lists = "casualty lists"
+casualty_card_lower = "casualty card (lower ranks)"
+wounded_notice = "notice of a wounded man admitted"
+arrival_card_higher = "arrival card (higher ranks)"
+arrival_card_lower = "arrival card (lower ranks)"
+award_lists = "award lists"
+reporting_card = "reporting cards"
+pow_card = "prisoner-of-war cards"
+
+[ui.enum.document_type.wwii_document_type]
+nagradnoy_list = "award sheet"
+award_order = "award order (decree)"
+anniversary_award = "anniversary award file"
+casualty_report = "report of irrecoverable losses"
+memory_book = "book of memory"
+service_card = "service record file"
+pow_card = "prisoner-of-war file"
+award_card = "award file"
+casualty_clarification = "a document clarifying losses"
+wound_card = "wound file"
+transit_point = "transit points and reserve regiments"
+unit_roster = "unit roster"
+
+[ui.enum.month.january]
+nom = "January"
+gen = "January"
+
+[ui.enum.month.february]
+nom = "February"
+gen = "February"
+
+[ui.enum.month.march]
+nom = "March"
+gen = "March"
+
+[ui.enum.month.april]
+nom = "April"
+gen = "April"
+
+[ui.enum.month.may]
+nom = "May"
+gen = "May"
+
+[ui.enum.month.june]
+nom = "June"
+gen = "June"
+
+[ui.enum.month.july]
+nom = "July"
+gen = "July"
+
+[ui.enum.month.august]
+nom = "August"
+gen = "August"
+
+[ui.enum.month.september]
+nom = "September"
+gen = "September"
+
+[ui.enum.month.october]
+nom = "October"
+gen = "October"
+
+[ui.enum.month.november]
+nom = "November"
+gen = "November"
+
+[ui.enum.month.december]
+nom = "December"
+gen = "December"
+
+[ui.set.births]
+title = "Birth"
+word = "birth"
+plural = "births"
+
+[ui.default]
+residence = "place"
+status_male = "men"
+status_female = "women"
+status_mother = "mothers"
+status_groom = "grooms"
+status_bride = "brides"
+cause_of_death = "cause of death"
+
+[ui.set.marriages]
+title = "Marriage"
+word = "wedding"
+plural = "marriages"
+
+[ui.set.deaths]
+title = "Death"
+word = "burial"
+plural = "deaths"
+
+[ui.set.census]
+title = "Household"
+word = "household"
+plural = "rolls"
+
+[ui.book]
+civil = "civil registry book (the second date is the registration)"
+female_previous_age = "women's age at the previous revision"
+
+[ui.set.name_list]
+title = "List"
+word = "list"
+plural = "lists"
+
+[ui.set.divorces]
+title = "Divorce"
+word = "divorce"
+plural = "divorces"
+
+[ui.set.external_sources]
+title = "Card"
+word = "card"
+plural = "cards"
+
+[ui.place]
+city = "name — with its kind: village, hamlet…"
+county = "district, volost"
+state = "province"
+country = "country"
+
+[ui.names]
+pol = "sex"
+imya = "name (modern spelling)"
+osnova = "base name"
+ot = "from"
+skloneniya = "declensions, links"
+roditelny = "genitive"
+patr_old = "old"
+patr_modern = "modern"
+istochnik = "source"
+head_son = "a son's patronymic"
+head_daughter = "a daughter's patronymic"
+
+# An edit refused (verso.ru.dsl.source: EditError, Stale) — its key and params.
+[source]
+unknown_value_kind = "unknown kind of value '{kind}'"
+no_parameter = "{func}() has no parameter '{param}'"
+cannot_create = "a call to {func}() cannot be created"
+no_parameters = "{func}() has no parameter(s) {params}"
+splat = "an unpacked list (*…) is edited in an editor only"
+unknown_op = "unknown operation '{op}'"
+no_member = "{func}() has no member {head}"
+no_place = "{func}() has no place @{to}"
+member_comment = "a comment at the end of a member's line — reorder in an editor"
+not_a_list = "{param}= is no list here — it is edited as an expression only"
+no_element = "{param}= has no element {key}"
+gone = "the file has no record #{ordinal}"
+stale = "the record changed on disk since it was loaded"
+listed_needs_review = "the record is on Geni already and not proofread: an edit goes through only together with «Proofread» — else the ratchet holds it, and the plan deletes its profiles from Geni"
+unknown_where_new = "unknown place for a new record '{where}'"
+new_only_in_a_metric_book = "a new record can be added to a metric book only"
+not_in_its_group_new = "the record does not stand right in its group — a new one beside it is written in an editor"
+new_not_a_call = "the start of the new record is no call to {func}()"
+new_no_number = "the new record has no number"
+unknown_where = "unknown place '{where}'"
+already_here = "the record is here already"
+listed_move = "the record is on Geni already and not proofread: first «Proofread», then to its place — else the ratchet holds it, and the plan deletes its profiles from Geni"
+not_in_its_group_move = "the record does not stand right in its group — it is moved in an editor"
+not_in_its_group_remove = "the record does not stand right in its group — it is removed in an editor"
+unknown_constant = "unknown constant '{code}': neither the file nor the catalog has it"
+looks_like_a_constant = "«{code}» looks like a constant's name, but neither the file nor the catalog has it"
+not_python = "no Python expression: {value} ({error})"
+not_a_number = "not a number: '{value}'"
+no_call = "{func}() has no call '{head}'"
+household_end_only_adds = "the end of a household only takes an addition"
+by_its_fields = "{head} is edited field by field, not whole"
+list_end_only_adds = "the end of {param}= only takes an addition"
+not_an_element_number = "not an element's number: '{key}'"
+element_not_a_call = "{param}={key} is no call"
+empty_path = "an empty path of an edit"
+reviewed_already = "the record is proofread already"
+not_a_constant_name = "'{code}' is no constant's name"
+dsl_v0 = "DSL v0: verso upgrade-dsl <file>"
+
+# An operation of /api/v2 the record's schema cannot address (verso.ru.dsl.paths).
+[paths]
+unknown = "{path}: no such path in the record's schema"
+type = "{path}: a value of the wrong kind — {expected} expected"
+opaque = "{path}: the source writes an expression here — it is edited in an editor only"
+not_a_group = "{path}: no group or slot — only those take an addition, an insertion, a removal, a move"
+not_a_value = "{path}: no field — only a field is set or unset"
+slot_taken = "{path}: the slot is taken"
+position = "{path}: no such place — the group holds {size}"
+op = "unknown operation '{op}'"
+
+[ZGS001]
+slot = "{slot}= in a civil registry book (civil=True): an act writes no godparents, sureties or clergy — a parish book's template?"
+christening = "christening() in a civil registry book (civil=True): an act records no christening — write birth()"
+
+[ZGS002]
+precedes = "registration {registration} precedes the birth {birth} in a civil registry book — a misread day or month?"
+
+[ZGS003]
+unflagged = "a book of {year} with no church — a civil registry book? Then civil=True: otherwise its registrations read as christenings and burials"
+
+[ZGS004]
+estate = "estate «{status}» in a civil registry book: estates were abolished in 1917 — does the act write it so?"
+
+[ZGS005]
+old_letters = "«{name}» is spelled the old way in a civil registry book (1918 on) — does the act write it so?"
+
+[on_json]
+unsupported = "{code}: no such linter code — the linters on records JSON know the codes of dsllint and no other"
+source_code = "{code}: the form of the source text — a file has it, records JSON does not; no linter on records JSON answers this code"
+no_context = "{record}: the records JSON carries no wrapper context in written (an export from before 0.1.16) — export the records again"
+not_replayable = "the records JSON cannot be rebuilt from what it wrote ({error})"
+codes_is_str = "codes must be a collection of codes, not the string «{codes}»"
+not_a_file = "records JSON must be a mapping, not {found}"
+other_schema = "records JSON of schema {wanted} expected, the file has {found}"
+no_documents = "records JSON must hold a list of documents (each a mapping), not {found}"
+set_scope = "{code}: a code about a record set's header — lint_header answers it, not lint_record"
+needs_file_scope = "{code}: a code that reads one fact of the whole file — pass file_in_scope (places.file_in_scope(headers))"
+needs_run_levels = "{code}: a code that reads the review levels of the record's page run — pass run_levels"
+
+[hosted]
+bad_row = "hosted.toml: [{code}] cannot be read: {row}"
+
+[cli.echz]
+case_summary = "  {dates}, folios by the inventory: {folios}, scans: {total_pages}"
+no_folio_names = "  (the file names carry no folio numbers — the download goes page by page)"
+folio_range = "  folios {first}-{last} ({count})"
+folios_missing = "  NO folios: {missing}"
+spreads = "  spreads (two folios on a scan): {spreads}"
+lettered = "  lettered: {lettered}"
+not_folios = "  not folios (cover/inventory/certifier): {other}{more}"
+session_expired = "  302/402 = the session expired or the reading-room hour ran out: renew echz_token.txt / the access and repeat the same command — what is downloaded already is skipped."
+help_archive = "which archive (default gavo)"
+help_meta = "find the case → echz_meta.json"
+help_notes = "collect the file names → notes.json + the folio index"
+help_get = "download folios, e.g. 51-119 | 51,60-64 | all"
+help_out = "where to put them (default <fund>-<inventory>-<case>)"
+unknown_archive = "unknown archive {archive}; known: {known}"
+no_meta = "no {meta} — first: echz meta <fund> <inventory> <case>"
+not_in_reading_room = "Ф.{fund} оп.{opis} д.{delo}: not in the electronic reading room (not digitized, or the numbers are wrong).\nCheck the numbers of the fund, the inventory and the case."
+no_pages = "{code}: the case is found, but the viewer gave no page — most likely the reading-room hour is not activated."
+notes_missing = ", NOT received: {missing}"
+no_such_folios = "{spec}: the case has no such folios (see `echz notes`)"
+downloaded = { one = "{spec}: {count} page → {target}/ ; downloaded {got}", other = "{spec}: {count} pages → {target}/ ; downloaded {got}" }
+not_downloaded = ", NOT downloaded: {failed}"
+
+[cli.export_csv]
+two_sets_one_file = "{path}: two record sets write {name}"
+help_village = "the village's directory"
+help_year = "this year only (may be repeated)"
+help_out = "write into DIR/<year>/, not beside the files"
+done = "{village}: CSV {written}, files {files}, skipped {skipped}"
+
+[cli.export_records]
+description = "Export a village's records as records-v1 JSON"
+help_village = "the village's directory"
+help_out = "the export's root (default records/ at the workspace's root)"
+help_strict = "exit 1 if some file did not import"
+done = "{files}, {records} → {target}"
+skipped = "files skipped: {count} (see {where})"
+
+[cli.facts]
+dumped = { one = "{count} assertion → {path}", other = "{count} assertions → {path}" }
+leaf = ", f. {page}"
+calendar_noted = "; stood down by a calendar_note — {noted}"
+
+[cli.familio_spravochnik]
+no_template = "no Familio metric-book template: --template FILE or <corpus>/familio/Shablon_MK.xlsx"
+help_cases = "Limit output to these cases (fund-inventory-case), comma-separated, e.g. 2162-74-12,64-9-956 — keeps only matching records across the years"
+help_template = "Familio's metric-book template .xlsx to fill (default: <corpus>/familio/Shablon_MK.xlsx)"
+
+[cli.fetch_record]
+layout = "fetch_record reads familio-extended sheets only, and «{site}» is {layout}"
+other_layout = "another layout"
+
+[cli.translit]
+description = "Show, add, remove and check the transliteration's rules (rows of the names layers, translit.tsv); move the corpus's transliteration.toml into a layer."
+show_help = "what each role spells the words as, and which rule"
+add_help = "write a rule into the writable layer"
+remove_help = "take a rule away"
+check_help = "the layers' linter over their rules"
+migrate_help = "write the corpus's transliteration.toml into the writable layer as rules of ru-v1"
+help_word = "a word as the records write it (one Cyrillic word)"
+help_latin = "its Latin spelling"
+help_profile = "the rule's profile (default: the profile of display)"
+help_dry_run = "check, write nothing"
+help_layer = "one layer's directory"
+added = "{word} → {latin} ({profile}): written to {layer}"
+redundant = "{word}: {profile} gives «{latin}» without the rule — it is redundant"
+removed = "{word}: the rule {latin} ({profile}) taken away from {layer}; the profile gives {gives}"
+dry_run = "--dry-run: nothing written"
+migrated = "{count} rules written to {layer}; now remove {path}"
+show_profile = "{word}: {role} ({profile}) → {result}"
+show_rule = "{word}: {role} ({profile} gives {gives}) → {result}, the rule of {layer}"
+check_summary = "layers: {layers}; hard findings {hard}, advice {advice}"
+
+[cli.names]
+layer_diff_help = "write the smallest layer over a base that answers an oracle's questions as the old tables do"
+layer_diff_description = """Write the smallest names layer over a base that answers every question of an oracle as the old tables of DIR (names.csv, names_ignore.csv, patronymics_ignore.csv) answer it.
+
+The oracle is a TSV file, one row a question: function<TAB>args_json<TAB>answer_json. A line starting with # is a comment. The function is the bare name of a naming function (canonicalize_name, matching_base, derive_patronymic …); args_json is the JSON list of all its parameters in order, defaults applied, a sex written "M", "F" or null; answer_json is the answer in the same notation, or {{"raises": "<the exception's class>"}}.
+
+The layer is three TSV files (names.tsv, forms.tsv, patronymics.tsv) in --out, every entry's source «legacy» (a name of the old ignore list keeps «ignore», which is what marks it); the same inputs write the same bytes. Exit 1: questions no entry of the old tables settles, listed — the layer is written all the same."""
+help_from_legacy = "the directory of the old tables"
+help_base = "the base the layer stands on"
+help_oracle = "the oracle file: the questions and the answers recorded"
+help_out = "the layer's directory (written)"
+layer_diff_done = "{out}: names {names}, forms {forms}, patronymics {patronymics} — {questions} questions and {derived} derived ones (feminine_patronymic), {differing} answered otherwise by the base alone; entries taken by those questions {direct}, along with them {along}; {rounds} rounds, {seconds} s"
+layer_diff_stale = "{count} questions of {oracle} are recorded otherwise than {legacy} answers today: the layer follows {legacy}"
+placed = "{path}:{line}: after {neighbour}"
+dry_run = "--dry-run: the file is untouched"
+top_of_file = "(the top of the file)"
+add_help = "add a name to the writable names layer (schema 6), or a row to names.csv (schema ≤ 5)"
+add_description = """Add a name to the writable layer of [names] (--layer DIR: another of its layers): a row in names.tsv and, where forms are given, in forms.tsv — no place, no order, a key has one row. The row is read by the layers' linter over the layers under it first: a hard finding (LEX001, LEX003, LEX007) refuses it and nothing is written; a row the layers under it answer alike (LEX005) is written, with the warning. A form option set to - says «no such form»; one left out is the rule's.
+
+A workspace of schema ≤ 5 keeps the old names.csv: the row goes there (--path another file), --origin and --declension are its columns."""
+help_name = "the name as the lexicon spells it (Cyrillic, one word)"
+help_add_base = "the name's base (a name some layer holds); omit for a canonical name"
+help_origin = "names.csv's «От» (schema ≤ 5 only)"
+help_declension = "names.csv's «Склонения, связи» (schema ≤ 5 only)"
+help_genitive = "the genitive, where the rule is wrong for the name; - for none"
+help_patronymic_m = "the son's patronymic, where the rule is wrong; - for none"
+help_patronymic_f = "the daughter's patronymic, where the rule is wrong; - for none"
+help_old_patronymic_m = "the short form a son's patronymic is written in, where the rule is wrong; - for none"
+help_old_patronymic_f = "the short form a daughter's patronymic is written in, where the rule is wrong; - for none"
+help_source = "the row's source (default editor)"
+help_replace = "replace the row of the key the writable layer holds already (instead of refusing it)"
+help_layer = "the writable layer's directory — the only layer written (default: [names] writable)"
+help_path = "names.csv (schema ≤ 5; default: the workspace's)"
+legacy_note = "{config}: schema ≤ 5 — the row goes to the old names.csv (a workspace of schema 6 keeps its names in layers)"
+no_layers = "{config}: schema ≤ 5 — the names are the old tables, not layers: «verso names {command}» works on layers (schema 6)"
+layer_needs_schema_6 = "{config}: --layer is for a workspace of schema 6; the old names.csv takes --path"
+replace_needs_schema_6 = "{config}: --replace is for a workspace of schema 6; the old names.csv has no layer rows to replace"
+path_needs_schema_5 = "{config}: --path is names.csv's, and a workspace of schema 6 keeps its names in layers: --layer DIR"
+legacy_only = "{option} is a column of the old names.csv: a layer has none"
+refused = "{layer}: nothing written — {count} hard findings"
+warning = "warning: {message}"
+added = "{layer}/{file}: {sex} {name}"
+replaced = "{layer}/{file}: {sex} {name} (replaced)"
+remove_help = "take a name out of the writable names layer"
+remove_description = """Delete the layer's rows of the name (its names.tsv and forms.tsv rows). A name only a layer below holds (the base) is taken out of the stack by a removal row — - in bases — written into the layer; remove it again once more to delete a row of the layer that a lower layer's still holds. Says, as a warning and never as a refusal, when records of the corpus still write the name."""
+help_remove_gender = "the entry's sex: «М», «Ж», or - for the entry of a name with no sex"
+removed_rows = "{layer}: «{name}» ({sex}) — deleted from {tables}"
+removed_tombstone = "{layer}: «{name}» ({sex}) is held by a layer below — a removal row written, the name is out of the stack"
+still_held = "a layer below still holds «{name}» ({sex}): remove it once more to write a removal row"
+dangling = { one = "{count} name still has «{name}» as its base: {names} — it answers as written (LEX003 in `verso names check`)", other = "{count} names still have «{name}» as their base: {names} — they answer as written (LEX003 in `verso names check`)" }
+used = { one = "the corpus still writes «{name}» in {count} record", other = "the corpus still writes «{name}» in {count} records" }
+check_help = "read the names layers with the layers' linter (LEX001–LEX007)"
+check_description = """Read the writable layer (without options), one layer (--layer DIR) or every layer, the base included, and the layers' sum (--all) with the layers' linter: each finding is printed as layer/file:line: message. Exit 1 when a finding is hard (LEX001, LEX002, LEX003, LEX006, LEX007); advice (LEX004, LEX005) is printed and passes."""
+help_check_layer = "one of [names] layers"
+help_check_all = "every layer, the base included, and their sum"
+check_old_table = "{layer}: the old table — not read here"
+check_sum = "the layers' sum: {error}"
+check_summary = "checked {layers}: {hard} hard, {advice} advice"
+explain_help = "say what the naming functions answer for a name, and which layer's entry gave it"
+explain_description = """For a name: each naming function's answer (canonicalize_name, matching_base, genitive_given_name, get_gender_from_name, derive_patronymic and derive_old_patronymic for a son and a daughter), and under it the entries of which layer it was read from. A form no layer writes is «rule»: the rules of verso.ru.naming.forms gave it; a function that reads a form shows the cell it reads."""
+help_explain_gender = "the name's sex: «М», «Ж», or - for the entry of no sex (default: the sexes the lexicon holds it in)"
+explain_call = "{call} = {answer}"
+explain_name = "    {layer}: names.tsv {sex} {name}{bases}, source {source}"
+explain_forms = "    {layer}: forms {sex} {name}: {cell} = {value} [{where}]"
+explain_pin = "    {layer}: patronymics.tsv {sex} {form}: father {father}, modern {modern}, short {old}"
+explain_unknown = "    no layer holds {kind} «{key}»"
+explain_rule = "rule"
+
+[cli.review_ratchet]
+seeded_already = "{path} exists already — the list is seeded once and only shrinks after"
+seeded = "{village}: unreviewed {unreviewed}; on Geni (a document in state) {listed} → {list_name}; held {held}"
+nameless = "  without a document (not seeded): {nameless}"
+shared_name = { one = "  ⚠ {count} record shares a document name with another record — check it by hand", other = "  ⚠ {count} records share a document name with another record — check them by hand" }
+held_in_file = "  held: {file} — {n}"
+no_lines_of_file = "{file}: the list has no lines of this file, or there is no such file"
+nothing_rebound = "\nNothing rebound: an edit like this one has to be reviewed."
+rebound = "{village}: rebound {moved}"
+no_line = "no line {spec}"
+pruned = "{village}: struck {struck}, left {left}"
+ok = "{village}: the ratchet holds — unreviewed on Geni {count}"
+behind = "\nThe list lags behind the review: verso review-ratchet --village \"{village}\" --prune"
+file_gone = "no such file — if it was renamed, fix the path"
+file_unreadable = "the file does not read: {error}: {detail}"
+line_not_in_base = "{base} has no such line: the list only shrinks"
+
+[cli.statuses_toml]
+description = "The workspace's corpus statuses (statuses.py) as statuses.toml"
+help_out = "write the TOML to this file (to print it, give no option)"
+no_module = "the workspace's corpus has no {name}"
+written = "{path}"
+both_now = "{py}: the corpus now holds the statuses twice — remove statuses.py or statuses.toml"
+
+[cli.svyatcy]
+no_such_day = "{text}: no such day in the Julian calendar"
+table_not_on_disk = "svyatcy import: the package's table is not on disk — give --out"
+written = { one = "{out}: {count} row", other = "{out}: {count} rows" }
+not_kept = "{name}: not in the saints' calendar of 1906"
+help_near = "the names kept around a day"
+help_date = "a Julian date, YYYY-MM-DD"
+help_like = "as read: rank by likeness"
+help_days = "the days a name is kept"
+help_coverage = "the share of a village's births whose name the calendar keeps"
+help_import = "rebuild the table from upstream"
+help_upstream = "the path to {file}"
+help_sha = "upstream's commit SHA"
+no_day = "{headword}: no day {d:02d}.{m:02d}"
+near = { one = "{gender}, {d:02d}.{m:02d}.{y} ±{window}: {count} name", other = "{gender}, {d:02d}.{m:02d}.{y} ±{window}: {count} names" }
+coverage = "{village}: {known} {of_births} ({share:.1%}) — the calendar keeps the name"
+
+[cli.upgrade_dsl]
+help_village = "the village's directory (without it — the files named only)"
+help_check = "write nothing; exit 1 if a file would change"
+help_files = "these files of the village only"
+nothing_named = "--village or files are needed"
+counts = "files {files}, rewritten {changed}, unchanged {same}"
+
+[cli.find_person.column]
+year = "Year"
+type = "Type"
+number = "Record №"
+role = "Role"
+birth = "Birth (date)"
+death = "Death (date)"
+name = "Name (modern)"
+status = "Status"
+residence = "Place"
+file = "File"
+
+[cli.facts.identity]
+appearances = "appearances in the records:            {total}"
+placed = "  placed on a canonical:               {minted}  ({share:.2f}%)"
+refused = "  REFUSED — no profile exists:         {refused}"
+reached = "canonicals reached:                    {placed} of {canonicals}"
+folded = "  folded (>1 appearance):              {folded}"
+repeated_number = "  two appearances under one record number: {repeated}"
+surplus = "  UNEXPLAINED surplus of appearances:   {surplus}"
+minted_twice = "one appearance — two profiles:        {twice}"
+
+[cli.facts.date_order]
+head = "date-order: {within} within a record, {across} across records"
+within = "WITHIN ONE RECORD — the source contradicts itself:"
+across = "TWO RECORDS DISAGREE — not a wrong date but a fold's signal: two records folded into one person say different things:"
+
+[cli.facts.birth]
+age_on = "{age} (on {as_of})"
+born = "b. {date}"
+implied_year = "  → b. {year}"
+implied_years = "  → b. {first}–{last}"
+
+[cli.facts.date]
+none = "no birth date"
+circa = "c. {date}"
+between = "between {start} and {end}"
+after = "after {start}"
+before = "before {start}"
+
+[cli.facts.ignore]
+no_profile = "ignore: —  (the record has no profile of its own)"
+no_birth = "ignore: —  (the record's profile has no birth date, nothing to drop)"
+or = " or "
+shared_res_name = "  (one res_name for two records of one number)"
+not_from_this_claim = "  ⚠ the profile's date is not derived from this claim"
+drops_also = "  ⚠ drops the date of: {also} too"
+
+[cli.facts.birth_claims]
+head = "birth-claims: {count} people whose records disagree about their birth (HIGH {high}, LOW {low}) — a fold's signal: two records folded into one person may be of two"
+finding = "[{confidence}] {name} ({res_name}): {years:.1f} years apart, {allowed:.1f} allowed"
+on_geni = "    on Geni: {date}"
+
+[cli.facts.father]
+derived_dot = " · reconstructed"
+derived_comma = ", reconstructed"
+ok_noted = "; {noted} as written in the original"
+head = "father-claims: {across} people whose records name different fathers (HIGH {high}, LOW {low}); {within} with a record contradicting itself"
+head_noted = "; {noted} — so in the original"
+across = "THE RECORDS DISAGREE — an over-fold's signal: records folded into one person name different fathers; the smaller groups are the records that stand out. A finding is a signal: splitting a canonical is a mutation, and an applied Geni merge cannot be undone."
+group = "    records {records}: {shown}"
+within = "A RECORD CONTRADICTS ITSELF — check the DSL against the scan:"
+noted = "SO IN THE ORIGINAL — the record says itself that its kin names disagree (source_kin_error):"
+noted_pair = "  {name} ({canonical}): {first} and {second}  [{file} №{number}] — {note}"
+
+[cli.facts.span]
+days = { one = "{count} day", other = "{count} days" }
+years = "≈{years:.1f} years"
+
+[cli.facts.death_claims]
+head = "death-claims: {count} people whose records date two deaths (HIGH {high}, LOW {low})"
+note = "A death is compared with a death, a burial with a burial; a year told to a revision with a slack of ±2. A burial of one record before another's death is `date-order`'s and not repeated here. A finding is an over-fold's signal: splitting a canonical is a mutation, and an applied Geni merge cannot be undone."
+finding = "[{confidence}] {name} ({canonical}) — {gap} beyond the slack"
+death = "death"
+burial = "burial"
+told = " (the year as told)"
+
+[cli.facts.name_days]
+unknown = "; the name not in the calendar — {births} ({names})"
+ok = "name-days: OK — 0 findings {of_births}{tail}{noted}."
+head = "name-days: {count} {of_births} — the name's saint more than {far} days from the window (HIGH {high}, LOW {low}){tail}{noted}"
+note = "The window: birth −{before} … max(christening, 8th day) +{after} days. Most often the name was simply given out of the calendar; HIGH — a look-alike name is kept in the window, the place to start checking the scan. The name is right — `birth(..., calendar_note=\"…\")`."
+finding = "[{confidence}] {name} ({gender}), b. {born}, chr. {christened} — the name's nearest saint {day:02d}.{month:02d}, {outside} days outside the window"
+lookalikes = "    kept in the window: {alts}"
+
+[cli.facts.wedding_calendar]
+ok = "wedding-calendar: OK — 0 findings {of_weddings}{noted}."
+head = "wedding-calendar: {strict} in a strict ban (HIGH) and {loose} in a loose one (LOW) {of_dated}{noted}"
+note = "Strict — the fasts, Cheesefare and Bright weeks, Svyatki, 29.08 and 14.09: almost always a misread month or day. Loose — Tuesday, Thursday, Saturday, the eves of feasts: the books do not always keep it. The date is right — `marriage(..., calendar_note=\"…\")`."
+pascha = " (Pascha {day:02d}.{month:02d})"
+other_months = "    the same day in a neighbouring month is open: "
+other_days = "    a day nearby is open: "
+
+[cli.facts.lags]
+baptism_head = { one = "{check}: {count} christening later than {days} days after the birth (HIGH {high}, LOW {low})", other = "{check}: {count} christenings later than {days} days after the birth (HIGH {high}, LOW {low})" }
+baptism_note = "HIGH — the christening's day is smaller than the birth's, and the christening's month is derived as the next one: one of the two days is probably misread."
+burial_head = { one = "{check}: {count} burial later than {days} days after the death (HIGH {high}, LOW {low})", other = "{check}: {count} burials later than {days} days after the death (HIGH {high}, LOW {low})" }
+burial_note = "The dead were buried on the third day; HIGH — more than {days} days, which neither the weather nor the clergy's absence explains."
+finding = "[{confidence}] {first_word} {first}, {second_word} {second} — {days}  [{file} №{number}{page}]"
+
+[cli.facts.abbr]
+born = "b."
+christened = "chr."
+died = "d."
+buried = "bur."
+
+[cli.facts.posthumous]
+head = { one = "posthumous-birth: {count} birth after a parent's death (HIGH {high}, LOW {low})", other = "posthumous-birth: {count} births after a parent's death (HIGH {high}, LOW {low})" }
+note = "A child after its mother's death or more than {days} days after its father's; the death is the latest the parent's records allow. A finding is an over-fold's signal: two people folded into one parent."
+mother = "mother"
+father = "father"
+finding = "[{confidence}] {name} ({parent}), {role} — a child {born} [{child}], {days} after the death {died} [{death}]"
+
+[cli.facts.children_span]
+head = { one = "children-span: {count} mother whose children were born more than {years:g} years apart (HIGH {high}, LOW {low})", other = "children-span: {count} mothers whose children were born more than {years:g} years apart (HIGH {high}, LOW {low})" }
+note = "Longer than a woman bears children: two women folded into one mother."
+finding = "[{confidence}] {name} ({parent}) — {children} children over {years:g} years: {first} [{first_where}] … {last} [{last_where}]"
+
+[cli.facts.wedding_ages]
+head = "wedding-ages: {count} (HIGH {high} — under the lawful age by more than {dispensation:g} years; LOW {low} — spouses more than {gap:g} years apart)"
+note = "The minimum follows the wedding's date: from 17.12.1774 15/13, from 19.07.1830 18/16; half a year the books allow themselves."
+groom = "groom"
+bride = "bride"
+under_age = "[{confidence}] {married}, {who} «{age}» — under {minimum}  {where}"
+gap = "[{confidence}] {married}, groom «{groom}», bride «{bride}» — {years:g} years  {where}"
+
+[cli.facts.basis]
+none = "no facts"
+total = "assertions in all: {total}"
+stated = "  STATED:                          {stated}"
+unknown = "  STATED?, basis unknown:          {unknown}   ({share:.1f}% — the price of deriving in place in a DSL constructor)"
+retracted = "  RETRACTED by the author:         {retracted}"
+derived = "  DERIVED:"
+
+[cli.facts.explain]
+record = "— {village}, {file}, {year} rec. {number} —"
+not_found = "no record {spec}"
+nothing_folded = "{res_name}: no appearance in the records is folded into this canonical"
+person = "— {name} ({res_name}): {appearances} {in_records} —"
+
+[consolidation]
+leaf = ", f. {page}"
+no_candidates = "No candidates."
+
+[consolidation.reconcile.kind]
+list = "list"
+external = "card"
+birth = "birth"
+marriage = "wedding"
+death = "death"
+census = "roll"
+
+[consolidation.reconcile]
+no_birth = "no birth stated"
+born = "b. {year}"
+born_between = "b. {first}–{last}"
+person = "{name} ({res_name}) · {born} · records: {records}"
+backing_by_name = "      list neighbour №{number} {name} — by given name and patronymic the candidate's {relation}: {canonical} (the records' surname differs or is not written)"
+backing = "      list neighbour №{number} {name} → {canonical} — the candidate's {relation}"
+targets = "people made of lists and cards alone"
+folded = "list entries and cards"
+by_neighbours = ", by neighbours {backed}"
+head = "{channel}: {count} {targets} — {candidates} candidate(s) (HIGH {high}{by_list}), {ambiguous} ambiguous, {none} not found"
+signal = "A finding is a SIGNAL, not a verdict: read both people's records before folding."
+through_neighbour = " — found through a list neighbour: given name and patronymic agree, the records' surname differs or is not written"
+chosen_by_neighbours = " — chosen by the list neighbours"
+record_profile = "    the record's profile: {profile}"
+contested = "    ⚠ the same person is proposed for entry {entries} of this list too — two entries of one list are two people"
+also_by_name = "· by name too (a namesake or an unfolded duplicate), the neighbours do not confirm:"
+father_agrees = "the father agrees by the patronymic"
+father_not_both = "the patronymic is not written on both"
+birth_checked = "birth checked"
+birth_unchecked = "birth cannot be checked"
+audit_head = "{channel} --audit-folded: {count} {folded} folded by hand already — {summary}"
+audit_folded = "■ [{outcome}] {name} — folded into {canonical_name} ({canonical})"
+channel_proposes = "    the channel proposes: {person}"
+
+[consolidation.reconcile.said]
+age = "{age} on {as_of}"
+born = "b. {date}"
+died = "died {date}"
+alive = "alive {date}"
+
+[consolidation.name_variants]
+targets = "unfolded records with a surname and a father"
+folded = "folded records with a surname and a father"
+
+[consolidation.estate_conflicts]
+reconstructed = " · reconstructed"
+finding = "{name} [{res_name}] — {estates} {in_records}:"
+hint = "  → the estate DIFFERS between the records. A signal, not a verdict: a scribe can be\n    unreliable, and a person known to be one passes through several landlords.\n    Test the hypothesis on someone whose identity is NOT in question before\n    splitting the cluster.\n"
+
+[consolidation.union_dups]
+same_household = "both are members of household {household} of one roll ({where}): the scribe listed them apart, so they are two people"
+reused_name = "{died} died in {death_year}, {born} was born in {birth_year} — the name was given again"
+drift = " ({spread} apart, but they cannot be read closer than {closest} — the approximate year is widened already)"
+siblings = "the birth years are {closest} apart{drift} — rather different children"
+two_baptisms = "each has a christening record of their own — {first}; {second}: one person is not christened twice, so they are two children"
+alive_after_death = "{first}: {first_said}, and {second}: {second_said} — after that death, so they are two people"
+candidate_approximate = "the dates do not tell these people apart: the birth year of {names} is approximate (derived from an age), and the gap fits an age's drift"
+candidate = "the dates do not tell these people apart"
+group = "■ {name} — union {union}"
+parents = "    parents: {parents}"
+single_parent = "(a single parent)"
+died = ", d. {year}"
+member = "      b. {born}{died}  {name}"
+head = "union-dups: {groups} group(s) of same-named children in one union — {candidates} candidate(s), {reused} a name given again, {siblings} different children, {household} one household, {baptisms} two christenings, {alive} alive after death"
+signal = "Candidates are a SIGNAL, not a verdict: check the household and the records before folding."
+retired = "Retired — the dates, the household or the records tell these people apart already:"
+
+[consolidation.split_couples]
+generations = "the halves stand no closer than {closest} years apart — rather same-named couples of different generations"
+half_fold = "a shared profile {shared} — the other spouse is not folded (a half fold)"
+no_shared = "the halves share no profile — the couple is spread over the records (e.g. a roll's or a census's household beside the metric books)"
+group = "■ {label} — {halves} pairs of profiles"
+no_dates = "no dates"
+child = "        · b. {born}  {name}  {res_name}"
+head = "split-couples: {couples} couple(s) spread over several unions — {candidates} candidate(s) ({half_folds} half fold, {unshared} without a shared profile), {retired} different generations"
+signal = "Candidates are a SIGNAL, not a verdict: check the records. Fold a COUPLE — both spouses; union-dups finds the children after."
+retired = "Retired — the dates set the halves a generation apart:"
+
+[consolidation.death_age.hint]
+years_for_months = "the age is read in YEARS where the source meant MONTHS (a bare number without a unit)"
+months_for_years = "the age is read in MONTHS where the source meant YEARS (a bare number without a unit)"
+tens_unread = "the stated age is LESS than the time lived — probably a tens digit unread"
+disagrees = "the age disagrees with the birth record — check both records on the scan"
+
+[consolidation.death_age]
+days = "{n:.0f} d"
+months = "{n:.1f} mo"
+years = "{n:.1f} y"
+child = "[{confidence}] {child} (father/mother: {parent})"
+birth = "    birth    {year} № {record}  [{source}]"
+death = "    death    {year} № {record}  [{source}]"
+stated = "    the record says «{stated}» = {span}, and {elapsed} passed ({gap} apart)"
+low = "LOW = the name recurs in the family, or the time lived exceeds the stated age more than {ratio:g}-fold: the burial is almost certainly a namesake's, whose birth record the corpus does not hold."
+signal = "A finding is a SIGNAL, not a verdict: check both records on the scan."
+
+[consolidation.death_age.unit]
+days = "d"
+months = "mo"
+years = "y"
+
+[consolidation.event]
+baptism = "christening"
+birth = "birth"
+death = "death"
+burial = "burial"
+
+[consolidation.date_order]
+hint = "  → an event before the birth — probably no k_year= on a December birth, or a day/year swapped in the source\n"
+
+[consolidation.sibling_spacing.hint]
+two_records = "two WRITTEN birth records too close — either twins entered apart, or one of the dates is misread"
+two_burials = "both ages are derived from burials — they can meet only if at least one has the wrong unit"
+one_burial = "the age of «{name}» is derived from a burial and puts the birth right beside a sibling's — the record probably means {unit}"
+
+[consolidation.sibling_spacing.unit]
+years = "YEARS"
+other = "another unit"
+
+[consolidation.sibling_spacing]
+from_burial = "derived from a burial"
+from_birth = "a birth record"
+gap = "    {days} d apart — {hint}\n"
+twins = "Twins entered under one number do not come here; twins entered apart do, and are stood down by hand."
+
+[consolidation.age_conflicts.role]
+mother = "mother"
+father = "father"
+parent = "parent"
+
+[consolidation.age_conflicts.hint]
+too_old = "  → a wrong/inexact birth year of the parent OR an over-merge (two namesakes fused into one canonical profile)\n"
+too_young = "  → a wrong/inexact birth year of the parent OR a child attached by mistake (the wrong parent)\n"
+
+[consolidation.age_conflicts.band]
+too_old = "too old"
+too_young = "too young"
+
+[consolidation.age_conflicts]
+parent = "{name} (b. {born}{approx}) — {role} of {children} children at {min_age}–{max_age} ({band}):"
+child = "    - {name}: b. {born} (age {age})"
+
+[consolidation.stale_claims]
+subject = "    about: {subject}"
+earlier = "    but earlier: {earlier} ({when})"
+perishable = "A primacy claim is the most perishable thing in these comments: the sweep goes deeper, and every new year may overturn it."
+signal = "A finding is a reason to reread TWO records, not a verdict: again and again the superlative is not about the record's subject."
+kind.birth = "birth"
+kind.marriage = "marriage"
+kind.death = "death"
+
+[importers.validation]
+expected_string_table = "expected a table of strings"
+expected_integer_table = "expected a table of integers"
+unknown_key = "{path}: unknown key «sheets.{key}»"
+missing_key = "{path}: no key «sheets.{key}»"
+wrong_type = "{path}: «sheets.{key}» — {expected}"
+none_known = "none"
+unread = "; not read: {unread}"
+no_sheet = "no sheet «{site}»: known {known}{unread}"
+two_villages = "two villages name the sheet «{site}»: {villages} — keep one"
+format = "{path}: «sheets.format» — one of {formats}"
+
+[linters.names_csv]
+empty_spelling = "an empty spelling"
+in_the_table = "«{value}» is in the table already — an exception would turn the gender of everyone bearing the name; add a row to names.csv"
+listed_already = "«{value}» is in {file} already"
+
+[linters.dead_code]
+functions = "DEAD001: {count} function(s) with no reference anywhere in the repository"
+functions_hint = "Remove them — or, if one is called by name at run time, add it to EXEMPT_NAMES with the reason."
+keys = "DEAD002: {count} schema key(s) the linter accepts and the code does not read"
+key = "  {key:32} declared in the schema {schema}"
+keys_hint = "Remove them from PROFILE_SCHEMA_KEYS/UNION_SCHEMA_KEYS with their lines in the villages' configs — else a curator writes them for nothing."
+
+[linters]
+finding = "{linter}: line {line}: {message}"
+
+[linters.dsllint]
+villages_take_no_paths = "--villages: takes no paths"
+
+[facts]
+leaf = ", f. {page}"
+
+[facts.event]
+baptism = "christening"
+birth = "birth"
+death = "death"
+burial = "burial"
+marriage = "wedding"
+counted_alive = "counted alive"
+
+[facts.date_order.hint]
+baptism_before_birth = "a christening before the birth — usually no k_year= on a December birth, or a day/year swapped in the source"
+death_before_birth = "a death before the birth — either a year swapped, or someone else's event landed on the profile"
+burial_before_death = "a burial before the death — usually the days swapped within the record, or b_month inherited from the month's block while d_month is set apart"
+burial_before_birth = "a burial before the birth — a year swapped"
+marriage_before_birth = "a wedding before the birth — the birth derived from a misread age, or two people folded into one"
+death_before_marriage = "a death before the wedding — two people folded into one (a namesake, a widow and a daughter-in-law of one name), or a year swapped"
+burial_before_marriage = "a burial before the wedding — two people folded into one, or a year swapped"
+death_before_baptism = "a death before the christening — a day or a month swapped in one of the records, or two infant namesakes folded"
+burial_before_baptism = "a burial before the christening — a day or a month swapped, or two infant namesakes folded"
+death_before_alive = "died before a roll counted him alive — two people folded into one (a father and a son of one name), or the death's year swapped"
+burial_before_alive = "buried before a roll counted him alive — two people folded into one, or a year swapped"
+
+[facts.reconcile]
+born = "b. {date} [{cite}]"
+same_list = "the canonical holds an entry of this same list already — two entries of one list are two people"
+same_household = "both in a household of one roll — the scribe listed them apart"
+birth_apart = "the births are {years:.1f} years apart, {allowed:.1f} allowed"
+two_baptisms = "each has a christening record of their own — {first}; {second}: one person is not christened twice"
+target = "the target"
+canonical = "the canonical"
+seen_before_birth = "{who} is named in a record [{cite}], and the other is {birth}"
+life_apart = "{who}: {first}, and the other: {second} — after that death"
+
+[facts.reconcile.audit]
+first = "first"
+at = "at place {place}"
+among = "among {count} candidates, {first}"
+no_name = "the name did not agree"
+no_name_father_surname = "the name did not agree (given name, father or surname)"
+
+[facts.lives]
+christened_at = "{cite}, b. {date}"
+died = "died"
+buried = "buried"
+alive = "alive"
+married = "married"
+born = "born"
+christened = "christened"
+
+[facts.fathers]
+father = "father {name}"
+
+[consolidation.reconcile.relation]
+spouse = "spouse"
+parent = "parent"
+child = "child"
+
+[dsl.upgrade]
+not_in_catalog = "{name}: the catalog {catalog} has no such name"
+not_in_facade = "{name}: the DSL's facade has no such name ({module})"
+not_a_dsl_module = "{module} — not a DSL module"
+comment_in_head = "a comment in the imports' head"
+comment_in_head_at = "a comment in the imports' head: {code}"
+import_after_code = "an import after code: {code}"
+main_does_more = "__main__ does more than export the CSVs"
+comment_before_main = "a comment before __main__"
+not_a_dsl_form = "import {dotted} — not a form of the DSL"
+not_a_dsl_import = "import {dotted} — not a DSL import"
+code_not_a_dsl_import = "{code} — not a DSL import"
+import_as = "an import with as: {code}"
+calendar_name = "calendar.{name} — not a DSL name"
+prints_would_move = "the ratchet's prints would change: {was} → {becomes}"
+more_than_head = "something besides the head changed: the AST outside the imports and __main__ differs"
+
+[dsl.surface]
+two_files = "{rev}: two surface files: {found}"
+not_written = "the DSL's surface is not written: verso dsl-surface --write"
+no_param = "{where}: no parameter {name}"
+param_kind = "{where}: the parameter {name}: another kind"
+param_default = "{where}: the default of {name} {was} → {now}"
+positional_order = "{where}: the order of the positional parameters"
+new_param = "{where}: a new parameter {name} without a default"
+value = "{where}: the value «{was}» → «{now}»"
+no_name = "{where}: no such name"
+kind = "{where}: another kind"
+gender = "{where}: the sex {was} → {now}"
+incompatible = "an incompatible change of DSL v1: {changes} — that is DSL v2 (DSL_API = 2, api-v2.json)"
+
+[archives.kaisa]
+bad_range = "cannot read the folio range: {part} (e.g. 51-119 or 51,53,60-64)"
+no_token = "no token file {path} — copy into it the session JWT of a browser signed in to the reading room"
+not_json = "{endpoint}: no JSON after {tries} tries — the token expired or the reading-room hour ran out:\n{out}"
+no_pages = "{code}: the viewer gave no page — most likely the reading-room hour is not activated"
+walk_diverges = "{code}, folios {lo}-{hi}: the walk does not converge ({hits} scans) — this case's file names carry no folio number. Collect `notes` and look at them."
+nothing_matched = "{code}: no scan matched to a folio — check the file names with `notes`."
+
+[records.blank]
+kind = "no blank book of the kind «{kind}»: births, marriages or deaths"
+year = "the year {year} is outside 1700–1930"
+shelfmark = "a book needs its fund, inventory and case: «{fund}», «{inventory}», «{case}»"
+path = "«{value}» cannot be part of a book's path: no «/», «\\» or «..», no padding spaces or control characters, and a locality is not empty, «.» or «..»"
+parish = "a book needs the parish it is kept in"
+defaults = "the book's defaults are not accepted: {error}"
+
+[records.cite]
+no_sex = "{kind} № {number}{sheet}: no sex — a birth's and a death's number is written with the sex (m{number}, f{number})"
+leaf = ", f. {page}"
+
+[notes.stale_notes]
+not_git = "stale-notes: not a git repository"
+no_config = "stale-notes: {root} has no {config}"
+head = "stale-notes: {village}, {revs} (the notes — {notes_at}): names changed {names}, old pairs of words {pairs}; places where the old reading is still written — {places}"
+settled = " (and {settled} fixed already, --all)"
+headers = "; headers with reviewed=False and no held record — {headers}\n"
+still = "  ⚠ the DSL still writes this pair ({still}) — shown are only the notes tied to the record by its number, leaf or year"
+settled_mark = "  (fixed already?)"
+unsearched = "One word changed without a pair — not searched (one name is in every year):"
+stale_headers = "The header still says reviewed=False, and the file holds no held record:"
+signal = "A finding is a reason to reread a note, not a verdict: an old reading may be quoted on purpose. Notes where the new reading stands beside it, or the old one is called overturned («не «…»», «вместо»), are hidden; --all shows them too."
+working_tree = "the working tree"
+
+[dsl.order.month]
+1 = "January"
+2 = "February"
+3 = "March"
+4 = "April"
+5 = "May"
+6 = "June"
+7 = "July"
+8 = "August"
+9 = "September"
+10 = "October"
+11 = "November"
+12 = "December"
+
+[dsl.order]
+no_number = "no number"
+after = "after {number}"
+before = "before {number}"
+frame = "frame {n}"
+leaf = "f. {label}"
+
+[notes.stale_notes.kind]
+reading = "reading"
+spelling = "spelling"
+
+# A counted phrase, for a message that counts two things: each takes its own `count`.
+[counted]
+files = { one = "{count} file", other = "{count} files" }
+records = { one = "{count} record", other = "{count} records" }
+in_records = { one = "in {count} record", other = "in {count} records" }
+births = { one = "{count} birth", other = "{count} births" }
+of_births = { one = "of {count} birth", other = "of {count} births" }
+names = { one = "{count} name", other = "{count} names" }
+appearances = { one = "{count} appearance", other = "{count} appearances" }
+estates = { one = "{count} estate", other = "{count} estates" }
+weddings = { one = "{count} wedding", other = "{count} weddings" }
+of_weddings = { one = "of {count} dated wedding", other = "of {count} dated weddings" }
+of_dated = "of {count} dated"

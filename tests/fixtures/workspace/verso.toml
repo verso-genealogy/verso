@@ -1,0 +1,10 @@
+# The library tests' workspace: the shipped names base under an invented layer (names-layer), no villages.
+schema = 6
+villages = []
+plugins = ["ru"]
+
+[names]
+layers = ["names-layer"]
+
+[corpus]       # the tests' synthetic corpus (invented places, owners, statuses and events); Verso keeps a copy (make fixture-copies)
+dir = "corpus"

@@ -1,0 +1,13 @@
+# The toy's catalog, Russian.
+schema = 1
+untranslated = ["hello.untranslated"]
+
+[hello]
+plain = "Здравствуй, {name}"
+braces = "скобка {{буквально}} и {n}"
+
+[hello.notes]
+one = "{count} заметка"
+few = "{count} заметки"
+many = "{count} заметок"
+other = "{count} заметки"
