@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from collections.abc import Generator, Mapping
 from contextlib import contextmanager
+from time import monotonic
 from importlib.resources.abc import Traversable
 from pathlib import Path
 from types import MappingProxyType
@@ -134,6 +135,7 @@ class FileRules:
         held = rules.get(rule.key)
         rules[rule.key] = rule._replace(note=held.note) if held is not None and not rule.note else rule
         write(path, rules)
+        reload()
 
     def remove(self, key: Key) -> None:
         """Drop the row of `key`; a KeyError when the layer has none."""
@@ -141,6 +143,7 @@ class FileRules:
         rules = _read(path)
         del rules[key]
         write(path, rules)
+        reload()
 
     def _writable(self) -> Path:
         if not self.writable or not isinstance(self.path, Path):
@@ -157,6 +160,7 @@ def provided(directory: Path, source: RuleSource) -> Generator[None]:
     """Until the block ends, the rules of the layer at `directory` are `source`'s, in place of its `translit.tsv`."""
     held = _PROVIDED.get(directory)
     _PROVIDED[directory] = source
+    reload()
     try:
         yield
     finally:
@@ -164,6 +168,7 @@ def provided(directory: Path, source: RuleSource) -> Generator[None]:
             _PROVIDED.pop(directory, None)
         else:
             _PROVIDED[directory] = held
+        reload()
 
 
 def sources(ws: workspace.Workspace) -> list[RuleSource]:
@@ -190,17 +195,38 @@ def writable(ws: workspace.Workspace) -> RuleSource:
     raise workspace.WorkspaceError(t("transliteration.no_writable_layer", config=ws.root / workspace.CONFIG))
 
 
-# The rules summed, by the stamps of the sources they were summed from (one workspace at a time).
-_summed: dict[tuple[Path, tuple[tuple[str, str], ...]], Mapping[Key, TranslitRule]] = {}
+#: How long the rules summed are answered from before their sources' stamps are looked at again: a word's spelling is
+#: asked ~10⁵ times a village (`verso.ru.naming.transliteration.spelling`), and a stamp costs a `stat` a file — as the
+#: names lexicon's (`verso.ru.naming.names_registry.RECHECK_SECONDS`).
+RECHECK_SECONDS = 1.0
+
+
+class _Held(NamedTuple):
+    """The rules summed for one workspace: its sources, their stamps then, and when to look at the stamps again."""
+    ws: workspace.Workspace
+    sources: tuple[RuleSource, ...]
+    stamps: tuple[str, ...]
+    rules: Mapping[Key, TranslitRule]
+    next_check: float
+
+
+_held: _Held | None = None
 
 
 def rules(ws: workspace.Workspace) -> Mapping[Key, TranslitRule]:
     """Every rule of `ws`, the layers summed: an upper layer's row replaces the lower one of its key, a `-` takes it away.
-    Read again when a source's stamp changes."""
-    stack = sources(ws)
-    stamp = (ws.root, tuple((s.name, s.stamp()) for s in stack))
-    summed = _summed.get(stamp)
-    if summed is None:
+    Kept for the workspace; its sources' stamps are looked at again at most every `RECHECK_SECONDS`, and the rules read
+    again when one changed. A rule written through a source (`put`, `remove`, `verso.ru.linters.translit_layer`), a
+    host's source provided or taken back (`provided`) and another workspace forget them at once (`reload`)."""
+    global _held
+    held = _held  # a local: another thread's `reload()` may forget the global meanwhile
+    if held is not None and held.ws is ws and monotonic() < held.next_check:
+        return held.rules
+    stack = held.sources if held is not None and held.ws is ws else tuple(sources(ws))
+    stamps = tuple(s.stamp() for s in stack)
+    if held is not None and held.ws is ws and held.stamps == stamps:
+        summed = held.rules
+    else:
         out: dict[Key, TranslitRule] = {}
         for source in stack:
             for key, rule in source.load().items():
@@ -209,9 +235,19 @@ def rules(ws: workspace.Workspace) -> Mapping[Key, TranslitRule]:
                 else:
                     out[key] = rule
         summed = MappingProxyType(out)
-        _summed.clear()
-        _summed[stamp] = summed
+    _held = _Held(ws, stack, stamps, summed, monotonic() + RECHECK_SECONDS)
     return summed
+
+
+def reload() -> None:
+    """Forget the rules summed, so the next `rules` reads every source again — after a write that may leave a stamp as it
+    was, or from a host whose rows changed under it."""
+    global _held
+    _held = None
+
+
+# Another workspace is other rules.
+workspace.on_change(reload)
 
 
 def explain(ws: workspace.Workspace, profile: str, word: str) -> list[tuple[str, TranslitRule]]:

@@ -137,6 +137,7 @@ def add_rule(ws: workspace.Workspace, word: str, latin: str, *, profile: str | N
     _refuse_minted(ws, profile, word, latin)
     if not dry_run:
         source.put(rule)
+        translit_layers.reload()
     return RuleView(profile, word, latin, source.name, True, PROFILES[profile](word), PROFILES[profile](word) == latin)
 
 
@@ -158,6 +159,7 @@ def remove_rule(ws: workspace.Workspace, word: str, *, profile: str | None = Non
             source.put(TranslitRule(profile, word, None))
         else:
             source.remove((profile, word))
+        translit_layers.reload()
     gives = PROFILES[profile](word) if profile in PROFILES else ""
     return RuleView(profile, word, gone.latin, source.name, True, gives, gives == gone.latin)
 
@@ -192,5 +194,6 @@ def migrate(ws: workspace.Workspace) -> tuple[Path, int]:
         if (RU_V1.name, word) not in held:
             source.put(TranslitRule(RU_V1.name, word, latin))
             written += 1
+    translit_layers.reload()
     return path, written
 

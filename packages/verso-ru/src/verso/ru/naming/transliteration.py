@@ -20,6 +20,7 @@ from dataclasses import dataclass, field
 from importlib.resources import files
 from importlib.resources.abc import Traversable
 from pathlib import Path
+from time import monotonic
 from types import MappingProxyType
 from typing import Literal, cast
 
@@ -387,6 +388,23 @@ def profile_of(role: Role) -> TranslitProfile:
     return profile
 
 
+#: The workspace whose corpus was last seen without a `transliteration.toml`, and until when that holds (`spelling`).
+_no_old_spellings: tuple[workspace.Workspace, float] | None = None
+
+
+def _refuse_old_spellings(ws: workspace.Workspace, recheck: float) -> None:
+    """Refuse a `transliteration.toml` still standing in the corpus of a workspace of schema 7. Looked at again at most every
+    `recheck` seconds: `spelling` is asked once a word, and the look is a `stat`."""
+    global _no_old_spellings
+    seen = _no_old_spellings
+    if seen is not None and seen[0] is ws and monotonic() < seen[1]:
+        return
+    old = _spellings_path()
+    if old is not None and old.is_file():
+        raise CorpusDataError(t("transliteration.moved_to_layer", path=old))
+    _no_old_spellings = (ws, monotonic() + recheck)
+
+
 def spelling(role: Role) -> Callable[[str], str]:
     """The role's spelling: a word the workspace spells whole, else its profile. The words spelled whole are, in a
     workspace of schema 6 or older, the corpus's `transliteration.toml` (`corpus_spellings`, `ru-v1`'s alone); in one of
@@ -400,9 +418,7 @@ def spelling(role: Role) -> Callable[[str], str]:
             return spelled if spelled is not None else profile(name)
         return spell_legacy
     from verso.ru.naming import translit_layers
-    old = _spellings_path()
-    if old is not None and old.is_file():
-        raise CorpusDataError(t("transliteration.moved_to_layer", path=old))
+    _refuse_old_spellings(ws, translit_layers.RECHECK_SECONDS)
     by_key = translit_layers.rules(ws)
     tag = profile.name
 
