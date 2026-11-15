@@ -19,7 +19,7 @@ Nothing of a real corpus is in this repository: its tests read a synthetic one.
 make bootstrap        # .venv with both distributions editable and the dev tools (requirements-dev.txt)
 make ci               # what CI runs, in its order: lint, tests, the core alone, the ratchets, the reference
 make standalone       # the tests from `git archive HEAD` in a clean venv of the wheels, the sentinel on
-make premerge         # make ci and make standalone: before every merge and release (CI runs no standalone on a PR)
+make premerge         # make ci and make standalone: before every merge and release, as CI runs on a PR
 make secrets-check    # gitleaks over `git archive HEAD`
 make stamp v=X.Y.Z    # a version into both distributions (their `version` and the sister pin)
 ```

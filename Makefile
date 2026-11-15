@@ -5,6 +5,8 @@
 
 SHELL := /bin/bash
 PY ?= $(CURDIR)/.venv/bin/python
+# The Python bootstrap makes .venv from with uv (CI's matrix passes each it tests).
+PYTHON_VERSION ?= 3.14
 SRC_PATH := $(CURDIR)/packages/verso-core/src:$(CURDIR)/packages/verso-ru/src
 # The tests import the code from the two src/ and this directory (`tests`, `tools`), never an installed copy.
 export PYTHONPATH := $(SRC_PATH):$(CURDIR)
@@ -13,7 +15,7 @@ export PYTHONPATH := $(SRC_PATH):$(CURDIR)
 
 bootstrap:
 	@if command -v uv >/dev/null 2>&1; then \
-		[ -d .venv ] || uv venv --quiet --python 3.14 .venv; \
+		[ -d .venv ] || uv venv --quiet --python $(PYTHON_VERSION) .venv; \
 		uv pip install --quiet --python .venv/bin/python -e 'packages/verso-core[schema]' \
 			-e 'packages/verso-ru[xlsx,sheets,dsl-tools]' -r requirements-dev.txt; \
 	else \
@@ -25,7 +27,7 @@ bootstrap:
 
 ci: lint test test-core ui-ratchet layering reference-check dsl-surface records-schema ui-schema
 
-# Before a merge or a release: what CI runs on a PR, and standalone, which it runs on main and not on a PR (ci.yml).
+# Before a merge or a release: what CI runs (ci.yml), standalone included.
 premerge: ci standalone
 
 test:

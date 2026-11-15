@@ -29,9 +29,9 @@ def test_lib_tools_resolve_to_lib():
 
 
 def test_ci_tests_every_python_the_classifiers_name():
-    # Every Python a step of CI sets up: a matrix's list, or one version written out.
+    # Every Python a step of CI sets up: a matrix's list (`python:` or `python-version:`), or one version written out.
     text = CI.read_text(encoding="utf-8")
-    versions = {v for listed in re.findall(r"python-version: \[([^\]]*)\]", text)
+    versions = {v for listed in re.findall(r"\bpython(?:-version)?: \[([^\]]*)\]", text)
                 for v in listed.replace("'", "").replace(" ", "").split(",")}
     versions |= set(re.findall(r"python-version: '(3\.\d+)'", text))
     assert versions, "ci.yml sets up no Python"
