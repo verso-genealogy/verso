@@ -19,7 +19,14 @@ CSV, хронологию и набор проверок, которые нах�
 
 ## Установка
 
-На PyPI библиотеки пока нет: она ставится из git-тега (`<tag>` — один из [тегов](https://github.com/verso-genealogy/verso/tags)).
+С PyPI, начиная с 0.1.39:
+
+```sh
+pip install "verso-ru[xlsx,dsl-tools,sheets]"
+```
+
+`verso-ru` ставит `verso-core` своей же версии. Версия до 0.1.39 ставится из своего git-тега (`<tag>` — один из
+[тегов](https://github.com/verso-genealogy/verso/tags)):
 
 ```sh
 pip install "verso-core @ git+https://github.com/verso-genealogy/verso@<tag>#subdirectory=packages/verso-core"
