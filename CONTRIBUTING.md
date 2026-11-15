@@ -20,10 +20,11 @@ python -m tools.reference --check            # the reference is current
   are spelled is a new profile or a new rule, never an edit.
 - **Messages** to the user — linter findings, errors — follow [the i18n rules](docs/i18n.md): English
   is the source (`locales/en.toml`), Russian a translation (`ru.toml`); content — the records' own
-  words — is never translated. Code, comments and docs are in English.
-  The guides in `docs/`, the README, the example's README, this file and SECURITY have a Russian
-  translation beside them (`X.ru.md`); a change to one is made in the other in the same PR. The
-  reference (`docs/reference`) is written from the code and stays English.
+  words — is never translated. Code and comments are in English.
+- **Docs** are written in English, the source. The guides in `docs/`, the README, the example's
+  README, this file and SECURITY have a Russian translation beside them (`X.ru.md`), changed in the
+  same PR; `tests/repo/test_public_texts.py` checks that the two keep the same headings, tables, code
+  and commands. The reference (`docs/reference`) is written from the code and stays English.
 - **How a change is checked.** `make premerge` runs every check. Byte-neutrality on a real corpus is
   checked by the maintainer at release. A PR that moves what a corpus produces (Terraform, CSV,
   records JSON, the ratchets' fingerprints) says so in its description.
