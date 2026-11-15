@@ -16,7 +16,7 @@ from verso.ru.reading import marking, task
 GROUPS = ("births", "marriages", "deaths", "census")
 #: sha256 of the cleaned prompts and schemas. A change of a prompt or a schema changes what a model
 #: answers: change it on purpose, re-measure it, then update this.
-PROMPT_HASH = "b1738a7c5ed6d6399f080f91ac5c23bf1dc4c63f05c26e088f29420d5a78209d"
+PROMPT_HASH = "c4040a842142c277460dc18cc3dbaef3a3e00b6a63f0bc8eb706d58ee9a9fb86"
 
 
 def test_prompts_present():
@@ -63,6 +63,34 @@ def test_marking_schema_converts():
     assert rec["kind"]["enum"] == ["birth", "marriage", "death"]
     assert rec["box_2d"] == {"type": "array", "items": {"type": "integer"}, "minItems": 4, "maxItems": 4}
     assert schema["properties"]["doubtful"]["items"] == {"type": "string"}
+
+
+@pytest.mark.parametrize("group", (*GROUPS, "marking"))
+def test_schemas_in_geminis_subset(group):
+    """The converter's contract, stdlib-only: a nullable is `anyOf` of one type and null, or a type array
+    of one type and "null"; no oneOf/allOf/$ref/patternProperties or other keyword outside the subset."""
+    schema = marking.output_schema() if group == "marking" else task.output_schema(group)
+    keywords = {"type", "properties", "required", "additionalProperties", "items", "enum", "anyOf",
+                "minItems", "maxItems"}
+
+    def check(node):
+        assert isinstance(node, dict)
+        assert set(node) <= keywords, set(node) - keywords
+        if "anyOf" in node:
+            assert set(node) == {"anyOf"}
+            a, b = node["anyOf"]
+            assert b == {"type": "null"} and a.get("type") != "null" and "anyOf" not in a
+            check(a)
+        t = node.get("type")
+        if isinstance(t, list):
+            assert len(t) == 2 and "null" in t and t.count("null") == 1
+        if t == "object":
+            for sub in node["properties"].values():
+                check(sub)
+        if t == "array":
+            check(node["items"])
+
+    check(schema)
 
 
 def test_census_roles_are_the_dsls():
