@@ -141,7 +141,11 @@ baseline is keyed by what a finding is, never by its message.
 
 1. `CHANGELOG.md` — what changed, and whether a corpus's output moves.
 2. `make premerge`, `make stamp v=X.Y.Z`, commit «Release X.Y.Z», tag `vX.Y.Z` (tags `v*` are protected: never
-   moved, never deleted), push. CI runs on the commit's push to main, not on the tag.
+   moved, never deleted), push. CI runs on the commit's push to main, not on the tag. The tag runs
+   `publish.yml`: it refuses a tag that does not name the stamped version, builds both distributions, publishes
+   each to PyPI once the maintainer approves its `pypi-*` deployment, then installs them from PyPI and runs the
+   example. The first release on PyPI also turns the README's «Install» (and its translation) to `pip install`
+   from PyPI, in the release commit: until it is published, the git tag is the only way to install.
 3. A corpus that pins this library moves its pin and judges the release by comparing its output byte for byte.
 4. `make stamp v=X.Y.(Z+1).dev0` on `main`, commit «Open X.Y.(Z+1).dev0 [skip ci]»: a version alone, which
    the release's run has just checked, and a full CI run of the Actions quota.
@@ -155,5 +159,5 @@ each have a Russian translation beside them (`X.ru.md`). Change both in the same
 
 ## Git
 
-Commit messages in English. Never `--amend` a pushed commit. Nothing is published to PyPI yet:
-`.github/workflows/publish.yml` runs by hand only.
+Commit messages in English. Never `--amend` a pushed commit. `.github/workflows/publish.yml` publishes a
+release tag to PyPI, and by hand a dev trial to TestPyPI; nothing else uploads.
