@@ -1,5 +1,7 @@
 # verso
 
+**English** · [Русский](README.ru.md)
+
 verso is a library for genealogical records written in Russian — from the Russian Empire to the Soviet
 period: parish metric books (births, marriages, deaths), revision lists (ревизские сказки), confession
 lists (исповедные росписи), and the cards of later catalogs.

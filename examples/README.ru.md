@@ -1,0 +1,47 @@
+# Игрушечный пример
+
+[English](README.md) · **Русский**
+
+`toy/` — самостоятельное рабочее пространство: одно выдуманное село, «Степанчиково» — по повести
+Достоевского «Село Степанчиково и его обитатели», — его помещик Егор Ильич Ростанев, несколько его
+крестьян и четыре книги: рождения, браки и смерти 1850 года и один двор ревизии 1858 года. Люди,
+даты и шифры выдуманы.
+
+```
+toy/
+  verso.toml                    # рабочее пространство: село, словарь имён (схема 6), данные корпуса
+  names/                        # слой имён поверх базового, который поставляет verso-ru: names.tsv,
+                                #   forms.tsv, patronymics.tsv — здесь пуст, базовый словарь знает
+                                #   все имена села; `verso names add` пишет сюда
+  corpus/                       # места, помещик (estates.toml), событие, его статусы
+  Степанчиково/
+    village.toml                # проект Geni, в который входят профили села
+    1850/stepanchikovo_{births,marriages,deaths}_1850.py
+    1858/stepanchikovo_census_1858.py
+    terraform/geni/main.tf      # каркас модуля; остальное пишет generate-tf
+```
+
+Базовый словарь отвечает дореформенными церковными формами (например, Иван → Иоанн в полях
+старого написания и в идентификаторах ресурсов); строка собственного слоя примера (`names/`)
+это переопределяет.
+
+`python examples/run.py` копирует `toy/` во временный каталог и шаг за шагом прогоняет по копии
+`verso`:
+
+1. `verso workspace villages` — рабочее пространство найдено;
+2. `verso dsllint --json …` — ни одной находки уровня error;
+3. `verso export-csv --village Степанчиково` — CSV на каждую книгу;
+4. `verso export-records --village Степанчиково` — JSON записей;
+5. `verso records-schema --validate records` — JSON соответствует схеме;
+6. `verso generate-tf --village Степанчиково` — Terraform для Geni;
+7. `verso facts --village Степанчиково` — слой фактов;
+8. `verso svyatcy near 1850-04-16 --gender M` — святцы вокруг дня.
+
+`--keep DIR` оставляет копию в DIR, чтобы её посмотреть; `--workspace DIR` прогоняет пример по
+вашему собственному рабочему пространству. Нужна библиотека с дополнениями, поставленная из тега
+релиза (`<tag>`, см. [README](../README.ru.md)):
+
+```
+pip install "verso-core[schema] @ git+https://github.com/verso-genealogy/verso@<tag>#subdirectory=packages/verso-core"
+pip install "verso-ru[xlsx,dsl-tools] @ git+https://github.com/verso-genealogy/verso@<tag>#subdirectory=packages/verso-ru"
+```

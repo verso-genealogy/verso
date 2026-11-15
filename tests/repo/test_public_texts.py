@@ -138,3 +138,18 @@ def test_contributing_follows_i18n():
 
 def test_changelog_links_no_pr_number():
     assert re.search(r"\(#\d+\)", _text("CHANGELOG.md")) is None
+
+
+#: A line a reader types, without its trailing comment (the comment is translated).
+_COMMAND_LINE = re.compile(r"^((?:pip install|python examples/run\.py) .*?)(?:\s+#\s.*)?$", re.MULTILINE)
+
+
+def test_russian_readmes_keep_the_english_ones_commands():
+    """A README.ru.md is a translation: what a reader types — the install lines, the commands — is the
+    English README's, so a command changed in one and not the other fails here."""
+    for english in ("README.md", "examples/README.md"):
+        en, ru = _text(english), _text(english.replace("README.md", "README.ru.md"))
+        assert "README.ru.md" in en
+        assert set(_COMMAND_LINE.findall(en)) <= set(_COMMAND_LINE.findall(ru)), english
+        missing = {m.group(0) for m in _COMMAND.finditer(en)} - {m.group(0) for m in _COMMAND.finditer(ru)}
+        assert not missing, sorted(missing)
