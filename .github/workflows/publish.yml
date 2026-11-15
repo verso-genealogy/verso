@@ -1,9 +1,10 @@
 name: Publish (TestPyPI trial)
 
 # The library's two distributions — verso-core, verso-ru — built from this repo at a dev
-# version, published to TestPyPI by trusted publishing (no token: the `testpypi` environment's
-# OIDC identity), then installed from the index and run on the toy example. Run by hand only, and
-# only once a TestPyPI pending publisher for this repository exists to upload to.
+# version, published to TestPyPI by trusted publishing (no token: the OIDC identity of each
+# distribution's environment, `testpypi-verso-core` and `testpypi-verso-ru`), then installed from the
+# index and run on the toy example. Run by hand only, and only once a TestPyPI pending publisher for
+# each project exists to upload to.
 # The scan of the built artifacts against a corpus's words needs that corpus, so it is the corpus's
 # own (`tools/public_tree --artifacts`), run before the first upload.
 on:
@@ -56,11 +57,22 @@ jobs:
           name: dist
           path: dist/*
 
+  # One job a distribution, each under an environment of its own (`<index>-<distribution>`): an index
+  # takes one pending publisher a configuration, and owner, repository, workflow and environment are the
+  # whole configuration — so the two projects could not both be registered under one environment.
   publish:
-    name: Publish to TestPyPI
+    name: Publish ${{ matrix.dist }} to TestPyPI
     needs: build
     runs-on: ubuntu-latest
-    environment: testpypi
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dist: verso-core
+            files: verso_core
+          - dist: verso-ru
+            files: verso_ru
+    environment: ${{ inputs.index }}-${{ matrix.dist }}
     permissions:
       id-token: write
     steps:
@@ -69,8 +81,18 @@ jobs:
           name: dist
           path: dist
 
+      # Its own wheel and sdist alone: the other project's files would be refused by this publisher.
+      - name: This distribution's files
+        env:
+          FILES: ${{ matrix.files }}
+        run: |
+          mkdir own
+          mv dist/"${FILES}"-* own/
+          ls own
+
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3
         with:
+          packages-dir: own/
           repository-url: https://test.pypi.org/legacy/
 
   verify:
