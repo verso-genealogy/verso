@@ -38,10 +38,8 @@ toy/
 8. `verso svyatcy near 1850-04-16 --gender M` — святцы вокруг дня.
 
 `--keep DIR` оставляет копию в DIR, чтобы её посмотреть; `--workspace DIR` прогоняет пример по
-вашему собственному рабочему пространству. Нужна библиотека с дополнениями, поставленная из тега
-релиза (`<tag>`, см. [README](../README.ru.md)):
+вашему собственному рабочему пространству. Нужна библиотека с дополнениями (см. [README](../README.ru.md)):
 
 ```
-pip install "verso-core[schema] @ git+https://github.com/verso-genealogy/verso@<tag>#subdirectory=packages/verso-core"
-pip install "verso-ru[xlsx,dsl-tools] @ git+https://github.com/verso-genealogy/verso@<tag>#subdirectory=packages/verso-ru"
+pip install "verso-core[schema]" "verso-ru[xlsx,dsl-tools]"
 ```

@@ -36,10 +36,8 @@ step by step:
 8. `verso svyatcy near 1850-04-16 --gender M` — the святцы around a day.
 
 `--keep DIR` leaves the copy in DIR to look at; `--workspace DIR` runs over a workspace of your
-own. It needs the library installed with its extras, from a release tag (`<tag>`, see the
-[README](../README.md)):
+own. It needs the library installed with its extras (see the [README](../README.md)):
 
 ```
-pip install "verso-core[schema] @ git+https://github.com/verso-genealogy/verso@<tag>#subdirectory=packages/verso-core"
-pip install "verso-ru[xlsx,dsl-tools] @ git+https://github.com/verso-genealogy/verso@<tag>#subdirectory=packages/verso-ru"
+pip install "verso-core[schema]" "verso-ru[xlsx,dsl-tools]"
 ```

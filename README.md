@@ -20,7 +20,14 @@ It is two distributions:
 
 ## Install
 
-Not on PyPI yet: install from a git tag (`<tag>` is one of [the tags](https://github.com/verso-genealogy/verso/tags)).
+From PyPI, since 0.1.39:
+
+```sh
+pip install "verso-ru[xlsx,dsl-tools,sheets]"
+```
+
+`verso-ru` brings the `verso-core` of its own version. A version before 0.1.39 installs from its git tag (`<tag>` is
+one of [the tags](https://github.com/verso-genealogy/verso/tags)):
 
 ```sh
 pip install "verso-core @ git+https://github.com/verso-genealogy/verso@<tag>#subdirectory=packages/verso-core"

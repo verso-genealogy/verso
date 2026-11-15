@@ -108,12 +108,17 @@ def _text(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
 
 
-def test_readme_installs_from_a_git_tag():
+def test_readme_installs_from_pypi_and_an_older_version_from_its_tag():
+    # On PyPI since 0.1.39 (the release workflow installs it from there and runs the example); a version
+    # before it is on no index, only its git tag.
     readme = _text("README.md")
-    assert not any(line.startswith("pip install verso-core verso-ru") for line in readme.splitlines())
+    assert 'pip install "verso-ru[xlsx,dsl-tools,sheets]"' in readme.splitlines()
+    assert "Not on PyPI" not in readme
     assert "git+https://github.com/verso-genealogy/verso@" in readme
     assert "#subdirectory=packages/verso-core" in readme
     assert "#subdirectory=packages/verso-ru" in readme
+    example = _text("examples/README.md")
+    assert 'pip install "verso-core[schema]" "verso-ru[xlsx,dsl-tools]"' in example.splitlines()
 
 
 def test_readme_names_the_shipped_names_base():
