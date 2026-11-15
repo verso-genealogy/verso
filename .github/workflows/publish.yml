@@ -1,13 +1,18 @@
-name: Publish (TestPyPI trial)
+name: Publish
 
-# The library's two distributions — verso-core, verso-ru — built from this repo at a dev
-# version, published to TestPyPI by trusted publishing (no token: the OIDC identity of each
-# distribution's environment, `testpypi-verso-core` and `testpypi-verso-ru`), then installed from the
-# index and run on the toy example. Run by hand only, and only once a TestPyPI pending publisher for
-# each project exists to upload to.
+# The library's two distributions — verso-core, verso-ru — built from this repo and published by
+# trusted publishing (no token: the OIDC identity of each distribution's environment,
+# `<index>-<distribution>`), then installed from the index and run on the toy example.
+# - A release tag `vX.Y.Z` (protected: only the maintainer pushes one) publishes the release
+#   commit's own version to PyPI, under `pypi-verso-core` and `pypi-verso-ru`, which take the
+#   maintainer's approval.
+# - By hand (`workflow_dispatch`): a trial at a dev version on TestPyPI, under
+#   `testpypi-verso-core` and `testpypi-verso-ru`.
 # The scan of the built artifacts against a corpus's words needs that corpus, so it is the corpus's
-# own (`tools/public_tree --artifacts`), run before the first upload.
+# own (`tools/public_tree --artifacts`), run on a build before a release is tagged.
 on:
+  push:
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       index:
@@ -24,14 +29,26 @@ jobs:
       contents: read
     outputs:
       version: ${{ steps.version.outputs.version }}
+      index: ${{ steps.version.outputs.index }}
     steps:
       - uses: actions/checkout@v7
 
-      # One version an attempt: re-running the whole workflow uploads a new one rather than
-      # clashing with the last; re-running verify alone reads this job's output from its attempt.
+      # A tag publishes the version its release commit stamped (`make stamp`), to PyPI. A trial is one
+      # version an attempt: re-running the whole workflow uploads a new one rather than clashing with
+      # the last; re-running verify alone reads this job's output from its attempt.
       - name: Version
         id: version
-        run: echo "version=0.1.0.dev$(( GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT ))" >> "$GITHUB_OUTPUT"
+        env:
+          EVENT: ${{ github.event_name }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [ "$EVENT" = push ]; then
+            echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+            echo "index=pypi" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=0.1.0.dev$(( GITHUB_RUN_NUMBER * 100 + GITHUB_RUN_ATTEMPT ))" >> "$GITHUB_OUTPUT"
+            echo "index=testpypi" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -44,7 +61,20 @@ jobs:
           version: "0.12.16"
           enable-cache: true
 
-      - name: Stamp the version into both distributions
+      # The tag's commit already carries its version: a tag on a commit that does not is refused here,
+      # before anything is built.
+      - name: The tag names the stamped version
+        if: steps.version.outputs.index == 'pypi'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          for p in packages/verso-core packages/verso-ru; do
+            got=$(python3 -c 'import sys, tomllib; print(tomllib.load(open(sys.argv[1], "rb"))["project"]["version"])' "$p/pyproject.toml")
+            [ "$got" = "$VERSION" ] || { echo "::error::$p: version $got, the tag says $VERSION"; exit 1; }
+          done
+
+      - name: Stamp the trial's version into both distributions
+        if: steps.version.outputs.index == 'testpypi'
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: python3 tools/release.py stamp "$VERSION"
@@ -61,7 +91,7 @@ jobs:
   # takes one pending publisher a configuration, and owner, repository, workflow and environment are the
   # whole configuration — so the two projects could not both be registered under one environment.
   publish:
-    name: Publish ${{ matrix.dist }} to TestPyPI
+    name: Publish ${{ matrix.dist }} to ${{ needs.build.outputs.index }}
     needs: build
     runs-on: ubuntu-latest
     strategy:
@@ -72,7 +102,7 @@ jobs:
             files: verso_core
           - dist: verso-ru
             files: verso_ru
-    environment: ${{ inputs.index }}-${{ matrix.dist }}
+    environment: ${{ needs.build.outputs.index }}-${{ matrix.dist }}
     permissions:
       id-token: write
     steps:
@@ -93,16 +123,17 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086  # v1.14.3
         with:
           packages-dir: own/
-          repository-url: https://test.pypi.org/legacy/
+          repository-url: ${{ needs.build.outputs.index == 'pypi' && 'https://upload.pypi.org/legacy/' || 'https://test.pypi.org/legacy/' }}
 
   verify:
-    name: Install from TestPyPI and run the example
+    name: Install from ${{ needs.build.outputs.index }} and run the example
     needs: [build, publish]
     runs-on: ubuntu-latest
     permissions:
       contents: read
     env:
       VERSION: ${{ needs.build.outputs.version }}
+      SIMPLE: ${{ needs.build.outputs.index == 'pypi' && 'https://pypi.org/simple/' || 'https://test.pypi.org/simple/' }}
     steps:
       - uses: actions/checkout@v7
 
@@ -116,12 +147,12 @@ jobs:
         with:
           version: "0.12.16"
 
-      # Only verso comes from TestPyPI, without its dependencies; the index takes a while to show
-      # a new upload, so the download is retried for five minutes.
-      - name: Download verso from TestPyPI
+      # Only verso comes from the index it was published to, without its dependencies; the index takes
+      # a while to show a new upload, so the download is retried for five minutes.
+      - name: Download verso from the index
         run: |
           for attempt in $(seq 1 30); do
-            pip download --no-deps --index-url https://test.pypi.org/simple/ "verso-core==$VERSION" "verso-ru==$VERSION" -d wheels/ && exit 0
+            pip download --no-deps --index-url "$SIMPLE" "verso-core==$VERSION" "verso-ru==$VERSION" -d wheels/ && exit 0
             echo "attempt $attempt: not on the index yet"
             sleep 10
           done

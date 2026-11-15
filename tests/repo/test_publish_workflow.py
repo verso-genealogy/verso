@@ -1,4 +1,4 @@
-"""publish.yml — the TestPyPI trial: built from this repo,
+"""publish.yml — a release tag to PyPI, a trial by hand to TestPyPI: built from this repo,
 published by trusted publishing, then installed from the index and run on the toy example."""
 from __future__ import annotations
 
@@ -19,19 +19,53 @@ def _runs(job: dict[str, Any]) -> str:
     return "\n".join(str(step.get("run", "")) for step in job["steps"])
 
 
-def test_publish_runs_only_by_hand():
-    triggers = _workflow().get("on") or _workflow()[True]
-    assert set(triggers) == {"workflow_dispatch"}
+def _triggers() -> dict[str, Any]:
+    return _workflow().get("on") or _workflow()[True]
+
+
+def test_publish_runs_on_a_release_tag_or_by_hand_to_testpypi():
+    triggers = _triggers()
+    assert set(triggers) == {"push", "workflow_dispatch"}
+    assert triggers["push"] == {"tags": ["v*"]}
+    # by hand, TestPyPI alone: PyPI takes a release tag
     assert triggers["workflow_dispatch"]["inputs"]["index"]["options"] == ["testpypi"]
+
+
+def _version_step() -> dict[str, Any]:
+    [step] = [s for s in _workflow()["jobs"]["build"]["steps"] if s.get("id") == "version"]
+    return step
+
+
+def test_a_tag_publishes_its_own_version_to_pypi_and_a_trial_a_dev_one_to_testpypi():
+    run = _version_step()["run"]
+    assert 'if [ "$EVENT" = push ]' in run
+    tag, trial = run.split("else")
+    assert 'version=${TAG#v}' in tag and "index=pypi" in tag
+    assert "0.1.0.dev" in trial and "index=testpypi" in trial
+    assert _version_step()["env"] == {"EVENT": "${{ github.event_name }}", "TAG": "${{ github.ref_name }}"}
+
+
+def test_a_tag_is_built_as_stamped_and_refused_when_the_stamp_disagrees():
+    steps = _workflow()["jobs"]["build"]["steps"]
+    [check] = [s for s in steps if s.get("name") == "The tag names the stamped version"]
+    [stamp] = [s for s in steps if "tools/release.py stamp" in str(s.get("run", ""))]
+    assert check["if"] == "steps.version.outputs.index == 'pypi'"
+    assert stamp["if"] == "steps.version.outputs.index == 'testpypi'"
+    for dist in ("packages/verso-core", "packages/verso-ru"):
+        assert dist in check["run"]
+    assert "exit 1" in check["run"]
+    [build] = [s for s in steps if s.get("run") == "make build"]
+    assert steps.index(check) < steps.index(build) and steps.index(stamp) < steps.index(build)
 
 
 def test_publish_job_has_id_token_and_the_testpypi_environment():
     job = _workflow()["jobs"]["publish"]
     assert job["needs"] == "build"
-    assert job["environment"] == "${{ inputs.index }}-${{ matrix.dist }}"
+    assert job["environment"] == "${{ needs.build.outputs.index }}-${{ matrix.dist }}"
     assert job["permissions"]["id-token"] == "write"
     [action] = [s for s in job["steps"] if str(s.get("uses", "")).startswith("pypa/gh-action-pypi-publish@")]
-    assert action["with"]["repository-url"] == "https://test.pypi.org/legacy/"
+    assert action["with"]["repository-url"] == ("${{ needs.build.outputs.index == 'pypi' && "
+                                                "'https://upload.pypi.org/legacy/' || 'https://test.pypi.org/legacy/' }}")
 
 
 def test_each_distribution_publishes_under_an_environment_of_its_own():
@@ -41,8 +75,8 @@ def test_each_distribution_publishes_under_an_environment_of_its_own():
     assert job["strategy"]["fail-fast"] is False
     legs = {leg["dist"]: leg["files"] for leg in job["strategy"]["matrix"]["include"]}
     assert legs == {"verso-core": "verso_core", "verso-ru": "verso_ru"}
-    environments = {f"testpypi-{dist}" for dist in legs}
-    assert environments == {"testpypi-verso-core", "testpypi-verso-ru"}
+    environments = {f"{index}-{dist}" for index in ("testpypi", "pypi") for dist in legs}
+    assert environments == {"testpypi-verso-core", "testpypi-verso-ru", "pypi-verso-core", "pypi-verso-ru"}
 
 
 def test_each_publish_job_uploads_its_own_files_alone():
@@ -61,10 +95,16 @@ def test_the_version_is_stamped_before_the_build():
     assert runs.index("tools/release.py stamp") < runs.index("make build")
 
 
-def test_verify_job_takes_only_verso_from_testpypi():
+def test_verify_job_takes_only_verso_from_the_index_it_published_to():
+    verify = _workflow()["jobs"]["verify"]
+    assert verify["env"]["SIMPLE"] == ("${{ needs.build.outputs.index == 'pypi' && "
+                                       "'https://pypi.org/simple/' || 'https://test.pypi.org/simple/' }}")
+    runs = _runs(verify)
+    lines = [line.strip() for line in runs.splitlines() if "$SIMPLE" in line]
+    assert lines and all(line.startswith("pip download --no-deps") for line in lines), lines
     text = WORKFLOW.read_text(encoding="utf-8")
-    lines = [line.strip() for line in text.splitlines() if "test.pypi.org" in line]
-    assert lines and all(line.startswith(("pip download --no-deps", "repository-url:")) for line in lines), lines
+    named = [line.strip() for line in text.splitlines() if "test.pypi.org" in line]
+    assert named and all(line.startswith(("repository-url:", "SIMPLE:")) for line in named), named
 
 
 def test_verify_job_runs_the_example_from_an_archive():
@@ -97,7 +137,8 @@ def test_each_attempt_publishes_its_own_version_and_the_jobs_share_it():
     assert "VERSION" not in (wf.get("env") or {})
     build = wf["jobs"]["build"]
     assert build["outputs"]["version"] == "${{ steps.version.outputs.version }}"
-    [step] = [s for s in build["steps"] if s.get("id") == "version"]
+    assert build["outputs"]["index"] == "${{ steps.version.outputs.index }}"
+    step = _version_step()
     assert "GITHUB_RUN_ATTEMPT" in step["run"] and "GITHUB_RUN_NUMBER" in step["run"]
     verify = wf["jobs"]["verify"]
     assert "build" in verify["needs"] and "publish" in verify["needs"]
