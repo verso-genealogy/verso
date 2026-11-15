@@ -43,6 +43,10 @@ docs/                                 the public guides, each with its Russian t
                                       docs/reference is written from the code and stays English
 examples/                             the toy example (`examples/run.py`)
 ide/                                  the VS Code and IntelliJ plugins of dsllint
+plugins/verso-reading/                the Claude Code plugin of the scan-reading skills and agents; the repository is
+                                      its marketplace `verso` (.claude-plugin/marketplace.json). It names no corpus:
+                                      a corpus's rules, albums and archives are its own AGENTS.md's
+                                      (tests/plugins/test_verso_reading.py)
 ```
 
 ## The rules the checks hold
