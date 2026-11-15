@@ -28,10 +28,32 @@ def test_publish_runs_only_by_hand():
 def test_publish_job_has_id_token_and_the_testpypi_environment():
     job = _workflow()["jobs"]["publish"]
     assert job["needs"] == "build"
-    assert job["environment"] == "testpypi"
+    assert job["environment"] == "${{ inputs.index }}-${{ matrix.dist }}"
     assert job["permissions"]["id-token"] == "write"
     [action] = [s for s in job["steps"] if str(s.get("uses", "")).startswith("pypa/gh-action-pypi-publish@")]
     assert action["with"]["repository-url"] == "https://test.pypi.org/legacy/"
+
+
+def test_each_distribution_publishes_under_an_environment_of_its_own():
+    # An index takes one pending publisher a configuration (owner, repository, workflow, environment):
+    # one environment for both projects could register only the first.
+    job = _workflow()["jobs"]["publish"]
+    assert job["strategy"]["fail-fast"] is False
+    legs = {leg["dist"]: leg["files"] for leg in job["strategy"]["matrix"]["include"]}
+    assert legs == {"verso-core": "verso_core", "verso-ru": "verso_ru"}
+    environments = {f"testpypi-{dist}" for dist in legs}
+    assert environments == {"testpypi-verso-core", "testpypi-verso-ru"}
+
+
+def test_each_publish_job_uploads_its_own_files_alone():
+    job = _workflow()["jobs"]["publish"]
+    [pick] = [s for s in job["steps"] if s.get("name") == "This distribution's files"]
+    assert pick["env"]["FILES"] == "${{ matrix.files }}"
+    assert 'mv dist/"${FILES}"-* own/' in pick["run"]
+    [action] = [s for s in job["steps"] if str(s.get("uses", "")).startswith("pypa/gh-action-pypi-publish@")]
+    assert action["with"]["packages-dir"] == "own/"
+    steps = job["steps"]
+    assert steps.index(pick) < steps.index(action)
 
 
 def test_the_version_is_stamped_before_the_build():
