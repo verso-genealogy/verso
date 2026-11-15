@@ -1,5 +1,7 @@
 # Security
 
+**English** · [Русский](SECURITY.ru.md)
+
 ## Supported versions
 
 verso (verso-core, verso-ru) is at 0.x: only the latest 0.x release receives fixes.

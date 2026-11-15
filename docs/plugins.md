@@ -1,5 +1,7 @@
 # Plugins
 
+**English** · [Русский](plugins.ru.md)
+
 The core (`verso-core`) works through the plugins a workspace enables, never by importing one.
 `verso-ru` is the plugin for Russian books; a corpus of another language's records would bring
 its own.

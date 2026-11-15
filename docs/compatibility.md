@@ -1,5 +1,7 @@
 # Compatibility
 
+**English** · [Русский](compatibility.ru.md)
+
 ## What is public
 
 The library promises, to a corpus that is not its author's, what a corpus is written against:

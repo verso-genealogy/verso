@@ -1,5 +1,7 @@
 # Contributing
 
+**English** · [Русский](CONTRIBUTING.ru.md)
+
 ```sh
 pip install -e "packages/verso-core[schema]" -e "packages/verso-ru[xlsx,dsl-tools]"
 python -m pytest tests                       # the library's tests
@@ -19,8 +21,9 @@ python -m tools.reference --check            # the reference is current
 - **Messages** to the user — linter findings, errors — follow [the i18n rules](docs/i18n.md): English
   is the source (`locales/en.toml`), Russian a translation (`ru.toml`); content — the records' own
   words — is never translated. Code, comments and docs are in English.
-  The README and the example's README have a Russian translation beside them (`README.ru.md`):
-  a change to one is made in the other in the same PR.
+  The guides in `docs/`, the README, the example's README, this file and SECURITY have a Russian
+  translation beside them (`X.ru.md`); a change to one is made in the other in the same PR. The
+  reference (`docs/reference`) is written from the code and stays English.
 - **How a change is checked.** `make premerge` runs every check. Byte-neutrality on a real corpus is
   checked by the maintainer at release. A PR that moves what a corpus produces (Terraform, CSV,
   records JSON, the ratchets' fingerprints) says so in its description.

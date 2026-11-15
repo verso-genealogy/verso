@@ -15,7 +15,7 @@ CSV, хронологию и набор проверок, которые нах�
   записей в конвейер, кодек JSON записей, места и данные корпуса, храповик вычитки, HCL-модели Geni и
   команда `verso`.
 - **verso-ru** — плагин для записей на русском: DSL (`verso.ru.dsl`), предметная область и имена,
-  слой фактов, поиск дублей профилей, линтеры DSL, транслятор в Terraform для Geni, экспорт и импорт.
+  слой фактов, проверки консолидации (слияния дублей профилей), линтеры DSL, транслятор в Terraform для Geni, экспорт и импорт.
 
 ## Установка
 
@@ -32,7 +32,7 @@ pip install "verso-ru[xlsx,dsl-tools,sheets] @ git+https://github.com/verso-gene
 Корпуса в библиотеке нет, но есть базовый словарь имён (`[names] base = "ru"`: имена, отчества и их
 старые написания). Корпус — это каталог с файлом `verso.toml`, где названы его сёла, его собственный
 слой имён поверх базового и его данные: места, владельцы, события хронологии, статусы помещиков.
-См. [рабочее пространство](docs/workspace.md) (на английском).
+См. [рабочее пространство](docs/workspace.ru.md).
 
 ## Быстрый старт
 
@@ -68,7 +68,7 @@ births = birth_records(
 - `verso dsllint FILE…` — линтеры DSL (см. [справочник](docs/reference/linters.md));
 - `verso export-csv --village V` — CSV на каждый набор записей, рядом с его файлом;
 - `verso generate-tf --village V` — профили, союзы и документы Geni в виде Terraform;
-- `verso export-records --village V` — JSON записей ([JSON записей](docs/records-json.md));
+- `verso export-records --village V` — JSON записей ([JSON записей](docs/records-json.ru.md));
 - `verso facts`, `verso date-order`, `verso reconcile`, … — проверки по записям
   ([все команды](docs/reference/commands.md)).
 
@@ -76,8 +76,8 @@ births = birth_records(
 
 Корпусу, который пишет не автор библиотеки, она обещает то, на что такой корпус опирается:
 
-- фасад DSL — `verso.ru.dsl` и три его каталога (`DSL_API`, [DSL](docs/dsl.md));
-- статусы корпуса как `<каталог корпуса>.statuses`;
+- фасад DSL — `verso.ru.dsl` и три его каталога (`DSL_API`, [DSL](docs/dsl.ru.md));
+- статусы корпуса как `<the corpus directory>.statuses`;
 - схему JSON записей (`records-v1.json`) и её правило идентификаторов `r1`;
 - команды `verso`, их флаги и коды выхода;
 - ключи `verso.toml` и `village.toml`;
@@ -87,19 +87,17 @@ births = birth_records(
 Всё остальное — модули под фасадом, предметная область, транслятор — принадлежит самой библиотеке
 и меняется без предупреждения. Пока версия 0.x, минорная версия может ломать совместимость: публичное
 имя, которое уберут или переименуют, одну минорную версию живёт рядом с преемником и предупреждает
-(`DeprecationWarning`), прежде чем уйти. См. [совместимость](docs/compatibility.md).
+(`DeprecationWarning`), прежде чем уйти. См. [совместимость](docs/compatibility.ru.md).
 
 ## Документация
 
-Документация пока только на английском.
-
-- Руководства: [рабочее пространство](docs/workspace.md) · [DSL](docs/dsl.md) · [плагины](docs/plugins.md) · [язык интерфейса](docs/i18n.md)
-  · [JSON записей](docs/records-json.md) · [храповик вычитки](docs/review-ratchet.md)
-  · [совместимость](docs/compatibility.md)
-- Справочник, собранный из кода: [команды](docs/reference/commands.md) ·
+- Руководства: [рабочее пространство](docs/workspace.ru.md) · [DSL](docs/dsl.ru.md) · [плагины](docs/plugins.ru.md) · [язык интерфейса](docs/i18n.ru.md)
+  · [JSON записей](docs/records-json.ru.md) · [храповик вычитки](docs/review-ratchet.ru.md)
+  · [совместимость](docs/compatibility.ru.md)
+- Справочник, собранный из кода (на английском): [команды](docs/reference/commands.md) ·
   [ключи рабочего пространства](docs/reference/workspace-keys.md) · [линтеры](docs/reference/linters.md) ·
   [API DSL](docs/reference/dsl-api.md)
-- [Как участвовать](CONTRIBUTING.md) · [Безопасность](SECURITY.md) · [Изменения](CHANGELOG.md)
+- [Как участвовать](CONTRIBUTING.ru.md) · [Безопасность](SECURITY.ru.md) · [Изменения](CHANGELOG.md)
 
 ## Лицензия
 

@@ -1,5 +1,7 @@
 # The review ratchet
 
+**English** · [Русский](review-ratchet.ru.md)
+
 One flag says whether a record has been read against its scan, and a list says which unread
 records are already on Geni (`verso.ru.dsl.records.reviewed`, `verso.core.ratchet`).
 

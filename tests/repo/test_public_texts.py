@@ -140,16 +140,63 @@ def test_changelog_links_no_pr_number():
     assert re.search(r"\(#\d+\)", _text("CHANGELOG.md")) is None
 
 
+#: The texts with a Russian translation beside them (`X.ru.md`): every guide in docs/, and these. The
+#: reference (docs/reference) is written from the code and stays English.
+_TRANSLATED = ("README.md", "examples/README.md", "CONTRIBUTING.md", "SECURITY.md")
 #: A line a reader types, without its trailing comment (the comment is translated).
-_COMMAND_LINE = re.compile(r"^((?:pip install|python examples/run\.py) .*?)(?:\s+#\s.*)?$", re.MULTILINE)
+_COMMAND_LINE = re.compile(r"^((?:pip install|python ) .*?)(?:\s+#\s.*)?$", re.MULTILINE)
+_LINK = re.compile(r"\]\(([^)\s]+)\)")
+_HEADING = re.compile(r"^#{1,6} (.+)$", re.MULTILINE)
 
 
-def test_russian_readmes_keep_the_english_ones_commands():
-    """A README.ru.md is a translation: what a reader types — the install lines, the commands — is the
-    English README's, so a command changed in one and not the other fails here."""
-    for english in ("README.md", "examples/README.md"):
-        en, ru = _text(english), _text(english.replace("README.md", "README.ru.md"))
-        assert "README.ru.md" in en
-        assert set(_COMMAND_LINE.findall(en)) <= set(_COMMAND_LINE.findall(ru)), english
-        missing = {m.group(0) for m in _COMMAND.finditer(en)} - {m.group(0) for m in _COMMAND.finditer(ru)}
-        assert not missing, sorted(missing)
+def _translated() -> list[Path]:
+    return [ROOT / rel for rel in _TRANSLATED] + [p for p in sorted((ROOT / "docs").glob("*.md")) if not p.name.endswith(".ru.md")]
+
+
+def _russian(english: Path) -> Path:
+    return english.with_name(english.stem + ".ru.md")
+
+
+def _anchors(path: Path) -> set[str]:
+    """GitHub's anchors of a Markdown file's headings."""
+    text = re.sub(r"^```.*?^```", "", path.read_text(encoding="utf-8"), flags=re.MULTILINE | re.DOTALL)
+    return {re.sub(r"[^\w\- ]", "", h.replace("`", "").strip().lower()).replace(" ", "-")
+            for h in _HEADING.findall(text)}
+
+
+def test_every_guide_has_its_russian_translation():
+    english = _translated()
+    assert len(english) > len(_TRANSLATED)
+    missing = [p.relative_to(ROOT).as_posix() for p in english if not _russian(p).is_file()]
+    assert missing == []
+    unlinked = [p.relative_to(ROOT).as_posix() for p in english if f"]({_russian(p).name})" not in p.read_text(encoding="utf-8")]
+    assert unlinked == []
+
+
+def test_translations_keep_the_english_ones_commands():
+    """A translation changes the words, not what a reader types: the install lines, the commands."""
+    wrong: list[str] = []
+    for english in _translated():
+        en, ru = english.read_text(encoding="utf-8"), _russian(english).read_text(encoding="utf-8")
+        rel = english.relative_to(ROOT).as_posix()
+        wrong += [f"{rel}: {line}" for line in sorted(set(_COMMAND_LINE.findall(en)) - set(_COMMAND_LINE.findall(ru)))]
+        wrong += [f"{rel}: {cmd}" for cmd in sorted({m.group(0) for m in _COMMAND.finditer(en)}
+                                                     - {m.group(0) for m in _COMMAND.finditer(ru)})]
+    assert wrong == [], "\n".join(wrong)
+
+
+def test_translations_links_resolve():
+    """A link of a translation reaches a file, and its anchor a heading of that file."""
+    wrong: list[str] = []
+    for english in _translated():
+        russian = _russian(english)
+        for target in _LINK.findall(russian.read_text(encoding="utf-8")):
+            if re.match(r"[a-z]+:", target):
+                continue
+            file, _, anchor = target.partition("#")
+            path = (russian.parent / file).resolve() if file else russian
+            if not path.is_file():
+                wrong.append(f"{russian.relative_to(ROOT)}: {target} — no such file")
+            elif anchor and anchor not in _anchors(path):
+                wrong.append(f"{russian.relative_to(ROOT)}: {target} — no such heading")
+    assert wrong == [], "\n".join(wrong)
