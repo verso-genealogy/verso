@@ -1,5 +1,7 @@
 # The toy example
 
+**English** · [Русский](README.ru.md)
+
 `toy/` is a whole workspace of its own: one invented village, «Степанчиково» — after Dostoevsky's
 «Село Степанчиково и его обитатели» — its landlord Егор Ильич Ростанев, a few of his peasants, and
 four books: births, marriages and deaths of 1850 and one двор of the 1858 revision. The people,

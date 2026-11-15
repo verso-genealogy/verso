@@ -39,7 +39,8 @@ packages/verso-ru/src/verso/ru/       the plugin: dsl (the facade and its catalo
 tests/                                the library's tests; tests/core — the core alone on a toy plugin;
                                       tests/repo — this repository's own tools
 tools/                                layers, reference, release, standalone, secrets check, i18n codemod
-docs/                                 the public guides; docs/reference is written from the code
+docs/                                 the public guides, each with its Russian translation beside it (X.ru.md);
+                                      docs/reference is written from the code and stays English
 examples/                             the toy example (`examples/run.py`)
 ide/                                  the VS Code and IntelliJ plugins of dsllint
 ```
@@ -144,6 +145,13 @@ baseline is keyed by what a finding is, never by its message.
 3. A corpus that pins this library moves its pin and judges the release by comparing its output byte for byte.
 4. `make stamp v=X.Y.(Z+1).dev0` on `main`, commit «Open X.Y.(Z+1).dev0 [skip ci]»: a version alone, which
    the release's run has just checked, and a full CI run of the Actions quota.
+
+## Docs
+
+English is the source; a guide in `docs/`, the README, the example's README, CONTRIBUTING and SECURITY
+each have a Russian translation beside them (`X.ru.md`). Change both in the same PR:
+`tests/repo/test_public_texts.py` fails when the two differ in headings, table rows, code blocks
+(comments aside) or the commands a reader types, or when a translation's link or anchor leads nowhere.
 
 ## Git
 

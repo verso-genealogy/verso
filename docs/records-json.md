@@ -1,5 +1,7 @@
 # Records JSON
 
+**English** · [Русский](records-json.ru.md)
+
 The built records, written out as JSON without loss and read back in their place — the way to
 the records without running Python (`verso.core.records`, schema v1).
 

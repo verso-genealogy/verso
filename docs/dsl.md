@@ -1,5 +1,7 @@
 # The DSL
 
+**English** · [Русский](dsl.ru.md)
+
 A DSL file is a Python module that builds record sets by calling the DSL's functions. It imports
 one facade — **DSL v1** — and nothing else.
 

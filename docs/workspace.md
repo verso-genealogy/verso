@@ -1,5 +1,7 @@
 # The workspace
 
+**English** · [Русский](workspace.ru.md)
+
 verso finds a corpus through one module, `verso.core.workspace`, never from where its own code
 lies. A workspace is a directory holding `verso.toml`; everything the library reads of a corpus —
 its villages, its names layer (over the base lexicon the library ships, `[names] base = "ru"`), its places and owners — is named there or beside it.
