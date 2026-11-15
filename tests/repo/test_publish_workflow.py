@@ -130,6 +130,17 @@ def test_the_action_holding_the_oidc_token_is_pinned_by_commit():
     assert re.fullmatch(r"pypa/gh-action-pypi-publish@[0-9a-f]{40}", action["uses"]), action["uses"]
 
 
+def test_every_action_the_release_runs_is_pinned_by_commit():
+    # The build makes what goes to PyPI: an action whose tag were moved would build it. Dependabot
+    # moves a commit pin and its comment together.
+    used = [str(s["uses"]) for job in _workflow()["jobs"].values() for s in job["steps"] if "uses" in s]
+    assert used
+    for uses in used:
+        assert re.fullmatch(r"[\w.-]+/[\w.-]+@[0-9a-f]{40}", uses), uses
+    lines = [line for line in WORKFLOW.read_text(encoding="utf-8").splitlines() if "uses:" in line]
+    assert all(re.search(r"@[0-9a-f]{40}  # v\d+(\.\d+)*$", line) for line in lines), lines
+
+
 def test_each_attempt_publishes_its_own_version_and_the_jobs_share_it():
     # A re-run of the whole workflow is a new attempt, a new version, no clash with the uploaded
     # one; a re-run of verify alone reads the version its build published.
