@@ -50,7 +50,7 @@ name = "ru.messages"
 packages = ["verso.ru.messages"]
 [[tier]]
 name = "ru.leaves"
-packages = ["verso.ru", "verso.ru.gender", "verso.ru.corpus_data", "verso.ru.ages", "verso.ru.census_revisions", "verso.ru.search", "verso.ru.archives"]
+packages = ["verso.ru", "verso.ru.gender", "verso.ru.corpus_data", "verso.ru.ages", "verso.ru.census_revisions", "verso.ru.search", "verso.ru.archives", "verso.ru.reading"]
 [[tier]]
 name = "ru.names"
 packages = ["verso.ru.naming", "verso.ru.relationship"]
