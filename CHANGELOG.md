@@ -3,6 +3,19 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased
+
+A corpus's output does not move: the change is in how often the transliteration's rules are read.
+
+### Fixed
+
+- A word's spelling (`naming.transliteration.spelling`, asked once a name) gathered the layers' rule sources and
+  `stat`-ed their files on every call — about a fifth of a village's Terraform translation. The rules summed are now
+  kept per workspace (`naming.translit_layers.rules`), their sources' stamps looked at again at most every
+  `RECHECK_SECONDS` (1 s, as the names lexicon's), and forgotten at once by a rule written through a source or
+  `linters.translit_layer`, a host's source provided or taken back, and another workspace (`translit_layers.reload`).
+  The refusal of a `transliteration.toml` left in a corpus of schema 7 is looked at as often.
+
 ## 0.1.38 — 2026-11-14
 
 The first release from this repository, imported as one commit. A corpus's output does not move: texts and the

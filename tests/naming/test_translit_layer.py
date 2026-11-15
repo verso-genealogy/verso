@@ -2,6 +2,7 @@
 taking a lower rule away; a workspace of schema 6 reads its corpus's transliteration.toml as it always did."""
 from __future__ import annotations
 
+import time
 from pathlib import Path
 
 import pytest
@@ -92,6 +93,79 @@ def test_a_rule_edited_is_read_on_the_next_name(tmp_path: Path):
         assert display()("Плотвичкин") == "Plotvichkin"
         translit_layers.writable(workspace.current()).put(TranslitRule("ru-v2", "Плотвичкин", "Plotvichkine"))
         assert display()("Плотвичкин") == "Plotvichkine"
+
+
+class _CountedRules:
+    """A host's rows that count how often their stamp is asked."""
+    name, writable = "host", False
+
+    def __init__(self, latin: str) -> None:
+        self.latin, self.stamps = latin, 0
+
+    def load(self):
+        return {("ru-v2", "Плотвичкин"): TranslitRule("ru-v2", "Плотвичкин", self.latin)}
+
+    def stamp(self) -> str:
+        self.stamps += 1
+        return self.latin
+
+
+def test_the_rules_are_kept_between_names(tmp_path: Path):
+    """A word's spelling is asked once a name: the rules summed are kept, and their sources' stamps are not asked again
+    before `RECHECK_SECONDS` have passed."""
+    root = _root(tmp_path)
+    host = _CountedRules("Plotvichkine")
+    with workspace.use(root), translit_layers.provided(root / "top", host):
+        for _ in range(100):
+            assert display()("Плотвичкин") == "Plotvichkine"
+    assert host.stamps == 1
+
+
+def test_a_file_edited_behind_the_rules_is_read_once_they_are_looked_at_again(tmp_path: Path,
+                                                                               monkeypatch: pytest.MonkeyPatch):
+    """A `translit.tsv` written by hand (or by a sync client) under a running process: its stamp is looked at again once the
+    interval has passed, and the rules are read again."""
+    root = _root(tmp_path, top="ru-v2\tПлотвичкин\tPlotvichkine\teditor\t\n")
+    with workspace.use(root):
+        assert display()("Плотвичкин") == "Plotvichkine"
+        (root / "top" / "translit.tsv").write_text(HEADER + "ru-v2\tПлотвичкин\tPlotwitschkin\teditor\t\n",
+                                                   encoding="utf-8")
+        assert display()("Плотвичкин") == "Plotvichkine"           # within the interval: the rules held
+        later = time.monotonic() + translit_layers.RECHECK_SECONDS
+        monkeypatch.setattr(translit_layers, "monotonic", lambda: later)
+        assert display()("Плотвичкин") == "Plotwitschkin"
+
+
+def test_a_host_source_provided_is_read_at_once(tmp_path: Path):
+    root = _root(tmp_path, top="ru-v2\tПлотвичкин\tPlotvichkine\teditor\t\n")
+    with workspace.use(root):
+        assert display()("Плотвичкин") == "Plotvichkine"
+        with translit_layers.provided(root / "top", _CountedRules("Plotwitschkin")):
+            assert display()("Плотвичкин") == "Plotwitschkin"
+        assert display()("Плотвичкин") == "Plotvichkine"
+
+
+def test_another_workspace_is_other_rules(tmp_path: Path):
+    (tmp_path / "one").mkdir()
+    (tmp_path / "two").mkdir()
+    one = _root(tmp_path / "one", top="ru-v2\tПлотвичкин\tPlotvichkine\teditor\t\n")
+    two = _root(tmp_path / "two")
+    with workspace.use(one):
+        assert display()("Плотвичкин") == "Plotvichkine"
+        with workspace.use(two):
+            assert display()("Плотвичкин") == "Plotvichkin"
+        assert display()("Плотвичкин") == "Plotvichkine"
+
+
+def test_the_old_file_appearing_is_refused_once_looked_at_again(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    root = _root(tmp_path)
+    monkeypatch.setattr(translit_layers, "RECHECK_SECONDS", 0.0)
+    with workspace.use(root):
+        assert address()("Плотвичкин") == "Plotvichkin"
+        (root / "corpus" / "transliteration.toml").write_text('[names]\n"Плотвичкин" = "Plotvichkine"\n',
+                                                              encoding="utf-8")
+        with pytest.raises(CorpusDataError, match="verso translit migrate"):
+            address()("Плотвичкин")
 
 
 def test_translit_rows_sorted_and_unique(tmp_path: Path):
