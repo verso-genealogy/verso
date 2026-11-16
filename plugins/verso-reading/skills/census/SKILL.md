@@ -7,6 +7,10 @@ description: >
   to trace a line one revision further back, to sweep a whole дело for a surname, to cut a
   directory of a дело's frames into what reads, or when scans are photographs of a screen
   and the handwriting will not resolve.
+compatibility: >
+  Needs Python 3.14+ and the verso library on PATH — pip install 'verso-core[scans]>=0.1.41'
+  'verso-ru>=0.1.41' (verso-core[heic] for a phone's own format) — and an agent that can open
+  local image files.
 ---
 
 Locating one family in a 500-household revision list is a search problem, not a transcription
@@ -18,6 +22,9 @@ searched differently, because there is no previous-revision age column to finger
 
 Альбомы, архивы и региональные правила — в AGENTS.md проекта: the extraction rules by record kind,
 where each дело's frames and its record (its leaves, its links) are kept.
+
+The other skills named here are named bare (`metric-books`); in the Claude Code plugin they are
+`verso-reading:metric-books` and so on.
 
 ## The method: work backwards one revision at a time
 
@@ -80,8 +87,10 @@ verso scans check $FR                  # is the дело whole?
 
 **Tell the album what it is — `scans.toml`.** A ревизская сказка is photographed as a SPREAD
 far more often than a metric book is, and the filename usually names one лист only
-(`63об.jpg` holding 63об and 64). Declare it once, in the frames' directory or the one `--layout`
-or `--village` names, and every recto becomes addressable instead of being reported missing:
+(`63об.jpg` holding 63об and 64). Declare it once in the frames' directory — `check`, `headers`,
+`crops`, `spread`, `zoom` and `rows` read it there, and `zoom`/`rows` also read the file `--layout`
+or `--village` names — and every recto becomes addressable instead of being reported missing:
+`check` counts both leaves of a frame, and a window's fractions are of the leaf, cut from its half.
 
 ```toml
 [album."1834 РС 8 (АРХИВ 1-1-200)"]
@@ -98,7 +107,8 @@ the двор in the project's notes on the дело.
 **Cut windows with `zoom --box`, not with ad-hoc PIL.** A hand-rolled `im.crop(...)` is thrown
 away, and eyeballed pixel coordinates on a downscaled render miss the row more often than
 not — one session spent a dozen crops landing above or beside the figure it wanted.
-`--box` takes FRACTIONS of the leaf (spread frames: of the whole frame), so the window
+`--box` takes FRACTIONS of the leaf — under `frames = "spread"` the half of the frame the leaf lies
+on; for a spread not declared in `scans.toml`, or under `--frames`, the whole frame — so the window
 survives any render size:
 
 ```bash
@@ -113,7 +123,7 @@ extension». An album photographed sideways (one metric-book album was lying ups
 fact) needs `rotate` in its stanza (180 there; one quarter-turn left the text still running
 across) — boxes are fractions of the turned frame. A frame shot differently from the rest takes
 its own turn, `rotate_frames = { "кадр1" = 90 }`, which replaces `rotate` for that frame (the
-`verso-reading:metric-books` skill has the details). Phone photos of an open ledger often have
+`metric-books` skill has the details). Phone photos of an open ledger often have
 the spread sideways in a portrait frame, and the phone's orientation tag is a guess that over a
 flat book is often wrong: try the turn, check which way up the text lands before deciding which
 half is the male page, then declare it so the next reader need not. Never «fix» a sideways frame
@@ -279,13 +289,17 @@ about ten records' worth per agent (each pays its context before its first page;
 range flags less and leaves more silent errors), parallel reads, and the lean
 `verso-reading:scan-reader` for a sweep that only reports — for a long sweep, one brief per agent,
 run from outside the repository so each starts with no project context (the AGENTS.md проекта says
-whether the project has a launcher for that).
+whether the project has a launcher for that). Outside the Claude Code plugin there is no such
+agent: give your harness's own subagent the same brief — the crops listed, read-only, «?» for what
+does not read — or read the pages yourself.
 
 ## Cross-checking against the parish registers
 
-`village.db` is the other half of the search. Before opening a scan:
+`village.db` is the other half of the search — `verso all-persons <village>` builds it from the
+village's DSL, and rebuilds it after a year is written. Before opening a scan:
 
 ```bash
+verso all-persons Маниловка
 verso find-person Маниловка "Федот Зотов"
 sqlite3 -column -header Маниловка/village.db "SELECT year,record_type,record_num,role,name_orig,patr_orig \
   FROM persons WHERE patr_orig LIKE 'Зотов%' AND year<=1800 ORDER BY year;"

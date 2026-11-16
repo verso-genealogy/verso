@@ -1,6 +1,7 @@
 ---
 name: names
 description: Reference for the names lexicon — the base verso-ru ships and the layers a corpus adds over it (names.tsv, forms.tsv, patronymics.tsv). Use when working with Russian historical names, patronymics, or resolving name validation lint errors.
+compatibility: Needs Python 3.14+ and verso-ru>=0.1.41 on PATH (the verso command and verso.ru.naming).
 ---
 
 Work with the names lexicon of the historical Russian genealogy records.
@@ -92,8 +93,10 @@ the layers' linter finds hard (LEX001, LEX003, LEX007). By hand, the rows are:
   `ignore` — with a sex when the person's is known, and a `forms.tsv` row of `-` cells if the
   name must give no patronymic.
 - An unknown **short patronymic** (`Unknown patronymic 'Карнелов'`): give its father a forms
-  cell, or add a pin to `patronymics.tsv` (`M<TAB>Карнелов<TAB>Корнилий<TAB>Корнилиевич<TAB><TAB>…`),
-  or, for a dubious form, an ignored row (form and source only).
+  cell, or pin it — `verso names pin --gender М --form Карнелов --father Корнилий --modern Корнилиевич`
+  writes the row of `patronymics.tsv` (`M<TAB>Карнелов<TAB>Корнилий<TAB>Корнилиевич<TAB><TAB>…`),
+  refusing what LEX001, LEX003 or LEX007 finds, and `verso names unpin --gender М --form Карнелов`
+  takes it out — or, for a dubious form, an ignored row (form and source only).
 
 Insert a hand-written row at its sorted place. Then `verso names check`. `verso names remove`
 takes a row out again (a name only the base holds gets a removal row).
@@ -136,7 +139,7 @@ from verso.ru.naming import (
 ```
 
 - `validate_first_name(name)` — the lexicon holds it (any layer), or ignores it; always True for
-  `None`, `''`, `'?'`, `'[имя]'`.
+  `None`, `''` and a name with `?` in it (`'?'`, `'Ва?'`).
 - `validate_old_patronymic(p, accept_full=False)` — a short form some name gives or a pin holds,
   or an ignored one; `accept_full=True` also takes a full «-ович/-евич» form whose father is known.
 - `canonicalize_name(name, gender=None)` — the name's canonical form; `matching_base(name,

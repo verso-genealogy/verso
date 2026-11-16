@@ -32,7 +32,7 @@ def test_standalone_extracts_outside_the_checkout(tmp_path: Path):
 
 def test_standalone_pins_come_from_requirements_dev():
     pins = standalone.pins()
-    assert [p.split("==")[0] for p in pins] == ["pytest", "jsonschema"]
+    assert [p.split("==")[0] for p in pins] == ["pytest", "jsonschema", "pyyaml"]
     assert all(re.fullmatch(r"[a-z-]+==[\w.]+", pin) for pin in pins), pins
 
 

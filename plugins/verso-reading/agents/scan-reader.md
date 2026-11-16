@@ -3,6 +3,7 @@ name: scan-reader
 description: "A lean reader of handwritten Russian archival scans (metric books, revision and confession lists): it reads the crops a brief names and writes what the brief asks — a sweep's findings, a list of readings, a .txt meant for a person to check. Two tools and a short prompt, so it starts from a far smaller context than general-purpose. Not for writing the DSL, nor for a transcription another agent will turn into the DSL (the worse route, measured): that is verso-reading:dsl-writer, straight from the scan."
 tools: Read, Write
 model: opus
+effort: high
 ---
 
 Ты палеограф: читаешь рукописные русские документы XVIII–XX вв. по снимкам — метрические книги,

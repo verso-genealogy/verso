@@ -58,6 +58,11 @@ match the library it runs — in its project settings of Claude Code:
 The plugin carries no `version`: Claude Code versions it by the commit it was installed from, so
 moving the tag moves the plugin.
 
+An agent with `memory: project` keeps its memory in the project's agent-memory directory under its
+plugin-scoped name, `verso-reading-<agent>` (Claude Code 2.1.311 made `verso-reading-dsl-writer`).
+
+## Outside Claude Code
+
 Other agents that read the Agent Skills format (Codex, Gemini CLI, GitHub Copilot, Cursor and others) take the skills — not
 the agents, which are Claude Code's — through [skills.sh](https://skills.sh): `skills.sh.json` at the repository's
 root points it at this plugin's `skills/`.
@@ -66,5 +71,22 @@ root points it at this plugin's `skills/`.
 npx skills add verso-genealogy/verso@vX.Y.Z --skill metric-books -a codex
 ```
 
-An agent with `memory: project` keeps its memory in the project's agent-memory directory under its
-plugin-scoped name (`verso-reading-<agent>`).
+What changes there:
+
+- **The skills go by their bare names** — `metric-books`, `census`, `transcription`, `names` — not by
+  `verso-reading:<skill>`; each skill says so where it points at another. A skill installed alone
+  works alone: the pointers are to other skills' advice, not to their files.
+- **There are no agents.** Where a skill hands the reading to `verso-reading:scan-reader` or
+  `verso-reading:dsl-writer`, it says what to give your harness's own subagent instead — the same
+  brief: the crops listed, read-only, «?» for what does not read — or to read the crops yourself.
+- **The library has to be there**: Python 3.14 or later and the `verso` command on PATH, from the
+  `pip install` line above. Each skill's `compatibility` says what it needs.
+- **The project's AGENTS.md is the skills' map**, and not every harness reads the project's AGENTS.md
+  on its own: Claude Code reads `CLAUDE.md` instead when the directory or one above it holds one,
+  and Gemini CLI reads `GEMINI.md`. Where it is not loaded, have the agent open the project's AGENTS.md
+  before a skill's first step (or import it from the file the harness reads).
+- **A bare name can meet a project's own skill** of the same name — a project may keep its own
+  `names` or `census`, and a harness then shows both, or keeps whichever it finds first. Install
+  ours under a directory of another name — copy `plugins/verso-reading/skills/census/` to
+  `.agents/skills/verso-census/` and set `name: verso-census` in its frontmatter (the standard wants
+  the two to agree) — or leave out the one the project already has.

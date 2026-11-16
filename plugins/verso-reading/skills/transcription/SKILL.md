@@ -1,22 +1,26 @@
 ---
 name: transcription
 description: Transcribe handwritten historical documents (metric books, census records) into a .txt file. Use when the user explicitly wants a transcription artefact — digitising a whole year, a reviewable text a second person can check, or shared source text. Writing the DSL straight from the scan is the project default and needs no transcription; this skill is the legacy transcribe-first route.
+compatibility: >
+  Needs an agent that can open local image files; the quadrant crops need Python 3.14+ and
+  verso-core[scans]>=0.1.41 on PATH.
 ---
 
 Perform character-by-character transcription of handwritten historical documents, particularly Russian Imperial-era
 metric books and census records from the 18th-19th centuries.
 
 > **This is the legacy route.** The default is to write the DSL straight from the scan,
-> for every record type (the `verso-reading:dsl-writer` agent). Transcribe to
+> for every record type (the `verso-reading:dsl-writer` agent of the Claude Code plugin; elsewhere,
+> by the project's extraction rules). Transcribe to
 > `.txt` first when the text file itself has value: whole-year digitisation feeding several
 > extraction passes, an artefact reviewable without re-running vision, or source text shared
-> between people. For a targeted lookup in a revision list, use the `verso-reading:census`
-> skill instead. The reading technique below applies either way.
+> between people. For a targeted lookup in a revision list, use the `census` skill instead
+> (`verso-reading:census` in the Claude Code plugin). The reading technique below applies either way.
 
-## IMPORTANT: Transcribe Directly (Claude vision, no external API)
+## IMPORTANT: Transcribe Directly (your own vision, no external API)
 
-Transcribe images **yourself** by reading them with the Read tool. Do NOT delegate to an external
-transcription API.
+Read the images **yourself**, with your own vision, opening each image file as your harness lets
+you. Do NOT delegate to an external transcription API.
 
 ### Workflow
 
@@ -56,16 +60,18 @@ When the user requests transcription:
 4. **Parallelize across pages with subagents** (measured on a reading benchmark). Only when the
    `.txt` itself is the product (a reviewable text, a whole year digitised for several readers): when the goal is
    the DSL, writing it straight from the scan made a third fewer errors than a transcription extracted afterwards.
-   For multi-page batches, spawn `verso-reading:scan-reader` subagents with `model: opus` and `effort: high` —
+   For multi-page batches, spawn `verso-reading:scan-reader` subagents (Opus at effort high) —
    **about ten records' worth per agent**, never one image each (every agent pays its context before its first
    image, ~17k in a large repository) and not fifty (a big batch flags less, so its errors go silent). For a large
    batch, run them from outside the repository, where an agent starts with no project context at all (the
    AGENTS.md проекта says whether the project has a launcher for that). Write the shared instructions once to a scratchpad file (transcription rules below +
    regional context digest + crop paths), give each agent a short prompt pointing at it, and ask it to read all
-   its crops with parallel Read calls in one turn. Launch in waves of 2–4. Require the two-pass protocol and a brief report:
+   its crops in parallel, in one turn. Launch in waves of 2–4. Require the two-pass protocol and a brief report:
    sheet number, record type (births/marriages/deaths), record number range, months, count of remaining `?` marks.
    If a page comes back with many `?` in name columns, send the agent a follow-up message directing it at the crops
-   (or better crops) rather than respawning — its page context is already loaded.
+   (or better crops) rather than respawning — its page context is already loaded. Outside the Claude Code plugin
+   there is no such agent: give your harness's own subagent the same brief — the crops listed, read-only, «?» for
+   what does not read — or read the crops yourself.
 
 5. **After transcription completes**:
    - Verify every expected `.txt` exists and is non-empty; count `?` per file as a quality signal

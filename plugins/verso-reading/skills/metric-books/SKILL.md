@@ -5,14 +5,21 @@ description: >
   дело is whole, find where части 1/2/3 begin, and cut the pages into the crops that are
   actually legible. Use when sweeping a year for a surname, continuing a year-by-year pass
   through a дело, re-checking one record against its scan, or when a reading disagrees with
-  what the corpus already holds. For revision and confession lists use
-  `verso-reading:census` instead; for producing a reviewable .txt use `verso-reading:transcription`.
+  what the corpus already holds. For revision and confession lists use the `census` skill
+  instead; for producing a reviewable .txt, the `transcription` skill.
+compatibility: >
+  Needs Python 3.14+ and the verso library on PATH — pip install 'verso-core[scans]>=0.1.41'
+  'verso-ru>=0.1.41' (verso-core[heic] for a phone's own format) — and an agent that can open
+  local image files.
 ---
 
 A year of a metric book is ~36 листов = ~72 pages. Reading them whole costs several times
 what it needs to and gets surnames wrong at an archive's ~950 px per leaf. The four setup steps
 below are mechanical and are handled by `verso scans`; everything after them is reading, and no
 tool helps with that.
+
+The skills this one points at are named bare (`census`, `transcription`); in the Claude Code
+plugin they are `verso-reading:census`, `verso-reading:transcription`.
 
 **Кадры дела — каталог.** The input is a directory of the дело's frames, best named by folio:
 `<кадр>_<лист>[об]` (`0118_57.jpg`, `0119_57об.jpg`, a spread `0241(131об-132).jpg`). Откуда
@@ -68,7 +75,7 @@ The box is in fractions of the frame (reading-room scans of one дело drift b
 tall box is laid left to right, a wide one stacked. A strip finds; the frame it names is then read
 at full size (two-tier rule below). It needs a steady layout — an archive's own scans; phone
 photographs of a book shift and turn, and a fixed box misses. Tested on a 10th-revision дело: see
-the `verso-reading:census` skill, «Sweeping a whole дело cheaply». The idea is ex-USSR Kinship
+the `census` skill, «Sweeping a whole дело cheaply». The idea is ex-USSR Kinship
 Research's (its field lessons and its scan montage).
 
 ## When the frames were never renamed
@@ -105,14 +112,14 @@ book guessable but not readable; `--enhance 1.7` clips the histogram at both end
 pushes contrast and edges, and the surnames come out plain. Pushing a hand that is already
 dark only crushes it, so this is a dial, not a default. Available on `crops`, `spread` and
 `zoom`. Once found, set `enhance = 1.7` in the album's stanza of `scans.toml` (below) and
-`zoom` takes it without the flag (the output line says «enhance 1.7 из scans.toml»).
+`zoom` takes it without the flag (its output line ends «, enhance 1.7 from scans.toml»).
 
 ## Why each step is shaped this way
 
 **Frames are rotated by EXIF, not by pixels.** A phone records the rotation as a tag and
 Pillow does not apply it on open, so a tagged frame would have every fractional window cut
 against the wrong axis — a `--part 3` crop slicing across the columns instead of along
-them, unreadable with nothing to say why. `verso scans` applies the tag on every open;
+them, unreadable with nothing to say why. Every `verso scans` subcommand that opens a frame applies the tag;
 if you cut crops with your own Pillow script, call `ImageOps.exif_transpose` first.
 
 **The tag is the phone's guess, and over a book lying flat it guesses wrong.** On one set of
@@ -170,7 +177,9 @@ name that will enter the DSL** — not only the ones that change a conclusion.
 
 **Handing the sweep to subagents** (measured on a reading benchmark): Opus at effort high, about
 ten records per agent, the lean `verso-reading:scan-reader` for a sweep that only reports, and
-`verso-reading:dsl-writer` straight from the scan for the DSL. For a long sweep, run
+`verso-reading:dsl-writer` straight from the scan for the DSL. Outside the Claude Code plugin
+there are no such agents: give your harness's own subagent the same brief — the crops listed,
+read-only, «?» for what does not read — or read the crops yourself. For a long sweep, run
 the readers from outside the repository, so that each starts with no project context (the
 AGENTS.md проекта says whether the project has a launcher for that).
 
@@ -191,8 +200,9 @@ on top is the same record as the row at that height below.
 
 Finding one record on one лист costs several zooms of guesswork. What the album knows about
 its own geometry is declared once in `scans.toml`, in the frames' directory (so the directory is
-self-describing); `zoom` and `rows` also take `--layout FILE` or `--village DIR`, where a project
-keeps the durable copy:
+self-describing). `check`, `headers`, `crops`, `spread`, `zoom` and `rows` read that file, and
+its only album; `zoom` and `rows` also take `--layout FILE` or `--village DIR`, where a project
+keeps the durable copy, and `--album-title` when the file holds several albums:
 
 ```toml
 [album."Маниловка 1902"]
@@ -205,6 +215,10 @@ enhance = 1.7
 - **`frames = "spread"`** is what makes the right-hand leaf exist at all. Some
   albums name a frame by its LEFT leaf (`47об.jpg` holds 47об and
   48), so without it every recto is reported missing and none can be addressed.
+  With it `check` counts both leaves, `headers` and `crops` cut each leaf from its
+  half of the frame (the `--part` columns are the leaf's), `spread` stacks the two
+  halves, and `zoom`/`rows` find either leaf; `--frames` reads frames by position
+  and leaves them whole.
   These albums MIX — the opening leaves are single frames — and a page whose
   facing side has a file of its own is left alone, so the declaration is safe.
   So is a frame whose image STANDS (taller than wide, after its orientation tag
@@ -218,8 +232,8 @@ enhance = 1.7
   what the file declares; **`rotate_frames = { "кадр1" = 0, "кадр7" = 270 }`**
   gives a frame shot differently its own turn, keyed by the label `--folio`
   names (`кадр7`, `64об`). An entry REPLACES `rotate` rather than adding to it,
-  so `0` declares the one frame the phone got right. Every command (`headers`,
-  `crops`, `spread`, `zoom`) reads both, and every window is in fractions of
+  so `0` declares the one frame the phone got right. Every subcommand that cuts
+  (`headers`, `crops`, `spread`, `zoom`, `rows`) reads both, and every window is in fractions of
   the TURNED frame — so changing a declaration moves every window on its frames,
   and they must be turned with it.
 - **`enhance`** is the push a faded hand needs; `zoom` takes it when no `--enhance` is given.

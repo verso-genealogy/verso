@@ -1,9 +1,9 @@
 ---
 name: dsl-writer
-description: "Use this agent to turn a source record — a page SCAN, or a validated `.txt` transcription of one — into a structured Python DSL file. The scan is the normal input: writing the DSL straight from the image is the default route, and a transcription is simply an alternative source when one already exists. Covers births, marriages, deaths, divorces and census.\\n\\n<example>\\nContext: The user points at scans of a metric book page; no transcription exists and none is needed.\\nuser: \"Extract the 1829 birth records from these Маниловка scans\"\\nassistant: \"I'll launch the dsl-writer agent to read the scans and write the DSL directly.\"\\n<commentary>\\nThe scan IS the input — that is the default route, so do not ask for a transcription first. Use the Task tool to launch the dsl-writer agent.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: User has completed transcription of a marriage record page and wants it extracted.\\nuser: \"I've validated the transcription for Маниловка 1803 marriage records. Can you extract the data?\"\\nassistant: \"I'll launch the dsl-writer agent to process the validated transcription into the Python DSL format.\"\\n<commentary>\\nA validated transcription is ready for extraction. Use the Task tool to launch the dsl-writer agent to generate the Python DSL.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: After a transcription+validation pipeline step, the next step is data extraction.\\nuser: \"The transcription for МК Маниловка 1811 deaths records 1-18 has been validated. Now extract the data.\"\\nassistant: \"Now I'll use the Task tool to launch the dsl-writer agent to extract the structured data.\"\\n<commentary>\\nThis is the extraction stage of the pipeline. Proactively use the dsl-writer agent.\\n</commentary>\\n</example>"
-tools: Edit, Write, Skill, Glob, Grep, Read, TaskOutput, Bash
-skills: verso-reading:names
+description: "Use this agent to turn a source record — a page SCAN, or a validated `.txt` transcription of one — into a structured Python DSL file. The scan is the normal input: writing the DSL straight from the image is the default route, and a transcription is simply an alternative source when one already exists. Covers births, marriages, deaths, divorces and census.\\n\\n<example>\\nContext: The user points at scans of a metric book page; no transcription exists and none is needed.\\nuser: \"Extract the 1829 birth records from these Маниловка scans\"\\nassistant: \"I'll launch the dsl-writer agent to read the scans and write the DSL directly.\"\\n<commentary>\\nThe scan IS the input — that is the default route, so do not ask for a transcription first. Launch the dsl-writer agent.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: User has completed transcription of a marriage record page and wants it extracted.\\nuser: \"I've validated the transcription for Маниловка 1803 marriage records. Can you extract the data?\"\\nassistant: \"I'll launch the dsl-writer agent to process the validated transcription into the Python DSL format.\"\\n<commentary>\\nA validated transcription is ready for extraction. Launch the dsl-writer agent to generate the Python DSL.\\n</commentary>\\n</example>\\n\\n<example>\\nContext: After a transcription+validation pipeline step, the next step is data extraction.\\nuser: \"The transcription for МК Маниловка 1811 deaths records 1-18 has been validated. Now extract the data.\"\\nassistant: \"Now I'll launch the dsl-writer agent to extract the structured data.\"\\n<commentary>\\nThis is the extraction stage of the pipeline. Proactively use the dsl-writer agent.\\n</commentary>\\n</example>"
+tools: Edit, Write, Skill, Glob, Grep, Read, Bash
 model: opus
+effort: high
 memory: project
 ---
 
@@ -90,7 +90,9 @@ Before outputting the final DSL file, verify:
   points at a misreading by re-reading the crop; leave one the source really calls for
 - [ ] **Names verified**: Use the `verso-reading:names` skill to look up any unfamiliar first names or patronymics
   before writing them — do not guess spellings
-- [ ] **Pre-reform orthography preserved**: every `person()` name field matches the source's spelling
+- [ ] **Pre-reform orthography preserved**: every `person()` name field matches the source's spelling (ѣ/і/ѳ/ъ
+  intact, nominative case) — a file with modernized «Петр/Федор/Яков» where the source reads «Петръ/Ѳедоръ/Яковъ»
+  FAILS this check
 - [ ] **Uncertainty is recorded, not smoothed**: an unreadable name is written `"?"` — the person stays in the
       record (`person("?", last_name_orig="Маниловъ")`), a partly read one keeps what was read (`"Ва?"`), and
       `comment=` says what is unread. Never leave out a person the record names because the name is illegible: an
@@ -104,9 +106,7 @@ Before outputting the final DSL file, verify:
       the project's names layer to clear a finding on your own reading: re-read the crop at 4–5×, and unless the
       scan plainly shows that form, write it with «?». A row added for a misreading hides the misreading. Measured: asked so, the DSL route left
       3.9 silent errors per 100 names against 7.3 without it (a reading benchmark)
-- [ ] **`reviewed=False`** on a census file transcribed from scans and not yet read back
-  (ѣ/і/ѳ/ъ intact, nominative case) — spot-check against the source; a file with modernized «Петр/Федор/Яков»
-  where the transcription reads «Петръ/Ѳедоръ/Яковъ» FAILS this check
+- [ ] **`reviewed=False`** on a census file read from scans and not yet read back against the source by a person
 - [ ] Record count matches the source
 - [ ] All record numbers are present and sequential
 - [ ] Dates are in the correct format

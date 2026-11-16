@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # The distributions, by their directory, and the extras the tests need.
 DISTS: dict[str, str] = {"packages/verso-core": "schema,heic", "packages/verso-ru": "xlsx,sheets,dsl-tools"}
 # The tests' own pins, read from requirements-dev.txt.
-TEST_PINS: tuple[str, ...] = ("pytest", "jsonschema")
+TEST_PINS: tuple[str, ...] = ("pytest", "jsonschema", "pyyaml")
 # What a child must not inherit: the checkout's code (make exports PYTHONPATH) or its workspace.
 _DROPPED = ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV", "VERSO_WORKSPACE", "VERSO_TEST_WORKSPACE")
 

@@ -15,6 +15,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
+from verso.core.scans.cli import subcommands
+
 ROOT = Path(__file__).resolve().parent.parent.parent
 PLUGIN = ROOT / "plugins" / "verso-reading"
 MARKETPLACE = ROOT / ".claude-plugin" / "marketplace.json"
@@ -41,6 +45,10 @@ _ROOTED = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]+)")
 _SETUP = re.compile(r"verso-scans|\bPhotos\b|Photos\.sqlite|ZGENERICALBUM|osxphotos|photoscript|Google Drive|HEIC")
 _PROJECT_AGENTS = re.compile(r"AGENTS\.md проекта|project's AGENTS\.md|AGENTS\.md of the project", re.IGNORECASE)
 _FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
+#: The files a harness reads as a project's context on its own: the README, which says what another harness needs,
+#: may name them; they point at no file of a corpus.
+_HARNESS_FILES = re.compile(r"`(?:CLAUDE|GEMINI)\.md`")
+README = PLUGIN / "README.md"
 
 
 def _texts() -> list[Path]:
@@ -48,23 +56,15 @@ def _texts() -> list[Path]:
                   and "__pycache__" not in p.parts)
 
 
-def _frontmatter(path: Path) -> dict[str, str]:
-    """The `key: value` pairs between the opening `---` lines; a `key: >` block folds its indented lines."""
+def _frontmatter(path: Path) -> dict[str, object]:
+    """The YAML between the opening `---` lines, read by a YAML parser (PyYAML, a pin of requirements-dev.txt): what a
+    harness reads, not what a line reader guesses."""
     lines = path.read_text(encoding="utf-8").splitlines()
     assert lines and lines[0] == "---", f"{path.relative_to(ROOT)}: no frontmatter"
     end = lines.index("---", 1)
-    out: dict[str, str] = {}
-    key: str | None = None
-    for line in lines[1:end]:
-        if key is not None and line.startswith((" ", "\t")):
-            out[key] = (out[key] + " " + line.strip()).strip()
-            continue
-        name, sep, value = line.partition(":")
-        assert sep, f"{path.relative_to(ROOT)}: {line!r} is no `key: value`"
-        value = value.strip()
-        key = name.strip() if value in {">", "|", ">-", "|-"} else None
-        out[name.strip()] = "" if key else value.strip('"').strip("'")
-    return out
+    meta = yaml.safe_load("\n".join(lines[1:end]))
+    assert isinstance(meta, dict), f"{path.relative_to(ROOT)}: the frontmatter is no mapping"
+    return meta
 
 
 def test_the_marketplace_lists_the_plugin_under_its_own_name():
@@ -84,6 +84,15 @@ def test_the_marketplace_lists_the_plugin_under_its_own_name():
     assert set(manifest) <= {"name", "version", "description", "author", "homepage", "repository", "license", "keywords"}
 
 
+#: The Agent Skills standard (agentskills.io/specification): a skill's frontmatter keys, and its name.
+_SKILL_KEYS = {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
+_SKILL_NAME = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+#: Claude Code's subagent frontmatter, the keys a plugin agent may carry, and the tools this plugin's agents may name.
+_AGENT_KEYS = {"name", "description", "tools", "disallowedTools", "model", "effort", "memory", "skills", "color",
+               "maxTurns"}
+_TOOLS = {"Read", "Write", "Edit", "Glob", "Grep", "Bash", "Skill", "Agent", "WebFetch", "WebSearch", "NotebookEdit"}
+
+
 def test_every_skill_and_agent_names_itself_and_says_when():
     skills = {p.parent.name: p for p in PLUGIN.glob(f"skills/*/{SKILL_FILE}")}
     agents = {p.stem: p for p in PLUGIN.glob("agents/*.md")}
@@ -92,14 +101,53 @@ def test_every_skill_and_agent_names_itself_and_says_when():
     for name, path in {**skills, **agents}.items():
         meta = _frontmatter(path)
         assert meta.get("name") == name, path.relative_to(ROOT)
-        assert len(meta.get("description", "")) > 40, path.relative_to(ROOT)
+        assert isinstance(meta.get("description"), str) and len(meta["description"]) > 40, path.relative_to(ROOT)
 
 
-def test_an_agent_preloads_the_plugins_own_skills():
-    for path in PLUGIN.glob("agents/*.md"):
-        preloaded = _frontmatter(path).get("skills", "")
-        for skill in filter(None, (s.strip() for s in preloaded.split(","))):
-            assert skill.startswith("verso-reading:") and skill.split(":", 1)[1] in SKILLS, (path.name, skill)
+def test_a_skill_keeps_to_the_standard():
+    """What every harness of the standard reads: the name (≤ 64, lowercase words joined by single hyphens, its
+    directory's), the description (≤ 1024), `compatibility` (≤ 500), and no key of one harness's own."""
+    wrong: list[str] = []
+    for path in sorted(PLUGIN.glob(f"skills/*/{SKILL_FILE}")):
+        rel, meta = path.relative_to(ROOT).as_posix(), _frontmatter(path)
+        name, description = str(meta.get("name", "")), str(meta.get("description", ""))
+        if not (_SKILL_NAME.match(name) and len(name) <= 64 and name == path.parent.name):
+            wrong.append(f"{rel}: name {name!r}")
+        if not 0 < len(description) <= 1024:
+            wrong.append(f"{rel}: description of {len(description)} characters")
+        if not 0 < len(str(meta.get("compatibility", "-"))) <= 500:
+            wrong.append(f"{rel}: compatibility of {len(str(meta['compatibility']))} characters")
+        if extra := set(meta) - _SKILL_KEYS:
+            wrong.append(f"{rel}: keys outside the standard {sorted(extra)}")
+    assert wrong == [], "\n".join(wrong)
+
+
+def test_an_agent_names_what_claude_code_resolves():
+    """An agent's keys are Claude Code's subagent fields; its tools are tools there are (a removed one is dropped
+    without a word); a preloaded skill is one the plugin ships."""
+    wrong: list[str] = []
+    for path in sorted(PLUGIN.glob("agents/*.md")):
+        meta = _frontmatter(path)
+        if extra := set(meta) - _AGENT_KEYS:
+            wrong.append(f"{path.name}: keys {sorted(extra)}")
+        tools = {t.strip() for t in str(meta.get("tools", "")).split(",") if t.strip()}
+        if unknown := tools - _TOOLS:
+            wrong.append(f"{path.name}: tools {sorted(unknown)}")
+        preloaded = meta.get("skills") or []
+        for skill in preloaded if isinstance(preloaded, list) else [preloaded]:
+            if str(skill).split(":", 1)[-1] not in SKILLS:
+                wrong.append(f"{path.name}: skill {skill!r}")
+        if "Task tool" in str(meta.get("description", "")):
+            wrong.append(f"{path.name}: the Task tool is the Agent tool")
+    assert wrong == [], "\n".join(wrong)
+
+
+def test_every_plugin_name_it_gives_is_shipped():
+    """`verso-reading:<name>` is a skill or an agent of the plugin."""
+    wrong = [f"{path.relative_to(ROOT).as_posix()}: verso-reading:{m.group(1)}"
+             for path in _texts() for m in re.finditer(r"verso-reading:([a-z0-9-]+)", path.read_text(encoding="utf-8"))
+             if m.group(1) not in SKILLS | AGENTS]
+    assert wrong == [], "\n".join(wrong)
 
 
 def test_nothing_points_outside_the_plugin():
@@ -109,6 +157,8 @@ def test_nothing_points_outside_the_plugin():
         rel = path.relative_to(ROOT).as_posix()
         text = path.read_text(encoding="utf-8")
         for n, line in enumerate(text.splitlines(), start=1):
+            if path == README:
+                line = _HARNESS_FILES.sub("``", line)
             for pattern in (_OUTSIDE, _MAKE):
                 if m := pattern.search(line):
                     wrong.append(f"{rel}:{n}: {m.group(0)!r} in {line.strip()[:100]}")
@@ -127,6 +177,8 @@ def test_nothing_points_outside_the_plugin():
 
 #: A command whose subcommands each take flags of their own: a flag is looked up in its subcommand's help.
 _PER_SUBCOMMAND = {"scans"}
+#: A subcommand of `verso scans` named in inline code without `verso scans` before it, and a flag after it.
+_BARE = re.compile(rf"^({'|'.join(sorted(subcommands()))})(\s+--.*)$")
 
 
 def _commands_named() -> dict[tuple[str, ...], set[str]]:
@@ -148,6 +200,11 @@ def _commands_named() -> dict[tuple[str, ...], set[str]]:
                 carried = ""
             spans = [line] if fence else re.findall(r"`([^`\n]*)`", line)
             for span in spans:
+                if not fence and (bare := _BARE.match(span)):
+                    # `crops --x0/--x1`, `zoom --row N OF`: a subcommand of `verso scans` named alone, with its flags.
+                    named.setdefault(("scans", bare.group(1)), set()).update(
+                        re.findall(r"--[a-z][a-z0-9-]*", bare.group(2)))
+                    continue
                 if not (m := re.match(r"verso ([a-z][a-z0-9-]*)(.*)", span)):
                     continue
                 key, rest = (m.group(1),), m.group(2)

@@ -7,6 +7,9 @@ description: >
   cards' frames — from an archive's reading room or wherever the project keeps them — and
   wants the households read, a surname found on them, or the cards turned into
   census_records().
+compatibility: >
+  Needs Python 3.14+ and the verso library on PATH — pip install 'verso-core[scans]>=0.1.41'
+  'verso-ru>=0.1.41' — and an agent that can open local image files.
 ---
 
 A 1917 card is one household on one two-page form. It names **only the домохозяин**; every
