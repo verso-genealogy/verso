@@ -1,0 +1,57 @@
+{
+ "argv": [
+  "crops",
+  "<DIR>/spreads",
+  "--out",
+  "<DIR>/crops",
+  "--frames"
+ ],
+ "case": "crops-frames",
+ "commit": "ed88220",
+ "exit": 0,
+ "files": {
+  "crops/0001_кадр1_a.jpg": "96214ca275d490714737a08e86e9b073be88f1b337e50383a1cee35240be204f",
+  "crops/0001_кадр1_b.jpg": "b09a19d7ba3259dfbdd574ad3cda575b40cd56b6dc0da76129f7f45c5d60cb62",
+  "crops/0002_кадр2_a.jpg": "89ba3cbbba64b26a65d354232e6216b322eb9303eeafc6570b294f3a1a409478",
+  "crops/0002_кадр2_b.jpg": "94b375b1e32138520cb9768f9be36f9cf35b9b3bb51323c0b3f2a59ca1c04ea2",
+  "crops/0003_кадр3_a.jpg": "c1c0c7cc350b7d5744df149577e191833c7e3c6d6cc4466585ac66aebd397c7c",
+  "crops/0003_кадр3_b.jpg": "e44a4dbce11321516e0f1bf03b5a7aecc022e84f8d71ad37e4c45b86fd49d17f"
+ },
+ "lang": "ru",
+ "pixels": {
+  "crops/0001_кадр1_a.jpg": "0f775ebe95f6b470bfe20a5d138b8822a08a09aae13905d92d6a62868e45711d",
+  "crops/0001_кадр1_b.jpg": "3af27166bd97a919fc8335db67b4be5424d532c0c55683ac0e87b690b28b072e",
+  "crops/0002_кадр2_a.jpg": "d30c08f95096e93bce5b791f520c19f5d3f3d13cf81b64e46f6f616a5b877d85",
+  "crops/0002_кадр2_b.jpg": "406182dc4011b19915ffb80b9d19e87c64b6cb6766265243dfa07b7ca01eefb7",
+  "crops/0003_кадр3_a.jpg": "699d7e440e2a6c0276a4081e44bb1856b00efc1cdd2bc0da1b65de33693f9076",
+  "crops/0003_кадр3_b.jpg": "766b0c7c13ec41d41206101c131ef1ecf3db08a67f0d66b5c44808f55bbeb6cd"
+ },
+ "sizes": {
+  "crops/0001_кадр1_a.jpg": [
+   2160,
+   678
+  ],
+  "crops/0001_кадр1_b.jpg": [
+   2160,
+   783
+  ],
+  "crops/0002_кадр2_a.jpg": [
+   2160,
+   678
+  ],
+  "crops/0002_кадр2_b.jpg": [
+   2160,
+   783
+  ],
+  "crops/0003_кадр3_a.jpg": [
+   1080,
+   678
+  ],
+  "crops/0003_кадр3_b.jpg": [
+   1080,
+   783
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/spreads: 3 frame(s) numbered by POSITION («кадр 1» …) — the filenames carry no лист. Continuity is unchecked in this mode; `--from`/`--to` select frames, and `spread` does not apply.\n6 crop(s) from 3 page(s), x 0–1 at 1.8× → <DIR>/crops\n"
+}

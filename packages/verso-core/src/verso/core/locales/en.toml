@@ -229,3 +229,46 @@ changed = "a record on Geni changed without a review — review it, revert the e
 gone = "no record of this fingerprint, and no unreviewed one in its place — reviewed with an edit or removed"
 no_label = "no unreviewed record of the same label — its number, sex or leaf changed: review it"
 counts_differ = "{lines} lines, and {records} records of this label — which is which cannot be told"
+
+[scans.cli]
+description = "The scan tools on frames already on disk: verso scans <subcommand> [its arguments]."
+sub_metavar = "subcommand"
+sub_twice = "the subcommand «{sub}» of verso scans is {where}"
+help_strips = "one region of every frame of an album, side by side on sheets — to find a frame, not to read it"
+help_quadrants = "four overlapping quarters of each scan, upscaled 3× and sharpened"
+help_descreen = "crop and zoom a scan, taking off the moiré of a photograph of a screen"
+help_jpeg = "each HEIC frame of a directory written as a JPEG of the same name (quality 92, turned upright)"
+help_images = "the scans to cut"
+help_quadrants_out = "the directory the crops are written to"
+help_album = "a directory of frames (an exported album)"
+help_box = "the region, as fractions of the frame (0..1)"
+help_strips_frames = "first-last by file stem (string order); default every image"
+help_per = "strips per sheet (default 20)"
+help_size = "strip height for columns / strip width for rows, px (default 900)"
+help_strips_out = "the output directory (created); sheets are named strips_<first>-<last>.jpg"
+help_descreen_image = "the scan; the crop goes to crops/ beside it"
+help_descreen_box = "l,t,r,b as fractions of width and height, or - for the whole page (default)"
+help_descreen_scale = "resize factor after de-screening (default 1.0)"
+help_descreen_mode = "vertical (default), horizontal — which way the stripes run; raw — no de-screening"
+help_descreen_rot = "extra counter-clockwise rotation in degrees (default 0)"
+help_jpeg_dir = "the directory whose HEIC frames to write as JPEG"
+
+[scans.stanza]
+not_toml = "{path} is not TOML, so no album is read from it: {error}"
+
+[scans.look]
+enhance_out_of_range = "enhance {enhance} is out of 1–{limit}"
+ink_unknown = "ink «{ink}» is none of: {inks}"
+ink_and_enhance = "ink «{ink}» and enhance {enhance} exclude each other: one answer to a pale hand"
+
+[scans.jpeg]
+written = "{name} → {jpeg}"
+failed = "{name}: not written as JPEG, kept as it is — {reason}"
+clash = "{name}: kept as it is — the source also has a frame {stem}.jpg (or a second HEIC of that name), and one JPEG cannot be both"
+
+[scans.strips]
+no_album = "no such album: {album}"
+no_frames = "no frame in this range"
+skipped = "skipped {name}: {error}"
+bad_box = "--box: four fractions, comma-separated, x0,y0,x1,y1"
+box_range = "--box: needs 0 ≤ x0 < x1 ≤ 1 and 0 ≤ y0 < y1 ≤ 1"

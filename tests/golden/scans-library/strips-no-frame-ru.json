@@ -1,0 +1,21 @@
+{
+ "argv": [
+  "strips",
+  "<DIR>/album",
+  "--box",
+  "0,0,1,1",
+  "--frames",
+  "9000-9999",
+  "--out",
+  "<DIR>/strips"
+ ],
+ "case": "strips-no-frame",
+ "commit": "c87d2d3",
+ "exit": 2,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "sizes": {},
+ "stderr": "ни одного кадра в этом диапазоне\n",
+ "stdout": ""
+}

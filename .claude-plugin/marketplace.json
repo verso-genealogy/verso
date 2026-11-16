@@ -1,0 +1,15 @@
+{
+  "name": "verso",
+  "owner": {
+    "name": "Verso",
+    "url": "https://github.com/verso-genealogy/verso"
+  },
+  "description": "Claude Code plugins of Verso, the library for genealogical records written as code",
+  "plugins": [
+    {
+      "name": "verso-reading",
+      "source": "./plugins/verso-reading",
+      "description": "Reading handwritten Russian archival scans — metric books, revision and confession lists, 1917 farm-census cards — into the Verso DSL"
+    }
+  ]
+}

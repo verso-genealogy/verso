@@ -1,0 +1,36 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/album",
+  "--folio",
+  "2об",
+  "--part",
+  "2",
+  "--col",
+  "bride",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-spread-half",
+ "exit": 0,
+ "files": {
+  "album/zoom_2об_a.jpg": "2740062d2a81d0a44273fb5a605d2fec12eff9c0c57047d39fc1e7abd120d27d"
+ },
+ "lang": "en",
+ "pixels": {
+  "album/zoom_2об_a.jpg": "81c7caf10a40e8fe96e55cee000132ec82c025c6af6579bb483802d9b040ef22"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album/zoom_2об_a.jpg: л. 2об — x 0.5–1, y 0.12–1, ч.2 bride at 2×, enhance 1.6 from scans.toml\n",
+ "thumbs": {
+  "album/zoom_2об_a.jpg": {
+   "mode": "L",
+   "size": [
+    608,
+    1444
+   ],
+   "thumb": "e8fed0e6eff0ece6e5f9f6e1e1e1fef5e1c6e1edecdadadaf5e4e4f7ffffffffedfbc4e3e5dedce2faece2ddf6e2e6e1dec3ddf3e5e5e5e5faf2e4eaffffffffecf4c9e2e4e5f7efe5e5e4e5e5f2e2e5e5cae4fcece4e4e4f7f5e4e5fafffffffffee1ffffffffffffffffffffffffffffe1fffffeffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe5e5cce8fde7e7e7f1fee4e5f9f7e7e6e5daf4dadadafee7e5eaf3ffffffffffe4e4cafbebd8daf2e5dadae7fceae4e4e5cbf0fedddadaedf8ded7e5faffffffffffe0fffeffffffffffffffffffffffffe1feffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffe5cbe5e5eef3e8f5fffdf8f8faf3e5e5cae5e5f5fffffffbf8f8f8ffffffffe8f6cbe5e6e6e7f3ddd5f3e1d1d4e6e6e7e0f6f2f1dfdacee1ece3e5fdfffffffcffe1fffefdfdfdfffae9fffefdfdfdfce1eee7e7ecfffbebfceee7fcffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1fffffffffffffffffffffffffffffff4d1f4ffeff4fdffffffffffffffffffe1fbfafdf8f8f8f8f1e1e1fbffffffffe8cbe9ede7dce5cae2dae1e6e0d4e1eab9d5e7f8ecebe5eefcdad3faffffffffedd1ececececfdfff9f1e9e7fdf8f8f8dbf8f7ffe7e6ecf7ffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1fffffffffffffffffffffffffffffdfee1fffffefffdfaf2f8fefefdfcfffee1fffffffffefffffefdfcffffffffe4e3cbebdce3e5e4e8f2f8e9e5e6f4ffe5c3d3d3d3d3dcefe8e4e6eaffffffffe4e5d1f6fcefe5e5edffeae5e5e5e5e5f5def8f8f8f8f8f8ffede5eaffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffffe1ffffffffffffffffffffffffffff"
+  }
+ }
+}

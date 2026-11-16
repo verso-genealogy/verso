@@ -1,0 +1,30 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "spread",
+  "<DIR>/album",
+  "--folio",
+  "1об"
+ ],
+ "case": "spread",
+ "exit": 0,
+ "files": {
+  "album/spread_1об_0.07-0.56.jpg": "086c7869b3159313446888b5dc65d6edcb1407197d95b09f66b2cda72d62b81e"
+ },
+ "lang": "en",
+ "pixels": {
+  "album/spread_1об_0.07-0.56.jpg": "ae8225dc9212de7f6706f39b834404bbc094cb76353acc5c841171de5a5c8f4d"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album/spread_1об_0.07-0.56.jpg: л. 1об (top) faces л. 2 (bottom), band 0.07–0.56\nThe same y-band from both halves: a row on the top is the SAME record as the row at the same height on the bottom.\n",
+ "thumbs": {
+  "album/spread_1об_0.07-0.56.jpg": {
+   "mode": "L",
+   "size": [
+    1560,
+    2114
+   ],
+   "thumb": "e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2d4d4d4d4d4d1d4d4d4d4d1d4d4d4d4d4d4d1d4d4d4d4d4d4d2d3d4d4d4d4d4d4e2b0b2e2e2dcded3d3daced6d2ccdbd5d3d0ded4d4d8d8d4cfdbd4d3ddd3dbe2e2e2e2e2e2dcdaccccdac7cccddcd4d3d7d5d4d4d7d6d3d4d7cccedcccccd8e2e2e2e2e2e2dcdcd4dcd4ced3d4ccdfd4d4cee0d2d7d1cdd4c8ccdacdd0ddd8e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2dcd8e2e2dce2e2e2e2dce2e0dce1e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2b593e2e2dcccccd1d7ccd2d6c2d7c9c5c3d6c5c6cac9c9cecdc9ced0d2dae2e2e2e2e2e2dce2ded6dfcfd5dfdde0dee2dce2e2e2e2e2ded1e1dee1dfdbdee2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e7dbcae6e7e2e1d9d9e2e1e0dfd9d9dfd9dbdbe7e7e7e7e7e2dfe5e7e7e7e7e7e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2d4d4d4d4d4d1d4d4d4d4d1d4d4d4d4d4d4d1d4d4d4d4d4d4d2d3d4d4d4d4d4d4e2b0b1e2e2dcdad4d4d8ced6dad3d4ddd3d3d4dbd4d4ded3cfddd3d3d5d9dbe2e2e2e2e2e2dce1d3dbd8ced4ded0ccccd6ccd5d3dad4dcd3dbd3dcd4d4dbdbe2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2cebfe2e2dce0d4d4d8d4d4d9cddaceded0d5dbdad3d4ddd1d3dbd3d5dcdbe2e2c4ade2e2dce0d3d4dfcdd3d6ded3d2d5d3d2d7d9dad5d7d4d3d4dfd2d5e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e2b067dde2dce2d4d4dbc7ccdfd3dbd3d4cedcd3d8cccccfdad2d9d3d3dedbe2e2e2e2e2e2dcdfd3dad3ceded2d1dbd4d9d2d2dad6d2d2ddcfdbd3d4d4dfdae2e2e2e2e2e2dce2d3d4d7d4d3dcd6d9d3d4d8d5d9d3dcd5d3cedfd4d3d9d3dbe2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dde1e2e2e2e2e2e2e7dbdce7e7e2e7e0e5e1dde0e4e7e7e6e0dde7e7e7e5e0d9d8d1e3dee7e7e7e7"
+  }
+ }
+}

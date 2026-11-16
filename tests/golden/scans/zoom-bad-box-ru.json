@@ -1,0 +1,22 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/album",
+  "--folio",
+  "1",
+  "--box",
+  "1",
+  "2",
+  "30",
+  "40"
+ ],
+ "case": "zoom-bad-box",
+ "exit": 1,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "stderr": "--box takes FRACTIONS of the leaf, not pixels: [1.0, 2.0, 30.0, 40.0]\n",
+ "stdout": "",
+ "thumbs": {}
+}

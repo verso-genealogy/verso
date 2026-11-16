@@ -1,0 +1,17 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "spread",
+  "<DIR>/album",
+  "--folio",
+  "3"
+ ],
+ "case": "spread-no-recto",
+ "exit": 1,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "stderr": "no page 3об in <DIR>/album\n",
+ "stdout": "",
+ "thumbs": {}
+}

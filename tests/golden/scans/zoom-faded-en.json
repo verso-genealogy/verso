@@ -1,0 +1,36 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/faded",
+  "--folio",
+  "1об",
+  "--part",
+  "3",
+  "--col",
+  "cause",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-faded",
+ "exit": 0,
+ "files": {
+  "faded/zoom_1об_a.jpg": "fecd00d1a8fce71ed7939860f451b19d9b4293b17eda89c2738ff8aecbac07da"
+ },
+ "lang": "en",
+ "pixels": {
+  "faded/zoom_1об_a.jpg": "b004f77b491be979c3191ee0ed28e471ae2b81f1f9868ec773b516751a132a6a"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/faded/zoom_1об_a.jpg: л. 1об — x 0.68–1, y 0.17–1, ч.3 cause at 2×, enhance 1.7 from scans.toml\n",
+ "thumbs": {
+  "faded/zoom_1об_a.jpg": {
+   "mode": "L",
+   "size": [
+    384,
+    1362
+   ],
+   "thumb": "fffeeae4e3e5eef0ffe8bbe5e5e5e5e5e5f5ede4e4e4e4e4e4e4e4f7fffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0ffffffffffffffffffffffffffffffffffffffffffe0e3e3dfe3e2ecffe7deb9e0e3e0e3e3edffffe8e2e0e0e2dfe1f6ffffffffffe3e1fdfff2e3e3e1e3dfbae3e4fefde1e1e3e1e3e1e4fee9e3e1e4fefffffffff2e1e1e2f5fde1e1e3f2d0fee1e3e3e3e3edfef0d7d7d7d7f6fffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0ffffffffffffffffffffffffffffffffffffffffffdcfee9e3e3e3e1e3e4dfb9f6ffe9e3e1e3e1e3e1fefff9e3e1e1e3f6fffffffff3ffffedebebebe6e3deb9e3fff7e2e0e7f3fefee8e3e1e0e2e2e3fefffffffff8fffff5f7f7f7fbfffad0fffffffffff8f8fefffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0ffffffffffffffffffffffffffffffffffffffffffede3e3e1fefeede3e3dfbae3e3e3e3f2f5e3e3e2e3e3edfee1e1e3f6ffffffffe3e3e3e3e2f2fed6d6d2afd6d6f7ede3e0e0e2f6f6e2e3e3e3e3e3f6fffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0ffffffffffffffffffffffffffffffffffffffffffe3e3e3fdfff2e2dfdfdeb7e3fffee9d6d6d6d6d6f6f6e2e3e3e3e2f5ffffffffe3e3e3e1fde4e3e3e3ddd0eee3e3e1e3e1e3e3e8fffee9e3e1e3e3f6fffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffad0ffffffffffffffffffffffffffffffffffffffffff"
+  }
+ }
+}

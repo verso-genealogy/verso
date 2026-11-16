@@ -1,0 +1,17 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/phone",
+  "--folio",
+  "9"
+ ],
+ "case": "zoom-no-page-phone",
+ "exit": 1,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "stderr": "no page 9 in <DIR>/phone. A frame is named «кадр 12», or just «12» in this mode.\n",
+ "stdout": "",
+ "thumbs": {}
+}

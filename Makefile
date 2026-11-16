@@ -16,11 +16,11 @@ export PYTHONPATH := $(SRC_PATH):$(CURDIR)
 bootstrap:
 	@if command -v uv >/dev/null 2>&1; then \
 		[ -d .venv ] || uv venv --quiet --python $(PYTHON_VERSION) .venv; \
-		uv pip install --quiet --python .venv/bin/python -e 'packages/verso-core[schema]' \
+		uv pip install --quiet --python .venv/bin/python -e 'packages/verso-core[schema,heic]' \
 			-e 'packages/verso-ru[xlsx,sheets,dsl-tools]' -r requirements-dev.txt; \
 	else \
 		[ -d .venv ] || python3 -m venv .venv; \
-		.venv/bin/pip install --quiet -e 'packages/verso-core[schema]' \
+		.venv/bin/pip install --quiet -e 'packages/verso-core[schema,heic]' \
 			-e 'packages/verso-ru[xlsx,sheets,dsl-tools]' -r requirements-dev.txt; \
 	fi
 	@echo "==> ready: $$(.venv/bin/python --version) in .venv"

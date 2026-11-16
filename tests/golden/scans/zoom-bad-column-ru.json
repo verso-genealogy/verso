@@ -1,0 +1,19 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/album",
+  "--folio",
+  "1",
+  "--col",
+  "name"
+ ],
+ "case": "zoom-bad-column",
+ "exit": 1,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "stderr": "--col 'name' needs --part (columns differ by part)\n",
+ "stdout": "",
+ "thumbs": {}
+}

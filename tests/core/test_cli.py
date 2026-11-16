@@ -1,4 +1,4 @@
-"""`verso <команда>` on the toy plugin: the core's four commands and each installed plugin's."""
+"""`verso <команда>` on the toy plugin: the core's five commands and each installed plugin's."""
 from __future__ import annotations
 
 from importlib import metadata
@@ -14,7 +14,8 @@ from verso.core.plugins import Plugin, PluginError
 
 @pytest.mark.usefixtures("toy_workspace")
 def test_a_toy_plugins_command_runs_through_verso(capsys: pytest.CaptureFixture[str]):
-    assert commands() == {"records-schema": "verso.core.records.schema", "tools": "verso.core.tools",
+    assert commands() == {"records-schema": "verso.core.records.schema", "scans": "verso.core.scans.cli",
+                          "tools": "verso.core.tools",
                           "ui-schema": "verso.core.records.ui", "workspace": "verso.core.workspace",
                           "toy-hello": "tests.core.hello"}
     assert main(["toy-hello"]) == 0
@@ -25,7 +26,8 @@ def test_every_module_of_the_core_run_as_a_program_is_a_command():
     """A module of the core that runs as a program is a command of `verso`: the commands are public."""
     import verso.core
     root = Path(verso.core.__file__).parent
-    mains = {".".join(("verso", "core", *p.relative_to(root).with_suffix("").parts))
+    # A package runs as a program by its `__main__.py`.
+    mains = {".".join(("verso", "core", *p.relative_to(root).with_suffix("").parts)).removesuffix(".__main__")
              for p in root.rglob("*.py") if 'if __name__ == "__main__":' in p.read_text(encoding="utf-8")}
     assert mains - {"verso.core.cli"} == set(COMMANDS.values())
 

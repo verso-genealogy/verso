@@ -1,0 +1,44 @@
+{
+ "argv": [
+  "strips",
+  "<DIR>/album",
+  "--box",
+  "0.05,0.02,0.95,0.12",
+  "--per",
+  "2",
+  "--size",
+  "500",
+  "--out",
+  "<DIR>/strips"
+ ],
+ "case": "strips-line",
+ "commit": "c87d2d3",
+ "exit": 0,
+ "files": {
+  "strips/strips_0001_обложка-0002_1.jpg": "82b004a704b8453954ff52744c0b46aba51a7381c3d1793090672efb839903de",
+  "strips/strips_0003_1об-0004_2.jpg": "133063216a4c1e4cf10a6e7c69c3bea62f7abb37e85208be9d65b4d4079aa349",
+  "strips/strips_0005_(2об-3)-0005_(2об-3).jpg": "1ca238f4925e974598a1f2506d9596fba9a31051b4b8dac11151cc60b1008fb9"
+ },
+ "lang": "en",
+ "pixels": {
+  "strips/strips_0001_обложка-0002_1.jpg": "645466d1345853371c08d5b7e5d49cdcee06d3ddd80402e69dbbe2708b6db649",
+  "strips/strips_0003_1об-0004_2.jpg": "c1a5fe29dff96f25d11e08cacb8eb70dc8da942457c68585ec78e6b0780e2a05",
+  "strips/strips_0005_(2об-3)-0005_(2об-3).jpg": "b37da3c8a2197f6eb44be29e9e0eab22b1442c441f50a5cebec9a37a34c936b0"
+ },
+ "sizes": {
+  "strips/strips_0001_обложка-0002_1.jpg": [
+   500,
+   214
+  ],
+  "strips/strips_0003_1об-0004_2.jpg": [
+   500,
+   214
+  ],
+  "strips/strips_0005_(2об-3)-0005_(2об-3).jpg": [
+   500,
+   66
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/strips/strips_0001_обложка-0002_1.jpg\n<DIR>/strips/strips_0003_1об-0004_2.jpg\n<DIR>/strips/strips_0005_(2об-3)-0005_(2об-3).jpg\n"
+}

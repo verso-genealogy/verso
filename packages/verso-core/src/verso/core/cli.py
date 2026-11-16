@@ -10,7 +10,7 @@ but that its usage names the program `verso <команда>`.
 — a `workspace.use()` here would not reach `verso workspace`, which runpy runs as a second
 copy of the module, and this module imports nothing of the library for that reason.
 
-The core's four commands are here; each installed plugin brings its own (`Plugin.commands`),
+The core's five commands are here; each installed plugin brings its own (`Plugin.commands`),
 found by the registry without a workspace: `verso --help` lists them all, the core's
 first, then each plugin's by its name. The tables are strings: the core imports none of the
 commands' modules.
@@ -38,6 +38,7 @@ _CONFIG = "verso.toml"
 # The core's own commands; each installed plugin brings its own (`Plugin.commands`).
 COMMANDS: dict[str, str] = {
     "records-schema": "verso.core.records.schema",
+    "scans":          "verso.core.scans.cli",
     "tools":          "verso.core.tools",
     "ui-schema":      "verso.core.records.ui",
     "workspace":      "verso.core.workspace",

@@ -115,7 +115,7 @@ from verso.ru.dsl import birth, birth_month, birth_records
 DEFAULTS = RecordDefaults(status_male=PEASANT_MALE)
 
 births = birth_records(
-    "ГАВО", "436", "13", "458", "Тестовка", "Покровская", 1887,
+    "ГАВО", "999", "1", "3", "Тестовка", "Покровская", 1887,
     *page("341об", reviewed=False,
           *birth_month(Month.JANUARY,
                        birth(1, Gender.FEMALE, 9, 10, child=person("Агафья"),
@@ -193,7 +193,7 @@ class Fingerprints(unittest.TestCase):
     def test_a_print_is_the_same_on_every_python(self):
         # The villages' lists hold prints taken on 3.14. 3.15's ast.dump leaves `ctx=Load()`
         # out: a print that followed it would read every listed record as «changed» there.
-        self.assertEqual(["9784e8df0a3f2bcc", "7b3f2548e9e47757"], _prints(DSL))
+        self.assertEqual(["89c20988f25fdcce", "c606ebffd7e9a9f8"], _prints(DSL))
         self.assertEqual(["83c57ee3a3d165c3"], _prints(ROLL))
 
     def test_records_under_a_keyword_a_constant_and_two_wrappers_keep_their_prints(self):

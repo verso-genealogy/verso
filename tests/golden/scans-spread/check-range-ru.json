@@ -1,0 +1,19 @@
+{
+ "argv": [
+  "check",
+  "<DIR>/spreads",
+  "--first",
+  "10",
+  "--last",
+  "12"
+ ],
+ "case": "check-range",
+ "commit": "0171ea8",
+ "exit": 0,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "sizes": {},
+ "stderr": "",
+ "stdout": "spreads: 5 page(s) on 3 frame(s), лл. 10об–12об\n  ✅ continuous: every side present, none doubled.\n  · frames = \"spread\" (scans.toml): кадр, названный по левому листу, держит и правый лист разворота, если сам не стоит как одна страница.\n"
+}

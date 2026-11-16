@@ -16,6 +16,11 @@ packages = ["verso.core.i18n"]
 name = "core.messages"
 packages = ["verso.core.messages"]
 [[tier]]
+# The scan tools: the images of a book on disk, which know no language of the records — above the messages they
+# speak, under everything that reads a workspace (they read none). Their `verso scans` is the entry's.
+name = "core.scans"
+packages = ["verso.core.scans"]
+[[tier]]
 name = "core.leaves"
 packages = ["verso.core", "verso.core.workspace", "verso.core.written"]
 [[tier]]
@@ -43,14 +48,14 @@ packages = ["verso.core.pipeline"]
 [[tier]]
 # `verso <команда>` — the commands' entry; it names each command's module by a string.
 name = "core.entry"
-packages = ["verso.core.cli"]
+packages = ["verso.core.cli", "verso.core.scans.cli"]
 [[tier]]
 # The plugin's messages — under everything of the plugin that speaks.
 name = "ru.messages"
 packages = ["verso.ru.messages"]
 [[tier]]
 name = "ru.leaves"
-packages = ["verso.ru", "verso.ru.gender", "verso.ru.corpus_data", "verso.ru.ages", "verso.ru.census_revisions", "verso.ru.search", "verso.ru.archives"]
+packages = ["verso.ru", "verso.ru.gender", "verso.ru.corpus_data", "verso.ru.ages", "verso.ru.census_revisions", "verso.ru.search", "verso.ru.archives", "verso.ru.reading", "verso.ru.scans"]
 [[tier]]
 name = "ru.names"
 packages = ["verso.ru.naming", "verso.ru.relationship"]
@@ -79,7 +84,7 @@ name = "ru.projections"
 packages = ["verso.ru.familio", "verso.ru.persons"]
 [[tier]]
 name = "ru.entry"
-packages = ["verso.ru.cli", "verso.ru.plugin"]
+packages = ["verso.ru.cli", "verso.ru.plugin", "verso.ru.scans.cli"]
 
 [overrides]
 # Модуль не в слое своего пакета: инструмент репо, а не линтер DSL (переехал до 0.1.0).

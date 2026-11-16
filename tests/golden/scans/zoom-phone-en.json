@@ -1,0 +1,32 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/phone",
+  "--folio",
+  "2",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-phone",
+ "exit": 0,
+ "files": {
+  "phone/zoom_кадр2_a.jpg": "abf4c4eb5a6a7bb42dd849e5ed189f8d091a7158a1845d70c588cd8e974971b1"
+ },
+ "lang": "en",
+ "pixels": {
+  "phone/zoom_кадр2_a.jpg": "7b1ff0333e38086b0a9f43c437fc3d206f370ba50edc27f6bc1b05895e2f934a"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/phone/zoom_кадр2_a.jpg: кадр2 — x 0–1, y 0.17–1 at 2×\n",
+ "thumbs": {
+  "phone/zoom_кадр2_a.jpg": {
+   "mode": "L",
+   "size": [
+    1200,
+    1362
+   ],
+   "thumb": "e2e2e2e2e2dce0d6daddc4c7c9d9d1d7dac3d1d0c9c9d5d3d4d9dbddd1d0e0e2e2e2e2e2e2dce2d3d0d0d5d2d6d1d0ddd1cad5d8d0d5d0c8c6d7d2d8ccded7e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2a87be2e2dce2d0d9d0cbd6d8d0d0dbd0cad1d9d0d0dbcbc3c8dad3d0d5e2e2e2e1dfe2e2dcdfc9ded1cbd1d9d1d1dcd4d8d1d1d5c8d2c8c3d8c8dfd1dee2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2c8a2e1e2dcdcd0d0d4cfd6d1d9d0d4d6cbdcd1d1d1d9d0cbd8d7d0dbd1dae2e2c08fe0e2dce0c8d7d0cbd1d8d9d6d0d3d2d3d0d9d4d0d6cdd3d3d6d0d3e0e2e2e2e2e2e2dcd9d1d1dfcdd1d5dad6ded9d1dbd4ded1d4d5c4c9d9d0decedce2e2e2e2e2e2dcded9d9e0dce2e1e2e1ddd9d5e2dfe2e2e2e2dce2e1e2e2e2e1e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2a7a9e2e2dce2d1d1ddced1d1decbc8d9cbd1d1dbd1d1e0ccd4d5c8c8d7dae2e2e2e2e2e2dcdbd1d0dacbd6d0d1d6c8d3c5c8dad0d0d7d1cbd9d0d1d6d0dae2e2e2e2e2e2dcddd1d1d2d1c9c9d0d9d8d1cbd5dbd1d1ded1ccdbd1dacad8d9e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2b898e2e2dcdfd1d6d9cbdcd1d1d0d9d0cadbd3d7d3d5d0cbd8d1d2d9d0dae2e2d1c4e2e2dcdfd1d1d7c3c8ced8d6d1c8d0d1d1d8d3d1d7ccd1d5d6d0d0dee2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2e2"
+  }
+ }
+}

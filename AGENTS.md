@@ -32,10 +32,12 @@ to each other). Python ≥ 3.14; CI runs 3.14 alone, the version the classifiers
 ```
 packages/verso-core/src/verso/core/   the core: workspace, plugin registry, pipeline (load, config),
                                       records JSON codec, places, corpus data, ratchet, Geni's HCL
-                                      models (targets/geni), i18n, `verso <command>` (cli.py)
+                                      models (targets/geni), i18n, `verso <command>` (cli.py), the scan
+                                      tools (scans: `verso scans`, Pillow by the extras [scans]/[heic])
 packages/verso-ru/src/verso/ru/       the plugin: dsl (the facade and its catalogs), domain, naming,
                                       facts, consolidation, linters, exporters, importers, translator
-                                      (targets/geni/translator), records vocabulary, cli modules
+                                      (targets/geni/translator), records vocabulary, cli modules, the scan
+                                      tools of a metric book's numbering (scans: `Plugin.scans`)
 tests/                                the library's tests; tests/core — the core alone on a toy plugin;
                                       tests/repo — this repository's own tools
 tools/                                layers, reference, release, standalone, secrets check, i18n codemod
@@ -43,6 +45,10 @@ docs/                                 the public guides, each with its Russian t
                                       docs/reference is written from the code and stays English
 examples/                             the toy example (`examples/run.py`)
 ide/                                  the VS Code and IntelliJ plugins of dsllint
+plugins/verso-reading/                the Claude Code plugin of the scan-reading skills and agents; the repository is
+                                      its marketplace `verso` (.claude-plugin/marketplace.json). It names no corpus:
+                                      a corpus's rules, albums and archives are its own AGENTS.md's
+                                      (tests/plugins/test_verso_reading.py)
 ```
 
 ## The rules the checks hold

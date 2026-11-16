@@ -1,0 +1,19 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "check",
+  "<DIR>/album",
+  "--first",
+  "2",
+  "--last",
+  "4"
+ ],
+ "case": "check-outside",
+ "exit": 1,
+ "files": {},
+ "lang": "en",
+ "pixels": {},
+ "stderr": "",
+ "stdout": "album: 6 frame(s), лл. 1–3\n  ⚠ 1 page(s) absent from the album: 3об\n    (a blank or an inserted foreign leaf is a normal cause — check the archive's inventory before treating it as a loss)\n  🔴 outside the declared range — a leaf filed under the wrong year? 1, 1об\n",
+ "thumbs": {}
+}

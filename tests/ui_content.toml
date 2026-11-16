@@ -23,4 +23,5 @@ modules = [
     { path = "packages/verso-ru/src/verso/ru/importers/validation.py", why = "the Familio sheets' columns, tabs, default statuses and age units, as the sheets write them: the sources' layout" },
     { path = "packages/verso-ru/src/verso/ru/facts/model.py", why = "a date's and a citation's text is what facts.jsonl writes, and the model imports nothing but the standard library: why() speaks it too" },
     { path = "packages/verso-ru/src/verso/ru/cli/all_persons.py", why = "village.db's record types and roles, as find_person and --type ask for them" },
+    { path = "packages/verso-ru/src/verso/ru/reading/*.py", why = "what a model is told to read: the task lines, the card's labels and the census roles, in the sources' language — the prompt, not the interface" },
 ]

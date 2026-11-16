@@ -1,0 +1,18 @@
+{
+  "name": "verso-reading",
+  "description": "Skills and agents for reading handwritten Russian archival scans — metric books, revision and confession lists, 1917 farm-census cards — and writing what they say into the Verso DSL",
+  "author": {
+    "name": "Verso",
+    "url": "https://github.com/verso-genealogy"
+  },
+  "homepage": "https://github.com/verso-genealogy/verso/tree/main/plugins/verso-reading",
+  "repository": "https://github.com/verso-genealogy/verso",
+  "license": "Apache-2.0",
+  "keywords": [
+    "genealogy",
+    "paleography",
+    "metric-books",
+    "revision-lists",
+    "verso"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "headers",
+  "<DIR>/album",
+  "--out",
+  "<DIR>/headers",
+  "--frames"
+ ],
+ "case": "headers-frames",
+ "exit": 0,
+ "files": {
+  "headers/headers_00.jpg": "3a1eca5aef8f5c78650c140dd1328b724770da8ea0421d14550e464456b136ba"
+ },
+ "lang": "en",
+ "pixels": {
+  "headers/headers_00.jpg": "e406b805c3dee53a80263f8a389a66422321c6aa3e9fcfc07bd47a41df6585c9"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album: 5 frame(s) numbered by POSITION («кадр 1» …) — the filenames carry no лист. Continuity is unchecked in this mode; `--from`/`--to` select frames, and `spread` does not apply.\n<DIR>/headers/headers_00.jpg: кадр1, кадр2, кадр3, кадр4, кадр5\n\n1 contact sheet(s). The printed running header names the part — «ЧАСТЬ ПЕРВАЯ, О РОДИВШИХСЯ» and so on; a leaf whose header strip is blank is a part TITLE page, which is where each part begins.\n",
+ "thumbs": {
+  "headers/headers_00.jpg": {
+   "mode": "RGB",
+   "size": [
+    760,
+    812
+   ],
+   "thumb": "4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a4a5858585858585858585858585858585858585858585858585858585858585858e4e4e4e4e4e4e4dfe4e4e4e4e4e4dfe4e4e4e4e4e4dfe4e4e4e4dfe4e4e4e4e4e2e2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2e2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2e2e2dce2e2e2e2dce2e2e2e2e2e2e2cbcfcac6c6d1d3cfd0d6cfcfd5d4d1cfd7d7d1cacfdec6d9dce2e2e2e2e2e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e2e2afbeb8b18aa0a0a6a8acb2a0909a9a8ea27c82948fa6bebe8a8794d6e2e2e2e2cbd1cfccb9c4c4c6c8c9ccc3bcc1c1bbc4b3b6bebcc6d1d1b9b8bedce2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2cfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfcfe3d8d9e3e3dde2e3e3e2d6dcdddbe0e3e3dde2e3e3e3e3e3dde2e3e2e3e3e2e3e2acafe2e2dcddcfcfd8d2dad3cedbd2cfccdecfd0d6d5d0cadad0cfdccedae2e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e6e5e6e6e6e7e6e6e6e6e6e6e6e6e6e6e2e2b8b59bb4989ba5bac7a1a58ca2afb5a19c8c91a1a7bab5b98896b4e2e2e2e2e2c4c2b0c2aeb0b7c6cfb4b7a6b5bec2b4b1a6a9b4b9c6c2c5a3adc2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2e2dcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd6d5d5d6d6d1d6d6d6d6d1d6d6d6d6d6d6d1d6d6d6d6d6d6d2d6d6d6d6d6d6d6e2a5a8e2e2dcd9d0d0d6cad3d8d0d1dcd0d0d0d9d0d1ded0cbddd0d0d2d6dae2e7e4e4e2e3e3e3e3e4dcd8dae2e3e5e7e7e2dbe3e3e4dfe3e2e3e3e4e3e3e2e7e2bdbda7b7c5b2abc1aea4b7c3afcfe2e2bbacb3b5c6b2adb7b2b5bdb5accbe2d9d9d8d9d9d9d9d9d9d9d9d9d8d9d9d9d9d9d9d9d9d8d9d9d9d9d9d9d9d9d9d9d6d8e4e0dedadfdfdddfdeddd7dcdde6d6d8e4dddfdadaddddd9dde0d6dde0e4"
+  }
+ }
+}

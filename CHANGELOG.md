@@ -3,6 +3,41 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## 0.1.41 — unreleased
+
+A corpus's output does not move: the scan tools are new, and nothing the DSL produces reads them.
+
+### Added
+
+- verso-core: `verso scans` and `verso.core.scans` (`[scans]`, `[heic]`); verso-ru: `verso.ru.scans` — from
+  verso-app, Apache-2.0 by its author. The tools work on the frames of a book already on disk: the core's `strips`,
+  `quadrants`, `descreen` (were the reading plugin's scripts; its skills now name `verso scans`) and `jpeg`
+  (a directory's HEIC frames as JPEG); verso-ru's `check`, `headers`, `crops`, `spread`, `zoom`, `rows` (verso-app's
+  `verso-scans` subcommands of those names, the same files, bytes and output — held by `tests/golden/scans`, captured
+  from verso-app on macOS; off macOS, where Pillow's JPEG coder and resampling differ, an image is held to a 32×32
+  thumbnail within a tolerance) and `cards` (the 1917 census cards). They read an album's stanza of `scans.toml` and write none:
+  the windows stay Verso's. The guide: [the scan tools](docs/scans.md).
+  Their public names are what the guide's table lists — each module's `__all__` is exactly that, a subcommand's
+  module public in `HELP`, `add_arguments` and `run` (`tests/ru/scans/test_surface.py`).
+- `verso.ru.scans.cli.zoom.locate` and `cut` (`Target`): `zoom`'s run in two steps — the page `--folio` names, then
+  the window cut from it, enlarged, written and said — so a caller with a window of its own (verso-app's
+  `verso-scans zoom --record`, a window remembered in `scans.toml` at the turn it was drawn) hands `cut` that window
+  and angle and its output is `zoom`'s. `zoom` itself writes what it wrote.
+- `Plugin.scans`: a plugin's subcommands of `verso scans`, as `Plugin.commands` are its commands.
+- `frames = "spread"` in an album's stanza is read by `check`, `headers`, `crops` and `spread` too, not only by
+  `zoom` and `rows`: a frame named by its left leaf is the two pages it holds, each cut from its half, unless it
+  stands up as one page (`verso.ru.scans.album.album_of`, `spread_frames`; `check_album(spreads=)`). `check`
+  expects such an album's sides from its first to its last — the recto before its first spread and the verso after
+  its last are the neighbouring albums' — and counts «N page(s) on M frame(s)». An album with no such stanza reads
+  as before; `tests/golden/scans-spread` holds the six subcommands on an album of spreads.
+- A `scans.toml` that is no TOML is refused by every subcommand that reads it, in a line, exit 2
+  (`verso.core.scans.stanza.StanzaError`), not a traceback.
+- A frame of every suffix the tools open (`IMAGE_SUFFIXES`, HEIC included) is read by its лист when its name carries
+  one; `cards` and `strips` take the same suffixes, and `quadrants` and `descreen` stand a frame up by its EXIF tag,
+  as the other subcommands do.
+- `rows` ends by naming no subcommand of the App's: «check them before a window is cut by them» — the one line of
+  `tests/golden/scans` that differs from the capture.
+
 ## 0.1.40 — 2026-11-16
 
 A corpus's output does not move: a pin teaches a spelling and changes no answer the lexicon gave, and

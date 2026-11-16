@@ -141,6 +141,18 @@ COMMANDS: dict[str, str] = {
     "verify-plan":                  "verso.ru.consolidation.verify_plan",
 }
 
+# `verso scans <подкоманда>` — the subcommands that read a metric book's numbering (лист, кадр, the parts),
+# over the core's (`verso.core.scans.cli`); each module gives `HELP`, `add_arguments` and `run`.
+SCANS: dict[str, str] = {
+    "cards":   "verso.ru.scans.cli.cards",
+    "check":   "verso.ru.scans.cli.check",
+    "crops":   "verso.ru.scans.cli.crops",
+    "headers": "verso.ru.scans.cli.headers",
+    "rows":    "verso.ru.scans.cli.rows",
+    "spread":  "verso.ru.scans.cli.spread",
+    "zoom":    "verso.ru.scans.cli.zoom",
+}
+
 # The records files' header (records v1.x): the version of the vocabulary verso-ru's records are
 # written in, and a book's language by default.
 VOCABULARY_VERSION = 1
@@ -151,7 +163,7 @@ def _names_base_digest(name: str) -> str | None:
     return base_digest(name)
 
 
-PLUGIN = Plugin(name="ru", package="verso.ru", commands=COMMANDS, dsl=_dsl, transliterate=_transliterate,
+PLUGIN = Plugin(name="ru", package="verso.ru", commands=COMMANDS, scans=SCANS, dsl=_dsl, transliterate=_transliterate,
                 display_transliterate=_display_transliterate, content=_content, village_tables=VILLAGE_TABLES, place_attributes=("familio",),
                 names_tables=("names.csv", "names_ignore.csv", "patronymics_ignore.csv"),
                 names_layer_files=("names.tsv", "forms.tsv", "patronymics.tsv"), names_base_digest=_names_base_digest,

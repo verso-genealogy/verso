@@ -1,0 +1,19 @@
+{
+ "argv": [
+  "strips",
+  "<DIR>/album",
+  "--box",
+  "0.5,0,0.4,1",
+  "--out",
+  "<DIR>/strips"
+ ],
+ "case": "strips-bad-box",
+ "commit": "c87d2d3",
+ "exit": 2,
+ "files": {},
+ "lang": "en",
+ "pixels": {},
+ "sizes": {},
+ "stderr": "usage: verso scans strips [-h] --box X0,Y0,X1,Y1 [--frames FIRST-LAST]\n                          [--per PER] [--size SIZE] --out OUT\n                          ALBUM\nverso scans strips: error: argument --box: --box: needs 0 ≤ x0 < x1 ≤ 1 and 0 ≤ y0 < y1 ≤ 1\n",
+ "stdout": ""
+}

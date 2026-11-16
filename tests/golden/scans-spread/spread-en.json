@@ -1,0 +1,26 @@
+{
+ "argv": [
+  "spread",
+  "<DIR>/spreads",
+  "--folio",
+  "10об"
+ ],
+ "case": "spread",
+ "commit": "ed88220",
+ "exit": 0,
+ "files": {
+  "spreads/spread_10об_0.07-0.56.jpg": "03e6d5a455eb20f69426f2e4021183f389073298b1bcbb1f6b8df1c4cd4356a9"
+ },
+ "lang": "en",
+ "pixels": {
+  "spreads/spread_10об_0.07-0.56.jpg": "bd7ce5f8ffe0ea0b7b9751ddf5824939be706b2a58348fa1a9e37583b0e428a6"
+ },
+ "sizes": {
+  "spreads/spread_10об_0.07-0.56.jpg": [
+   1583,
+   2114
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/spreads/spread_10об_0.07-0.56.jpg: л. 10об (top) faces л. 11 (bottom), band 0.07–0.56\nThe same y-band from both halves: a row on the top is the SAME record as the row at the same height on the bottom.\n"
+}

@@ -1,0 +1,15 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "check",
+  "<DIR>/phone"
+ ],
+ "case": "check-phone",
+ "exit": 1,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "stderr": "",
+ "stdout": "phone: 3 file(s), none carrying a лист — no folio numbering to check.\n  · e.g. IMG_0001.jpg, IMG_0002.jpg, IMG_0003.jpg\n  The other subcommands fall back to numbering pages by FRAME («кадр 12»), which reads fine but verifies nothing: a missing leaf and a leaf filed under the wrong year both look tidy. Rename the album (see the docs) before reading a year twice.\n",
+ "thumbs": {}
+}

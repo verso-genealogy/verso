@@ -43,6 +43,11 @@ each answer is kept for the workspace it was asked in and forgotten when the wor
 - the plugin's commands of `verso` — `Plugin.commands`, from the installed plugins, without a
   workspace. `verso --help` lists them grouped, the core's first; two plugins naming one command
   are refused.
+- the plugin's subcommands of `verso scans` — `Plugin.scans`, a name → a module giving `HELP`,
+  `add_arguments(parser)` and `run(args) -> int`, imported only when the parser is built. They follow
+  the core's (`strips`, `quadrants`, `descreen`, `jpeg`); a name two declare is refused. verso-ru's read
+  a metric book's numbering: `check`, `headers`, `crops`, `spread`, `zoom`, `rows`, `cards`
+  ([the scan tools](scans.md)).
 - `content()` — the content profile (`ContentProfile`): the locales a generated Geni profile's
   names and about are keyed by. verso-ru's: `native = "ru"`, `latin = "en-US"`. It is content,
   frozen by the plugin, and never follows the interface's language.
