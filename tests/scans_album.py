@@ -12,11 +12,19 @@ the счётъ column, so `rows` finds its marks.
     python -m tests.scans_album golden     # in the App's venv: each case of CASES through
                                            # `python -m verso.app.scans.mk_scans`, VERSO_LANG=en and ru →
                                            # tests/golden/scans/<case>-<lang>.json
+    python -m tests.scans_album golden-library   # each case of LIBRARY_CASES through `python -m verso.core.cli
+                                           # scans` of the verso this venv imports →
+                                           # tests/golden/scans-library/<case>-<lang>.json
+
+The library's cases are the subcommands that replaced the reading plugin's scripts — `strips`, `quadrants`,
+`descreen` and `cards` (`cards/`, three invented farm-census cards): their goldens were captured at the verso
+commit where a test held them byte for byte to those scripts, and they hold the outputs since the scripts went.
 
 A golden file is `{app_commit, argv, lang, stdout, stderr, exit, files, pixels}`: the argv with `<DIR>` for the
 album's root, what the command printed (the root again `<DIR>`), its exit code, and every file it wrote — its
 SHA-256, and the SHA-256 of its decoded pixels (`pixels`), which a platform whose JPEG coder differs still
-matches. This module imports nothing of verso: the App's venv runs it.
+matches. A library golden names its `commit` instead of `app_commit`, and adds each image's size (`sizes`).
+This module imports nothing of verso: the App's venv runs it.
 """
 from __future__ import annotations
 
@@ -112,6 +120,23 @@ def draw_album(root: Path) -> None:
     (village / "scans.toml").write_text(VILLAGE_TOML, encoding="utf-8")
 
 
+def draw_cards(root: Path) -> Path:
+    """Three invented card frames under `root/cards`: a table over a header on a wide spread."""
+    from PIL import Image, ImageDraw
+    album = root / "cards"
+    album.mkdir(parents=True)
+    for index in range(3):
+        im = Image.new("RGB", (880, 670), (230, 222, 200))
+        draw = ImageDraw.Draw(im)
+        for row in range(8):
+            draw.line((20, 40 + 25 * row, 560, 40 + 25 * row), fill=(60, 50, 40), width=2)
+        draw.rectangle((680, 250, 780, 285), outline=(60, 50, 40), width=3)
+        draw.text((690, 255), f"{index + 7}", fill=(20, 20, 20))
+        draw.text((820, 8), f"{index + 41}", fill=(80, 80, 80))
+        im.save(album / f"card_{index:02d}.jpg", quality=90)
+    return album
+
+
 # The cases: a name and the subcommand's argv, `<DIR>` the album's root. The same argv runs `verso-scans` (the
 # App's) and `verso scans` (the library's). Each runs on an album drawn afresh: `spread`, `zoom` and `rows` write
 # beside the frames by default, and a file left there is a page of the next case's album.
@@ -165,6 +190,31 @@ CASES: list[tuple[str, list[str]]] = [
 ]
 LANGS = ("en", "ru")
 
+LIBRARY_GOLDEN = GOLDEN.parent / "scans-library"
+# The library's cases, on the albums and the cards drawn afresh. `strips` labels its strips in a system font (Arial,
+# DejaVu Sans, else Pillow's own), so only its names, sizes and output are the same on every platform.
+LIBRARY_CASES: list[tuple[str, list[str]]] = [
+    ("strips-column", ["strips", "<DIR>/album", "--box", "0.0,0.1,0.2,0.95", "--out", "<DIR>/strips"]),
+    ("strips-line", ["strips", "<DIR>/album", "--box", "0.05,0.02,0.95,0.12", "--per", "2", "--size", "500",
+                     "--out", "<DIR>/strips"]),
+    ("strips-frames", ["strips", "<DIR>/album", "--box", "0.0,0.1,0.2,0.95", "--frames", "0002-0004",
+                       "--out", "<DIR>/strips"]),
+    ("strips-no-album", ["strips", "<DIR>/nowhere", "--box", "0,0,1,1", "--out", "<DIR>/strips"]),
+    ("strips-no-frame", ["strips", "<DIR>/album", "--box", "0,0,1,1", "--frames", "9000-9999", "--out", "<DIR>/strips"]),
+    ("strips-bad-box", ["strips", "<DIR>/album", "--box", "0.5,0,0.4,1", "--out", "<DIR>/strips"]),
+    ("quadrants", ["quadrants", "<DIR>/album/0003_1об.jpg", "<DIR>/album/0005_(2об-3).jpg", "--out", "<DIR>/q"]),
+    ("descreen", ["descreen", "<DIR>/album/0003_1об.jpg"]),
+    ("descreen-band", ["descreen", "<DIR>/album/0003_1об.jpg", "0.1,0.2,0.6,0.5", "1.5"]),
+    ("descreen-horizontal", ["descreen", "<DIR>/album/0003_1об.jpg", "0.1,0.2,0.6,0.5", "2", "horizontal"]),
+    ("descreen-raw", ["descreen", "<DIR>/album/0003_1об.jpg", "-", "1.0", "raw", "90"]),
+    ("cards", ["cards", "<DIR>/cards", "<DIR>/out"]),
+    ("cards-table", ["cards", "<DIR>/cards", "<DIR>/out", "--table", "0:0:0.7:0.4"]),
+    ("cards-zoom", ["cards", "<DIR>/cards", "<DIR>/out", "--zoom", "1:0.2:0.1:0.6:0.4"]),
+    ("cards-no-image", ["cards", "<DIR>/village", "<DIR>/out"]),
+]
+#: Whose bytes hang on the platform's fonts: compared by name, size and output only.
+FONT_BOUND = {"strips"}
+
 
 def argv_for(argv: list[str], root: Path) -> list[str]:
     return [arg.replace("<DIR>", str(root)) for arg in argv]
@@ -200,6 +250,16 @@ def pixels(path: Path) -> str:
             return _sha(f"{im.mode} {im.size}".encode() + im.tobytes())
     except Exception:
         return _sha(path.read_bytes())
+
+
+def size(path: Path) -> list[int] | None:
+    """An image's size, width and height; None when the file is no image."""
+    from PIL import Image
+    try:
+        with Image.open(path) as im:
+            return list(im.size)
+    except Exception:
+        return None
 
 
 def _app_commit() -> str:
@@ -240,15 +300,81 @@ def golden() -> int:
     return 0
 
 
+def _library_commit() -> str:
+    import verso.core
+    where = Path(verso.core.__file__).resolve().parent
+    done = subprocess.run(["git", "-C", str(where), "rev-parse", "--short", "HEAD"], capture_output=True, text=True,
+                          check=True)
+    return done.stdout.strip()
+
+
+def capture_library(name: str, argv: list[str], lang: str, commit: str) -> dict[str, Any]:
+    """One library case run through `verso scans`, on the albums and the cards drawn afresh."""
+    with tempfile.TemporaryDirectory(prefix="scans-golden-") as scratch:
+        root = Path(scratch)
+        draw_album(root)
+        draw_cards(root)
+        before = tree(root)
+        env = {**os.environ, "VERSO_LANG": lang, "PYTHONIOENCODING": "utf-8"}
+        env.pop("VERSO_WORKSPACE", None)
+        done = subprocess.run([sys.executable, "-m", "verso.core.cli", "scans", *argv_for(argv, root)],
+                              cwd=root, env=env, capture_output=True, text=True, encoding="utf-8")
+        files = written(root, before)
+        return {"commit": commit, "case": name, "argv": argv, "lang": lang,
+                "stdout": blank(done.stdout, root), "stderr": blank(done.stderr, root), "exit": done.returncode,
+                "files": files, "pixels": {f: pixels(root / f) for f in files},
+                "sizes": {f: size(root / f) for f in files}}
+
+
+def golden_library() -> int:
+    commit = _library_commit()
+    if LIBRARY_GOLDEN.exists():
+        shutil.rmtree(LIBRARY_GOLDEN)
+    LIBRARY_GOLDEN.mkdir(parents=True)
+    for name, argv in LIBRARY_CASES:
+        for lang in LANGS:
+            record = capture_library(name, argv, lang, commit)
+            (LIBRARY_GOLDEN / f"{name}-{lang}.json").write_text(
+                json.dumps(record, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+            print(f"{name}-{lang}: exit {record['exit']}, {len(record['files'])} file(s)")
+    return 0
+
+
+def matches_golden(golden: dict[str, Any], root: Path, before: dict[str, str], code: int, out: str,
+                   err: str) -> list[str]:
+    """How a run under `root` differs from its golden; empty when it does not. A file of other bytes matches by
+    its decoded pixels off the platform the golden was captured on (macOS); a font-bound subcommand's files match
+    by name and size."""
+    wrong: list[str] = []
+    if (code, blank(out, root), blank(err, root)) != (golden["exit"], golden["stdout"], golden["stderr"]):
+        wrong.append(f"exit/stdout/stderr: {(code, blank(out, root), blank(err, root))!r}")
+    files = written(root, before)
+    if sorted(files) != sorted(golden["files"]):
+        return [*wrong, f"files: {sorted(files)} != {sorted(golden['files'])}"]
+    for name, sha in files.items():
+        if golden["argv"][0] in FONT_BOUND:
+            if size(root / name) != golden["sizes"][name]:
+                wrong.append(f"{name}: size {size(root / name)} != {golden['sizes'][name]}")
+        elif sha != golden["files"][name]:
+            if pixels(root / name) != golden["pixels"][name]:
+                wrong.append(f"{name}: other pixels than the golden's")
+            elif os.uname().sysname == "Darwin":
+                wrong.append(f"{name}: other bytes than the golden's, on the platform it was captured on")
+    return wrong
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("golden", help="capture the App's outputs into tests/golden/scans")
+    sub.add_parser("golden-library", help="capture the library's outputs into tests/golden/scans-library")
     draw = sub.add_parser("draw", help="draw the albums under DIR")
     draw.add_argument("directory", type=Path)
     args = parser.parse_args(argv)
     if args.command == "golden":
         return golden()
+    if args.command == "golden-library":
+        return golden_library()
     draw_album(args.directory)
     return 0
 

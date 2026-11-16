@@ -1,0 +1,49 @@
+{
+ "argv": [
+  "cards",
+  "<DIR>/cards",
+  "<DIR>/out"
+ ],
+ "case": "cards",
+ "commit": "c87d2d3",
+ "exit": 0,
+ "files": {
+  "out/00.jpg": "6e346d90253df2b00db1502540c32393680dd904b172d067267b4a18cd6be70d",
+  "out/01.jpg": "7babd8e78e33510a3e8e110d45e974de79f2f77087a5754ee3144b32a3a4cab9",
+  "out/02.jpg": "eb4d1da2820b45df5355a085eba7b655c479fc4b2ee126e60f3f58a3eea5a423",
+  "out/leaves.jpg": "ce4aa515f2d210c5b49444cd2bd08e9352b4faeb23cc1dcc3d5bca8e4ee61b25",
+  "out/numbers.jpg": "43d40013ac3be8a20601d7426d8d1e87b73200fdb7a6c764c73f529882c3c95f"
+ },
+ "lang": "en",
+ "pixels": {
+  "out/00.jpg": "9465491b8a94540cea28ce5269e949937ea872d2fe1526c92e50f654f1a14b0a",
+  "out/01.jpg": "25b3c475920659fadcbcb9810b584dfa67be8e736bbae664f918989a91fd3e3d",
+  "out/02.jpg": "731a0073feeafdcc6f8b34e5aacebbf4c3cee6ae43809700768fc277b41aba6b",
+  "out/leaves.jpg": "ac26dc2a0b9733d4f92d6b4e793a5b4c802e2c4cb5d00086d017c54401df50e7",
+  "out/numbers.jpg": "4483569dc6e7efcd1c9c4c0576c7b8c0cfe2848ba4a0fa9d51854d9589869a8a"
+ },
+ "sizes": {
+  "out/00.jpg": [
+   1500,
+   1003
+  ],
+  "out/01.jpg": [
+   1500,
+   1003
+  ],
+  "out/02.jpg": [
+   1500,
+   1003
+  ],
+  "out/leaves.jpg": [
+   1440,
+   135
+  ],
+  "out/numbers.jpg": [
+   1440,
+   119
+  ]
+ },
+ "stderr": "",
+ "stdout": "00  card_00\n01  card_01\n02  card_02\n"
+}

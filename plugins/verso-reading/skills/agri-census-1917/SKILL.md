@@ -24,8 +24,8 @@ tools it has for each archive. This skill starts once the scans exist.
 The input is a directory of the cards' frames (`$FR` below); откуда кадры — в AGENTS.md проекта.
 Cards downloaded from an archive's site often arrive named by the head of household
 (`Манилов Иван Яковлевич. … уезд, … ф.1 оп.1 д.100.jpg`), so the directory carries no лист
-numbers and `verso scans` reads it in frame mode. It needs `pip install 'verso-core[scans]'
-verso-ru`.
+numbers and `verso scans` reads it in frame mode. It needs
+`pip install 'verso-core[scans]>=0.1.40' 'verso-ru>=0.1.40'`.
 
 A card is ~8800×6700 px. Read whole, it is downscaled to ~1.1 MP and nothing on it resolves.
 

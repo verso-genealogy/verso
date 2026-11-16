@@ -1,0 +1,69 @@
+{
+ "argv": [
+  "quadrants",
+  "<DIR>/album/0003_1об.jpg",
+  "<DIR>/album/0005_(2об-3).jpg",
+  "--out",
+  "<DIR>/q"
+ ],
+ "case": "quadrants",
+ "commit": "c87d2d3",
+ "exit": 0,
+ "files": {
+  "q/0003_1об_bl.png": "91d477c93b338c0fc10a0a001212669a442dfaf6117898094584c50ac78cc00f",
+  "q/0003_1об_br.png": "8f2f5a8a745695d67c97d32f40d549702c7e6dee704156138cbdfb56adcef093",
+  "q/0003_1об_tl.png": "17d0bb1e80cddfb458682f7ad7c1661cc917e2fd970e9e5252ee0daef8ac2811",
+  "q/0003_1об_tr.png": "1883ba911e2ecb07ac4132e25faa648b1f5eeaac645103c389ec585ed2d2e63f",
+  "q/0005_(2об-3)_bl.png": "12ad7b38792a1f5e9f156cfa27e9ddc0161e8fea145cedc972fc2dab1e89f911",
+  "q/0005_(2об-3)_br.png": "d09095dd106ce42a134d65d665c4fb452d6a3f82e48438478fb29e743b952d99",
+  "q/0005_(2об-3)_tl.png": "ddc23b286b1b35c978bd53a37d77391bfb1cdade3045aeb2fa8993ec3a2b7dda",
+  "q/0005_(2об-3)_tr.png": "1ae4373277a4e24e5b3dcaadbf5ebc8e8531b83cbe4f6b1938a5e99caa8d58cf"
+ },
+ "lang": "en",
+ "pixels": {
+  "q/0003_1об_bl.png": "c74dec56db8479aea0c31323a8320fafe12b53802e375453319b8f400321f1eb",
+  "q/0003_1об_br.png": "9b49e7c280ee126b35d25d04de03a1c19e650aa743024270365c46b70a348648",
+  "q/0003_1об_tl.png": "0824cfd51c44f58cbaefdd88c59d9903c3e7c694df8c1e4854e4e8cd4c5c7ce9",
+  "q/0003_1об_tr.png": "821fcf71f0fffbfbd8501231e983343be984af00ce1acf9ae7a639a00aca1797",
+  "q/0005_(2об-3)_bl.png": "486a71e99fc799fee39bc3494a67a37e47ad3cdb0e0a8a036a642241ad9c1d2e",
+  "q/0005_(2об-3)_br.png": "ea258033b7edbae7f7ec59d11908f89fa863ad2a71a81dd97064ec68c020dc5d",
+  "q/0005_(2об-3)_tl.png": "1bca459b1856343a8204563b41579e4e26974cfe0b1f7267fc664c3f4d7c18dc",
+  "q/0005_(2об-3)_tr.png": "fb5048a28590c629c7f70a91b5e9fcdc285494fbbbce02110ba75c40a2635973"
+ },
+ "sizes": {
+  "q/0003_1об_bl.png": [
+   1080,
+   1380
+  ],
+  "q/0003_1об_br.png": [
+   1080,
+   1380
+  ],
+  "q/0003_1об_tl.png": [
+   1080,
+   1380
+  ],
+  "q/0003_1об_tr.png": [
+   1080,
+   1380
+  ],
+  "q/0005_(2об-3)_bl.png": [
+   1980,
+   1380
+  ],
+  "q/0005_(2об-3)_br.png": [
+   1980,
+   1380
+  ],
+  "q/0005_(2об-3)_tl.png": [
+   1980,
+   1380
+  ],
+  "q/0005_(2об-3)_tr.png": [
+   1980,
+   1380
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/q/0003_1об_tl.png\n<DIR>/q/0003_1об_tr.png\n<DIR>/q/0003_1об_bl.png\n<DIR>/q/0003_1об_br.png\n<DIR>/q/0005_(2об-3)_tl.png\n<DIR>/q/0005_(2об-3)_tr.png\n<DIR>/q/0005_(2об-3)_bl.png\n<DIR>/q/0005_(2об-3)_br.png\n"
+}

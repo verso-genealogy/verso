@@ -30,7 +30,7 @@ The skills read a directory of a дело's frames, best named by folio (`<ка�
 the library's `verso scans` and the other `verso …` commands. They need the library with Pillow:
 
 ```bash
-pip install 'verso-core[scans]' verso-ru
+pip install 'verso-core[scans]>=0.1.40' 'verso-ru>=0.1.40'
 ```
 
 ## Installing

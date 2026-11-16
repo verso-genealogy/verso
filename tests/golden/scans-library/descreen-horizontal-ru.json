@@ -1,0 +1,27 @@
+{
+ "argv": [
+  "descreen",
+  "<DIR>/album/0003_1об.jpg",
+  "0.1,0.2,0.6,0.5",
+  "2",
+  "horizontal"
+ ],
+ "case": "descreen-horizontal",
+ "commit": "c87d2d3",
+ "exit": 0,
+ "files": {
+  "album/crops/0003_1об_0.1-0.2-0.6-0.5_2.0_horizontal_0.png": "4027c9e80e06d3cfcdc2b477a65b9cae4e7e1cc05d1969e94a06ec913e4527d3"
+ },
+ "lang": "ru",
+ "pixels": {
+  "album/crops/0003_1об_0.1-0.2-0.6-0.5_2.0_horizontal_0.png": "19c918e873e30c9f1bb470873a2166b49aed69738a55d0e6b7fb84650a4bd555"
+ },
+ "sizes": {
+  "album/crops/0003_1об_0.1-0.2-0.6-0.5_2.0_horizontal_0.png": [
+   600,
+   492
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album/crops/0003_1об_0.1-0.2-0.6-0.5_2.0_horizontal_0.png (600, 492)\n"
+}

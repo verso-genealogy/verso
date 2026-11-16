@@ -1,0 +1,19 @@
+{
+ "argv": [
+  "strips",
+  "<DIR>/nowhere",
+  "--box",
+  "0,0,1,1",
+  "--out",
+  "<DIR>/strips"
+ ],
+ "case": "strips-no-album",
+ "commit": "c87d2d3",
+ "exit": 2,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "sizes": {},
+ "stderr": "нет такого альбома: <DIR>/nowhere\n",
+ "stdout": ""
+}

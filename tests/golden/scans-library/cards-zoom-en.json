@@ -1,0 +1,27 @@
+{
+ "argv": [
+  "cards",
+  "<DIR>/cards",
+  "<DIR>/out",
+  "--zoom",
+  "1:0.2:0.1:0.6:0.4"
+ ],
+ "case": "cards-zoom",
+ "commit": "c87d2d3",
+ "exit": 0,
+ "files": {
+  "out/zoom_01.jpg": "c64020028443a61a7a621ef9ad009fc3bff68d64afd4acf29d7c19d4345c0cdf"
+ },
+ "lang": "en",
+ "pixels": {
+  "out/zoom_01.jpg": "82b5bbb052bca7f14caa45a12d9348c6d5e694b224e6655655f576e777ccdcd7"
+ },
+ "sizes": {
+  "out/zoom_01.jpg": [
+   1400,
+   799
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/out/zoom_01.jpg\n"
+}

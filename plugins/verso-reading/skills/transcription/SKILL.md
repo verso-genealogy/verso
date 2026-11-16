@@ -38,7 +38,7 @@ When the user requests transcription:
    image. Generate upscaled quadrant crops first:
 
    ```bash
-   verso scans quadrants <image> [<image> ...] --out <scratchpad>/crops    # pip install 'verso-core[scans]'
+   verso scans quadrants <image> [<image> ...] --out <scratchpad>/crops    # pip install 'verso-core[scans]>=0.1.40'
    ```
 
    This writes four overlapping crops per image (`N_tl/N_tr/N_bl/N_br` = left/right page × top/bottom, 3x LANCZOS

@@ -1,0 +1,28 @@
+{
+ "argv": [
+  "strips",
+  "<DIR>/album",
+  "--box",
+  "0.0,0.1,0.2,0.95",
+  "--out",
+  "<DIR>/strips"
+ ],
+ "case": "strips-column",
+ "commit": "c87d2d3",
+ "exit": 0,
+ "files": {
+  "strips/strips_0001_обложка-0005_(2об-3).jpg": "f7a7fea6cb50c5242cc7793084ac13d3608023c43b14836e129aaa7cefeb9436"
+ },
+ "lang": "ru",
+ "pixels": {
+  "strips/strips_0001_обложка-0005_(2об-3).jpg": "6f3b990b4111d839c10fa8d2b4d9b5be0cee97cb6ab8df023e4629072eb1a2a0"
+ },
+ "sizes": {
+  "strips/strips_0001_обложка-0005_(2об-3).jpg": [
+   954,
+   928
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/strips/strips_0001_обложка-0005_(2об-3).jpg\n"
+}

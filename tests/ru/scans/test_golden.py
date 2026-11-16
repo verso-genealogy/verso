@@ -16,7 +16,8 @@ import pytest
 
 pytest.importorskip("PIL")
 
-from tests.scans_album import GOLDEN, argv_for, blank, draw_album, pixels, tree, written
+from tests.scans_album import (GOLDEN, LIBRARY_GOLDEN, argv_for, blank, draw_album, draw_cards, matches_golden, pixels,
+                                tree, written)
 from verso.core.cli import main
 
 CASES = sorted(GOLDEN.glob("*.json"))
@@ -45,3 +46,27 @@ def test_verso_scans_writes_what_the_app_wrote(path: Path, tmp_path: Path, monke
         if sha != golden["files"][name]:
             assert pixels(root / name) == golden["pixels"][name], f"{name}: other pixels than the App's"
             assert os.uname().sysname != "Darwin", f"{name}: other bytes than the App's, on the platform it was captured on"
+
+
+CARDS = sorted(p for p in LIBRARY_GOLDEN.glob("cards*.json"))
+
+
+def test_the_cards_goldens_are_there():
+    assert len(CARDS) == 8
+
+
+@pytest.mark.parametrize("path", CARDS, ids=[p.stem for p in CARDS])
+def test_cards_writes_its_golden(path: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+                                 capfd: pytest.CaptureFixture[str]):
+    """`cards` writes what it wrote when a test still held it byte for byte to the reading plugin's script it
+    replaced (`tests/golden/scans-library`, `python -m tests.scans_album golden-library`)."""
+    golden: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    root = tmp_path / "root"
+    draw_album(root)
+    draw_cards(root)
+    before = tree(root)
+    monkeypatch.chdir(root)
+    monkeypatch.setenv("VERSO_LANG", golden["lang"])
+    code = main(["scans", *argv_for(golden["argv"], root)])
+    out, err = capfd.readouterr()
+    assert matches_golden(golden, root, before, code, out, err) == []

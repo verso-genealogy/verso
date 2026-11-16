@@ -1,0 +1,30 @@
+{
+ "argv": [
+  "strips",
+  "<DIR>/album",
+  "--box",
+  "0.0,0.1,0.2,0.95",
+  "--frames",
+  "0002-0004",
+  "--out",
+  "<DIR>/strips"
+ ],
+ "case": "strips-frames",
+ "commit": "c87d2d3",
+ "exit": 0,
+ "files": {
+  "strips/strips_0002_1-0004_2.jpg": "de960462e5eb9c3f0f7fdb434d62000ad7dc9a816db48ed3773b9d8be7b451c6"
+ },
+ "lang": "en",
+ "pixels": {
+  "strips/strips_0002_1-0004_2.jpg": "e0a3af296c383259c63070dae5b3bfb8f2ceef60273de162938f9ce3944a2e47"
+ },
+ "sizes": {
+  "strips/strips_0002_1-0004_2.jpg": [
+   477,
+   928
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/strips/strips_0002_1-0004_2.jpg\n"
+}

@@ -1,0 +1,24 @@
+{
+ "argv": [
+  "descreen",
+  "<DIR>/album/0003_1об.jpg"
+ ],
+ "case": "descreen",
+ "commit": "c87d2d3",
+ "exit": 0,
+ "files": {
+  "album/crops/0003_1об_full_1.0_vertical_0.png": "3c5c7ada1b06343cab23ba1205126e7896b86a23790dd5e3d0e1ab008bc40d91"
+ },
+ "lang": "ru",
+ "pixels": {
+  "album/crops/0003_1об_full_1.0_vertical_0.png": "88245b162631813b7d5da64e9ef4859966c7b48ad733b353e19c26df878eace1"
+ },
+ "sizes": {
+  "album/crops/0003_1об_full_1.0_vertical_0.png": [
+   600,
+   820
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album/crops/0003_1об_full_1.0_vertical_0.png (600, 820)\n"
+}

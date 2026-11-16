@@ -9,6 +9,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.scans_album import draw_cards
 from verso.core.cli import main
 from verso.core.scans.cli import CORE, subcommands
 from verso.ru.plugin import PLUGIN, SCANS
@@ -37,23 +38,6 @@ def test_the_windows_are_not_this_commands(capsys: pytest.CaptureFixture[str], t
         assert f"unrecognized arguments: {flag}" in capsys.readouterr().err
 
 
-def _cards(root: Path) -> Path:
-    """Three invented card frames: a table over a header on a wide spread, one tagged to stand on its side."""
-    from PIL import Image, ImageDraw
-    album = root / "cards"
-    album.mkdir()
-    for index in range(3):
-        im = Image.new("RGB", (880, 670), (230, 222, 200))
-        draw = ImageDraw.Draw(im)
-        for row in range(8):
-            draw.line((20, 40 + 25 * row, 560, 40 + 25 * row), fill=(60, 50, 40), width=2)
-        draw.rectangle((680, 250, 780, 285), outline=(60, 50, 40), width=3)
-        draw.text((690, 255), f"{index + 7}", fill=(20, 20, 20))
-        draw.text((820, 8), f"{index + 41}", fill=(80, 80, 80))
-        im.save(album / f"card_{index:02d}.jpg", quality=90)
-    return album
-
-
 def _run(argv: list[str], cwd: Path) -> tuple[int, str, str]:
     done = subprocess.run([sys.executable, *argv], cwd=cwd, env={**os.environ, "PYTHONIOENCODING": "utf-8"},
                           capture_output=True, text=True, encoding="utf-8", timeout=300, check=False)
@@ -67,7 +51,7 @@ def _run(argv: list[str], cwd: Path) -> tuple[int, str, str]:
 ])
 def test_cards_writes_the_cards_windows(tmp_path: Path, flags: list[str], written: set[str]):
     pytest.importorskip("PIL")
-    album = _cards(tmp_path)
+    album = draw_cards(tmp_path)
     code, out, err = _run(["-m", "verso.core.cli", "scans", "cards", str(album), str(tmp_path / "out"), *flags], tmp_path)
     assert code == 0, err
     assert {p.name for p in (tmp_path / "out").iterdir()} == written

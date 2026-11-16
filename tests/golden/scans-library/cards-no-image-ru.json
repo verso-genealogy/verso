@@ -1,0 +1,16 @@
+{
+ "argv": [
+  "cards",
+  "<DIR>/village",
+  "<DIR>/out"
+ ],
+ "case": "cards-no-image",
+ "commit": "c87d2d3",
+ "exit": 1,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "sizes": {},
+ "stderr": "no images in <DIR>/village\n",
+ "stdout": ""
+}

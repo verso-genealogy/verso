@@ -21,8 +21,8 @@ tool helps with that.
 first and last лист, its parts) is kept, and the surnames and estates of each village.
 `verso scans check DIR` says whether the дело is whole.
 
-`verso scans` needs Pillow: `pip install 'verso-core[scans]' verso-ru`. A phone's own format needs
-`verso-core[heic]` as well, or one `verso scans jpeg DIR` that writes each HEIC frame as a JPEG.
+`verso scans` needs Pillow: `pip install 'verso-core[scans]>=0.1.40' 'verso-ru>=0.1.40'`. A phone's own
+format needs `'verso-core[heic]>=0.1.40'`; with it, `verso scans jpeg DIR` can also turn each HEIC frame into a JPEG in place.
 
 ## The four steps
 
@@ -210,7 +210,7 @@ enhance = 1.7
   So is a frame whose image STANDS (taller than wide, after its orientation tag
   and the album's `rotate`): a spread lies on its side, and some archives' albums
   shoot a blank or summary leaf alone among spreads — split, its «об» would be
-  the right half of its own recto.
+  the right half of its own recto (`standing_frames`).
 - **`top`/`bottom`** are what make `zoom --row N OF` land: the writing area starts at
   a different height in every дело, and a page whose last third is signatures
   divides into rows that are all too tall.
@@ -218,9 +218,10 @@ enhance = 1.7
   what the file declares; **`rotate_frames = { "кадр1" = 0, "кадр7" = 270 }`**
   gives a frame shot differently its own turn, keyed by the label `--folio`
   names (`кадр7`, `64об`). An entry REPLACES `rotate` rather than adding to it,
-  so `0` declares the one frame the phone got right. Every window is in fractions
-  of the TURNED frame — so changing a declaration moves every window on its
-  frames, and they must be turned with it.
+  so `0` declares the one frame the phone got right. Every command (`headers`,
+  `crops`, `spread`, `zoom`) reads both, and every window is in fractions of
+  the TURNED frame — so changing a declaration moves every window on its frames,
+  and they must be turned with it.
 - **`enhance`** is the push a faded hand needs; `zoom` takes it when no `--enhance` is given.
 - **`village`**, in the frames' own copy, names the directory whose `scans.toml` is the durable
   one: `enhance` is asked there too. `--layout`, `--village` and `--album-title` override.
@@ -275,6 +276,6 @@ show it, and let the person who knows the hand read it.
 ## Limits
 
 `verso scans` fetches nothing: it works on frames already on disk, and getting them there is the
-project's (the AGENTS.md проекта). It needs Pillow only — `verso-core[scans]`, and
-`verso-core[heic]` for a phone's own format; without them the pure parts (filenames, continuity,
+project's (the AGENTS.md проекта). It needs Pillow only — `verso-core[scans]>=0.1.40`, and
+`verso-core[heic]>=0.1.40` for a phone's own format; without them the pure parts (filenames, continuity,
 the windows' arithmetic) still run.

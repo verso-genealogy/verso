@@ -70,7 +70,7 @@ believing either figure.
 **Кадры дела — каталог.** The input is a directory of the дело's frames, best named by folio
 (`<кадр>_<лист>[об]`: `0118_57.jpg`, `0119_57об.jpg`). Откуда кадры — в AGENTS.md проекта: an
 archive's download, an export of a photo library, a shared folder. `verso scans check DIR` says
-whether the дело is whole; `verso scans` needs `pip install 'verso-core[scans]' verso-ru`.
+whether the дело is whole; `verso scans` needs `pip install 'verso-core[scans]>=0.1.40' 'verso-ru>=0.1.40'`.
 
 ```bash
 FR=/path/to/the/frames/rs1834          # the дело's frames, as the project keeps them
@@ -128,7 +128,7 @@ Two traps that renumber the frames under you:
 - **Never write anything into the frames' directory.** Every image file there is a frame, so
   a `contact.jpg` saved beside the originals shifts «кадр 6» onto a different page (in one
   album the births spread came up where the burials were). Send crops to `--out` elsewhere.
-  A phone's own format is read as it is with `verso-core[heic]`, and converting it is done in
+  A phone's own format is read as it is with `verso-core[heic]>=0.1.40`, and converting it is done in
   place: `verso scans jpeg DIR` replaces each HEIC with a JPEG of the same name, keeping the count.
 - **A number in the filename is read as the лист.** Scans named `000.png … 048.png` are often
   FILE numbers, but the tools read them as листы: `--folio 41` opens `041.png` although the page
