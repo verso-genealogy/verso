@@ -11,7 +11,7 @@ A corpus's output does not move: the scan tools are new, and nothing the DSL pro
 
 - verso-core: `verso scans` and `verso.core.scans` (`[scans]`, `[heic]`); verso-ru: `verso.ru.scans` — from
   verso-app, Apache-2.0 by its author. The tools work on the frames of a book already on disk: the core's `strips`,
-  `quadrants`, `descreen` (the reading plugin's scripts, which stay until its skills name `verso scans`) and `jpeg`
+  `quadrants`, `descreen` (were the reading plugin's scripts; its skills now name `verso scans`) and `jpeg`
   (a directory's HEIC frames as JPEG); verso-ru's `check`, `headers`, `crops`, `spread`, `zoom`, `rows` (verso-app's
   `verso-scans` subcommands of those names, the same files, bytes and output — held by `tests/golden/scans`, captured
   from verso-app) and `cards` (the 1917 census cards). They read an album's stanza of `scans.toml` and write none:

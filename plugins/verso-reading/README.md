@@ -6,7 +6,7 @@ farm-census cards — and writing what they say into the Verso DSL (`verso.ru.ds
 
 | Skill | What for |
 |---|---|
-| `verso-reading:metric-books` | a year of a metric book: export the album, check it is whole, find the parts, cut legible crops, read in two tiers |
+| `verso-reading:metric-books` | a year of a metric book from a directory of its frames: check it is whole, find the parts, cut legible crops, read in two tiers |
 | `verso-reading:census` | find a family in a revision or confession list by its age fingerprint, then write the households |
 | `verso-reading:agri-census-1917` | the 1917 household cards: the bottom-up table, the relationship codes, the DSL shape |
 | `verso-reading:transcription` | the legacy transcribe-first route: a reviewable `.txt` of a page |
@@ -22,11 +22,16 @@ farm-census cards — and writing what they say into the Verso DSL (`verso.ru.ds
 Nothing here knows a corpus. Альбомы, архивы и региональные правила — в AGENTS.md проекта: the
 project that uses the plugin says, in the project's AGENTS.md, where its extraction rules are (the
 general set and one per record kind), its regional notes per village (surnames, estates, places,
-the clergy), which Photos album holds which дело, where the record of each дело's composition is
-kept, and the tools it has for its archives. The skills and agents read those from there.
+the clergy), where the frames of each дело come from and where the record of each дело's
+composition is kept, and the tools it has for its archives. The skills and agents read those from
+there.
 
-Scripts, each in its skill's `scripts/` (`skills/*/scripts/`), need only Python and Pillow. `verso-scans`, which the scan skills call,
-is a command of verso-app (the Verso review app); the `verso …` commands are this library's.
+The skills read a directory of a дело's frames, best named by folio (`<кадр>_<лист>[об]`), with
+the library's `verso scans` and the other `verso …` commands. They need the library with Pillow:
+
+```bash
+pip install 'verso-core[scans]' verso-ru
+```
 
 ## Installing
 

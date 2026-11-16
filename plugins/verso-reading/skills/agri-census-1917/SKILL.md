@@ -3,14 +3,11 @@ name: agri-census-1917
 description: >
   Read household cards of the 1917 All-Russian agricultural census («Всероссийская
   сельскохозяйственная и поземельная перепись 1917 г.», карточки для сплошной переписи
-  сельских хозяйств) and write them into the DSL. Use when the user has such cards — from
-  an archive's reading room, a Photos album named after the дело, or a Drive folder — and
+  сельских хозяйств) and write them into the DSL. Use when the user has a directory of such
+  cards' frames — from an archive's reading room or wherever the project keeps them — and
   wants the households read, a surname found on them, or the cards turned into
   census_records().
 ---
-
-`<this skill>` in the commands below is this skill's folder — the one this file is in; scripts are named
-from it, so the skill runs wherever it is installed.
 
 A 1917 card is one household on one two-page form. It names **only the домохозяин**; every
 other member is a relationship code and an age. So the card gives a household's shape — who
@@ -22,38 +19,38 @@ Downloading the cards from an archive's site (search by surname, stitching the v
 is the project's business: альбомы, архивы и региональные правила — в AGENTS.md проекта, with the
 tools it has for each archive. This skill starts once the scans exist.
 
-## 1. Get the cards out of Photos
+## 1. The cards' frames
 
+The input is a directory of the cards' frames (`$FR` below); откуда кадры — в AGENTS.md проекта.
 Cards downloaded from an archive's site often arrive named by the head of household
-(`Манилов Иван Яковлевич. … уезд, … ф.1 оп.1 д.100.jpg`), so the album carries no лист numbers
-and `verso-scans` (a command of verso-app, the Verso review app) runs in frame mode. Export by
-the album's pk:
-
-```bash
-verso-scans albums --match "<a word of the album's title>" --full
-verso-scans export --album x --album-pk <pk> --out $SC/agri1917
-```
+(`Манилов Иван Яковлевич. … уезд, … ф.1 оп.1 д.100.jpg`), so the directory carries no лист
+numbers and `verso scans` reads it in frame mode. It needs `pip install 'verso-core[scans]'
+verso-ru`.
 
 A card is ~8800×6700 px. Read whole, it is downscaled to ~1.1 MP and nothing on it resolves.
 
 ## 2. Cut the three windows that matter
 
 ```bash
-python3 "<this skill>/scripts/card_crops.py" $SC/agri1917 $SC/cards
+SC=/tmp/agri1917                    # scratchpad, never the project tree nor $FR
+verso scans cards $FR $SC/cards
 ```
 
-(any Python with Pillow) writes, per card, `NN.jpg` — the «Население» table over the card
-header — plus `numbers.jpg` (the «№ карточки» box of every card, tiled) and `leaves.jpg` (the
-pencil лист number, top right). Read `numbers.jpg` and `leaves.jpg` first: they give the card
+writes, per card, `NN.jpg` — the «Население» table over the card header — plus `numbers.jpg`
+(the «№ карточки» box of every card, tiled) and `leaves.jpg` (the pencil лист number, top
+right). Read `numbers.jpg` and `leaves.jpg` first: they give the card
 order and the лист for `page=` in one image each. Then read the `NN.jpg` sheets. To check one
-doubtful cell, `--zoom IDX:x0:y0:x1:y1` enlarges one box of one card at 1400 px.
+doubtful cell, `verso scans cards $FR $SC/cards --zoom IDX:x0:y0:x1:y1` enlarges one box of one card at 1400 px.
 
 For a whole volost's cards (hundreds, not 28), find the households first with a strip of the
 card's head line — «Фамилия, имя и отчество домохозяина» — over every card:
-`python3 "<this skill>/../metric-books/scripts/scan_strips.py" $SC/agri1917 --box X0,Y0,X1,Y1
---per 30 --size 1200 --out $SC/heads` (a wide box stacks the lines one under another, each
-labelled with its frame; measure the box on one card). Not yet run on a whole volost — check the
-first sheet before trusting the box.
+
+```bash
+verso scans strips $FR --box X0,Y0,X1,Y1 --per 30 --size 1200 --out $SC/heads
+```
+
+A wide box stacks the lines one under another, each labelled with its frame; measure the box on
+one card. Not yet run on a whole volost — check the first sheet before trusting the box.
 
 The windows were measured on one дело of these cards. The printed form is the same everywhere,
 but a different stitch may shift it — look at one card first and pass `--table/--header` if

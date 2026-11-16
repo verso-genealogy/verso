@@ -9,7 +9,6 @@ here would itself publish them.
 """
 from __future__ import annotations
 
-import ast
 import json
 import re
 import subprocess
@@ -37,7 +36,9 @@ _MAKE = re.compile(r"\bmake (?:[a-z][a-z0-9]*[-_][a-z0-9_-]*|[a-z]+=|bootstrap|g
 _MD = re.compile(r"[\w.-]+\.md\b")
 _PY = re.compile(r"[\w-]+\.py\b")
 _ROOTED = re.compile(r"\$\{CLAUDE_PLUGIN_ROOT\}/([\w./-]+)")
-_SKILL_PATH = re.compile(r"<this skill>/([\w./-]+)")
+#: A word of one owner's setup, not of reading: where the frames come from is the project's (its AGENTS.md).
+#: HEIC is the input of `verso scans jpeg` and may be named on the line that names it.
+_SETUP = re.compile(r"verso-scans|\bPhotos\b|Photos\.sqlite|ZGENERICALBUM|osxphotos|photoscript|Google Drive|HEIC")
 _PROJECT_AGENTS = re.compile(r"AGENTS\.md проекта|project's AGENTS\.md|AGENTS\.md of the project", re.IGNORECASE)
 _FENCE = re.compile(r"^\s*(`{3,}|~{3,})")
 
@@ -124,25 +125,42 @@ def test_nothing_points_outside_the_plugin():
     assert wrong == [], "\n".join(wrong)
 
 
-def _commands_named() -> dict[str, set[str]]:
-    """`verso <command> …` as the plugin writes it: in inline code, or a line of a code block."""
-    named: dict[str, set[str]] = {}
+#: A command whose subcommands each take flags of their own: a flag is looked up in its subcommand's help.
+_PER_SUBCOMMAND = {"scans"}
+
+
+def _commands_named() -> dict[tuple[str, ...], set[str]]:
+    """`verso <command> …` as the plugin writes it: in inline code, or a line of a code block (with the lines a
+    trailing backslash continues). `verso scans <sub> …` is keyed by its subcommand."""
+    named: dict[tuple[str, ...], set[str]] = {}
     for path in PLUGIN.rglob("*.md"):
         fence = False
+        carried = ""
         for line in path.read_text(encoding="utf-8").splitlines():
             if _FENCE.match(line):
-                fence = not fence
+                fence, carried = not fence, ""
                 continue
-            spans = [line.strip()] if fence else re.findall(r"`([^`\n]*)`", line)
+            if fence:
+                line = carried + " " + line.strip() if carried else line.strip()
+                if line.endswith("\\"):
+                    carried = line[:-1]
+                    continue
+                carried = ""
+            spans = [line] if fence else re.findall(r"`([^`\n]*)`", line)
             for span in spans:
-                if m := re.match(r"verso ([a-z][a-z0-9-]*)(.*)", span):
-                    named.setdefault(m.group(1), set()).update(re.findall(r"--[a-z][a-z0-9-]*", m.group(2)))
+                if not (m := re.match(r"verso ([a-z][a-z0-9-]*)(.*)", span)):
+                    continue
+                key, rest = (m.group(1),), m.group(2)
+                if key[0] in _PER_SUBCOMMAND and (sub := re.match(r"\s+([a-z][a-z0-9-]*)(.*)", rest)):
+                    key, rest = (key[0], sub.group(1)), sub.group(2)
+                named.setdefault(key, set()).update(re.findall(r"--[a-z][a-z0-9-]*", rest))
     return named
 
 
 def test_the_commands_it_names_are_the_librarys():
     named = _commands_named()
     assert named
+    assert any(key[0] == "scans" and len(key) == 2 for key in named), "the skills read with `verso scans <sub>`"
     workspace = ROOT / "tests" / "fixtures" / "workspace"
     env = {"COLUMNS": "200", "PATH": "", "VERSO_LANG": "en", "PYTHONPATH": ":".join(sys.path)}
 
@@ -150,29 +168,56 @@ def test_the_commands_it_names_are_the_librarys():
         return subprocess.run([sys.executable, "-m", "verso.core.cli", "--workspace", str(workspace), *command, "--help"],
                               capture_output=True, text=True, env=env).stdout
 
+    def has(said: str, flag: str) -> bool:
+        return re.search(re.escape(flag) + r"(?![\w-])", said) is not None
+
     listed = set(re.findall(r"^\s+([a-z][a-z0-9-]+)\s", help_of(), re.MULTILINE))
     wrong: list[str] = []
-    for command, flags in sorted(named.items()):
+    for key, flags in sorted(named.items()):
+        command = key[0]
         if command not in listed:
             wrong.append(f"verso {command}: no such command")
             continue
         said = help_of(command)
-        for group in re.findall(r"\{([a-z,-]+)\}", said):  # a command of subcommands: their flags too
-            said += "".join(help_of(command, sub) for sub in group.split(","))
-        wrong += [f"verso {command} {flag}: no such flag" for flag in sorted(flags) if flag not in said]
+        if len(key) == 2:
+            if key[1] not in set(re.findall(r"^\s+([a-z][a-z0-9-]+)\s", said, re.MULTILINE)):
+                wrong.append(f"verso {' '.join(key)}: no such subcommand")
+                continue
+            said = help_of(*key)
+        else:
+            for group in re.findall(r"\{([a-z,-]+)\}", said):  # a command of subcommands: their flags too
+                said += "".join(help_of(command, sub) for sub in group.split(","))
+        wrong += [f"verso {' '.join(key)} {flag}: no such flag" for flag in sorted(flags) if not has(said, flag)]
     assert wrong == [], "\n".join(wrong)
 
 
-def test_a_skill_names_its_scripts_from_its_own_folder():
-    """A skill says `<this skill>/scripts/x.py`, not `${CLAUDE_PLUGIN_ROOT}/…`: other agents (Codex, Gemini CLI, Copilot)
-    read skill files too, and only Claude Code sets that variable. Every such path exists."""
-    wrong = []
-    for skill in sorted((PLUGIN / "skills").iterdir()):
-        text = (skill / SKILL_FILE).read_text(encoding="utf-8")
-        if "CLAUDE_PLUGIN_ROOT" in text:
-            wrong.append(f"{skill.name}: ${{CLAUDE_PLUGIN_ROOT}} in a skill")
-        wrong += [f"{skill.name}: <this skill>/{m.group(1)} does not exist"
-                  for m in _SKILL_PATH.finditer(text) if not (skill / m.group(1)).resolve().exists()]
+def test_a_skill_names_no_plugin_root():
+    """`${CLAUDE_PLUGIN_ROOT}` is set by Claude Code only; other agents (Codex, Gemini CLI, Copilot) read skill files too."""
+    wrong = [skill.name for skill in sorted((PLUGIN / "skills").iterdir())
+             if "CLAUDE_PLUGIN_ROOT" in (skill / SKILL_FILE).read_text(encoding="utf-8")]
+    assert wrong == []
+
+
+def test_no_scripts_in_the_plugin():
+    """The scan tools are the library's command `verso scans`: the plugin ships text, not a copy of them."""
+    shipped = [str(p.relative_to(PLUGIN)) for p in PLUGIN.rglob("*")
+               if (p.is_file() and p.suffix == ".py") or (p.is_dir() and p.name == "scripts")]
+    assert shipped == [], shipped
+    said = [str(p.relative_to(PLUGIN)) for p in _texts() if "<this skill>" in p.read_text(encoding="utf-8")]
+    assert said == [], said
+
+
+def test_no_word_of_an_owners_setup():
+    """The input of a skill is a directory of a дело's frames; a photo library, a cloud folder, an App's command are
+    one owner's way of getting them there, and the project's AGENTS.md says which."""
+    wrong: list[str] = []
+    for path in _texts():
+        rel = path.relative_to(ROOT).as_posix()
+        for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
+            for m in _SETUP.finditer(line):
+                if m.group(0) == "HEIC" and "verso scans jpeg" in line:
+                    continue
+                wrong.append(f"{rel}:{n}: {m.group(0)!r} in {line.strip()[:100]}")
     assert wrong == [], "\n".join(wrong)
 
 
@@ -182,26 +227,3 @@ def test_skills_sh_finds_the_skills():
     paths = json.loads((ROOT / "skills.sh.json").read_text(encoding="utf-8"))["paths"]
     assert paths == ["./plugins/verso-reading/skills"]
     assert {p.parent.name for p in (ROOT / paths[0]).glob("*/" + SKILL_FILE)} == SKILLS
-
-
-def test_a_skills_scripts_live_in_its_scripts_folder():
-    """One layout for every skill: its skill file at its root, its scripts in `scripts/`."""
-    loose = [str(p.relative_to(PLUGIN)) for p in PLUGIN.rglob("*.py")
-             if p.parent.name != "scripts" or p.parent.parent.parent != PLUGIN / "skills"]
-    assert loose == [], loose
-
-
-def test_the_scripts_need_only_python_and_pillow():
-    scripts = sorted(PLUGIN.rglob("*.py"))
-    assert scripts
-    for path in scripts:
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                roots = {a.name.split(".")[0] for a in node.names}
-            elif isinstance(node, ast.ImportFrom):
-                assert node.level == 0, f"{path.name}: a relative import"
-                roots = {(node.module or "").split(".")[0]}
-            else:
-                continue
-            assert roots <= set(sys.stdlib_module_names) | {"PIL", "__future__"}, (path.name, roots)

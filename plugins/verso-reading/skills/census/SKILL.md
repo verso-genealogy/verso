@@ -4,13 +4,10 @@ description: >
   Find a family in a revision list (ревизская сказка) or a confession list (исповедная
   роспись) by reading the scans, then write the households into the DSL. Use when the user
   asks to find someone in РС 1719/1795/1811/1816/1834/1850/1858 or in an ИР of a given year,
-  to trace a line one revision further back, to sweep a whole дело for a surname, to pull
-  census scans out of Apple Photos / Google Drive, or when scans are photographs of a screen
+  to trace a line one revision further back, to sweep a whole дело for a surname, to cut a
+  directory of a дело's frames into what reads, or when scans are photographs of a screen
   and the handwriting will not resolve.
 ---
-
-`<this skill>` in the commands below is this skill's folder — the one this file is in; scripts are named
-from it, so the skill runs wherever it is installed.
 
 Locating one family in a 500-household revision list is a search problem, not a transcription
 problem. Transcribing the дело page by page costs hundreds of image reads; the methods below
@@ -20,7 +17,7 @@ list read the project's confession-list rules as well, and see "Confession lists
 searched differently, because there is no previous-revision age column to fingerprint with.
 
 Альбомы, архивы и региональные правила — в AGENTS.md проекта: the extraction rules by record kind,
-which album holds which дело, where each дело's record (its leaves, its links) is kept.
+where each дело's frames and its record (its leaves, its links) are kept.
 
 ## The method: work backwards one revision at a time
 
@@ -70,44 +67,21 @@ believing either figure.
 
 ## Getting the scans
 
-**Use `verso-scans export`, not photoscript.** (`verso-scans` is a command of verso-app, the
-Verso review app, not of this library.) The albums are organised per village folder, one album
-per дело, named `YYYY (АРХИВ Ф-О-Д)` (e.g. `1811 РС (АРХИВ 1-1-100)`, `1834 РС 8 (АРХИВ 1-1-200)`),
-and the tool resolves them in `Photos.sqlite`, copies whatever is already on disk and pays
-AppleScript only for the iCloud remainder:
+**Кадры дела — каталог.** The input is a directory of the дело's frames, best named by folio
+(`<кадр>_<лист>[об]`: `0118_57.jpg`, `0119_57об.jpg`). Откуда кадры — в AGENTS.md проекта: an
+archive's download, an export of a photo library, a shared folder. `verso scans check DIR` says
+whether the дело is whole; `verso scans` needs `pip install 'verso-core[scans]' verso-ru`.
 
 ```bash
-verso-scans albums --match "1834 РС"      # Z_PK settles a duplicate title
-verso-scans export --album "1834 РС 8" --album-pk 1234 --out $SC/rs1834 \
-    --village Маниловка                    # ← ALWAYS: the durable stanza
-verso-scans check  $SC/rs1834            # is the дело whole?
+FR=/path/to/the/frames/rs1834          # the дело's frames, as the project keeps them
+SC=/tmp/rs1834                         # scratchpad, never the project tree nor $FR
+verso scans check $FR                  # is the дело whole?
 ```
-
-**Always pass `--village`.** Without it the album's stanza (pk, `frames`, note) lands only in
-the export directory's own `scans.toml` — a scratch copy that is deleted with the session —
-and every window `zoom --remember` saves after that goes there too. One whole review found
-seven дворы across five albums this way and kept none of them. If an album was exported
-without it, add the stanza afterwards with
-`verso.app.scans.layout.remember_album(Path("<village>/scans.toml"), Album(...))` rather than
-re-exporting (each `verso-scans` call snapshots Photos.sqlite via SQLite's online backup API
-rather than copying the file plus its `-wal`/`-shm` sidecars — the snapshot it produces is
-sized to what the database actually holds, not to the WAL, which matters because Photos was
-measured not checkpointing at all: a 257 MB `Photos.sqlite` sat beside a 95 GB `-wal`, so the
-old file-copy snapshot copied 95 GB on every call and four concurrent runs filled the disk.
-The backup itself still walks that WAL to reconstruct the current pages, so it is not free —
-measured at ~10 minutes for a ~4.5 GB snapshot on one library — but it is disk-safe: a few
-concurrent runs cost a few GB apiece, not tens of GB each). Concurrent runs are safe: each
-takes its own snapshot.
-
-Driving Photos frame by frame is the path that fails SILENTLY: `photo.export()` has returned
-`[]` with every original of an album already on disk, and a short directory is
-indistinguishable from a дело the archive never photographed. Keep the recipe below only for
-something `verso-scans` cannot do.
 
 **Tell the album what it is — `scans.toml`.** A ревизская сказка is photographed as a SPREAD
 far more often than a metric book is, and the filename usually names one лист only
-(`63об.jpg` holding 63об and 64). Declare it once, in the album directory or the village
-one, and every recto becomes addressable instead of being reported missing:
+(`63об.jpg` holding 63об and 64). Declare it once, in the frames' directory or the one `--layout`
+or `--village` names, and every recto becomes addressable instead of being reported missing:
 
 ```toml
 [album."1834 РС 8 (АРХИВ 1-1-200)"]
@@ -116,101 +90,55 @@ top = 0.19             # where the ruled household table begins; bottom = … to
 ```
 
 `top`/`bottom` are what make `zoom --row N OF` land on the right двор instead of drifting a
-row. And once a household IS found, keep the window — `zoom … --record <№ двора> --box …
---remember` writes it back, and the same двор comes out of `--record` alone next time. A
-whole-дело sweep re-reads the same дворы more than once; this is the difference. Remember a
-better window later and it REPLACES the earlier one, so a first rough guess costs nothing.
-`--record` accepts a revision list's letter-suffixed дворы as-is (`--record 1в`, `--record 2а`)
-— households numbered "1", "1а", "1б", "1в" are each their own remembered window.
+row. Once a household IS found, keep its window: a whole-дело sweep re-reads the same дворы more
+than once, and that is the difference. `verso scans` never writes `scans.toml`; if the project has
+a tool that remembers windows, the AGENTS.md проекта names it — otherwise note the `--box` beside
+the двор in the project's notes on the дело.
 
-**Cut windows with `zoom --box`, not with ad-hoc PIL.** A hand-rolled `im.crop(...)` saves
-nothing, and eyeballed pixel coordinates on a downscaled render miss the row more often than
-not — the same session spent a dozen crops landing above or beside the figure it wanted.
+**Cut windows with `zoom --box`, not with ad-hoc PIL.** A hand-rolled `im.crop(...)` is thrown
+away, and eyeballed pixel coordinates on a downscaled render miss the row more often than
+not — one session spent a dozen crops landing above or beside the figure it wanted.
 `--box` takes FRACTIONS of the leaf (spread frames: of the whole frame), so the window
-survives any render size, and with `--record <№ двора> --part 1 --remember --village X` the
-first good one is kept:
+survives any render size:
 
 ```bash
-verso-scans zoom $SC/rs1850 --folio 27 --part 1 --record 54 \
-    --box 0.12 0.61 0.94 0.84 --scale 1 --tag d54 --remember --village Маниловка \
-    --album-title "1850 РС 9 (АРХИВ 1-1-300)"
+verso scans zoom $FR --folio 27 --part 1 --box 0.12 0.61 0.94 0.84 --scale 1 \
+    --album-title "1834 РС 8" --out $SC/rs1834_d54.jpg
 ```
 
-Under frame numbering `--folio 27` is the 27th file (1-based) and the window is stored as
-«кадр27». `--scale 1` on a whole-двор window is already ~3400 px wide — enough to read a
-figure; go to 3–4 only on a one-column strip. `--out` is a FILE path when given; a directory
-fails inside PIL with «unknown file extension». An album photographed sideways (one metric-book
-album was lying upside down, in fact) needs `rotate` in its stanza (180 there; one quarter-turn
-left the text still running across) — boxes are fractions of the turned frame.
-A frame shot differently from the rest takes its own turn, `rotate_frames = { "кадр1" = 90 }`,
-which replaces `rotate` for that frame (the `verso-reading:metric-books` skill has the
-details). Never «fix» a sideways HEIC by applying pillow-heif's `info["original_orientation"]`:
-the decoder has already applied it, and applying it again turns the frame twice.
+Under frame numbering `--folio 27` is the 27th file (1-based), labelled «кадр27». `--scale 1` on a
+whole-двор window is already ~3400 px wide — enough to read a figure; go to 3–4 only on a
+one-column strip. `--out` is a FILE path; a directory fails inside PIL with «unknown file
+extension». An album photographed sideways (one metric-book album was lying upside down, in
+fact) needs `rotate` in its stanza (180 there; one quarter-turn left the text still running
+across) — boxes are fractions of the turned frame. A frame shot differently from the rest takes
+its own turn, `rotate_frames = { "кадр1" = 90 }`, which replaces `rotate` for that frame (the
+`verso-reading:metric-books` skill has the details). Phone photos of an open ledger often have
+the spread sideways in a portrait frame, and the phone's orientation tag is a guess that over a
+flat book is often wrong: try the turn, check which way up the text lands before deciding which
+half is the male page, then declare it so the next reader need not. Never «fix» a sideways frame
+by applying pillow-heif's `info["original_orientation"]`: the decoder has already applied it, and
+applying it again turns the frame twice.
 
 Comparing digits (is this «3» or «5»?) still wants a strip of one column at 3–4× beside the
-same digit elsewhere on the page — cut it with `zoom --box` too, `--tag` keeps the outputs apart.
+same digit elsewhere on the page — cut it with `zoom --box` too, each to its own `--out`.
 
 Two traps that renumber the frames under you:
 
-- **Never write anything into the export directory.** Every image file there is a frame, so
-  a `contact.jpg` or a HEIC→jpg conversion saved beside the originals shifts «кадр 6» onto a
-  different page (in one album the births spread came up where the burials were). Send crops to
-  `--out` elsewhere, and convert HEIC nowhere — `verso-scans` reads it.
-- **A number in the filename is read as the лист — until a title says otherwise.** Scans
-  named `000.png … 048.png` are often FILE numbers, but the tools read them as листы:
-  `--folio 41` opens `041.png`, and the window is stored as «л. 41» although the page says
-  86. (It cannot be ruled out by shape: `053.jpg` of another album really is л. 53.)
-  **Fix it in Photos, not on disk:** set each frame's «Название» to `<кадр>_<лист>` —
-  `0041_86`, `0042_86об`, read off the page's top-right corner — addressing the album by
-  its UUID (`ZGENERICALBUM.ZUUID`, see the `photoscript` recipe below), check the titles in a
-  fresh `Photos.sqlite` snapshot, and re-export. A title that names a лист beats the
-  filename, so the export comes out as `0041_86.png` and `--folio 86` opens the right page;
-  `check --album` reads the titles too. A title naming no лист (`0000_обложка`) leaves the
-  filename alone. Re-key any window remembered under the old number — it is stored by the
-  label, which has changed.
-  Timestamp names (`20231115_101530.jpg`) never count as a лист; untitled, `--folio 20` finds
-  «no page 20» — pass `--frames` to number by position, or title them the same way.
-
-`photoscript` is the fallback if it is ever needed:
-
-```python
-import photoscript
-p = photoscript.PhotosLibrary(); p.activate()
-folder = [f for f in p.folders() if f.name == "Маниловка"][0]
-alb = [a for a in folder.albums if a.name == "1834 РС 8 (АРХИВ 1-1-200)"][0]
-for ph in alb.photos():
-    ph.export(dest, original=True, overwrite=False, timeout=180)
-
-# Titling: address the album by UUID (select ZUUID from ZGENERICALBUM where Z_PK=…),
-# not by name — the folder walk has failed with «Invalid index».
-alb = photoscript.Album("<ZUUID of the album>")
-for ph in alb.photos():
-    ph.title = titles[ph.filename]          # {"041.png": "0041_86", …}
-```
-
-- `.folders()` / `.albums()` are METHODS on `PhotosLibrary`; on a `Folder`, `.albums` is a
-  PROPERTY (no parens).
-- **Do not read the originals straight off disk.** Roughly half are iCloud-optimised: only a
-  1536×2048 derivative exists locally under `resources/derivatives/`, and the full 4096×3072
-  original arrives only when `export()` pulls it down. Exporting runs at ~35 photos/minute, so
-  a 250-photo дело takes about seven minutes — start it in the background.
-- Phone photos of an open ledger are often **rotated**: the spread sits sideways in a portrait
-  frame. The phone's orientation tag is a guess, and flat over a book it is often wrong, so
-  `ImageOps.exif_transpose()` (which applies it) is not enough; try `.rotate(90, expand=True)`
-  and check which way up the text lands before deciding which half is the male page — then
-  declare the turn in `scans.toml` (`rotate` / `rotate_frames`) so the next reader need not.
-
-**Google Drive** holds the same scans for some дела (the project's record of the дело has the
-folder links). They are publicly fetchable without auth:
-
-```bash
-curl -sL "https://drive.usercontent.google.com/download?id=<FILE_ID>&export=download&confirm=t" -o 000.png
-```
-
-Enumerate the folder with `gdown --folder --json <folder-url>` (install into the venv) — the
-plain `gdown --folder` download rate-limits after ~40 files, so take the JSON id list and curl
-the rest yourself. `uc?export=download` works for small files but returns a confirm page for
-large ones; the `usercontent` host with `confirm=t` does not.
+- **Never write anything into the frames' directory.** Every image file there is a frame, so
+  a `contact.jpg` saved beside the originals shifts «кадр 6» onto a different page (in one
+  album the births spread came up where the burials were). Send crops to `--out` elsewhere.
+  A phone's own format is read as it is with `verso-core[heic]`, and converting it is done in
+  place: `verso scans jpeg DIR` replaces each HEIC with a JPEG of the same name, keeping the count.
+- **A number in the filename is read as the лист.** Scans named `000.png … 048.png` are often
+  FILE numbers, but the tools read them as листы: `--folio 41` opens `041.png` although the page
+  says 86. (It cannot be ruled out by shape: `053.jpg` of another дело really is л. 53.)
+  Rename each frame `<кадр>_<лист>` — `0041_86.png`, `0042_86об.png`, read off the page's
+  top-right corner — and `--folio 86` opens the right page; where the project keeps its frames
+  (the AGENTS.md проекта) says how to rename them there. A name naming no лист
+  (`0000_обложка`) is a frame and no page. Re-key any window noted under the old number.
+  Timestamp names (`20000101_120000.jpg`) never count as a лист; `--folio 20` then finds
+  «no page 20» — pass `--frames` to number by position, or rename them the same way.
 
 ⚠ **A reading is not a finding until the person who knows the hand agrees.** Ages and names
 in a revision tale decide who is whose child, and a single misread letter propagates into the
@@ -224,28 +152,21 @@ A 500-household дело is ~100 page images. Reading each in full costs ~2000 t
 just the left margin costs a quarter of that, and the margin is where the household number and
 the head's name live.
 
-```python
+```bash
 # 4 pages side by side, left 37% of each — head names and numbers, nothing else
-W, H = 420, 1700
-def strip(n):
-    im = Image.open(f"rs1811/{n:03d}.png").convert("L")
-    w, h = im.size
-    c = ImageOps.autocontrast(im.crop((0, 0, int(w * 0.37), h)), cutoff=1)
-    return c.resize((W, H), Image.LANCZOS)
+verso scans strips $FR --box 0,0,0.37,1 --per 4 --size 1700 --out $SC/margins
 ```
 
-Twenty-seven montages cover a hundred pages. Use this to build the household-number → page
+Twenty-seven sheets cover a hundred pages. Use this to build the household-number → page
 index first; then jump straight to the band your fingerprint predicts.
 
 **Cheaper still for the index alone — a strip of the «№ семьи» column, 27 frames to a sheet**
-(`<this skill>/../metric-books/scripts/scan_strips.py`, the «лента по одной графе» of
-ex-USSR Kinship Research). Tested on a 10th-revision дело (reading-room spreads 1500×~1180):
-100 frames → **4 sheets** in a second, and they gave every anchor of a hand-made index that had
-taken 35 three-scan montages.
+(`verso scans strips`, the «лента по одной графе» of ex-USSR Kinship Research). Tested on a
+10th-revision дело (reading-room spreads 1500×~1180): 100 frames → **4 sheets** in a second, and
+they gave every anchor of a hand-made index that had taken 35 three-scan montages.
 
 ```bash
-python3 "<this skill>/../metric-books/scripts/scan_strips.py" "$ALBUM" \
-    --box 0.065,0.26,0.145,0.93 --frames 0310-0409 --per 27 --size 800 --out $SC/strips
+verso scans strips $FR --box 0.065,0.26,0.145,0.93 --frames 0310-0409 --per 27 --size 800 --out $SC/strips
 ```
 
 The box is in fractions of the frame (a 9th/10th-revision spread: both number columns sit at
@@ -316,14 +237,12 @@ Some дела reach us as phone photos of a monitor showing a PDF viewer. Two co
 
   (Transpose the kernel if the stripes run horizontally.) It costs a little horizontal
   sharpness and buys back the whole word. Measured on one дело of such photos: unreadable at
-  3× before, readable at 2× after. Packaged as
-  `<this skill>/scripts/descreen_crop.py` (Python and Pillow):
+  3× before, readable at 2× after. `verso scans descreen` does exactly this, writing into
+  `crops/` beside the scan:
 
   ```bash
-  python3 "<this skill>/scripts/descreen_crop.py" \
-      page.png 0.19,0.22,0.66,0.60 1.5            # band of rows, 1.5x, de-screened
-  python3 "<this skill>/scripts/descreen_crop.py" \
-      photo.jpg - 0.4 raw 90                       # whole page, rotated, no filter
+  verso scans descreen page.png 0.19,0.22,0.66,0.60 1.5     # band of rows, 1.5x, de-screened
+  verso scans descreen photo.jpg - 0.4 raw 90               # whole page, rotated, no filter
   ```
 
 - **The useful zoom is lower than you think.** ~1.5–2× over a band of 6–10 rows beats 4–5×

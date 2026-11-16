@@ -1,8 +1,7 @@
 """verso-ru's subcommands of `verso scans` (`Plugin.scans`): listed with the core's, each answering `--help` in both
-languages, and `cards` writing what the reading plugin's `card_crops.py` it replaces writes."""
+languages, and `cards` writing the cards' windows."""
 from __future__ import annotations
 
-import hashlib
 import os
 import subprocess
 import sys
@@ -13,10 +12,6 @@ import pytest
 from verso.core.cli import main
 from verso.core.scans.cli import CORE, subcommands
 from verso.ru.plugin import PLUGIN, SCANS
-
-ROOT = Path(__file__).resolve().parents[3]
-CARDS = ROOT / "plugins" / "verso-reading" / "skills" / "agri-census-1917" / "scripts" / "card_crops.py"
-
 
 def test_the_plugin_brings_its_subcommands():
     assert PLUGIN.scans is SCANS
@@ -65,23 +60,23 @@ def _run(argv: list[str], cwd: Path) -> tuple[int, str, str]:
     return done.returncode, done.stdout, done.stderr
 
 
-def _files(directory: Path) -> dict[str, str]:
-    return {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(directory.iterdir())}
-
-
-@pytest.mark.parametrize("flags", [[], ["--zoom", "1:0.2:0.1:0.6:0.4"], ["--table", "0:0:0.7:0.4"]])
-def test_cards_writes_what_the_script_writes(tmp_path: Path, flags: list[str]):
+@pytest.mark.parametrize(("flags", "written"), [
+    ([], {"00.jpg", "01.jpg", "02.jpg", "numbers.jpg", "leaves.jpg"}),
+    (["--table", "0:0:0.7:0.4"], {"00.jpg", "01.jpg", "02.jpg", "numbers.jpg", "leaves.jpg"}),
+    (["--zoom", "1:0.2:0.1:0.6:0.4"], {"zoom_01.jpg"}),
+])
+def test_cards_writes_the_cards_windows(tmp_path: Path, flags: list[str], written: set[str]):
     pytest.importorskip("PIL")
     album = _cards(tmp_path)
-    script = _run([str(CARDS), str(album), str(tmp_path / "a"), *flags], tmp_path)
-    ours = _run(["-m", "verso.core.cli", "scans", "cards", str(album), str(tmp_path / "b"), *flags], tmp_path)
-    assert script[0] == ours[0] == 0, (script, ours)
-    assert script[1].replace(str(tmp_path / "a"), "OUT") == ours[1].replace(str(tmp_path / "b"), "OUT")
-    assert _files(tmp_path / "a") == _files(tmp_path / "b") != {}
+    code, out, err = _run(["-m", "verso.core.cli", "scans", "cards", str(album), str(tmp_path / "out"), *flags], tmp_path)
+    assert code == 0, err
+    assert {p.name for p in (tmp_path / "out").iterdir()} == written
+    if not flags:
+        assert out.splitlines() == ["00  card_00", "01  card_01", "02  card_02"]
 
 
-def test_cards_of_an_empty_album_is_refused_as_the_script_does(tmp_path: Path):
+def test_cards_of_an_empty_album_is_refused(tmp_path: Path):
     (tmp_path / "empty").mkdir()
-    script = _run([str(CARDS), str(tmp_path / "empty"), str(tmp_path / "a")], tmp_path)
-    ours = _run(["-m", "verso.core.cli", "scans", "cards", str(tmp_path / "empty"), str(tmp_path / "a")], tmp_path)
-    assert script == ours and script[0] == 1
+    code, _, err = _run(["-m", "verso.core.cli", "scans", "cards", str(tmp_path / "empty"), str(tmp_path / "a")], tmp_path)
+    assert code == 1
+    assert str(tmp_path / "empty") in err

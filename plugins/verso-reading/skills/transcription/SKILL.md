@@ -3,9 +3,6 @@ name: transcription
 description: Transcribe handwritten historical documents (metric books, census records) into a .txt file. Use when the user explicitly wants a transcription artefact — digitising a whole year, a reviewable text a second person can check, or shared source text. Writing the DSL straight from the scan is the project default and needs no transcription; this skill is the legacy transcribe-first route.
 ---
 
-`<this skill>` in the commands below is this skill's folder — the one this file is in; scripts are named
-from it, so the skill runs wherever it is installed.
-
 Perform character-by-character transcription of handwritten historical documents, particularly Russian Imperial-era
 metric books and census records from the 18th-19th centuries.
 
@@ -33,7 +30,7 @@ When the user requests transcription:
 2. **Check scan resolution** (critical):
 
    ```bash
-   sips -g pixelWidth -g pixelHeight <image>
+   python3 -c "import sys; from PIL import Image; print(Image.open(sys.argv[1]).size)" <image>
    ```
 
    If the scan is low-resolution relative to its content (rule of thumb: a **two-page spread under ~2500px wide**, or
@@ -41,8 +38,7 @@ When the user requests transcription:
    image. Generate upscaled quadrant crops first:
 
    ```bash
-   # any Python with Pillow
-   python3 "<this skill>/scripts/make_crops.py" <image> [<image> ...] --out <scratchpad>/crops
+   verso scans quadrants <image> [<image> ...] --out <scratchpad>/crops    # pip install 'verso-core[scans]'
    ```
 
    This writes four overlapping crops per image (`N_tl/N_tr/N_bl/N_br` = left/right page × top/bottom, 3x LANCZOS

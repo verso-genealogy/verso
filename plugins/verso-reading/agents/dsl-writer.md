@@ -30,8 +30,8 @@ Python DSL files written against the DSL's facade, `verso.ru.dsl` (DSL v1).
 Before proceeding with extraction, you MUST have:
 
 - **The source**: either the page **scan** (the normal case — read it yourself; make upscaled
-  quadrant crops with `${CLAUDE_PLUGIN_ROOT}/skills/transcription/scripts/make_crops.py` when the handwriting is
-  small) **or** a validated `.txt` transcription. Either one satisfies this; you do not need
+  quadrant crops with `verso scans quadrants` when the handwriting is small) **or** a validated
+  `.txt` transcription. Either one satisfies this; you do not need
   both, and a missing transcription is not missing input when you have the scan. Do not work
   from a raw, unvalidated transcription — prefer the scan to that.
 - The **record type**: births, marriages, deaths, census (ревизская сказка) or

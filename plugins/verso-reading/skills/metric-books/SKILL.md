@@ -1,152 +1,127 @@
 ---
 name: metric-books
 description: >
-  Read a year of a metric book (метрическая книга) from the scans — export the Apple Photos
-  album, verify the album is whole, find where части 1/2/3 begin, and cut the pages into the
-  crops that are actually legible. Use when sweeping a year for a surname, continuing a
-  year-by-year pass through a дело, re-checking one record against its scan, or when a
-  reading disagrees with what the corpus already holds. For revision and confession lists use
+  Read a year of a metric book (метрическая книга) from a directory of its scans — verify the
+  дело is whole, find where части 1/2/3 begin, and cut the pages into the crops that are
+  actually legible. Use when sweeping a year for a surname, continuing a year-by-year pass
+  through a дело, re-checking one record against its scan, or when a reading disagrees with
+  what the corpus already holds. For revision and confession lists use
   `verso-reading:census` instead; for producing a reviewable .txt use `verso-reading:transcription`.
 ---
 
-`<this skill>` in the commands below is this skill's folder — the one this file is in; scripts are named
-from it, so the skill runs wherever it is installed.
-
 A year of a metric book is ~36 листов = ~72 pages. Reading them whole costs several times
 what it needs to and gets surnames wrong at an archive's ~950 px per leaf. The four setup steps
-below are mechanical and are handled by `verso-scans`; everything after them is reading, and no
+below are mechanical and are handled by `verso scans`; everything after them is reading, and no
 tool helps with that.
 
-`verso-scans` is a command of **verso-app** (the Verso review app, `verso.app.scans.mk_scans`), not of
-this library: the project that has the App installed has the command in its venv.
+**Кадры дела — каталог.** The input is a directory of the дело's frames, best named by folio:
+`<кадр>_<лист>[об]` (`0118_57.jpg`, `0119_57об.jpg`, a spread `0241(131об-132).jpg`). Откуда
+кадры — в AGENTS.md проекта: an archive's download, an export of a photo library, a shared folder
+— and, with them, the project's regional rules, where the record of each дело's composition (its
+first and last лист, its parts) is kept, and the surnames and estates of each village.
+`verso scans check DIR` says whether the дело is whole.
 
-Альбомы, архивы и региональные правила — в AGENTS.md проекта: which album holds which дело, where
-the record of each дело's composition (its first and last лист, its parts) is kept, and the
-surnames and estates of each village.
+`verso scans` needs Pillow: `pip install 'verso-core[scans]' verso-ru`. A phone's own format needs
+`verso-core[heic]` as well, or one `verso scans jpeg DIR` that writes each HEIC frame as a JPEG.
 
 ## The four steps
 
 ```bash
-SC=/tmp/mn1887                      # scratchpad, never the project tree
+FR=/path/to/the/frames               # the дело's frames, as the project keeps them
+SC=/tmp/mn1887                       # scratchpad, never the project tree nor $FR
 
-# 0. Before pulling anything: is this дело whole, and which album is it?
-#    Both questions are answered out of Photos.sqlite, copying no frames —
-#    which matters, because a SELECTIVE album (80 frames for 288 sides)
-#    and a gappy one (27 sides absent) were both found the expensive way,
-#    after a hundred JPEGs had already been pulled.
-verso-scans check --album "Маниловка 1887"
-verso-scans albums --match "Маниловка" --full
+# 1. Is the дело whole? --first/--last come from the project's record of the дело.
+#    Run it before pulling anything else out of the frames: a SELECTIVE set
+#    (80 frames for 288 sides) and a gappy one (27 sides absent) were both found
+#    the expensive way, after a hundred crops had already been read.
+verso scans check $FR --first 57 --last 92
 
-# 1. Fetch the album. Reads Photos.sqlite, COPIES every original already on disk and
-#    only asks Photos.app to pull the iCloud-optimised remainder — so it is instant
-#    for a downloaded album and resumable if the pull is interrupted. `--album` takes
-#    any unambiguous part of the title; `verso-scans albums --match <text>` lists them
-#    with the Z_PK that settles a duplicate title.
-verso-scans export --album "Маниловка 1887" --out $SC \
-    --village "Маниловка"
-#    `--village` also appends the album's stanza (pk, leaf-or-spread) to the
-#    village's durable scans.toml. `top`/`bottom` are measured by eye and stay
-#    yours to add. A frame whose Photos «Название» names a лист is exported
-#    under the title, whatever its filename says — which is how an IMG_* album,
-#    or one named by FILE number (`041.png` = л. 86), gets fixed without
-#    re-importing it.
-
-# 2. Is the album whole? --first/--last come from the project's record of the дело
-verso-scans check $SC --first 57 --last 92
-
-# 3. Where do части 1/2/3 begin? The running header names the part; a BLANK
+# 2. Where do части 1/2/3 begin? The running header names the part; a BLANK
 #    header strip is a part title page.
-verso-scans headers $SC --out $SC/headers
+verso scans headers $FR --out $SC/headers
 
-# 4. Cut the pages you will actually read — ONE PART AT A TIME, so the crop can
-#    drop the columns that carry no names. Folio ranges come from step 3.
-verso-scans crops $SC --out $SC/c1 --verso-only --part 1 --from 58 --to 74
-verso-scans crops $SC --out $SC/c2 --verso-only --part 2 --from 75 --to 77
-verso-scans crops $SC --out $SC/c3 --verso-only --part 3 --from 78 --to 91
+# 3. Cut the pages you will actually read — ONE PART AT A TIME, so the crop can
+#    drop the columns that carry no names. Folio ranges come from step 2.
+verso scans crops $FR --out $SC/c1 --verso-only --part 1 --from 58 --to 74
+verso scans crops $FR --out $SC/c2 --verso-only --part 2 --from 75 --to 77
+verso scans crops $FR --out $SC/c3 --verso-only --part 3 --from 78 --to 91
 ```
 
-Then read `$SC/crops/*.jpg` in order. When a page yields a record worth keeping, pull its
-facing recto **row-aligned**:
+4. Read `$SC/c1/*.jpg` (then `c2`, `c3`) in order. When a page yields a record worth keeping, pull
+its facing recto **row-aligned**:
 
 ```bash
-verso-scans spread $SC --folio 64об --band 0.41 0.63
+verso scans spread $FR --folio 64об --band 0.41 0.63 --out $SC/spread_64об.jpg
 ```
 
-## Ленты по одной графе — one column across the whole album
+## Ленты по одной графе — one column across the whole дело
 
 When the question is about ONE column over many frames — a surname in the parents' column, the
 «Имена родившихся» of a whole year, household numbers of a revision, the head line of a card —
 cut that column from every frame and lay the strips side by side, each labelled with its frame:
 
 ```bash
-python3 "<this skill>/scripts/scan_strips.py" "$ALBUM" \
-    --box X0,Y0,X1,Y1 [--frames FIRST-LAST] [--per 20] [--size 900] --out $SC/strips
+verso scans strips $FR --box X0,Y0,X1,Y1 [--frames FIRST-LAST] [--per 20] [--size 900] --out $SC/strips
 ```
 
-It needs only Python and Pillow. The box is in fractions of the frame (reading-room scans of one
-дело drift by a few pixels); a tall box is laid left to right, a wide one stacked. A strip finds;
-the frame it names is then read at full size (two-tier rule below). It needs a steady layout — an
-archive's own scans; phone photographs of a book shift and turn, and a fixed box misses. Tested on
-a 10th-revision дело: see the `verso-reading:census` skill, «Sweeping a whole дело cheaply».
-The idea is ex-USSR Kinship Research's (its field lessons and its scan montage).
+The box is in fractions of the frame (reading-room scans of one дело drift by a few pixels); a
+tall box is laid left to right, a wide one stacked. A strip finds; the frame it names is then read
+at full size (two-tier rule below). It needs a steady layout — an archive's own scans; phone
+photographs of a book shift and turn, and a fixed box misses. Tested on a 10th-revision дело: see
+the `verso-reading:census` skill, «Sweeping a whole дело cheaply». The idea is ex-USSR Kinship
+Research's (its field lessons and its scan montage).
 
-## When the album was never renamed
+## When the frames were never renamed
 
-The four steps above assume the archives' `<кадр>_<лист>.jpg` naming. Whole folders of
-albums are not renamed — the years of a parish may sit in Photos exactly as the phone wrote
-them (`IMG_20240611_093012.jpg`). Every subcommand except `spread` then numbers pages by
+The four steps above assume the `<кадр>_<лист>.jpg` naming. Whole folders of frames are not
+renamed — the years of a parish may sit exactly as the phone wrote them
+(`IMG_20000101_120000.jpg`). Every subcommand except `spread` then numbers pages by
 **position** and calls them «кадр 12»; `--from`/`--to` select frames, `--frames` forces the
 mode, and `check` tells you it can verify nothing:
 
 ```bash
-verso-scans headers $SC --out $SC/headers --rows 6   # → кадр1 … кадр38
-verso-scans crops   $SC --out $SC/p3 --from 31 --to 38 --part 3
-verso-scans zoom    $SC --folio 35 --box 0.28 0.55 0.82 0.63 --scale 3.4
+verso scans headers $FR --out $SC/headers --rows 6   # → кадр1 … кадр38
+verso scans crops   $FR --out $SC/p3 --from 31 --to 38 --part 3
+verso scans zoom    $FR --folio 35 --box 0.28 0.55 0.82 0.63 --scale 3.4 --out $SC/z35.jpg
 ```
 
 Two things this mode cannot do. **It verifies nothing** — a leaf never photographed and a
-leaf filed under the wrong year both look like a tidy album, which is the whole reason the
-folio naming exists; rename before reading a year twice. And **`spread` does not apply**,
-because «the facing recto» has no meaning without лист numbers — cut the two halves by
-hand with `crops --x0/--x1`.
+leaf filed under the wrong year both look like a tidy directory, which is the whole reason the
+folio naming exists; rename the frames `<кадр>_<лист>[об]`, read off each page's corner, before
+reading a year twice. And **`spread` does not apply**, because «the facing recto» has no meaning
+without лист numbers — cut the two halves by hand with `crops --x0/--x1`.
+
+**A number in the filename is read as the лист.** Frames named `000.png … 048.png` are often
+FILE numbers, but `verso scans` reads them as листы: `--folio 41` opens `041.png` although the
+page says 86. (It cannot be ruled out by shape: `053.jpg` of another дело really is л. 53.)
+Rename them `<кадр>_<лист>` (`0041_86.png`, `0042_86об.png`) and `--folio 86` opens the right page.
 
 The frame index counts every image in the directory, so **always `--out` somewhere else**:
-writing crops back beside the frames renumbers everything after them.
+writing crops back beside the frames renumbers everything after them. `spread`, `zoom` and
+`rows` write into the frames' directory unless `--out` names a file — give it every time.
 
 **A pale hand needs `--enhance`.** Plain autocontrast (the default, `--enhance 1`) left one
 book guessable but not readable; `--enhance 1.7` clips the histogram at both ends and
 pushes contrast and edges, and the surnames come out plain. Pushing a hand that is already
 dark only crushes it, so this is a dial, not a default. Available on `crops`, `spread` and
-`zoom`. Once found, set it on the album — Verso's viewer «Бледные чернила», or `enhance = 1.7`
-in its stanza of the village `scans.toml` — and `zoom` takes it without the flag (the output
-line says «enhance 1.7 из scans.toml»).
+`zoom`. Once found, set `enhance = 1.7` in the album's stanza of `scans.toml` (below) and
+`zoom` takes it without the flag (the output line says «enhance 1.7 из scans.toml»).
 
 ## Why each step is shaped this way
 
 **Frames are rotated by EXIF, not by pixels.** A phone records the rotation as a tag and
 Pillow does not apply it on open, so a tagged frame would have every fractional window cut
 against the wrong axis — a `--part 3` crop slicing across the columns instead of along
-them, unreadable with nothing to say why. `verso-scans` applies the tag on every open;
+them, unreadable with nothing to say why. `verso scans` applies the tag on every open;
 if you cut crops with your own Pillow script, call `ImageOps.exif_transpose` first.
 
-**The tag is the phone's guess, and over a book lying flat it guesses wrong.** A HEIC is
-decoded ALREADY turned: libheif applies the file's `irot` box, and pillow-heif then resets
-the EXIF tag to 1 and keeps the old value in `info["original_orientation"]` — a record of
-what was applied, never something to apply again (it turns every frame twice; rendered
-against Photos, it would have put four years of one village's albums upside down). What is
-wrong is the tag itself: on one set of HEIC albums it was wrong on most spreads and right on
-the odd single page. So a frame that still lies sideways is DECLARED in `scans.toml` — `rotate`
-for the album, `rotate_frames` for a frame shot differently (below). Upright is what Photos
-shows: compare with it, not with `sips`, which reports neither `irot` nor the HEIC tag.
-
-**`export` does not drive Photos.app frame by frame.** It used to, and that path fails
-SILENTLY: `photo.export()` has returned `[]` with all the originals of an album already
-on disk, and hung past six minutes on one frame after a restart — and a short directory
-is indistinguishable from a year the archive never photographed. The album is resolved in
-`Photos.sqlite` instead (`verso.app.sources.photos.library`, Mac-free and unit-tested), originals
-already on disk are copied, and AppleScript is paid only for the iCloud remainder, where
-its real job is to trigger the download. One album: 74 copied, 48 pulled. Still
-run `check` afterwards — a frame that never arrives is reported, not assumed.
+**The tag is the phone's guess, and over a book lying flat it guesses wrong.** On one set of
+phone albums it was wrong on most spreads and right on the odd single page. So a frame that
+still lies sideways is DECLARED in `scans.toml` — `rotate` for the album, `rotate_frames` for a
+frame shot differently (below). Upright is what the phone's own viewer shows: compare with it.
+A phone's own format is decoded already turned, and pillow-heif keeps the old tag in
+`info["original_orientation"]` only as a record of what was applied: applying it again turns
+every frame twice (it would have put four years of one village's albums upside down).
 
 **`check` before reading, always.** Two failures are invisible to a reader and expensive:
 a page never photographed (the godparents of a whole spread simply absent), and a leaf
@@ -156,13 +131,13 @@ the дело catches the second; without them the check still catches gaps and d
 A gap in FRAME numbering is not a defect (the cover is frame 1 and the first leaf may be
 frame 190); a missing folio SIDE is.
 
-**An album with gaps is rebuilt, not read around.** When the дело is online whole (an
-archive's reading room, Яндекс.Архив — the project's record of the дело has the link),
-compare the album with the case before reading: one album held 64 of the case's 92
+**A дело with gaps is completed, not read around.** When the дело is online whole (an
+archive's reading room, an aggregator — the project's record of the дело has the link),
+compare the frames with the case before reading: one set held 64 of the case's 92
 scans, its filenames were shifted against the scan numbers (`317.jpeg` was scan 315), and the
 missing 28 included a birth, two weddings and a burial of the family being swept. Find the
 missing scans by matching each frame against the case's previews, download the originals and
-replace the album in Photos without deleting anything (the AGENTS.md проекта names the
+add them to the frames without deleting anything (the AGENTS.md проекта names the
 project's tools for its archives). An aggregator's OCR text is also the fastest way to LOCATE a
 family in a whole case — search the surnames, then read every hit on the scan.
 
@@ -214,23 +189,17 @@ on top is the same record as the row at that height below.
 
 ## `scans.toml` — what the album knows about itself
 
-Finding one record on one лист costs several zooms of guesswork, and the answer
-used to be thrown away as soon as the crop came out right. Two kinds of knowledge
-are worth keeping, and they live in `scans.toml` — read from the ALBUM directory
-first (so a scratch export is self-describing), else from the village directory,
-which is the copy git keeps:
+Finding one record on one лист costs several zooms of guesswork. What the album knows about
+its own geometry is declared once in `scans.toml`, in the frames' directory (so the directory is
+self-describing); `zoom` and `rows` also take `--layout FILE` or `--village DIR`, where a project
+keeps the durable copy:
 
 ```toml
 [album."Маниловка 1902"]
-photos_pk = 1234        # settles a duplicate title — one year may be two albums
 frames = "spread"       # the file is a spread though the NAME gives one лист
 top = 0.19              # where the writing area begins; bottom = … as well
-
-[[album."Маниловка 1902".box]]
-folio = "47об"
-part = 1
-record = 31
-box = [0.18, 0.44, 0.60, 0.97]
+rotate_frames = { "кадр7" = 270 }
+enhance = 1.7
 ```
 
 - **`frames = "spread"`** is what makes the right-hand leaf exist at all. Some
@@ -241,37 +210,30 @@ box = [0.18, 0.44, 0.60, 0.97]
   So is a frame whose image STANDS (taller than wide, after its orientation tag
   and the album's `rotate`): a spread lies on its side, and some archives' albums
   shoot a blank or summary leaf alone among spreads — split, its «об» would be
-  the right half of its own recto (`standing_frames`).
-- **`top`/`bottom`** are what make `--row N OF` land: the writing area starts at
+  the right half of its own recto.
+- **`top`/`bottom`** are what make `zoom --row N OF` land: the writing area starts at
   a different height in every дело, and a page whose last third is signatures
   divides into rows that are all too tall.
 - **`rotate`** turns every frame that many degrees counter-clockwise on top of
   what the file declares; **`rotate_frames = { "кадр1" = 0, "кадр7" = 270 }`**
   gives a frame shot differently its own turn, keyed by the label `--folio`
   names (`кадр7`, `64об`). An entry REPLACES `rotate` rather than adding to it,
-  so `0` declares the one frame the phone got right. Every command (`headers`,
-  `crops`, `spread`, `zoom`) reads both, and every window is in fractions of
-  the TURNED frame — so changing a declaration moves every window on its frames,
-  and they must be turned with it.
-- **`[[box]]`** is the cache. Find a record once with `--box … --remember`, and
-  `--record 31` brings the same window back forever. A second `--remember` for
-  the same record REPLACES its window and says `window REPLACED` — locating a
-  record takes several tries, and the last one is the one that was right. Only
-  that one table is rewritten, so hand-measured geometry, album notes and the
-  comments beside them survive. A window drawn in Verso on a slanted leaf may
-  carry `angle = 1.5`: its frame was turned that far (degrees CCW, after
-  `rotate`) to lay the lines level, and `zoom` cuts it at that turn; a `--box`
-  typed on the command line is on the frame as it lies (angle 0).
-- **`village`** is written into the ALBUM's copy by `export --village X`, and
-  says where the durable file is. Reading prefers the album's copy so a scratch
-  export can be tweaked; WRITING follows this pointer instead, because a
-  `--remember` that lands in a /tmp export is a window found and thrown away.
-  `--layout` and `--village` still override it.
+  so `0` declares the one frame the phone got right. Every window is in fractions
+  of the TURNED frame — so changing a declaration moves every window on its
+  frames, and they must be turned with it.
+- **`enhance`** is the push a faded hand needs; `zoom` takes it when no `--enhance` is given.
+- **`village`**, in the frames' own copy, names the directory whose `scans.toml` is the durable
+  one: `enhance` is asked there too. `--layout`, `--village` and `--album-title` override.
+
+`verso scans` reads `scans.toml` and never writes it. A record's window, once found, is worth
+keeping — a whole-дело sweep comes back to the same records. If the project has a tool that
+remembers windows, it is named in the AGENTS.md проекта; without one, write the `--box` you
+settled on into the project's notes on the дело.
 
 ```bash
-verso-scans zoom $SC --folio 47об --part 1 --record 31 \
-    --box 0.18 0.44 0.60 0.97 --scale 9 --remember     # found, and kept
-verso-scans zoom $SC --folio 47об --part 1 --record 31 --scale 9
+verso scans rows $FR --part 1 --folio 47об 48об --out $SC/rows_47об.jpg   # where each record begins
+verso scans zoom $FR --folio 47об --part 1 --row 3 8 --out $SC/z47об_3.jpg   # the 3rd of the page's 8
+verso scans zoom $FR --folio 47об --box 0.18 0.44 0.60 0.97 --scale 9 --out $SC/z47об_3.jpg
 ```
 
 ⚠ **A reading of mine is not a finding.** Twice in one session a model read this kind
@@ -307,19 +269,12 @@ show it, and let the person who knows the hand read it.
    library's, `verso death-age` and `verso sibling-spacing` (validates every birth year you derived
    from a burial age) are the ones a newly read year most often trips; reading backwards, a new year
    almost always falsifies some primacy claim of the years already written.
-4. Record the year's composition (part boundaries, inserted leaves, album frame range) where the
+4. Record the year's composition (part boundaries, inserted leaves, frame range) where the
    project keeps the record of the дело — the next year's `check --first/--last` depends on it.
 
 ## Limits
 
-`export` needs macOS with Apple Photos and the `photoscript` package; the other commands
-need only Pillow. Neither is a declared dependency of the library, so both are imported lazily
-and say what to install. Some дела are also on Google Drive or on an archive's or an
-aggregator's site — the project's record of the дело has the links; the
-`verso-reading:census` skill documents the Drive curl recipe.
-
-**Not every album titled with a year is the village's.** An album's Photos FOLDER says whose
-book it is: «1852 (АРХИВ Ф-О-Д)» in the folder «Маниловка» is Маниловка's book, though a
-neighbouring village may have no 1852 album of its own
-(`verso.app.sources.photos.library.album_folders`; `export` resolves a title held in two folders by
-the village's folder, but a title only one village has is taken whatever its folder).
+`verso scans` fetches nothing: it works on frames already on disk, and getting them there is the
+project's (the AGENTS.md проекта). It needs Pillow only — `verso-core[scans]`, and
+`verso-core[heic]` for a phone's own format; without them the pure parts (filenames, continuity,
+the windows' arithmetic) still run.
