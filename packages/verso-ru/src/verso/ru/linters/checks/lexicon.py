@@ -10,7 +10,8 @@ Codes:
 * **LEX002** (hard) — a key written twice in one table of the layer: the layer would answer by the order of
   its rows, which is what the layers exist to end.
 * **LEX003** (hard) — a base no layer of the sum holds: `matching_base` would fold onto a name the lexicon does
-  not know — a row's own base, or the base of a lower entry a removal row (`-`) takes away.
+  not know — a row's own base, or the base of a lower entry a removal row (`-`) takes away; and a pin's father no
+  layer holds as a man's name: `father_name_for_patronymic` would answer a name the lexicon does not know.
 * **LEX004** — a base that is itself a variant: in the base layer an error (its bases are a fixed point — one
   step of `matching_base` reaches the canonical name), above it advice — a corpus may fold onto its own
   spelling, and a chain there is the corpus's to collapse.
@@ -111,6 +112,7 @@ def lint_layer(source: FilesLayer, *, below: Sequence[Layer] = (), base: bool = 
                   {e.key: e for e in entries if isinstance(e, PatronymicEntry)}, writable=source.writable,
                   derives=True)
     found += _bases(layer, lines["names"], below, base)
+    found += _fathers(layer, lines.get("patronymics", {}), below)
     found += _conflicts(layer, below)
     found += _redundant(layer, lines, below)
     return found
@@ -179,6 +181,17 @@ def _bases(layer: Layer, lines: dict[tuple[Gender | None, str], int], below: Seq
             elif held.base is not None:
                 found.append(Finding("names.tsv", issue("LEX004", "chain", line, level=_ERROR if base else _WARN,
                                                         token=entry.name, key=entry.name, base=b, next=held.base)))
+    return found
+
+
+def _fathers(layer: Layer, lines: dict[tuple[Gender | None, str], int], below: Sequence[Layer]) -> list[Finding]:
+    """LEX003 at a pin: a father the sum holds as no man's name (nor as a name of no sex)."""
+    names = _summed_names([*below, layer])
+    found = []
+    for key, pin in layer.patronymics.items():
+        if pin.father is not None and (Gender.MALE, pin.father) not in names and (None, pin.father) not in names:
+            found.append(Finding("patronymics.tsv", issue("LEX003", "unknown_father", lines.get(key), level=_ERROR,
+                                                          token=pin.form, key=pin.form, father=pin.father)))
     return found
 
 

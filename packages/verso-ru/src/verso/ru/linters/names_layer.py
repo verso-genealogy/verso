@@ -1,9 +1,15 @@
-"""What `verso names add` and `verso names remove` do to a writable layer, apart from printing it — as `names_csv` is for the old table.
+"""What `verso names add`, `remove`, `pin` and `unpin` do to a writable layer, apart from printing it — as `names_csv` is for the old table.
 
 A layer is written one row to a key and no row has a place: `FilesLayer.put` and `remove` keep its files sorted. What is
 decided here is whether a row may be written — the layer's linter (`verso.ru.linters.checks.lexicon`) reads the new
 rows over the layers under them, a hard finding refuses — and what a removal is: the layer's own row deleted, or, for a
 name only a lower layer (the base) holds, a removal row (`-` in bases) that takes it out of the stack.
+
+A pin (`patronymics.tsv`, `new_pin`) is one more spelling of a patronymic read back to its father — «Зюзеин» → Зюзей,
+Зюзеевич — or, with `old`, a modern form's short one. It is a reverse lookup: what the father's forms give
+(`derive_old_patronymic`) stays as it was, so a historical spelling is taught without moving any record's output. A pin
+over a form the sum reads already is written, and said (`reading_change`): it changes what records writing that form
+read.
 
 Only a workspace of schema 6 has layers (`verso.ru.naming.layers`); the old `names.csv` is `verso.ru.naming.names_table`'s.
 """
@@ -21,7 +27,7 @@ from verso.ru.linters.checks.lexicon import Finding, lint_layer
 from verso.ru.messages import t
 from verso.ru.naming import layers
 from verso.ru.naming.layer_files import NO_FORM, FilesLayer, Table
-from verso.ru.naming.lexicon import ABSENT, FormsEntry, Layer, NameEntry
+from verso.ru.naming.lexicon import ABSENT, FormsEntry, Layer, Lexicon, NameEntry, PatronymicEntry
 
 #: The source a row written by hand carries unless one is given.
 DEFAULT_SOURCE = "editor"
@@ -122,7 +128,8 @@ def replaced(at: Target, entries: Sequence[NameEntry | FormsEntry]) -> list[Name
     return [e for e in entries if e.key in (at.here.names if isinstance(e, NameEntry) else at.here.forms)]
 
 
-def findings_of(at: Target, entries: Sequence[NameEntry | FormsEntry], *, replace: bool = False) -> list[Finding]:
+def findings_of(at: Target, entries: Sequence[NameEntry | FormsEntry | PatronymicEntry], *,
+                replace: bool = False) -> list[Finding]:
     """What the layer's linter says of `entries` written over the layers under them — only the new rows are read, so a
     layer of a thousand pins costs no more than one of none. With `replace` the rows they replace are not among the
     layers under them: the new row is compared with the layers below, not with the row it takes the place of."""
@@ -130,9 +137,11 @@ def findings_of(at: Target, entries: Sequence[NameEntry | FormsEntry], *, replac
     if replace:
         gone = {e.key for e in entries if isinstance(e, NameEntry)}
         gone_forms = {e.key for e in entries if isinstance(e, FormsEntry)}
+        gone_pins = {e.key for e in entries if isinstance(e, PatronymicEntry)}
         # The layer as it is but for the rows replaced: its `derives`, `derived` and the rest kept.
         here = dataclasses.replace(here, names={k: v for k, v in here.names.items() if k not in gone},
-                                   forms={k: v for k, v in here.forms.items() if k not in gone_forms})
+                                   forms={k: v for k, v in here.forms.items() if k not in gone_forms},
+                                   patronymics={k: v for k, v in here.patronymics.items() if k not in gone_pins})
     with tempfile.TemporaryDirectory() as scratch:
         probe = FilesLayer(Path(scratch), name=at.layer.name, writable=True)
         for entry in entries:
@@ -182,3 +191,76 @@ def _dangling(names: Mapping[Key, NameEntry], gone: Key) -> tuple[str, ...]:
     if (sex, name) in names or (None, name) in names:
         return ()
     return tuple(sorted({e.name for e in names.values() if e.bases == (name,) and e.sex == sex}))
+
+
+# -- pins: patronymics.tsv
+
+def _value(text: str | None) -> str | None:
+    """A pin's cell as given: spaces round it dropped, an empty one none."""
+    cell = (text or "").strip()
+    return cell or None
+
+
+def new_pin(at: Target, sex: Gender | None, form: str, father: str | None, modern: str | None, old: str | None,
+            source: str, *, replace: bool = False) -> PatronymicEntry:
+    """The pin `pin` writes: (`sex`, `form`) read back to `father` and `modern`, or, with `old`, a modern form's short one;
+    none of the three — a form the lexicon knows and ties to nothing. A key the layer holds is `EditError`, unless
+    `replace` — then its row is replaced whole. What the layers' linter says of it is `findings_of`'s."""
+    entry = PatronymicEntry(sex, form.strip(), _value(father), _value(modern), source, _value(old))
+    if not replace and entry.key in at.here.patronymics:
+        raise EditError(str(t("names_edit.exists", name=entry.form, sex=_cell(sex) or "—", layer=at.layer.name,
+                              table="patronymics")))
+    return entry
+
+
+@dataclass(frozen=True)
+class Reading:
+    """What the sum answers for a pin's key: a short form's father and modern form, or a modern form's short one."""
+    father: str | None = None
+    modern: str | None = None
+    old: str | None = None
+
+
+def reading(stack: Sequence[Layer], sex: Gender | None, form: str, *, of_modern: bool) -> Reading | None:
+    """What the sum of `stack` answers for (`sex`, `form`): read as a short form (its father and modern form —
+    `canonicalize_patronymic`) or, `of_modern`, as a modern one (its short form — `find_old_patronymic_by_modern`);
+    None where it answers nothing."""
+    lexicon = Lexicon.of(list(stack))
+    if of_modern:
+        index = lexicon.modern_f if sex is Gender.FEMALE else lexicon.modern_m
+        short = index.get(form)
+        return Reading(old=short) if short else None
+    index = lexicon.old_f if sex is Gender.FEMALE else lexicon.old_m
+    found = index.get(form)
+    return None if found is None else Reading(found.father, found.modern)
+
+
+def reading_change(at: Target, pin: PatronymicEntry) -> tuple[Reading, Reading] | None:
+    """(what the layers read the pin's form as now, what they would with the pin) where the pin changes an answer the sum
+    gives already — the records writing that form read it otherwise after it; None where the form is new to the lexicon,
+    or is read alike. The layer's own row of the key, which a `replace` writes over, counts as «now»."""
+    if pin.is_unattached:
+        return None
+    of_modern = pin.old is not None
+    before = reading([*at.below, at.here], pin.sex, pin.form, of_modern=of_modern)
+    if before is None:
+        return None
+    after = Reading(old=pin.old) if of_modern else Reading(pin.father, pin.modern)
+    return None if before == after else (before, after)
+
+
+@dataclass(frozen=True)
+class PinRemoval:
+    """What `unpin` did, or would: whether a layer below still holds a pin of the key (it answers again)."""
+    still_held: bool
+
+
+def remove_pin(at: Target, sex: Gender | None, form: str, *, write: bool) -> PinRemoval:
+    """The pin (`sex`, `form`) taken out of the layer; `write=False` says what would be done. `EditError` when the layer
+    holds no such pin — a pin of a layer below is not the layer's to remove."""
+    key: Key = (sex, form)
+    if key not in at.here.patronymics:
+        raise EditError(str(t("names_edit.no_such_pin", form=form, sex=_cell(sex) or "—", layer=at.layer.name)))
+    if write:
+        at.layer.remove("patronymics", key)
+    return PinRemoval(any(key in layer.patronymics for layer in at.below))

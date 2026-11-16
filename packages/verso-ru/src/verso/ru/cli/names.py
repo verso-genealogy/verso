@@ -2,6 +2,8 @@
 
     verso names add --gender Ж --name Евфрасиния --base Ефросиния --genitive Евфрасинии --source "Горюхино 1917"
     verso names remove --gender Ж --name Евфрасиния
+    verso names pin --gender М --form Зюзеин --father Зюзей --modern Зюзеевич --source "Горюхино МК 1901"
+    verso names unpin --gender М --form Зюзеин
     verso names check [--layer DIR | --all]
     verso names explain Евфрасиния [--gender Ж]
 
@@ -15,6 +17,15 @@ key; for a name only a layer below (the base) holds it writes a removal row — 
 stack, and it says when records of the corpus still write the name (a warning, never a refusal). `check` is the linter over
 the writable layer, one layer (`--layer`) or every layer (`--all`) and the sum; exit 1 when a finding is hard. `explain`
 says, for one name, what each naming function answers and which layer's entry gave it, or that the rule did.
+
+`pin` writes one row of `patronymics.tsv` into the writable layer: a short patronymic read back to its father and its modern
+form (`--father`, `--modern`) — one more historical spelling, which `validate_old_patronymic` and `canonicalize_patronymic`
+then know, while what the father's forms give (`derive_old_patronymic`) stays as it was, so no record's output moves —, or
+(`--old`) a modern form's short one; none of the three, a form known and tied to nothing. The row is read by the same linter:
+LEX001 (a key no lookup asks by, a pin of a father with no sex), LEX003 (a father no layer holds as a man's name) and LEX007
+refuse it. A pin over a form the sum reads already is written and said: the records writing that form read it otherwise.
+`--replace` replaces the layer's pin of the key. `unpin` deletes the layer's pin of a key; a pin of a layer below is not the
+layer's to remove.
 
 `add --replace` replaces the row of a key the layer holds already, whole, instead of refusing it: each table the command
 writes (`names.tsv`, and `forms.tsv` when forms are given) has that key's row replaced, and a table it does not write is
@@ -119,6 +130,24 @@ def main(argv: Sequence[str] | None = None) -> int:
     remove.add_argument('--layer', default=None, metavar='DIR', help=str(t("cli.names.help_layer")))
     remove.add_argument('--dry-run', action='store_true')
 
+    pin = sub.add_parser('pin', help=str(t("cli.names.pin_help")), description=str(t("cli.names.pin_description")),
+                         formatter_class=argparse.RawDescriptionHelpFormatter)
+    pin.add_argument('--gender', required=True, choices=list(GENDERS), help=str(t("cli.names.help_pin_gender")))
+    pin.add_argument('--form', required=True, help=str(t("cli.names.help_pin_form")))
+    pin.add_argument('--father', default='', help=str(t("cli.names.help_pin_father")))
+    pin.add_argument('--modern', default='', help=str(t("cli.names.help_pin_modern")))
+    pin.add_argument('--old', default='', help=str(t("cli.names.help_pin_old")))
+    pin.add_argument('--source', default='', help=str(t("cli.names.help_source")))
+    pin.add_argument('--layer', default=None, metavar='DIR', help=str(t("cli.names.help_layer")))
+    pin.add_argument('--replace', action='store_true', help=str(t("cli.names.help_pin_replace")))
+    pin.add_argument('--dry-run', action='store_true')
+
+    unpin = sub.add_parser('unpin', help=str(t("cli.names.unpin_help")), description=str(t("cli.names.unpin_description")))
+    unpin.add_argument('--gender', required=True, choices=list(GENDERS), help=str(t("cli.names.help_pin_gender")))
+    unpin.add_argument('--form', required=True, help=str(t("cli.names.help_pin_form")))
+    unpin.add_argument('--layer', default=None, metavar='DIR', help=str(t("cli.names.help_layer")))
+    unpin.add_argument('--dry-run', action='store_true')
+
     check = sub.add_parser('check', help=str(t("cli.names.check_help")),
                            description=str(t("cli.names.check_description")))
     scope = check.add_mutually_exclusive_group()
@@ -146,6 +175,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             return _add(ws, args)
         if args.command == 'remove':
             return _remove(ws, args)
+        if args.command == 'pin':
+            return _pin(ws, args)
+        if args.command == 'unpin':
+            return _unpin(ws, args)
         return _check(ws, Path(args.layer) if args.layer else None, args.all)
     except (edit.EditError, LayerFileError, LexiconConflict) as error:  # said, with the file or the key, never a traceback
         print(f'error: {error}', file=sys.stderr)
@@ -258,6 +291,63 @@ def _remove(ws: workspace.Workspace, args: argparse.Namespace) -> int:
     used = usage.written_count(ws, args.name)
     if used:
         print(t("cli.names.used", name=args.name, count=used), file=sys.stderr)
+    if args.dry_run:
+        print(t("cli.names.dry_run"))
+    else:
+        names_registry.reload()
+    return 0
+
+
+def _pin(ws: workspace.Workspace, args: argparse.Namespace) -> int:
+    """`pin`: one row of patronymics.tsv, read by the layers' linter over the layers under it, written when no finding is
+    hard; a pin that changes what the sum reads a form as is said."""
+    at = edit.target(ws, Path(args.layer) if args.layer else None)
+    sex = GENDERS[args.gender]
+    entry = edit.new_pin(at, sex, args.form, args.father, args.modern, args.old, args.source or edit.DEFAULT_SOURCE,
+                         replace=args.replace)
+    found = edit.findings_of(at, [entry], replace=args.replace)
+    hard = [f for f in found if f.issue.level == 'error']
+    for f in hard:
+        print(f'error: {f.issue.message}', file=sys.stderr)
+    if hard:
+        print(t("cli.names.refused", layer=at.layer.name, count=len(hard)), file=sys.stderr)
+        return 1
+    for f in found:
+        print(t("cli.names.warning", message=f.issue.message), file=sys.stderr)
+    change = edit.reading_change(at, entry)
+    if change is not None:
+        before, after = change
+        print(t("cli.names.warning", message=t("cli.names.pin_rereads", form=entry.form, before=_read(before),
+                                                after=_read(after))), file=sys.stderr)
+    reading = _read(edit.Reading(entry.father, entry.modern, entry.old))
+    if entry.key in at.here.patronymics:
+        print(t("cli.names.pin_replaced", layer=at.layer.name, sex=_sex(sex), form=entry.form, reading=reading))
+    else:
+        print(t("cli.names.pinned", layer=at.layer.name, sex=_sex(sex), form=entry.form, reading=reading))
+    if args.dry_run:
+        print(t("cli.names.dry_run"))
+        return 0
+    at.layer.put(entry)
+    names_registry.reload()
+    return 0
+
+
+def _read(reading: edit.Reading) -> str:
+    """A pin's reading as the commands say it: «father, modern», «→ short» for a modern form's, «—» for a form tied to
+    nothing."""
+    if reading.old is not None:
+        return f'→ {reading.old}'
+    return ', '.join(cell for cell in (reading.father, reading.modern) if cell) or '—'
+
+
+def _unpin(ws: workspace.Workspace, args: argparse.Namespace) -> int:
+    """`unpin`: the layer's pin of the key deleted."""
+    at = edit.target(ws, Path(args.layer) if args.layer else None)
+    sex = GENDERS[args.gender]
+    done = edit.remove_pin(at, sex, args.form, write=not args.dry_run)
+    print(t("cli.names.unpinned", layer=at.layer.name, sex=_sex(sex), form=args.form))
+    if done.still_held:
+        print(t("cli.names.pin_still_held", form=args.form, sex=_sex(sex)))
     if args.dry_run:
         print(t("cli.names.dry_run"))
     else:
