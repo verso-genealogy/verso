@@ -21,5 +21,15 @@
   "faded/rows_1-1об_1.jpg": "605d6e414092aca5d6bfdd4cfa956950317d365777b5a4d5bf5b8493cae74f28"
  },
  "stderr": "",
- "stdout": "л. 1, ч.1: 3 mark(s) in the счётъ column below 0.17\n   1  0.345–0.368\n   2  0.554–0.577\n   3  0.761–0.784\n  cuts 0.332 0.54 0.748 0.835\nл. 1об, ч.1: 4 mark(s) in the счётъ column below 0.17\n   1  0.304–0.327\n   2  0.471–0.494\n   3  0.637–0.660\n   4  0.802–0.826\n  cuts 0.29 0.457 0.623 0.789 0.849\n<DIR>/faded/rows_1-1об_1.jpg: the marks (red, numbered in page order) and the cuts (blue) — check them before a window is cut by them\n"
+ "stdout": "л. 1, ч.1: 3 mark(s) in the счётъ column below 0.17\n   1  0.345–0.368\n   2  0.554–0.577\n   3  0.761–0.784\n  cuts 0.332 0.54 0.748 0.835\nл. 1об, ч.1: 4 mark(s) in the счётъ column below 0.17\n   1  0.304–0.327\n   2  0.471–0.494\n   3  0.637–0.660\n   4  0.802–0.826\n  cuts 0.29 0.457 0.623 0.789 0.849\n<DIR>/faded/rows_1-1об_1.jpg: the marks (red, numbered in page order) and the cuts (blue) — check them before a window is cut by them\n",
+ "thumbs": {
+  "faded/rows_1-1об_1.jpg": {
+   "mode": "RGB",
+   "size": [
+    2586,
+    1440
+   ],
+   "thumb": "ffe6e0fefefaf1f0fdeefbfcfefafdfcffedd8fafefefdf9fafdf9fefefbfffcffe1daf4e3e5e5eaeae5ebdbdaeae3effff7c5f4ede6ede3ded2d7e3d7d8e1edfff7f9f4dde0efe9e9cddfe9dedae2f4fff8f9f4e3e7e7edf5f2f9f2f0f1e5edfff6f8f3f6f1f0f2e8f3f0f4f2f8f2f8fff7f8f3f8f4f8f8f8f4f8f8f4f8f8f7fff7f9f4f9f5f9f9f9f5f9f9f5f9f9f3fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f2fff7f9f4f9f5f9f9f9f5f9f9f5f9f9fafff8f9f4f7f5f9f9f9f5f9f9f5f9f9f9fff7f9f4f9f5f9f9f9f5f9f9f5f9f9f3ffeddae9e5eaeadadedadceceae5e8e7ffedeee7e8eaeeeeeeeaeeeeeaeeeef0ffecaff4ebd0e8e9dfe4eadce2e6e7f5fbd6c0f4eae3eee4eae3e4e8e3ece6effff8f9f4e5e6e1d9f0e3e6ecdcf4deedfff1f0f4e5e3e7e8e3e6e7e8dfe3e8f6fff8f9f4f3f5f3f7f0f4ecf3f1e7f0f8fff7f9f4e6e5e9e2e3e7ebe3e8e7e6f1fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f3fff7f9f4f9f5f9f9f9f5f9f9f5f9f9f5fff8f9f4f8f5f9f9f9f5f9f9f5f9f9f4fff7f9f4f9f5f9f9f9f5f9f9f5f9f9f8ffeedce9e7e9eeeeeeeaeeeeeaeceeecfff6f8f3f8f4f8f8f8f4f8f8f4f8f8f2fee992f3ece6e2e8e4e1dce3e0eae7e7fff7f9f4f8f5f9f9f9f5f9f9f5f9f9fafff8f9f4eddfebe6f0e3e8ebe0ecedf7ffe7e0e7eaeaeee7e6e6eeeeeae9eceafff8f9f4f9f5f9f9f9f5f9f9f5f9f9f2fad6a9f4e1dcdde5eee5dbd9dce8e8f7fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f9fff7f9f4ebe5dde6e6e4eff0e4eae3f0fff8f9f4f8f5f9f9f9f5f9f9f5f9f9f2fff7f9f4f9f5f9f9f9f5f9f9f5f9f9faffeee4e9e6dbebeceeeaeeeee7ebededfff7f9f4f9f5f9f9f9f5f9f9f5f9f9f3feeac0f4e4e5e4e5e3e4deecd9e3e7ebfff7f9f4f9f5f9f9f9f5f9f9f5f9f9f6fff8f9f4eae5e6e7e7e2eee3edebeaeefff7f9f4f9f5f9f9f9f5f9f9f5f9f9f8fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f6ffecede6e6e9ededede9edede9ededebfff7f8f3f8f4f8f8f8f4f8f8f4f8f8f2f9d8daf4e9e4ece6e5d6ebe5dde5ecf7fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f9ffeff1f4e7e0e7e3ebe3e3e9dce7e5f3ffede0e9e5eaedeeeee7eeeee9edeee6fff7f9f2e0e2e8e0e0dde0e4e1e0e6f5feeaa6f4e9e1e7e8e7d5e4e2e2e5e1f2ffedeee9eeeaeeeeeeeaeeeeeaeeeee9fff1efead9e1e3d9e1e3e3e3dbd9e5e2fff7f9f4f9f5f9f9f9f5f9f9f5f9f9fafff8f9f4f9f5f9f9f9f5f9f9f5f9f9f9fff7f9f4f9f5f9f9f9f5f9f9f5f9f9f3fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f2fff7f9f4f9f5f9f9f9f5f9f9f5f9f9f7fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f6fff7f9f4f9f5f9f9f9f5f9f9f5f9f9f6fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f5fff7f9f4f9f5f9f9f9f5f9f9f5f9f9f4fff8f9f4f9f5f9f9f9f5f9f9f5f9f9f3"
+  }
+ }
 }

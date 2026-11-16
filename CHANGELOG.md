@@ -14,7 +14,8 @@ A corpus's output does not move: the scan tools are new, and nothing the DSL pro
   `quadrants`, `descreen` (were the reading plugin's scripts; its skills now name `verso scans`) and `jpeg`
   (a directory's HEIC frames as JPEG); verso-ru's `check`, `headers`, `crops`, `spread`, `zoom`, `rows` (verso-app's
   `verso-scans` subcommands of those names, the same files, bytes and output — held by `tests/golden/scans`, captured
-  from verso-app) and `cards` (the 1917 census cards). They read an album's stanza of `scans.toml` and write none:
+  from verso-app on macOS; off macOS, where Pillow's JPEG coder and resampling differ, an image is held to a 32×32
+  thumbnail within a tolerance) and `cards` (the 1917 census cards). They read an album's stanza of `scans.toml` and write none:
   the windows stay Verso's. The guide: [the scan tools](docs/scans.md).
   Their public names are what the guide's table lists — each module's `__all__` is exactly that, a subcommand's
   module public in `HELP`, `add_arguments` and `run` (`tests/ru/scans/test_surface.py`).

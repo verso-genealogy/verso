@@ -27,10 +27,18 @@ An album of spreads (`spreads/`, drawn by `draw_spreads`) names each frame by it
 page alone (`0003_12об.jpg`). Its cases (`SPREAD_CASES`) hold how `check`, `headers`, `crops`, `spread`, `zoom` and
 `rows` read the stanza; they were captured from the library, as its own behaviour.
 
-A golden file is `{app_commit, argv, lang, stdout, stderr, exit, files, pixels}`: the argv with `<DIR>` for the
-album's root, what the command printed (the root again `<DIR>`), its exit code, and every file it wrote — its
-SHA-256, and the SHA-256 of its decoded pixels (`pixels`), which a platform whose JPEG coder differs still
-matches. A library golden names its `commit` instead of `app_commit`, and adds each image's size (`sizes`).
+A golden file is `{app_commit, argv, lang, stdout, stderr, exit, files, pixels, thumbs}`: the argv with `<DIR>`
+for the album's root, what the command printed (the root again `<DIR>`), its exit code, and every file it wrote —
+its SHA-256, the SHA-256 of its decoded pixels (`pixels`), and its likeness (`thumbs`: mode, size and a
+`THUMB`×`THUMB` greyscale thumbnail, `likeness`). A library golden names its `commit` instead of `app_commit`,
+adds each image's size (`sizes`) and holds no `thumbs`.
+
+What is compared where (`matches_golden`): on macOS, where the goldens were captured, every file's bytes. Elsewhere
+Pillow's wheel is another build — its JPEG coder and its LANCZOS differ — so a file of other bytes matches by its
+likeness within `TOLERANCE` when its golden holds one, else by its decoded pixels. Measured on Pillow 13.0.0,
+Linux x86_64 against macOS arm64: the App's zoom, spread and `crops --with-count` outputs drift by at most 11
+levels in a pixel and 0.01 on the mean, by 1 level in the thumbnail; the library's PNGs differ in bytes only.
+`VERSO_GOLDEN_OFF_MACOS=1` takes the other platform's path on macOS.
 This module imports nothing of verso: the App's venv runs it.
 """
 from __future__ import annotations
@@ -291,6 +299,47 @@ def pixels(path: Path) -> str:
         return _sha(path.read_bytes())
 
 
+# The likeness of an image: a THUMB×THUMB greyscale thumbnail of its BOX means. Off macOS an image matches its
+# golden when no cell of the thumbnail is more than TOLERANCE[0] levels off and the cells' mean is within
+# TOLERANCE[1]. Measured: Pillow's other platform moves a cell by 1 level (mean 0.007); the same pixels encoded
+# again as JPEG at quality 75, by 6 (mean 0.5). A wrong image moves it further: the contrast of a missed enhance
+# by 12 or more (mean 2.2), a crop shifted 2% down by 20, a frame left upside down by 39 (`test_golden.py`).
+THUMB = 32
+TOLERANCE = (6, 1.0)
+
+
+def likeness(path: Path) -> dict[str, Any] | None:
+    """An image's mode, size and `THUMB`×`THUMB` greyscale thumbnail (hex); None when the file is no image."""
+    from PIL import Image
+    try:
+        with Image.open(path) as im:
+            im.load()
+            small = im.convert("L").resize((THUMB, THUMB), Image.Resampling.BOX)
+            return {"mode": im.mode, "size": list(im.size), "thumb": small.tobytes().hex()}
+    except Exception:
+        return None
+
+
+def unlike(path: Path, golden: dict[str, Any]) -> str | None:
+    """How the image at `path` is not the one `golden` (a `likeness`) describes, past `TOLERANCE`; None when it is
+    alike."""
+    here = likeness(path)
+    if here is None:
+        return "no image"
+    if (here["mode"], here["size"]) != (golden["mode"], golden["size"]):
+        return f"{here['mode']} {here['size']}, not {golden['mode']} {golden['size']}"
+    off = [abs(a - b) for a, b in zip(bytes.fromhex(here["thumb"]), bytes.fromhex(golden["thumb"]), strict=True)]
+    worst, mean = max(off), sum(off) / len(off)
+    if worst > TOLERANCE[0] or mean > TOLERANCE[1]:
+        return f"thumbnail off by {worst} at most, {mean:.2f} on the mean (tolerance {TOLERANCE[0]}, {TOLERANCE[1]})"
+    return None
+
+
+def on_macos() -> bool:
+    """Whether this is the platform the goldens were captured on, whose bytes they hold."""
+    return os.uname().sysname == "Darwin" and os.environ.get("VERSO_GOLDEN_OFF_MACOS") != "1"
+
+
 def size(path: Path) -> list[int] | None:
     """An image's size, width and height; None when the file is no image."""
     from PIL import Image
@@ -322,7 +371,8 @@ def capture(name: str, argv: list[str], lang: str, commit: str) -> dict[str, Any
         files = written(root, before)
         return {"app_commit": commit, "case": name, "argv": argv, "lang": lang,
                 "stdout": blank(done.stdout, root), "stderr": blank(done.stderr, root), "exit": done.returncode,
-                "files": files, "pixels": {f: pixels(root / f) for f in files}}
+                "files": files, "pixels": {f: pixels(root / f) for f in files},
+                "thumbs": {f: like for f in files if (like := likeness(root / f)) is not None}}
 
 
 def golden() -> int:
@@ -382,9 +432,10 @@ def golden_library(cases: list[tuple[str, list[str]]] | None = None, where: Path
 
 def matches_golden(golden: dict[str, Any], root: Path, before: dict[str, str], code: int, out: str,
                    err: str) -> list[str]:
-    """How a run under `root` differs from its golden; empty when it does not. A file of other bytes matches by
-    its decoded pixels off the platform the golden was captured on (macOS); a font-bound subcommand's files match
-    by name and size."""
+    """How a run under `root` differs from its golden; empty when it does not. On macOS, where the golden was
+    captured, a file matches by its bytes; elsewhere a file of other bytes matches by its likeness within
+    `TOLERANCE` when the golden holds one (`thumbs`), else by its decoded pixels. A font-bound subcommand's files
+    match by name and size."""
     wrong: list[str] = []
     if (code, blank(out, root), blank(err, root)) != (golden["exit"], golden["stdout"], golden["stderr"]):
         wrong.append(f"exit/stdout/stderr: {(code, blank(out, root), blank(err, root))!r}")
@@ -396,10 +447,13 @@ def matches_golden(golden: dict[str, Any], root: Path, before: dict[str, str], c
             if size(root / name) != golden["sizes"][name]:
                 wrong.append(f"{name}: size {size(root / name)} != {golden['sizes'][name]}")
         elif sha != golden["files"][name]:
-            if pixels(root / name) != golden["pixels"][name]:
-                wrong.append(f"{name}: other pixels than the golden's")
-            elif os.uname().sysname == "Darwin":
+            if on_macos():
                 wrong.append(f"{name}: other bytes than the golden's, on the platform it was captured on")
+            elif name in golden.get("thumbs", {}):
+                if (why := unlike(root / name, golden["thumbs"][name])) is not None:
+                    wrong.append(f"{name}: not like the golden's: {why}")
+            elif pixels(root / name) != golden["pixels"][name]:
+                wrong.append(f"{name}: other pixels than the golden's")
     return wrong
 
 

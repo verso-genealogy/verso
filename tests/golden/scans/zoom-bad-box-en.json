@@ -17,5 +17,6 @@
  "lang": "en",
  "pixels": {},
  "stderr": "--box takes FRACTIONS of the leaf, not pixels: [1.0, 2.0, 30.0, 40.0]\n",
- "stdout": ""
+ "stdout": "",
+ "thumbs": {}
 }
