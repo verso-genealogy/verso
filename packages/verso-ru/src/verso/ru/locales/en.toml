@@ -536,6 +536,7 @@ duplicate = "«{key}»: the key is written on line {first} already"
 [LEX003]
 unknown_base = "«{key}»: no layer holds the base «{base}»"
 removed_base = "«{key}»: the removal of «{base}» leaves this name's base in no layer"
+unknown_father = "«{key}»: no layer holds the father «{father}» as a man's name"
 
 [LEX004]
 chain = "«{key}»: the base «{base}» is itself a variant of «{next}»"
@@ -585,6 +586,7 @@ not_writable = "{path} is not the writable names layer: add and remove write onl
 old_format = "the names layer «{layer}» is the old table (names.csv): write it as three TSV files first (verso names layer-diff)"
 exists = "«{name}» ({sex}) is in {table}.tsv of «{layer}» already — remove it first: a key has one row"
 no_such_name = "no layer holds «{name}» ({sex})"
+no_such_pin = "the layer «{layer}» pins no «{form}» ({sex}): a pin of a layer below is not removed from here"
 
 [oracle]
 cannot_write = "the names oracle cannot write the answer {value} ({type}) in its notation"
@@ -1195,6 +1197,21 @@ explain_pin = "    {layer}: patronymics.tsv {sex} {form}: father {father}, moder
 explain_unknown = "    no layer holds {kind} «{key}»"
 explain_rule = "rule"
 
+pin_help = "pin a patronymic: a row of patronymics.tsv in the writable names layer"
+pin_description = """Write a row of patronymics.tsv into the writable layer of [names]: a short patronymic read back to its father and its modern form (--father, --modern) — one more historical spelling, which validate_old_patronymic and canonicalize_patronymic then know; what the father's forms give (derive_old_patronymic) does not change, so no record's output moves. With --old, a modern patronymic's short form; with none of the three, a form the lexicon knows and ties to nothing. The row is read by the layers' linter: LEX001 (a key no lookup asks by; a pin of a father with no sex), LEX003 (a father no layer holds as a man's name) and LEX007 refuse it. A pin of a form the sum reads otherwise already is written with a warning: the records writing that form read it otherwise."""
+help_pin_gender = "the form's sex: «М», «Ж», or - for a form of no sex (one tied to nothing only)"
+help_pin_form = "the patronymic's form as the lexicon spells it (Cyrillic, one word)"
+help_pin_father = "the father's name (a man's name some layer holds)"
+help_pin_modern = "the modern patronymic («-ович», «-евич», «-овна», «-евна»)"
+help_pin_old = "the short form of the modern patronymic --form (in place of --father and --modern)"
+help_pin_replace = "replace the pin of a key the writable layer holds already (instead of refusing)"
+pinned = "{layer}/patronymics.tsv: {sex} {form}: {reading}"
+pin_replaced = "{layer}/patronymics.tsv: {sex} {form}: {reading} (replaced)"
+pin_rereads = "the sum reads «{form}» as {before} already; with the pin — {after}: the records writing that form read it otherwise"
+unpin_help = "take a patronymic's pin out of the writable names layer"
+unpin_description = """Delete the key's row of patronymics.tsv from the writable layer. A pin of a layer below (the base) is not removed so: it is not this layer's."""
+unpinned = "{layer}/patronymics.tsv: {sex} {form} — deleted"
+pin_still_held = "a layer below pins «{form}» ({sex}) too: the form is read by its row"
 [cli.review_ratchet]
 seeded_already = "{path} exists already — the list is seeded once and only shrinks after"
 seeded = "{village}: unreviewed {unreviewed}; on Geni (a document in state) {listed} → {list_name}; held {held}"

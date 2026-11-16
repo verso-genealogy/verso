@@ -120,6 +120,8 @@ base's build, the layers' linter (LEX007) and `verso names layer-diff` run — a
 ```
 verso names add --gender Ж --name Евфрасиния --base Ефросиния --genitive Евфрасинии --source "МК 1917" [--dry-run]
 verso names remove --gender Ж --name Евфрасиния [--dry-run]
+verso names pin --gender М --form Зюзеин --father Зюзей --modern Зюзеевич --source "МК 1901" [--replace] [--dry-run]
+verso names unpin --gender М --form Зюзеин [--dry-run]
 verso names check [--layer DIR | --all]
 verso names explain Евфрасиния [--gender Ж]
 ```
@@ -147,6 +149,18 @@ deletes that row. Either way it says so, and says when a layer below still holds
 removed one as their base (they answer as written; LEX003 in `check`), and — a warning, never a refusal — how many
 records of the workspace's villages still write the name (`written` as a `person(…)`'s given name, the files read as
 syntax). `--gender -` is the entry of a name with no sex. Exit 1: no layer holds the key.
+
+`pin` writes one row of `patronymics.tsv` into the writable layer: a short patronymic read back to its father and its modern
+form (`--father`, `--modern`) — a scribe's spelling, «Зюзеин» beside the «Зюзеев» the father's forms give. It is a reverse
+lookup: `validate_old_patronymic`, `canonicalize_patronymic` and `father_name_for_patronymic` know the form after it, while
+`derive_old_patronymic` of the father still answers by his forms, so no record writing the old form reads otherwise. With
+`--old` the row is a modern form's short one (what `find_old_patronymic_by_modern` gives); with none of the three, a form
+the lexicon knows and ties to nothing. A pin is a man's or a woman's form (`--gender М|Ж`; `-` only for a form tied to
+nothing), so a spelling of both is two rows. The row is read by the layers' linter first: LEX001 (a key no lookup asks by, a
+pin tied to a father with no sex), LEX003 (a father no layer holds as a man's name) and LEX007 refuse it; a pin of a form the
+sum already reads otherwise is written with a warning naming both readings — the records writing that form read it
+otherwise. A key the layer pins already is refused unless `--replace`. `unpin` deletes the layer's pin of a key; a pin of a
+layer below is not the layer's to remove (exit 1).
 
 `check` reads the writable layer with the linter (LEX001–LEX007), or the layer `--layer` names, or with `--all` every layer,
 the base included, and their sum. Each finding is printed as `layer/file:line: message`; exit 1 when one is hard
