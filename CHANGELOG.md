@@ -3,7 +3,7 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## 0.1.40 — unreleased
+## 0.1.40 — 2026-11-16
 
 A corpus's output does not move: a pin teaches a spelling and changes no answer the lexicon gave, and
 `terraform fmt` is run otherwise over a generated tree.
