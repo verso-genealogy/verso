@@ -1,7 +1,7 @@
 # verso-core: what knows no language of the records — the workspace, the plugin registry,
 # the pipeline's loading, the records JSON's codec, the places and the corpus's data, the review
-# ratchet's mechanism, Geni's HCL models and `verso <команда>`. It loads no third-party package;
-# `[schema]` is for `verso records-schema --validate`.
+# ratchet's mechanism, Geni's HCL models, the scan tools and `verso <команда>`. It loads no third-party package
+# but its extras': `[schema]` is for `verso records-schema --validate`, `[scans]` and `[heic]` for `verso scans`.
 [build-system]
 requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "verso-core"
 version = "0.1.41.dev0"
-description = "verso's core: workspace, plugin registry, records JSON, review ratchet, Geni models and the verso command."
+description = "verso's core: workspace, plugin registry, records JSON, review ratchet, Geni models, scan tools and the verso command."
 requires-python = ">=3.14"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
@@ -34,6 +34,10 @@ Issues = "https://github.com/verso-genealogy/verso/issues"
 
 [project.optional-dependencies]
 schema = ["jsonschema==4.26.0"]
+# `verso scans` and `verso.core.scans`: the images of a scanned book cut, turned and laid out (Pillow).
+scans = ["pillow==13.0.0"]
+# A phone's HEIC frames as well: pillow-heif is a heavy wheel, and an archive's scans are JPEG.
+heic = ["verso-core[scans]", "pillow-heif==1.8.1"]
 
 [project.scripts]
 verso = "verso.core.cli:main"

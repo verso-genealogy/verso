@@ -198,7 +198,7 @@ def pixels(path: Path) -> str:
         with Image.open(path) as im:
             im.load()
             return _sha(f"{im.mode} {im.size}".encode() + im.tobytes())
-    except Exception:  # noqa: BLE001 — what Pillow raises for a file it cannot read is Pillow's
+    except Exception:
         return _sha(path.read_bytes())
 
 
@@ -241,7 +241,7 @@ def golden() -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser = argparse.ArgumentParser(description=(__doc__ or "").split("\n\n")[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("golden", help="capture the App's outputs into tests/golden/scans")
     draw = sub.add_parser("draw", help="draw the albums under DIR")

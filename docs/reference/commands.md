@@ -10,6 +10,7 @@
 | Command | Module | What it does |
 |---|---|---|
 | `verso records-schema` | `verso.core.records.schema` | records-v1.json — the JSON Schema of the records JSON, built from the field table. |
+| `verso scans` | `verso.core.scans.cli` | The scan tools on frames already on disk, a directory of an album's images (`verso scans <subcommand>`). |
 | `verso tools` | `verso.core.tools` | Where terraform and geni are: |
 | `verso ui-schema` | `verso.core.records.ui` | ui-v1.json — the review page's schema, built from the vocabulary and a plugin's hints. |
 | `verso workspace` | `verso.core.workspace` | Where the corpus is: |

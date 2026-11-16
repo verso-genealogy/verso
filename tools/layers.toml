@@ -16,6 +16,11 @@ packages = ["verso.core.i18n"]
 name = "core.messages"
 packages = ["verso.core.messages"]
 [[tier]]
+# The scan tools: the images of a book on disk, which know no language of the records — above the messages they
+# speak, under everything that reads a workspace (they read none). Their `verso scans` is the entry's.
+name = "core.scans"
+packages = ["verso.core.scans"]
+[[tier]]
 name = "core.leaves"
 packages = ["verso.core", "verso.core.workspace", "verso.core.written"]
 [[tier]]
@@ -43,7 +48,7 @@ packages = ["verso.core.pipeline"]
 [[tier]]
 # `verso <команда>` — the commands' entry; it names each command's module by a string.
 name = "core.entry"
-packages = ["verso.core.cli"]
+packages = ["verso.core.cli", "verso.core.scans.cli"]
 [[tier]]
 # The plugin's messages — under everything of the plugin that speaks.
 name = "ru.messages"

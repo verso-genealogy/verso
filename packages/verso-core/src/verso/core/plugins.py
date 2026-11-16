@@ -105,6 +105,9 @@ class Plugin:
     name: str
     package: str
     commands: Mapping[str, str] = field(default_factory=dict[str, str])
+    # The subcommands of `verso scans` it adds — a name → the module giving `HELP`, `add_arguments(parser)` and
+    # `run(args) -> int` (`verso.core.scans.cli`); strings, as `commands`: a module is imported when the parser is built.
+    scans: Mapping[str, str] = field(default_factory=dict[str, str])
     dsl: Callable[[], Dsl] | None = None
     transliterate: Callable[[], Callable[[str], str]] | None = None
     content: Callable[[], ContentProfile] | None = None

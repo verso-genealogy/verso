@@ -125,3 +125,41 @@ def test_an_uncaught_plugin_error_is_one_line():
     done = subprocess.run([sys.executable, "-c", code], cwd=PROJECT, capture_output=True, text=True, timeout=60,
                           check=False, env={"PATH": "/usr/bin:/bin", "PYTHONPATH": pythonpath()})
     assert (done.returncode, done.stdout, done.stderr) == (1, "", "плагин «ru» не установлен — переустановите пакеты окружения\n")
+
+
+# --- `verso scans`: a plugin's subcommands (`Plugin.scans`) ---------------------------------------------------
+
+SCANNER = Plugin(name="scanner", package="tests.core", scans={"count": "tests.core.scans.toy_scans"})
+
+
+def test_a_plugins_scan_subcommand_is_seen_and_runs(tmp_path: Path, capsys: pytest.CaptureFixture[str],
+                                                     monkeypatch: pytest.MonkeyPatch):
+    from verso.core.cli import main
+    from verso.core.scans.cli import CORE, subcommands
+    monkeypatch.setenv("VERSO_LANG", "en")
+    (tmp_path / "0001_1.jpg").write_bytes(b"")
+    (tmp_path / "notes.txt").write_bytes(b"")
+    with plugins.adding(TOY, SCANNER, entry_points=False):
+        assert subcommands() == {**CORE, "count": "tests.core.scans.toy_scans"}
+        assert main(["scans", "--help"]) == 0
+        assert "\n    count      count the frames\n" in capsys.readouterr().out
+        assert main(["scans", "count", str(tmp_path)]) == 0
+    assert capsys.readouterr().out == "1\n"
+
+
+def test_a_scan_subcommand_named_twice_is_refused(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch):
+    from verso.core.cli import main
+    from verso.core.scans.cli import subcommands
+    monkeypatch.setenv("VERSO_LANG", "en")
+    twin = dataclasses.replace(SCANNER, name="twin")
+    with plugins.adding(SCANNER, twin, entry_points=False):
+        with pytest.raises(PluginError) as caught:
+            subcommands()
+        assert str(caught.value) == "the subcommand «count» of verso scans is the plugins' scanner and twin"
+        assert main(["scans", "--help"]) == 2
+    assert capsys.readouterr().err == \
+        "verso scans: the subcommand «count» of verso scans is the plugins' scanner and twin\n"
+    shadow = Plugin(name="shadow", package="tests.core", scans={"strips": "tests.core.scans.toy_scans"})
+    with plugins.adding(shadow, entry_points=False), pytest.raises(PluginError) as caught:
+        subcommands()
+    assert str(caught.value) == "the subcommand «strips» of verso scans is the core's and the plugin shadow's"

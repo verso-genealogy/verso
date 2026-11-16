@@ -230,3 +230,43 @@ counts_differ = "строк {lines}, а записей с этой меткой 
 length = "{path}: {left} элементов ≠ {right}"
 other_object = "{path}: другой объект"
 fields = "{path}: поля {left} ≠ {right}"
+
+[scans.cli]
+description = "Инструменты сканов для кадров, уже лежащих на диске: verso scans <подкоманда> [её аргументы]."
+sub_metavar = "подкоманда"
+sub_twice = "подкоманда «{sub}» команды verso scans есть {where}"
+help_strips = "одна область каждого кадра альбома, рядом на листах — чтобы найти кадр, а не прочитать"
+help_quadrants = "четыре перекрывающиеся четверти каждого скана, увеличенные втрое и с резкостью"
+help_descreen = "вырезать и увеличить скан, сняв муар фотографии экрана"
+help_jpeg = "каждый кадр HEIC каталога — в JPEG того же имени (качество 92, поставлен прямо)"
+help_images = "сканы, которые резать"
+help_quadrants_out = "каталог, куда пишутся вырезки"
+help_album = "каталог кадров (выгруженный альбом)"
+help_box = "область в долях кадра (0..1)"
+help_strips_frames = "первый-последний по имени файла (в порядке строк); по умолчанию все кадры"
+help_per = "лент на лист (по умолчанию 20)"
+help_size = "высота ленты для графы / ширина ленты для строки, px (по умолчанию 900)"
+help_strips_out = "каталог для листов (создаётся); листы называются strips_<first>-<last>.jpg"
+help_descreen_image = "скан; вырезка ложится в crops/ рядом с ним"
+help_descreen_box = "l,t,r,b в долях ширины и высоты или - для всей страницы (по умолчанию)"
+help_descreen_scale = "увеличение после снятия муара (по умолчанию 1.0)"
+help_descreen_mode = "vertical (по умолчанию), horizontal — как идут полосы; raw — без снятия муара"
+help_descreen_rot = "дополнительный поворот против часовой стрелки в градусах (по умолчанию 0)"
+help_jpeg_dir = "каталог, чьи кадры HEIC писать в JPEG"
+
+[scans.look]
+enhance_out_of_range = "enhance {enhance} вне 1–{limit}"
+ink_unknown = "ink «{ink}» — нет такого: {inks}"
+ink_and_enhance = "ink «{ink}» и enhance {enhance} вместе нельзя: это два ответа бледным чернилам"
+
+[scans.jpeg]
+written = "{name} → {jpeg}"
+failed = "{name}: в JPEG не записан, оставлен как был — {reason}"
+clash = "{name}: оставлен как был — у источника есть и кадр {stem}.jpg (или второй HEIC с этим именем), и один JPEG не может быть обоими"
+
+[scans.strips]
+no_album = "нет такого альбома: {album}"
+no_frames = "ни одного кадра в этом диапазоне"
+skipped = "пропущен {name}: {error}"
+bad_box = "--box: четыре доли через запятую, x0,y0,x1,y1"
+box_range = "--box: нужно 0 ≤ x0 < x1 ≤ 1 и 0 ≤ y0 < y1 ≤ 1"
