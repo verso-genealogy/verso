@@ -1,0 +1,26 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/phone",
+  "--folio",
+  "кадр3",
+  "--village",
+  "<DIR>/village",
+  "--album-title",
+  "Собакевичи",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-phone-village",
+ "exit": 0,
+ "files": {
+  "phone/zoom_кадр3_a.jpg": "56c0f94e0611cc81ed5c2218f582c508a06cca677785d6a0e26954fe25253a78"
+ },
+ "lang": "en",
+ "pixels": {
+  "phone/zoom_кадр3_a.jpg": "4b7e25bffade37472c1b1e73afa9fd4040a2eceb135649d9fd34ee240eac1009"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/phone/zoom_кадр3_a.jpg: кадр3 — x 0–1, y 0.17–1 at 2×, enhance 1.7 from scans.toml\n"
+}

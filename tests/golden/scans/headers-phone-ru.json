@@ -1,0 +1,20 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "headers",
+  "<DIR>/phone",
+  "--out",
+  "<DIR>/headers"
+ ],
+ "case": "headers-phone",
+ "exit": 0,
+ "files": {
+  "headers/headers_00.jpg": "f73366f0b994ab3ad9bcdcba21f10d548b98c31dd0d0e3d910292607b8f50522"
+ },
+ "lang": "ru",
+ "pixels": {
+  "headers/headers_00.jpg": "41cacbbe4edd33d2ebb5bca871f35c2c5b01729133a3c72b661ac6914023bfdc"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/phone: 3 frame(s) numbered by POSITION («кадр 1» …) — the filenames carry no лист. Continuity is unchecked in this mode; `--from`/`--to` select frames, and `spread` does not apply.\n<DIR>/headers/headers_00.jpg: кадр1, кадр2, кадр3\n\n1 contact sheet(s). The printed running header names the part — «ЧАСТЬ ПЕРВАЯ, О РОДИВШИХСЯ» and so on; a leaf whose header strip is blank is a part TITLE page, which is where each part begins.\n"
+}

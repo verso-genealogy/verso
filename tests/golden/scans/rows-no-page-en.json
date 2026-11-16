@@ -1,0 +1,18 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "rows",
+  "<DIR>/album",
+  "--part",
+  "1",
+  "--folio",
+  "8"
+ ],
+ "case": "rows-no-page",
+ "exit": 1,
+ "files": {},
+ "lang": "en",
+ "pixels": {},
+ "stderr": "no page 8 in <DIR>/album. An об page is written «420об», its recto «421»; a frame «кадр12», or «12» when frames are numbered by position.\n",
+ "stdout": ""
+}

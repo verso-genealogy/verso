@@ -1,0 +1,20 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "spread",
+  "<DIR>/album",
+  "--folio",
+  "1об"
+ ],
+ "case": "spread",
+ "exit": 0,
+ "files": {
+  "album/spread_1об_0.07-0.56.jpg": "086c7869b3159313446888b5dc65d6edcb1407197d95b09f66b2cda72d62b81e"
+ },
+ "lang": "en",
+ "pixels": {
+  "album/spread_1об_0.07-0.56.jpg": "ae8225dc9212de7f6706f39b834404bbc094cb76353acc5c841171de5a5c8f4d"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album/spread_1об_0.07-0.56.jpg: л. 1об (top) faces л. 2 (bottom), band 0.07–0.56\nThe same y-band from both halves: a row on the top is the SAME record as the row at the same height on the bottom.\n"
+}

@@ -1,0 +1,20 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "headers",
+  "<DIR>/album",
+  "--out",
+  "<DIR>/headers"
+ ],
+ "case": "headers",
+ "exit": 0,
+ "files": {
+  "headers/headers_00.jpg": "54969649d52bbe4f0380602a6afcd9e2435e05cb89e322935210881edb4352ae"
+ },
+ "lang": "en",
+ "pixels": {
+  "headers/headers_00.jpg": "e719f915580e3345f64f23188be80b7ce70f42c4cc3f6764bc2e3c4ce5084a6c"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/headers/headers_00.jpg: лл. кадр1, 1, 1об, 2, 2об, 3\n\n1 contact sheet(s). The printed running header names the part — «ЧАСТЬ ПЕРВАЯ, О РОДИВШИХСЯ» and so on; a leaf whose header strip is blank is a part TITLE page, which is where each part begins.\n"
+}

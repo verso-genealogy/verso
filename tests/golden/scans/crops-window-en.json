@@ -1,0 +1,48 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "crops",
+  "<DIR>/album",
+  "--out",
+  "<DIR>/crops",
+  "--x0",
+  "0.3",
+  "--x1",
+  "0.7",
+  "--scale",
+  "1.2"
+ ],
+ "case": "crops-window",
+ "exit": 0,
+ "files": {
+  "crops/0001_кадр1_a.jpg": "611d843a0318f6c45ab2ee49452d17dcf0afe2bca8fc4a7072e2d39c82b13102",
+  "crops/0001_кадр1_b.jpg": "304365c3dded7994d8639da4329609e7f7595ea93e8f8f04531562fd95804352",
+  "crops/0002_1_a.jpg": "7dd0bfb5c77840562493a6bee4e59458f05d97484e8a502b80aff5a1808f9544",
+  "crops/0002_1_b.jpg": "b1b292332f89754b25a1940ea7288d0d86a82473b4b98687b9bc507da6fdc309",
+  "crops/0003_1об_a.jpg": "a22c2ff357bea39069b1fad0df3020d45ef346300f743815b5efb664eb5d1b81",
+  "crops/0003_1об_b.jpg": "43dc3aa9669d818767b0bbf148a853c34e54fcc1d020310e25f537b016f37440",
+  "crops/0004_2_a.jpg": "47fa36486f6dfcf495a404f88123e0e50e3b1ed78c4cb3d2cbe35cc171d3ff90",
+  "crops/0004_2_b.jpg": "78c4e5e987f75f9a64a3beee07154f021bbccf3da8a9349bfb8c4e946e816efd",
+  "crops/0005_2об_a.jpg": "978590478edbecf8e473d2bac4e5649f7783c351d155128920d12bb454d3184c",
+  "crops/0005_2об_b.jpg": "b367b1f2876656d658b563a8e42f7694880d07a8d16570fe3f23ffadb4b1d1af",
+  "crops/0005_3_a.jpg": "8d384105c69674b3eb45d591101e5a76fc62b4925ab6253279307f58dc1752fe",
+  "crops/0005_3_b.jpg": "5e6859f8c4cac6ab268ebd8eb8be870aefff353ebba700d1a3ab3f7a0df973d7"
+ },
+ "lang": "en",
+ "pixels": {
+  "crops/0001_кадр1_a.jpg": "7469bb76f770add7a6ca0696fda6f564af8f5336fecaf8df0da8b9a56ddd622b",
+  "crops/0001_кадр1_b.jpg": "ebafa5cb53d6288c97c99ef6ce4a77d9552b32bff1fbd8f835f1633f5a34bf06",
+  "crops/0002_1_a.jpg": "2acedb707992016bccf19111690de7a12e93cf1f4ae50223b042666e7fe00589",
+  "crops/0002_1_b.jpg": "0bc5fc390bb13c38f65e0856a9362ef7883aa9a220af5573f684fa815360270c",
+  "crops/0003_1об_a.jpg": "7f248916e18553777d545209028c9e9997b19527ee0fd2c1cd35cc5a58d0d837",
+  "crops/0003_1об_b.jpg": "cbcab3c446991abf7468b2a39570e9c3baa5d0a426570cbe2d22ec79c0739d50",
+  "crops/0004_2_a.jpg": "c8d1bde7fea7cacb38a3df93e75358d34eaf9cba401f527f27de71dfc0119ff3",
+  "crops/0004_2_b.jpg": "066662f31d387e41efa21a0bec0b59bdb238182ddd1a69e14aa25a2e1a4b99dd",
+  "crops/0005_2об_a.jpg": "5de8406ac8d37f8f37867b347146bbfeefb2974b0680475091d1a31f1bf5e2de",
+  "crops/0005_2об_b.jpg": "304ae8d2097229478fc3b7fa6c8e1240dae2df2b1dae872eed0f1b2ddd716d63",
+  "crops/0005_3_a.jpg": "d893dfda65fd8bf7f9e62203651ab65347a0400054e395e0693ede9b03c81e74",
+  "crops/0005_3_b.jpg": "12eb2013d4621fc4a97e56c5c9e6e1451228d8735dc2620bc9c36237002d253e"
+ },
+ "stderr": "",
+ "stdout": "12 crop(s) from 6 page(s), x 0.3–0.7 at 1.2× → <DIR>/crops\n"
+}

@@ -1,0 +1,21 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "headers",
+  "<DIR>/album",
+  "--out",
+  "<DIR>/headers",
+  "--frames"
+ ],
+ "case": "headers-frames",
+ "exit": 0,
+ "files": {
+  "headers/headers_00.jpg": "3a1eca5aef8f5c78650c140dd1328b724770da8ea0421d14550e464456b136ba"
+ },
+ "lang": "ru",
+ "pixels": {
+  "headers/headers_00.jpg": "e406b805c3dee53a80263f8a389a66422321c6aa3e9fcfc07bd47a41df6585c9"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album: 5 frame(s) numbered by POSITION («кадр 1» …) — the filenames carry no лист. Continuity is unchecked in this mode; `--from`/`--to` select frames, and `spread` does not apply.\n<DIR>/headers/headers_00.jpg: кадр1, кадр2, кадр3, кадр4, кадр5\n\n1 contact sheet(s). The printed running header names the part — «ЧАСТЬ ПЕРВАЯ, О РОДИВШИХСЯ» and so on; a leaf whose header strip is blank is a part TITLE page, which is where each part begins.\n"
+}

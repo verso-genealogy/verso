@@ -1,0 +1,30 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "crops",
+  "<DIR>/album",
+  "--out",
+  "<DIR>/crops",
+  "--verso-only",
+  "--part",
+  "3",
+  "--grey"
+ ],
+ "case": "crops-verso",
+ "exit": 0,
+ "files": {
+  "crops/0003_1об_a.jpg": "5b4fc4bc602ff5423f261ccc4a1b2fcaa7fb45519073693cb720a11072a08759",
+  "crops/0003_1об_b.jpg": "0ea6b6b679d87d2ea467ee4dac37bdb23b92aa3772278d3bf1d4b377205917b2",
+  "crops/0005_2об_a.jpg": "8e2879bef5536105efc988a3039c02e151f1d3b160af4254693e777915f4f0b7",
+  "crops/0005_2об_b.jpg": "2902daef58fb99f1dff819183173c8817ce75f0bf1de40c73917c5cd4ba1fdd9"
+ },
+ "lang": "ru",
+ "pixels": {
+  "crops/0003_1об_a.jpg": "1ed8304320446add413fc9579c10561c0eeedede7a2c0c302372136d1ddf4f9d",
+  "crops/0003_1об_b.jpg": "8d4d931415815ac807b7395ee37de337d67548f9cea490081edc19293de8381b",
+  "crops/0005_2об_a.jpg": "12ff0ae4e82c2dfcebb08d042c908ce2b800aa17a9ce9c6a48d385ece8d6cb2d",
+  "crops/0005_2об_b.jpg": "2489fc4e33adc08b4d3a42805bf11ec389984ae246d70a4a5e26dd8da7a58066"
+ },
+ "stderr": "",
+ "stdout": "4 crop(s) from 2 page(s), x 0.15–1 at 2.4× (ч. 3 preset) → <DIR>/crops\nverso only: in ч.3 the recto carries no names at all, and in ч.1/ч.2 it carries the godparents/sureties — crop those with `spread` when a page turns up a record worth reading.\n"
+}

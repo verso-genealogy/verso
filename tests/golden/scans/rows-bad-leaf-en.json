@@ -1,0 +1,22 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "rows",
+  "<DIR>/album",
+  "--part",
+  "1",
+  "--folio",
+  "1",
+  "--x0",
+  "0.6",
+  "--x1",
+  "0.4"
+ ],
+ "case": "rows-bad-leaf",
+ "exit": 1,
+ "files": {},
+ "lang": "en",
+ "pixels": {},
+ "stderr": "the leaf needs 0 ≤ x0 < x1 ≤ 1 and 0 ≤ top < bottom ≤ 1: x 0.6–0.4, y 0.12–1.0\n",
+ "stdout": ""
+}

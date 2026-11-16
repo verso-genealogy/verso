@@ -1,0 +1,16 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/album",
+  "--folio",
+  "9"
+ ],
+ "case": "zoom-no-page",
+ "exit": 1,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "stderr": "no page 9 in <DIR>/album. An об page is written «420об», its recto «421».\n",
+ "stdout": ""
+}

@@ -1,0 +1,28 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "crops",
+  "<DIR>/phone",
+  "--out",
+  "<DIR>/crops",
+  "--from",
+  "2"
+ ],
+ "case": "crops-phone",
+ "exit": 0,
+ "files": {
+  "crops/0002_кадр2_a.jpg": "5973fbbdf6c44b7c21c5debb9812bb68e22adad15059c40709bfbd1c364145ff",
+  "crops/0002_кадр2_b.jpg": "b56c854259c6614a927dbd3f393afc6ef15f92188b821857ec282ad840609b50",
+  "crops/0003_кадр3_a.jpg": "a8e4f3e2df0585d175c164b21eb082f8c7f2e1de989a51cf6a82aa60209a828f",
+  "crops/0003_кадр3_b.jpg": "37b9fe80c0cf4626e41d899d415dcdaa604620ab2d75f5cb2e6131f64bd509a5"
+ },
+ "lang": "ru",
+ "pixels": {
+  "crops/0002_кадр2_a.jpg": "3286aa9780dd6d2895301e91b42719fd7dfeae808f524cf3e1e25c3dc9ad0cee",
+  "crops/0002_кадр2_b.jpg": "8079127a9a3b3cb3e4beedc25429ed3a834f97464a7959b72534e5cd65e015f6",
+  "crops/0003_кадр3_a.jpg": "b946a9f0560936fb1d67b8a9ea613fdc376092e7c0ad3d4a4f94d3fe22bdf601",
+  "crops/0003_кадр3_b.jpg": "742c8464b6be8699215d1e36c6b83e2bf35a2094d4d6a22b8040e8b8756b6184"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/phone: 3 frame(s) numbered by POSITION («кадр 1» …) — the filenames carry no лист. Continuity is unchecked in this mode; `--from`/`--to` select frames, and `spread` does not apply.\n4 crop(s) from 2 page(s), x 0–1 at 1.8× → <DIR>/crops\n"
+}

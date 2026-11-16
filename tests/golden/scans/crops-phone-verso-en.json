@@ -1,0 +1,17 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "crops",
+  "<DIR>/phone",
+  "--out",
+  "<DIR>/crops",
+  "--verso-only"
+ ],
+ "case": "crops-phone-verso",
+ "exit": 1,
+ "files": {},
+ "lang": "en",
+ "pixels": {},
+ "stderr": "--verso-only needs folio names: with frame numbering nothing says which side of a leaf a frame holds.\n",
+ "stdout": "<DIR>/phone: 3 frame(s) numbered by POSITION («кадр 1» …) — the filenames carry no лист. Continuity is unchecked in this mode; `--from`/`--to` select frames, and `spread` does not apply.\n"
+}

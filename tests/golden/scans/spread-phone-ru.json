@@ -1,0 +1,16 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "spread",
+  "<DIR>/phone",
+  "--folio",
+  "1"
+ ],
+ "case": "spread-phone",
+ "exit": 1,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "stderr": "<DIR>/phone: no filename carries a лист, so «the facing recto» has no meaning here — `spread` is the one subcommand the frame fallback cannot serve. Rename the album (see the docs), or cut the two halves by hand with `crops --x0/--x1`. (3 file(s), e.g. IMG_0001.jpg, IMG_0002.jpg)\n",
+ "stdout": ""
+}

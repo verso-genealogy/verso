@@ -1,0 +1,34 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/album",
+  "--folio",
+  "3",
+  "--part",
+  "3",
+  "--col",
+  "age",
+  "--enhance",
+  "1",
+  "--top",
+  "0.2",
+  "--pad",
+  "0.05",
+  "--scale",
+  "3",
+  "--out",
+  "<DIR>/z.jpg"
+ ],
+ "case": "zoom-enhance",
+ "exit": 0,
+ "files": {
+  "z.jpg": "ff33f18c498ce5cea29f3e1cf4a705ae5c9c55019c52137210fe32b850dc452c"
+ },
+ "lang": "en",
+ "pixels": {
+  "z.jpg": "22dc974ab30d18389e7ce65fa9bc447a5ea34529faf094f32eecd499557d44f6"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/z.jpg: л. 3 — x 0.52–0.78, y 0.2–1, ч.3 age at 3×\n"
+}

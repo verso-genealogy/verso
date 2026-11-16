@@ -1,0 +1,24 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/faded",
+  "--folio",
+  "1",
+  "--layout",
+  "<DIR>/village/scans.toml",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-layout",
+ "exit": 0,
+ "files": {
+  "faded/zoom_1_a.jpg": "72b6130b8a130f31993a748d415af9533dcab9fc77247268054e9f3b4e371bbb"
+ },
+ "lang": "en",
+ "pixels": {
+  "faded/zoom_1_a.jpg": "81c8a1a350adeadc088eb6f49177662aa2e180709c3e7b1cc35f659215df5b69"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/faded/zoom_1_a.jpg: л. 1 — x 0–1, y 0.17–1 at 2×, enhance 1.7 from scans.toml\n"
+}

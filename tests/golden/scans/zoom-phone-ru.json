@@ -1,0 +1,22 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/phone",
+  "--folio",
+  "2",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-phone",
+ "exit": 0,
+ "files": {
+  "phone/zoom_кадр2_a.jpg": "abf4c4eb5a6a7bb42dd849e5ed189f8d091a7158a1845d70c588cd8e974971b1"
+ },
+ "lang": "ru",
+ "pixels": {
+  "phone/zoom_кадр2_a.jpg": "7b1ff0333e38086b0a9f43c437fc3d206f370ba50edc27f6bc1b05895e2f934a"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/phone/zoom_кадр2_a.jpg: кадр2 — x 0–1, y 0.17–1 at 2×\n"
+}

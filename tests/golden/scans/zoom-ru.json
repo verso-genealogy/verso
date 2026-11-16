@@ -1,0 +1,27 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/album",
+  "--folio",
+  "1об",
+  "--part",
+  "1",
+  "--col",
+  "godparents",
+  "--row",
+  "2",
+  "3"
+ ],
+ "case": "zoom",
+ "exit": 0,
+ "files": {
+  "album/zoom_1об_a.jpg": "170314ee4261505f50b4dbd4168bf6602376678b568572737aaeb28a88c5ed3c"
+ },
+ "lang": "ru",
+ "pixels": {
+  "album/zoom_1об_a.jpg": "40077dd51b145d7ccfdfb136a04beeedbcaf306205b3a2a14a17956c9c3a3037"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album/zoom_1об_a.jpg: л. 1об — x 0.55–1, y 0.393333–0.726667, ч.1 godparents, row 2/3 at 6×, enhance 1.6 из scans.toml\n⚠ Rows are an EVEN division of the writing area; records are not equal height (a monthly total eats a row). If the band missed, widen with --pad or name the band outright with --box.\n"
+}

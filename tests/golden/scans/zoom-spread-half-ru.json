@@ -1,0 +1,26 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/album",
+  "--folio",
+  "2об",
+  "--part",
+  "2",
+  "--col",
+  "bride",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-spread-half",
+ "exit": 0,
+ "files": {
+  "album/zoom_2об_a.jpg": "2740062d2a81d0a44273fb5a605d2fec12eff9c0c57047d39fc1e7abd120d27d"
+ },
+ "lang": "ru",
+ "pixels": {
+  "album/zoom_2об_a.jpg": "81c7caf10a40e8fe96e55cee000132ec82c025c6af6579bb483802d9b040ef22"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album/zoom_2об_a.jpg: л. 2об — x 0.5–1, y 0.12–1, ч.2 bride at 2×, enhance 1.6 из scans.toml\n"
+}

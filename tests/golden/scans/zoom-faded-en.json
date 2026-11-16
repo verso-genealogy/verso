@@ -1,0 +1,26 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/faded",
+  "--folio",
+  "1об",
+  "--part",
+  "3",
+  "--col",
+  "cause",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-faded",
+ "exit": 0,
+ "files": {
+  "faded/zoom_1об_a.jpg": "fecd00d1a8fce71ed7939860f451b19d9b4293b17eda89c2738ff8aecbac07da"
+ },
+ "lang": "en",
+ "pixels": {
+  "faded/zoom_1об_a.jpg": "b004f77b491be979c3191ee0ed28e471ae2b81f1f9868ec773b516751a132a6a"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/faded/zoom_1об_a.jpg: л. 1об — x 0.68–1, y 0.17–1, ч.3 cause at 2×, enhance 1.7 from scans.toml\n"
+}

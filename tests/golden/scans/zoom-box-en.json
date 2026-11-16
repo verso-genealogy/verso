@@ -1,0 +1,30 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "zoom",
+  "<DIR>/album",
+  "--folio",
+  "1",
+  "--box",
+  "0.1",
+  "0.2",
+  "0.6",
+  "0.5",
+  "--colour",
+  "--tag",
+  "b",
+  "--scale",
+  "2"
+ ],
+ "case": "zoom-box",
+ "exit": 0,
+ "files": {
+  "album/zoom_1_b.jpg": "a03fd0063b95102686169733cac51a99a92b7b8d6f4aabe07fbb766679148d04"
+ },
+ "lang": "en",
+ "pixels": {
+  "album/zoom_1_b.jpg": "5f2801f36071c2add522b1b04bae6dc53c8ec6b4049345debc42d7a9e68803b8"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/album/zoom_1_b.jpg: л. 1 — x 0.1–0.6, y 0.2–0.5 at 2×\n"
+}

@@ -1,0 +1,14 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "check",
+  "<DIR>/faded"
+ ],
+ "case": "check-whole",
+ "exit": 0,
+ "files": {},
+ "lang": "ru",
+ "pixels": {},
+ "stderr": "",
+ "stdout": "faded: 2 frame(s), лл. 1–1об\n  ✅ continuous: every side present, none doubled.\n"
+}

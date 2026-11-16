@@ -1,0 +1,28 @@
+{
+ "app_commit": "c1851a2",
+ "argv": [
+  "headers",
+  "<DIR>/album",
+  "--out",
+  "<DIR>/headers",
+  "--rows",
+  "2",
+  "--strip",
+  "0.3"
+ ],
+ "case": "headers-rows",
+ "exit": 0,
+ "files": {
+  "headers/headers_00.jpg": "dc47de0ef9c5f643f4467b32354924b9e61889876a1d940204f4d6559d48cc94",
+  "headers/headers_01.jpg": "541c3d28f53f2e3ae36d9da47931888a952b6bf046bcf21d65cff9a1f32f899b",
+  "headers/headers_02.jpg": "d38a0749780096877c7f9e7ec182b8d495e37b0d57a9bed8905d72654856487b"
+ },
+ "lang": "ru",
+ "pixels": {
+  "headers/headers_00.jpg": "6187f99eddc21d94250e5b658548bc5e2169855440e2bfb8ed222d535dfa945f",
+  "headers/headers_01.jpg": "b3a18c5aef99730b8dd532f86c22f4e2325ec5279a4aff3ceea23253335b43ff",
+  "headers/headers_02.jpg": "72c7ca8908bbf22921fd6b4b8becb0c16a800921ef3964655634ccd2f31c18fa"
+ },
+ "stderr": "",
+ "stdout": "<DIR>/headers/headers_00.jpg: лл. кадр1, 1\n<DIR>/headers/headers_01.jpg: лл. 1об, 2\n<DIR>/headers/headers_02.jpg: лл. 2об, 3\n\n3 contact sheet(s). The printed running header names the part — «ЧАСТЬ ПЕРВАЯ, О РОДИВШИХСЯ» and so on; a leaf whose header strip is blank is a part TITLE page, which is where each part begins.\n"
+}
