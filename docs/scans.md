@@ -50,16 +50,20 @@ The album's stanza, `[album."<title>"]`, is read and never written:
 
 | Key | What it does |
 |---|---|
-| `frames` | `"spread"`: one frame holds both leaves, whatever its name says (`zoom`, `rows`) |
+| `frames` | `"spread"`: a frame named by one leaf holds the facing side too — a frame standing up stays one page (`check`, `headers`, `crops`, `spread`, `zoom`, `rows`) |
 | `top`, `bottom` | where the writing begins and ends, as fractions of the leaf (`zoom`, `rows`) |
 | `rotate`, `rotate_frames` | the turn on top of the frame's own EXIF tag, for the album and per page |
 | `enhance` | the push a faded hand needs (`zoom`, when no `--enhance` is given) |
 | `village` | in an album's own copy, the directory whose `scans.toml` is the durable one: `enhance` is asked there too |
 
 Every other key — the windows (`[[album."…".box]]`), the columns, the look's other keys, the source — is passed over.
-`headers`, `crops` and `spread` read the album directory's own `scans.toml`; `zoom` and `rows` read the one
-`--layout` names, else the album's own, else `--village`'s. The title is `--album-title` (exact, or the one album
-whose title contains it), else the file's only album.
+`check`, `headers`, `crops` and `spread` read the album directory's own `scans.toml`, and its only album: they take
+no flag that names another file or a title. `zoom` and `rows` read the one `--layout` names, else the album's own,
+else `--village`'s; the title is `--album-title` (exact, or the one album whose title contains it), else the file's
+only album. Under `frames = "spread"` a window's fractions are of the leaf — the half of the frame it lies on — in
+every subcommand; `--frames` reads frames by position and leaves them whole. `check` expects such an album's sides
+from its first to its last: the recto before the first spread's left leaf and the verso after the last spread's
+right leaf are the neighbouring albums'. A `scans.toml` that does not read as TOML is refused in a line, exit 2.
 
 The windows are the review page's: Verso writes them, and `verso-scans` (the App's) remembers one with
 `zoom --record --remember` or a leaf's at once with `windows`. `verso scans rows` finds the marks and draws them; it
@@ -75,12 +79,12 @@ The modules' `__all__` is public ([compatibility](compatibility.md)):
 | `verso.core.scans.window` | `Box`, a window in fractions; `FULL_WIDTH` |
 | `verso.core.scans.level` | `turn`, `turned_size`, `level_crop`, `line_angle` |
 | `verso.core.scans.look` | `Look`, `legible`, `coloured_ink`; `PLAIN`, `INKS`, `MAX_ENHANCE` |
-| `verso.core.scans.stanza` | `Stanza`, `for_album`, `rotation`, `enhance_for` |
+| `verso.core.scans.stanza` | `Stanza`, `StanzaError`, `for_album`, `rotation`, `enhance_for` |
 | `verso.core.scans.sheets` | `contact_sheet`, `strips_sheet`, `fit_width` |
 | `verso.ru.scans.folio` | `Page`, `parse_album`, `parse_frame`, `frame_pages`, `check_album`, `format_report`, `expand_spreads`, `renumber_scans`; `FRAME_PREFIX`, `VERSO_SUFFIX` |
 | `verso.ru.scans.zoom` | `COLUMNS`, `DEFAULT_TOP`, `column_window`, `row_band`, `resolve` |
 | `verso.ru.scans.rows` | `detect`, `count_window`, `ruler`, `sheet`, `parse_keys`, `pair`, `cuts_from` |
-| `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode` |
+| `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode`, `album_of`, `spread_frames` |
 | a subcommand's module, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); `verso.ru.scans.cli.rows` also `leaf`, `report`; `verso.ru.scans.cli.zoom` also `locate`, `cut`, `Target` — the page found, then a window cut from it, which a caller may hand its own window and turn |
 | `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag` |
 | `verso.core.scans.cli` | `main`, `verso scans` itself |

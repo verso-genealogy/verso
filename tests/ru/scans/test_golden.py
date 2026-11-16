@@ -16,8 +16,8 @@ import pytest
 
 pytest.importorskip("PIL")
 
-from tests.scans_album import (GOLDEN, LIBRARY_GOLDEN, argv_for, blank, draw_album, draw_cards, matches_golden, pixels,
-                                tree, written)
+from tests.scans_album import (GOLDEN, LIBRARY_GOLDEN, SPREAD_CASES, SPREAD_GOLDEN, argv_for, blank, draw_album,
+                                draw_cards, draw_spreads, matches_golden, pixels, tree, written)
 from verso.core.cli import main
 
 CASES = sorted(GOLDEN.glob("*.json"))
@@ -64,6 +64,33 @@ def test_cards_writes_its_golden(path: Path, tmp_path: Path, monkeypatch: pytest
     root = tmp_path / "root"
     draw_album(root)
     draw_cards(root)
+    before = tree(root)
+    monkeypatch.chdir(root)
+    monkeypatch.setenv("VERSO_LANG", golden["lang"])
+    code = main(["scans", *argv_for(golden["argv"], root)])
+    out, err = capfd.readouterr()
+    assert matches_golden(golden, root, before, code, out, err) == []
+
+
+SPREADS = sorted(SPREAD_GOLDEN.glob("*.json"))
+
+
+def test_every_subcommand_that_reads_a_stanza_has_its_spread_goldens():
+    held = {json.loads(p.read_text(encoding="utf-8"))["argv"][0] for p in SPREADS}
+    assert held == {"check", "headers", "crops", "spread", "zoom", "rows"}
+    assert len(SPREADS) == 2 * len(SPREAD_CASES)
+
+
+@pytest.mark.parametrize("path", SPREADS, ids=[p.stem for p in SPREADS])
+def test_an_album_of_spreads_is_read_as_its_stanza_says(path: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+                                                         capfd: pytest.CaptureFixture[str]):
+    """`frames = "spread"`: each frame named by its left leaf is two pages, cut to the half each lies on, in every
+    subcommand that reads the stanza (`tests/golden/scans-spread`, `python -m tests.scans_album golden-spread`)."""
+    golden: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
+    root = tmp_path / "root"
+    draw_album(root)
+    draw_cards(root)
+    draw_spreads(root)
     before = tree(root)
     monkeypatch.chdir(root)
     monkeypatch.setenv("VERSO_LANG", golden["lang"])

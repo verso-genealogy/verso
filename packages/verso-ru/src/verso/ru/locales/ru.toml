@@ -1677,6 +1677,7 @@ of_weddings = { one = "из {count} датированного венчания"
 of_dated = { one = "из {count} датированного", few = "из {count} датированных", many = "из {count} датированных", other = "из {count} датированных" }
 
 [scans]
+spread_album = "  · frames = \"spread\" (scans.toml): кадр, названный по левому листу, держит и правый лист разворота, если сам не стоит как одна страница."
 
 [scans.headers]
 

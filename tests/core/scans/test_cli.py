@@ -35,3 +35,14 @@ def test_a_missing_argument_is_argparses_refusal(capsys: pytest.CaptureFixture[s
     with plugins.adding(entry_points=False):
         assert verso(["scans", "strips"]) == 2
     assert "usage: verso scans strips" in capsys.readouterr().err
+
+
+def test_strips_takes_every_suffix_the_scan_tools_open(tmp_path):
+    """`strips` cuts from the frames `IMAGE_SUFFIXES` names — a `.heif` too, not a list of its own."""
+    from verso.core.scans.cli import strips
+    from verso.core.scans.image import IMAGE_SUFFIXES
+    for index, suffix in enumerate(IMAGE_SUFFIXES):
+        (tmp_path / f"{index:04d}{suffix}").write_bytes(b"")
+    (tmp_path / "scans.toml").write_text("", encoding="utf-8")
+    assert [p.suffix for p in strips.frames(tmp_path, None)] == list(IMAGE_SUFFIXES)
+

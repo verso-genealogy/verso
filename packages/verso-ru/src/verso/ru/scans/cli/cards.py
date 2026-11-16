@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from verso.core.scans.image import pil
+from verso.core.scans.image import IMAGE_SUFFIXES, pil
 
 __all__ = ["HELP", "add_arguments", "run"]
 
@@ -84,7 +84,7 @@ def add_arguments(p: argparse.ArgumentParser) -> None:
 
 def run(args: argparse.Namespace) -> int:
     Image, ImageOps, _ = pil()
-    cards = sorted(p for p in args.album.iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png"))
+    cards = sorted(p for p in args.album.iterdir() if p.suffix.lower() in IMAGE_SUFFIXES)
     if not cards:
         print(f"no images in {args.album}", file=sys.stderr)
         return 1

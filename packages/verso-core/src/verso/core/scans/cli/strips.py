@@ -22,14 +22,12 @@ from pathlib import Path
 from typing import Any
 
 from verso.core.messages import t
-from verso.core.scans.image import pil
+from verso.core.scans.image import IMAGE_SUFFIXES, pil
 from verso.core.scans.sheets import strips_sheet
 
 __all__ = ["HELP", "add_arguments", "run"]
 
 HELP = t("scans.cli.help_strips")
-# The frames a strip is cut from.
-STRIP_SUFFIXES = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".heic"}
 
 
 def parse_box(text: str) -> tuple[float, float, float, float]:
@@ -45,7 +43,7 @@ def parse_box(text: str) -> tuple[float, float, float, float]:
 
 def frames(album: Path, span: str | None) -> list[Path]:
     """The frames of `album`, in name order; `span` FIRST-LAST keeps those whose stem falls between (string order)."""
-    files = sorted(p for p in album.iterdir() if p.suffix.lower() in STRIP_SUFFIXES)
+    files = sorted(p for p in album.iterdir() if p.suffix.lower() in IMAGE_SUFFIXES)
     if span:
         first, _, last = span.partition("-")
         last = last or first

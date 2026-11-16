@@ -324,6 +324,61 @@ class SpreadsDeclaredPerAlbum(unittest.TestCase):
                          [p.label for p in expand_spreads(pages) if p.name != "087_(029об-030).jpg"])
 
 
+    def test_a_declared_album_is_checked_as_its_frames_hold_it(self):
+        # Named by the left leaf, every recto was reported absent until the check read the stanza's word.
+        names = ["46об.jpg", "47об.jpg", "48об.jpg"]
+        self.assertEqual(("46", "47", "48"), check_album(names).missing_pages)
+        report = check_album(names, spreads=lambda page: False)
+        # It opens on the left leaf of a spread and closes on the right one: 46 and 49об are the neighbours'.
+        self.assertEqual((), report.missing_pages)
+        self.assertTrue(report.ok)
+        self.assertEqual(("46об", "49"), (report.first_label, report.last_label))
+        self.assertTrue(format_report(report).startswith("6 page(s) on 3 frame(s), лл. 46об–49"))
+        self.assertEqual(("47об", "48"), check_album(["46об.jpg", "48об.jpg"], spreads=lambda page: False).missing_pages)
+
+    def test_a_declared_range_keeps_the_spread_it_opens_on(self):
+        names = ["46об.jpg", "47об.jpg", "48об.jpg"]
+        self.assertEqual((), check_album(names, expect_first=47, expect_last=49, spreads=lambda page: False).outside_range)
+        # A frame wholly outside the range is still flagged — both of its leaves.
+        self.assertEqual(("46об", "47"),
+                         check_album(names, expect_first=48, expect_last=49, spreads=lambda page: False).outside_range)
+        # Without the stanza the range is read leaf by leaf, as before.
+        self.assertEqual(("46об",), check_album(names, expect_first=47, expect_last=49).outside_range)
+
+    def test_a_declared_album_keeps_a_frame_that_stands_alone(self):
+        report = check_album(["10об.jpg", "11об.jpg", "12об.jpg"], spreads=lambda page: page.name == "12об.jpg")
+        self.assertEqual([("10об", "L"), ("11", "R"), ("11об", "L"), ("12", "R"), ("12об", "")],
+                         [(p.label, p.half) for p in report.pages])
+
+
+class EverySuffixTheToolsOpen(unittest.TestCase):
+    """A frame the scan tools open (`IMAGE_SUFFIXES`, HEIC included) is read by its лист as a JPEG is."""
+
+    def test_heic_frames_named_by_folio(self):
+        pages, bad = parse_album(["0118_57.heic", "0119_57об.HEIC"])
+        self.assertEqual([], bad)
+        self.assertEqual(["57", "57об"], [p.label for p in pages])
+
+    def test_heif_spread_in_parentheses(self):
+        self.assertEqual([("131об", "L"), ("132", "R")],
+                         [(p.label, p.half) for p in parse_frame("0241(131об-132).heif")])
+
+    def test_bare_folio_heic(self):
+        self.assertEqual(["64об"], [p.label for p in parse_frame("64об.heic")])
+
+    def test_mixed_with_jpeg_nothing_is_unparseable(self):
+        pages, bad = parse_album(["0118_57.jpg", "0119_57об.heic", "0120_58.png", "0121_58об.tiff"])
+        self.assertEqual([], bad)
+        self.assertTrue(check_album([p.name for p in pages]).ok)
+
+    def test_every_suffix_is_one_the_tools_open(self):
+        from verso.core.scans.image import IMAGE_SUFFIXES
+        for suffix in IMAGE_SUFFIXES:
+            self.assertEqual(["57"], [p.label for p in parse_frame(f"0118_57{suffix}")], suffix)
+            self.assertEqual(["57"], [p.label for p in parse_frame(f"57{suffix.upper()}")], suffix)
+        self.assertEqual([], parse_frame("0118_57.gif"))
+
+
 class ATimestampIsNotAFolio(unittest.TestCase):
     """`20000102_120039.jpg` is a phone's timestamp, not кадр 20000102 л. 120039.
 

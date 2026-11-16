@@ -1,0 +1,33 @@
+{
+ "argv": [
+  "zoom",
+  "<DIR>/spreads",
+  "--folio",
+  "11",
+  "--box",
+  "0.1",
+  "0.1",
+  "0.9",
+  "0.5",
+  "--scale",
+  "1"
+ ],
+ "case": "zoom",
+ "commit": "ed88220",
+ "exit": 0,
+ "files": {
+  "spreads/zoom_11_a.jpg": "39135d75e6db97dc275bc541254b7d34065f2deddeb17b077a356b74dacfc0a2"
+ },
+ "lang": "en",
+ "pixels": {
+  "spreads/zoom_11_a.jpg": "8f92e5256292f6862eb0d4158b3a0585fa82b766d52fd0bc5107797d37a47c0b"
+ },
+ "sizes": {
+  "spreads/zoom_11_a.jpg": [
+   488,
+   328
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/spreads/zoom_11_a.jpg: л. 11 — x 0.1–0.9, y 0.1–0.5 at 1×\n"
+}

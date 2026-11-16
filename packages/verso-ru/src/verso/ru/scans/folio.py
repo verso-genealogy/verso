@@ -22,14 +22,19 @@ from itertools import pairwise
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 
+from verso.core.scans.image import IMAGE_SUFFIXES
 from verso.ru.messages import t
 
 __all__ = ["FRAME_PREFIX", "VERSO_SUFFIX", "Page", "check_album", "expand_spreads", "format_report", "frame_pages",
            "parse_album", "parse_frame", "renumber_scans"]
 
+# Every suffix the scan tools open (`IMAGE_SUFFIXES`) names a frame by folio as well: a phone's HEIC frames renamed
+# `0118_57.heic` are read by лист, as their JPEG would be.
+_SUFFIX = "|".join(re.escape(suffix.lstrip(".")) for suffix in IMAGE_SUFFIXES)
+_SUFFIXES = frozenset(suffix.lstrip(".") for suffix in IMAGE_SUFFIXES)
 # `0118_57.jpg`, `0119_57об.jpg`, and the cover/inventory frames that carry a
 # word instead of a folio (`001_обложка.jpg`, `002_внутр оп.jpg`).
-_NAME = re.compile(r"^(?P<frame>\d+)_(?P<folio>.+?)\.(?:jpg|jpeg|png|tif|tiff)$", re.IGNORECASE)
+_NAME = re.compile(rf"^(?P<frame>\d+)_(?P<folio>.+?)\.(?:{_SUFFIX})$", re.IGNORECASE)
 # `57`, `57об`, and the shapes an inserted leaf takes: `12а`, `12а об` — a
 # letter suffix is the archivist's own numbering for a leaf bound in later, and
 # the space before «об» is how the photographer typed it.
@@ -37,9 +42,9 @@ _NAME = re.compile(r"^(?P<frame>\d+)_(?P<folio>.+?)\.(?:jpg|jpeg|png|tif|tiff)$"
 # `0005` is лист 5): no дело runs to five. Unbounded, a phone timestamp —
 # `20000101_120000.jpg`, which is how an unrenamed album is named — parses
 # as «кадр 20000101, лист 120000». That is not merely cosmetic: `check`
-# then reports hundreds of absent pages, and `exported_name` concludes the
-# filename already carries a лист and ignores the «Название» the reader set
-# in Photos, so renaming an album has no effect at all.
+# then reports hundreds of absent pages, and a program that renames frames by
+# folio concludes the filename already carries a лист and leaves it as it is,
+# so renaming the album has no effect at all.
 _FOLIO = re.compile(r"^0*(?P<number>\d{1,4})\s*(?P<letter>[а-яё])?\s*(?P<verso>об)?$")  # i18n: content — the book's own words: лист, об, кадр
 # `0240(131).jpg`, `0241(131об-132).jpg`, `305_(144об-145).jpg`, and the same
 # thing with no parentheses at all — `612_388об-389.jpg`. That is how some archives
@@ -47,8 +52,7 @@ _FOLIO = re.compile(r"^0*(?P<number>\d{1,4})\s*(?P<letter>[а-яё])?\s*(?P<vers
 # says which two leaves are on it, so the лист numbering IS present and only
 # needed reading: without this the album falls back to `frame_pages`, where
 # nothing about continuity can be checked and `spread` does not apply.
-_PAREN = re.compile(r"^(?P<frame>\d+)_?\((?P<folios>[^)]+)\)"
-                    r"\.(?:jpg|jpeg|png|tif|tiff)$", re.IGNORECASE)
+_PAREN = re.compile(rf"^(?P<frame>\d+)_?\((?P<folios>[^)]+)\)\.(?:{_SUFFIX})$", re.IGNORECASE)
 
 VERSO_SUFFIX = "об"  # i18n: content — the book's own words: лист, об, кадр
 # How a page with no лист of its own is named — a cover, an inventory frame, or
@@ -122,7 +126,7 @@ def parse_frame(name: str) -> list[Page]:
                          frame=frame, name=name, half=half)
                     for fm, half in zip(matches, ("L", "R"), strict=True)]
     stem, _, ext = name.rpartition(".")
-    if stem and ext.lower() in {"jpg", "jpeg", "png", "tif", "tiff"}:
+    if stem and ext.lower() in _SUFFIXES:
         # `64об.jpg`, `063.jpg` — the лист and nothing else, which is how some
         # archives name an album. There is no frame number to compare it
         # against, so continuity is checked on the folios alone; `parse_album`
@@ -186,7 +190,7 @@ def parse_album(names: Iterable[str]) -> tuple[list[Page], list[str]]:
 def frame_pages(names: Iterable[str]) -> list[Page]:
     """Pages of an album that was never renamed to `<frame>_<лист>.jpg`.
 
-    Whole archives sit in Apple Photos exactly as the phone wrote them
+    Whole archives sit in a photo library exactly as the phone wrote them
     (`IMG_20000101_120000.jpg`), and renaming fifty albums to read one year out
     of one of them is not worth the afternoon. Filename order IS the order the
     pages were photographed, so the frame index stands in for the folio and
@@ -289,6 +293,7 @@ class AlbumReport:
     duplicate_pages: tuple[str, ...]    # the same folio side photographed twice
     frame_gaps: tuple[tuple[int, int], ...]
     outside_range: tuple[str, ...]      # folios outside a declared range
+    spreads: bool = False               # read as an album of spreads named by their left leaf
 
     @property
     def ok(self) -> bool:
@@ -304,8 +309,16 @@ def _expected_sides(first: int, last: int) -> list[tuple[int, str, bool]]:
 
 def check_album(names: Iterable[str], *,
                 expect_first: int | None = None,
-                expect_last: int | None = None) -> AlbumReport:
+                expect_last: int | None = None,
+                spreads: Callable[[Page], bool] | None = None) -> AlbumReport:
     """Continuity of an album, optionally against a declared folio range.
+
+    `spreads`: the album's frames are spreads named by their left leaf (`frames = "spread"` in its stanza), and
+    the callable says which frame stands up as one page — each other frame holds the facing side too
+    (`expand_spreads`). None: every frame is what its name says. Such an album opens on the left leaf of its first
+    spread and closes on the right leaf of its last, so the run expected is from its first SIDE to its last: the
+    recto before the one and the об side after the other are the neighbouring albums'. And a leaf outside a declared
+    range is not reported when its frame holds a leaf inside it — the spread the range opens or closes on.
 
     A missing page is reported per SIDE, because that is how the loss behaves:
     a recto absent while its verso is present means the godparents of every
@@ -315,6 +328,8 @@ def check_album(names: Iterable[str], *,
     blank verso was not worth a frame leaves one, and every дело has a few.
     """
     pages, bad = parse_album(names)
+    if spreads is not None:
+        pages = expand_spreads(pages, spreads)
     folios = [p for p in pages if p.is_folio]
 
     seen: dict[tuple[int, str, bool], list[Page]] = {}
@@ -333,17 +348,20 @@ def check_album(names: Iterable[str], *,
     first = min(plain, default=None)
     last = max(plain, default=None)
 
+    sides = [(p.number, p.verso) for p in folios if not p.letter]
+    opens, closes = (min(sides), max(sides)) if spreads is not None and sides else ((0, False), (10 ** 9, True))
     missing: list[str] = []
     if first is not None and last is not None:
         for side in _expected_sides(first, last):
-            if side not in seen:
+            if side not in seen and opens <= (side[0], side[2]) <= closes:
                 number, _, verso = side
                 missing.append(f"{number}{VERSO_SUFFIX}" if verso else str(number))
 
     outside: list[str] = []
     if expect_first is not None and expect_last is not None:
         lo, hi = min(expect_first, expect_last), max(expect_first, expect_last)
-        outside = [p.label for p in folios if not lo <= p.number <= hi]
+        inside = {p.name for p in folios if lo <= p.number <= hi} if spreads is not None else set()
+        outside = [p.label for p in folios if not lo <= p.number <= hi and p.name not in inside]
 
     frames = sorted(p.frame for p in pages)
     gaps = tuple((a, b) for a, b in pairwise(frames) if b - a > 1)
@@ -354,7 +372,7 @@ def check_album(names: Iterable[str], *,
         last_label=folios[-1].label if folios else None,
         first_folio=first, last_folio=last,
         missing_pages=tuple(missing), duplicate_pages=duplicates,
-        frame_gaps=gaps, outside_range=tuple(sorted(set(outside))))
+        frame_gaps=gaps, outside_range=tuple(sorted(set(outside))), spreads=spreads is not None)
 
 
 def format_report(report: AlbumReport, *, album: str = "") -> str:
@@ -371,7 +389,9 @@ def format_report(report: AlbumReport, *, album: str = "") -> str:
                      "Rename the album (see the docs) before reading "
                      "a year twice.")
         return "\n".join(lines)
-    lines = [f"{head}{len(report.pages)} frame(s), "
+    count = (f"{len(report.pages)} page(s) on {len({p.name for p in report.pages})} frame(s)" if report.spreads
+             else f"{len(report.pages)} frame(s)")
+    lines = [f"{head}{count}, "
              f"лл. {report.first_label}–{report.last_label}"]  # i18n: content — the book's own words: лист, об, кадр
     if report.unparseable:
         lines.append(f"  ⚠ {len(report.unparseable)} unparseable name(s): "

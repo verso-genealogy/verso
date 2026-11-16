@@ -1,0 +1,59 @@
+{
+ "argv": [
+  "crops",
+  "<DIR>/spreads",
+  "--out",
+  "<DIR>/crops",
+  "--verso-only",
+  "--part",
+  "3"
+ ],
+ "case": "crops-verso",
+ "commit": "ed88220",
+ "exit": 0,
+ "files": {
+  "crops/0001_10об_a.jpg": "fb4929dd87ebd24cc94d05413b35fe768239ae9104c950a6a0103de305e123b2",
+  "crops/0001_10об_b.jpg": "bfb217507549b6914ce37634356e9c613b328717e7370a560d270c66493fb9fe",
+  "crops/0002_11об_a.jpg": "0b6b7cf2cebca57bf7488e8459a8859b71b6bc6f23daf7e436f472791188fb12",
+  "crops/0002_11об_b.jpg": "6cf2b8271eaebe8825cc9dfbcb8cade8fca85bffb0f02abe67a3d3c2fdcc7915",
+  "crops/0003_12об_a.jpg": "27d02e4b689b762e3bac37b03346fd49515e99454e1eae27ed7a05d58f28eae3",
+  "crops/0003_12об_b.jpg": "2407b41a34f052308549aa3e0d6c1a1c9891ca8f14ae008e2aaec0f240f2b408"
+ },
+ "lang": "ru",
+ "pixels": {
+  "crops/0001_10об_a.jpg": "4ba226891a64968aa452fa153b8cccf13e87bcd4085b0ccde1d21885abe5d9d6",
+  "crops/0001_10об_b.jpg": "222065a107bcbfc67dc7e269a306d6dd2f694a023758d7892b26a49cd23cf609",
+  "crops/0002_11об_a.jpg": "b81c6cdbdacdc6c6f1961c2f749260ee34e91fe216342cdcb67fcc3dac113ccd",
+  "crops/0002_11об_b.jpg": "561f92817a0b8f4963ef46d08a057a310eaae5e460aeeeeb9a5ed635e42dc987",
+  "crops/0003_12об_a.jpg": "46b278066e9bf39991c9764c7e6d4ee77095e3d6456755a22b4777861adbe5ae",
+  "crops/0003_12об_b.jpg": "7f8074f50b4a1d6330f89c9f2bb489d38734803ea0d24f96bb32b6d82a632f79"
+ },
+ "sizes": {
+  "crops/0001_10об_a.jpg": [
+   1240,
+   904
+  ],
+  "crops/0001_10об_b.jpg": [
+   1240,
+   1044
+  ],
+  "crops/0002_11об_a.jpg": [
+   1240,
+   904
+  ],
+  "crops/0002_11об_b.jpg": [
+   1240,
+   1044
+  ],
+  "crops/0003_12об_a.jpg": [
+   1224,
+   904
+  ],
+  "crops/0003_12об_b.jpg": [
+   1224,
+   1044
+  ]
+ },
+ "stderr": "",
+ "stdout": "6 crop(s) from 3 page(s), x 0.15–1 at 2.4× (ч. 3 preset) → <DIR>/crops\nverso only: in ч.3 the recto carries no names at all, and in ч.1/ч.2 it carries the godparents/sureties — crop those with `spread` when a page turns up a record worth reading.\n"
+}

@@ -12,18 +12,20 @@ import verso.core.scans
 import verso.ru.scans
 
 GUIDE = Path(__file__).resolve().parents[3] / "docs" / "scans.md"
+GUIDE_RU = GUIDE.with_name("scans.ru.md")
 PROTOCOL = {"HELP", "add_arguments", "run"}
 
 
-def _table() -> dict[str, set[str]]:
+def _table(guide: Path = GUIDE, heading: str = "## In Python") -> dict[str, set[str]]:
     """The guide's rows: a module (or the subcommands' row) and the names it gives."""
-    text = GUIDE.read_text(encoding="utf-8").split("## In Python", 1)[1]
+    text = guide.read_text(encoding="utf-8").split(heading, 1)[1]
     rows: dict[str, set[str]] = {}
     for line in text.splitlines():
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) != 2 or not cells[0].startswith(("`verso.", "a subcommand")):
+        if len(cells) != 2 or not cells[0].startswith(("`verso.", "a subcommand", "модуль подкоманды")):
             continue
-        rows[cells[0]] = set(re.findall(r"`([A-Za-z_][A-Za-z0-9_]*)`", cells[1]))
+        key = "a subcommand" if cells[0].startswith("модуль подкоманды") else cells[0]
+        rows[key] = set(re.findall(r"`([A-Za-z_][A-Za-z0-9_]*)`", cells[1]))
     return rows
 
 
@@ -54,3 +56,9 @@ def test_every_module_s_all_is_its_row():
         seen.append(name)
     assert PROTOCOL <= subcommand and {"verso.ru.scans.cli.rows", "verso.ru.scans.cli.zoom"} <= set(seen)
     assert {key for key in rows if key.startswith("`")} == {f"`{name}`" for name in seen if f"`{name}`" in rows}
+
+
+def test_the_russian_guide_lists_what_the_english_one_does():
+    """docs/scans.ru.md, «В Python», names each module's names as docs/scans.md does: the two guides cannot drift."""
+    english = {("a subcommand" if key.startswith("a subcommand") else key): names for key, names in _table().items()}
+    assert _table(GUIDE_RU, "## В Python") == english

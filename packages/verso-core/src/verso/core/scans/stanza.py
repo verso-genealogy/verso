@@ -21,9 +21,10 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
+from verso.core.messages import t
 from verso.core.scans.look import INKS, MAX_ENHANCE
 
-__all__ = ["Stanza", "enhance_for", "for_album", "rotation"]
+__all__ = ["Stanza", "StanzaError", "enhance_for", "for_album", "rotation"]
 
 # The file an album directory and a village directory each keep.
 FILE = "scans.toml"
@@ -65,6 +66,10 @@ class Stanzas:
 EMPTY = Stanzas(albums={})
 
 
+class StanzaError(ValueError):
+    """A `scans.toml` that does not read as TOML: no stanza is guessed from it. `verso scans` says so and exits 2."""
+
+
 def _enhance(body: Mapping[str, object]) -> float:
     """The stanza's push: a value of the wrong kind or out of range is dropped, and so is one beside an `ink` —
     two answers to one pale hand, of which the ink stands."""
@@ -99,12 +104,15 @@ def parse(text: str) -> Stanzas:
 
 
 def load(path: Path) -> Stanzas:
-    """The albums of the file at `path`; none when there is no file."""
+    """The albums of the file at `path`; none when there is no file. StanzaError when it is no TOML."""
     try:
         text = path.read_text(encoding="utf-8")
     except FileNotFoundError:
         return EMPTY
-    return parse(text)
+    try:
+        return parse(text)
+    except tomllib.TOMLDecodeError as error:
+        raise StanzaError(str(t("scans.stanza.not_toml", path=path, error=error))) from None
 
 
 def find_file(directory: Path, village: Path | None = None) -> Path | None:

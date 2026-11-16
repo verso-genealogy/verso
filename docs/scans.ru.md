@@ -51,16 +51,21 @@ pip install 'verso-core[heic]'     # и HEIC
 
 | Ключ | Что делает |
 |---|---|
-| `frames` | `"spread"`: в одном кадре оба листа, что бы ни говорило его имя (`zoom`, `rows`) |
+| `frames` | `"spread"`: кадр, названный по одному листу, держит и лист напротив — кадр, стоящий вертикально, остаётся одной страницей (`check`, `headers`, `crops`, `spread`, `zoom`, `rows`) |
 | `top`, `bottom` | где начинается и кончается письмо, в долях листа (`zoom`, `rows`) |
 | `rotate`, `rotate_frames` | поворот поверх собственной метки EXIF кадра — для альбома и для страницы |
 | `enhance` | насколько усилить бледные чернила (`zoom`, когда `--enhance` не задан) |
 | `village` | в собственной копии альбома — каталог, чей `scans.toml` долговечный: `enhance` спрашивается и там |
 
 Все прочие ключи — окна (`[[album."…".box]]`), графы, остальные ключи вида, источник — пропускаются.
-`headers`, `crops` и `spread` читают собственный `scans.toml` каталога альбома; `zoom` и `rows` — тот, что назван
-`--layout`, иначе собственный альбома, иначе `--village`. Альбом — `--album-title` (точное название или единственный
-альбом, чьё название его содержит), иначе единственный альбом файла.
+`check`, `headers`, `crops` и `spread` читают собственный `scans.toml` каталога альбома и его единственный альбом:
+флага, который назвал бы другой файл или название, у них нет. `zoom` и `rows` читают тот, что назван `--layout`,
+иначе собственный альбома, иначе `--village`; альбом — `--album-title` (точное название или единственный альбом,
+чьё название его содержит), иначе единственный альбом файла. При `frames = "spread"` доли окна — доли листа, той
+половины кадра, на которой он лежит, — во всех подкомандах; `--frames` читает кадры по порядку и оставляет их
+целыми. `check` такого альбома ждёт стороны от первой до последней: лицевая перед левым листом первого разворота и
+оборот после правого листа последнего — соседних альбомов. `scans.toml`, который не читается как TOML, подкоманды
+отклоняют строкой и кодом 2.
 
 Окна — дело страницы вычитки: их пишет Verso, а `verso-scans` (App) запоминает одно через
 `zoom --record --remember` или все окна листа сразу через `windows`. `verso scans rows` находит метки и рисует их;
@@ -76,12 +81,12 @@ pip install 'verso-core[heic]'     # и HEIC
 | `verso.core.scans.window` | `Box`, окно в долях; `FULL_WIDTH` |
 | `verso.core.scans.level` | `turn`, `turned_size`, `level_crop`, `line_angle` |
 | `verso.core.scans.look` | `Look`, `legible`, `coloured_ink`; `PLAIN`, `INKS`, `MAX_ENHANCE` |
-| `verso.core.scans.stanza` | `Stanza`, `for_album`, `rotation`, `enhance_for` |
+| `verso.core.scans.stanza` | `Stanza`, `StanzaError`, `for_album`, `rotation`, `enhance_for` |
 | `verso.core.scans.sheets` | `contact_sheet`, `strips_sheet`, `fit_width` |
 | `verso.ru.scans.folio` | `Page`, `parse_album`, `parse_frame`, `frame_pages`, `check_album`, `format_report`, `expand_spreads`, `renumber_scans`; `FRAME_PREFIX`, `VERSO_SUFFIX` |
 | `verso.ru.scans.zoom` | `COLUMNS`, `DEFAULT_TOP`, `column_window`, `row_band`, `resolve` |
 | `verso.ru.scans.rows` | `detect`, `count_window`, `ruler`, `sheet`, `parse_keys`, `pair`, `cuts_from` |
-| `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode` |
+| `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode`, `album_of`, `spread_frames` |
 | модуль подкоманды, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); у `verso.ru.scans.cli.rows` ещё `leaf`, `report`; у `verso.ru.scans.cli.zoom` ещё `locate`, `cut`, `Target` — найденная страница, затем окно, вырезанное из неё, — вызывающий может отдать своё окно и поворот |
 | `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag` |
 | `verso.core.scans.cli` | `main` — сам `verso scans` |

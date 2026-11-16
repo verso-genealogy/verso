@@ -1747,6 +1747,7 @@ of_dated = "of {count} dated"
 
 [scans]
 frames_by_position = "{directory}: {count} frame(s) numbered by POSITION («кадр 1» …) — the filenames carry no лист. Continuity is unchecked in this mode; `--from`/`--to` select frames, and `spread` does not apply."
+spread_album = "  · frames = \"spread\" (scans.toml): a frame named by its left leaf holds the facing recto too, unless it stands up as one page."
 
 [scans.headers]
 done = "\n{len} contact sheet(s). The printed running header names the part — «ЧАСТЬ ПЕРВАЯ, О РОДИВШИХСЯ» and so on; a leaf whose header strip is blank is a part TITLE page, which is where each part begins."

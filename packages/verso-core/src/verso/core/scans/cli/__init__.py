@@ -63,10 +63,15 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     import verso.core.workspace  # noqa: F401 — it tells verso.core.i18n where the language comes from
     from verso.core.plugins import PluginError
+    from verso.core.scans.stanza import StanzaError
     try:
         parser = build_parser()
     except PluginError as error:
         print(f"verso scans: {error}", file=sys.stderr)
         return 2
     args = parser.parse_args(argv)
-    return args.run(args)
+    try:
+        return args.run(args)
+    except StanzaError as error:  # a scans.toml no subcommand can read: said, not a traceback
+        print(f"verso scans: {error}", file=sys.stderr)
+        return 2

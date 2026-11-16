@@ -1,0 +1,26 @@
+{
+ "argv": [
+  "headers",
+  "<DIR>/spreads",
+  "--out",
+  "<DIR>/headers"
+ ],
+ "case": "headers",
+ "commit": "ed88220",
+ "exit": 0,
+ "files": {
+  "headers/headers_00.jpg": "16de01ea6f15268348af5aa9d3066d36c92b9fa6770362f2477b4b4947de8657"
+ },
+ "lang": "en",
+ "pixels": {
+  "headers/headers_00.jpg": "15ca6abcfe38d95de870a287f0ab0f2dafe6b3694f5b867b472dce905ba70b12"
+ },
+ "sizes": {
+  "headers/headers_00.jpg": [
+   760,
+   888
+  ]
+ },
+ "stderr": "",
+ "stdout": "<DIR>/headers/headers_00.jpg: лл. 10об, 11, 11об, 12, 12об\n\n1 contact sheet(s). The printed running header names the part — «ЧАСТЬ ПЕРВАЯ, О РОДИВШИХСЯ» and so on; a leaf whose header strip is blank is a part TITLE page, which is where each part begins.\n"
+}

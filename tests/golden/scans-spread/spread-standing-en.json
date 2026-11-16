@@ -1,0 +1,17 @@
+{
+ "argv": [
+  "spread",
+  "<DIR>/spreads",
+  "--folio",
+  "12об"
+ ],
+ "case": "spread-standing",
+ "commit": "ed88220",
+ "exit": 1,
+ "files": {},
+ "lang": "en",
+ "pixels": {},
+ "sizes": {},
+ "stderr": "л. 13 (the facing recto) is not in <DIR>/spreads\n",
+ "stdout": ""
+}

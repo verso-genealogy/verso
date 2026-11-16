@@ -15,10 +15,17 @@ the счётъ column, so `rows` finds its marks.
     python -m tests.scans_album golden-library   # each case of LIBRARY_CASES through `python -m verso.core.cli
                                            # scans` of the verso this venv imports →
                                            # tests/golden/scans-library/<case>-<lang>.json
+    python -m tests.scans_album golden-spread    # each case of SPREAD_CASES the same way, on the album of
+                                           # spreads → tests/golden/scans-spread/<case>-<lang>.json
 
 The library's cases are the subcommands that replaced the reading plugin's scripts — `strips`, `quadrants`,
 `descreen` and `cards` (`cards/`, three invented farm-census cards): their goldens were captured at the verso
 commit where a test held them byte for byte to those scripts, and they hold the outputs since the scripts went.
+
+An album of spreads (`spreads/`, drawn by `draw_spreads`) names each frame by its left leaf and says
+`frames = "spread"` in its stanza — `0001_10об.jpg` holds 10об and 11 —, with one frame among them standing up, one
+page alone (`0003_12об.jpg`). Its cases (`SPREAD_CASES`) hold how `check`, `headers`, `crops`, `spread`, `zoom` and
+`rows` read the stanza; they were captured from the library, as its own behaviour.
 
 A golden file is `{app_commit, argv, lang, stdout, stderr, exit, files, pixels}`: the argv with `<DIR>` for the
 album's root, what the command printed (the root again `<DIR>`), its exit code, and every file it wrote — its
@@ -49,6 +56,8 @@ PAPER = (236, 226, 204)
 INK = (52, 40, 34)
 
 ALBUM_TOML = f'[album."{TITLE}"]\ntop = 0.12\nenhance = 1.6\nrotate_frames = {{ "1" = 180 }}\n'
+SPREAD_TITLE = "Маниловка 1902"
+SPREAD_TOML = f'[album."{SPREAD_TITLE}"]\nframes = "spread"\ntop = 0.12\n'
 FADED_TOML = f'[album."{FADED_TITLE}"]\nframes = "side"\nvillage = "village"\n'
 VILLAGE_TOML = f'[album."{FADED_TITLE}"]\nenhance = 1.7\n'
 
@@ -118,6 +127,21 @@ def draw_album(root: Path) -> None:
     village = root / "village"
     village.mkdir()
     (village / "scans.toml").write_text(VILLAGE_TOML, encoding="utf-8")
+
+
+def draw_spreads(root: Path) -> Path:
+    """An album of spreads under `root/spreads`, each frame named by its left leaf, one standing alone."""
+    from PIL import Image
+    album = root / "spreads"
+    album.mkdir(parents=True)
+    for frame, (left, right) in enumerate(((31, 32), (33, 34)), start=1):
+        spread = Image.new("RGB", (LEAF[0] * 2, LEAF[1]), PAPER)
+        spread.paste(_leaf(left, 4 + frame), (0, 0))
+        spread.paste(_leaf(right, 5), (LEAF[0], 0))
+        _save(spread, album / f"{frame:04d}_{9 + frame}об.jpg")
+    _save(_leaf(35, 3), album / "0003_12об.jpg")                       # one page, standing up among the spreads
+    (album / "scans.toml").write_text(SPREAD_TOML, encoding="utf-8")
+    return album
 
 
 def draw_cards(root: Path) -> Path:
@@ -212,6 +236,21 @@ LIBRARY_CASES: list[tuple[str, list[str]]] = [
     ("cards-zoom", ["cards", "<DIR>/cards", "<DIR>/out", "--zoom", "1:0.2:0.1:0.6:0.4"]),
     ("cards-no-image", ["cards", "<DIR>/village", "<DIR>/out"]),
 ]
+SPREAD_GOLDEN = GOLDEN.parent / "scans-spread"
+# The album of spreads under the stanza that declares it: each subcommand reads a frame as the two leaves it holds.
+SPREAD_CASES: list[tuple[str, list[str]]] = [
+    ("check", ["check", "<DIR>/spreads"]),
+    ("check-range", ["check", "<DIR>/spreads", "--first", "10", "--last", "12"]),
+    ("headers", ["headers", "<DIR>/spreads", "--out", "<DIR>/headers"]),
+    ("crops", ["crops", "<DIR>/spreads", "--out", "<DIR>/crops", "--part", "1"]),
+    ("crops-verso", ["crops", "<DIR>/spreads", "--out", "<DIR>/crops", "--verso-only", "--part", "3"]),
+    ("crops-frames", ["crops", "<DIR>/spreads", "--out", "<DIR>/crops", "--frames"]),
+    ("spread", ["spread", "<DIR>/spreads", "--folio", "10об"]),
+    ("spread-standing", ["spread", "<DIR>/spreads", "--folio", "12об"]),
+    ("zoom", ["zoom", "<DIR>/spreads", "--folio", "11", "--box", "0.1", "0.1", "0.9", "0.5", "--scale", "1"]),
+    ("rows", ["rows", "<DIR>/spreads", "--part", "1", "--folio", "10об", "11"]),
+]
+
 #: Whose bytes hang on the platform's fonts: compared by name, size and output only.
 FONT_BOUND = {"strips"}
 
@@ -314,6 +353,7 @@ def capture_library(name: str, argv: list[str], lang: str, commit: str) -> dict[
         root = Path(scratch)
         draw_album(root)
         draw_cards(root)
+        draw_spreads(root)
         before = tree(root)
         env = {**os.environ, "VERSO_LANG": lang, "PYTHONIOENCODING": "utf-8"}
         env.pop("VERSO_WORKSPACE", None)
@@ -326,15 +366,15 @@ def capture_library(name: str, argv: list[str], lang: str, commit: str) -> dict[
                 "sizes": {f: size(root / f) for f in files}}
 
 
-def golden_library() -> int:
+def golden_library(cases: list[tuple[str, list[str]]] | None = None, where: Path = LIBRARY_GOLDEN) -> int:
     commit = _library_commit()
-    if LIBRARY_GOLDEN.exists():
-        shutil.rmtree(LIBRARY_GOLDEN)
-    LIBRARY_GOLDEN.mkdir(parents=True)
-    for name, argv in LIBRARY_CASES:
+    if where.exists():
+        shutil.rmtree(where)
+    where.mkdir(parents=True)
+    for name, argv in LIBRARY_CASES if cases is None else cases:
         for lang in LANGS:
             record = capture_library(name, argv, lang, commit)
-            (LIBRARY_GOLDEN / f"{name}-{lang}.json").write_text(
+            (where / f"{name}-{lang}.json").write_text(
                 json.dumps(record, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8")
             print(f"{name}-{lang}: exit {record['exit']}, {len(record['files'])} file(s)")
     return 0
@@ -368,6 +408,8 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("golden", help="capture the App's outputs into tests/golden/scans")
     sub.add_parser("golden-library", help="capture the library's outputs into tests/golden/scans-library")
+    sub.add_parser("golden-spread", help="capture the library's outputs on the album of spreads into "
+                                         "tests/golden/scans-spread")
     draw = sub.add_parser("draw", help="draw the albums under DIR")
     draw.add_argument("directory", type=Path)
     args = parser.parse_args(argv)
@@ -375,7 +417,10 @@ def main(argv: list[str] | None = None) -> int:
         return golden()
     if args.command == "golden-library":
         return golden_library()
+    if args.command == "golden-spread":
+        return golden_library(SPREAD_CASES, SPREAD_GOLDEN)
     draw_album(args.directory)
+    draw_spreads(args.directory)
     return 0
 
 

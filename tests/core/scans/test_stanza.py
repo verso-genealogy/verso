@@ -91,3 +91,11 @@ def test_the_durable_file_is_named_before_the_one_read(tmp_path: Path):
     assert stanza.durable_file(layout=None, village=None, album_village="", **kw) == read
     assert stanza.durable_file(layout=None, village=None, album_village="", album_dir=tmp_path,
                                read_path=None) == tmp_path / "scans.toml"
+
+
+def test_a_file_that_is_no_toml_is_refused_not_guessed(tmp_path):
+    """A broken `scans.toml` is no album: StanzaError names the file and where the TOML broke."""
+    import pytest
+    (tmp_path / "scans.toml").write_text('[album."Маниловка 1902"\nframes = "spread"\n', encoding="utf-8")
+    with pytest.raises(stanza.StanzaError, match=r"scans\.toml is not TOML.*line 1"):
+        stanza.for_album(tmp_path)

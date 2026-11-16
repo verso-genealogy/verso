@@ -5,11 +5,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from verso.core.scans import stanza
 from verso.core.scans.image import pil
 from verso.core.scans.sheets import contact_sheet, fit_width
 from verso.ru.messages import t
-from verso.ru.scans.album import load_pages, note_frame_mode, open_page
+from verso.ru.scans.album import album_of, load_pages, note_frame_mode, open_page
 from verso.ru.scans.cli import add_frames_flag
 
 __all__ = ["HELP", "add_arguments", "run"]
@@ -31,16 +30,18 @@ def add_arguments(p: argparse.ArgumentParser) -> None:
 def run(args: argparse.Namespace) -> int:
     pil()
     directory = Path(args.directory)
-    rotation = stanza.rotation(directory)
+    album = album_of(directory)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
 
-    pages, by_frame = load_pages(directory, force_frames=args.frames)
+    pages, by_frame = load_pages(directory, force_frames=args.frames,
+                                 expand=bool(album and album.frames == "spread"),
+                                 turn=album.rotate if album else 0)
     if by_frame:
         note_frame_mode(directory, len(pages))
     strips = []
     for page in pages:
-        im = open_page(directory, page, rotation(page.label))
+        im = open_page(directory, page, album.rotation_for(page.label) if album else 0)
         strip = im.crop((0, 0, im.width, int(im.height * args.strip)))
         strips.append((page.label, fit_width(strip, CONTACT_SHEET_WIDTH)))
 

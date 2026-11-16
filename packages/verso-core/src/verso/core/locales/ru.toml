@@ -254,6 +254,9 @@ help_descreen_mode = "vertical (по умолчанию), horizontal — как 
 help_descreen_rot = "дополнительный поворот против часовой стрелки в градусах (по умолчанию 0)"
 help_jpeg_dir = "каталог, чьи кадры HEIC писать в JPEG"
 
+[scans.stanza]
+not_toml = "{path} — не TOML, и альбом из него не читается: {error}"
+
 [scans.look]
 enhance_out_of_range = "enhance {enhance} вне 1–{limit}"
 ink_unknown = "ink «{ink}» — нет такого: {inks}"

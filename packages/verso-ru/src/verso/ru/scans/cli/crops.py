@@ -11,11 +11,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from verso.core.scans import stanza
 from verso.core.scans.image import pil
 from verso.core.scans.look import legible
 from verso.ru.messages import t
-from verso.ru.scans.album import load_pages, note_frame_mode, open_page
+from verso.ru.scans.album import album_of, load_pages, note_frame_mode, open_page
 from verso.ru.scans.cli import add_enhance_flag, add_frames_flag
 from verso.ru.scans.folio import Page
 
@@ -84,11 +83,13 @@ def add_arguments(p: argparse.ArgumentParser) -> None:
 def run(args: argparse.Namespace) -> int:
     Image, _, _ = pil()
     directory = Path(args.directory)
-    rotation = stanza.rotation(directory)
+    album = album_of(directory)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
 
-    pages, by_frame = load_pages(directory, force_frames=args.frames)
+    pages, by_frame = load_pages(directory, force_frames=args.frames,
+                                 expand=bool(album and album.frames == "spread"),
+                                 turn=album.rotate if album else 0)
     if by_frame:
         note_frame_mode(directory, len(pages))
     if args.verso_only:
@@ -112,7 +113,7 @@ def run(args: argparse.Namespace) -> int:
     grey = args.grey or enhance > 1
     count = 0
     for page in pages:
-        im = open_page(directory, page, rotation(page.label))
+        im = open_page(directory, page, album.rotation_for(page.label) if album else 0)
         left, right = int(im.width * x0), int(im.width * x1)
         bands = ((args.top, 0.5 + HALF_OVERLAP), (0.5 - HALF_OVERLAP, 1.0))
         for tag, (y0, y1) in zip("ab", bands, strict=True):

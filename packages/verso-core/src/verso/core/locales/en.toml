@@ -253,6 +253,9 @@ help_descreen_mode = "vertical (default), horizontal — which way the stripes r
 help_descreen_rot = "extra counter-clockwise rotation in degrees (default 0)"
 help_jpeg_dir = "the directory whose HEIC frames to write as JPEG"
 
+[scans.stanza]
+not_toml = "{path} is not TOML, so no album is read from it: {error}"
+
 [scans.look]
 enhance_out_of_range = "enhance {enhance} is out of 1–{limit}"
 ink_unknown = "ink «{ink}» is none of: {inks}"

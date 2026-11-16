@@ -13,11 +13,32 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any
 
+from verso.core.scans import stanza
 from verso.core.scans.image import cut_half, image_names, open_upright, pil, turn_upright, turned_frame_size
+from verso.core.scans.stanza import Stanza
 from verso.ru.messages import t
 from verso.ru.scans.folio import FRAME_PREFIX, Page, expand_spreads, frame_pages, parse_album
 
-__all__ = ["find", "load_pages", "note_frame_mode", "open_page", "page_named", "page_size", "titled", "where"]
+__all__ = ["album_of", "find", "load_pages", "note_frame_mode", "open_page", "page_named", "page_size",
+           "spread_frames", "titled", "where"]
+
+
+def album_of(directory: Path, *, layout: str | None = None, village: str | None = None,
+             album_title: str | None = None) -> Stanza | None:
+    """The album's stanza of `scans.toml`, chosen as `zoom` and `rows` choose it (`stanza.for_album`): the file
+    `layout` names, else the album directory's own, else `village`'s; the title given, else the file's only album.
+    None when no file or no album answers."""
+    _, title, stanzas = stanza.for_album(directory, layout=layout, village=village, album_title=album_title)
+    return stanzas.album(title) if title else None
+
+
+def spread_frames(directory: Path, album: Stanza | None) -> Callable[[Page], bool] | None:
+    """For an album whose stanza says `frames = "spread"` — its frames are spreads named by their left leaf — which
+    of its frames stand up as one page (`standing_frames`); None for every other album, whose frames are what their
+    names say."""
+    if album is None or album.frames != "spread":
+        return None
+    return standing_frames(directory, album.rotate)
 
 
 def open_page(directory: Path, page: Page, rotate: int = 0) -> Any:
