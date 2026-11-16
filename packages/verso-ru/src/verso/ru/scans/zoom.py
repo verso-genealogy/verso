@@ -28,6 +28,8 @@ core's (`verso.core.scans.window`): it knows no part of a book.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from verso.core.scans.window import FULL_WIDTH, Box
 from verso.ru.messages import t
 
@@ -124,7 +126,7 @@ def row_band(row: int, of: int, *, top: float = DEFAULT_TOP,
 
 
 def resolve(*, part: int | None = None, column: str | None = None,
-            row: tuple[int, int] | None = None, box: tuple[float, ...] | None = None,
+            row: tuple[int, int] | None = None, box: Sequence[float] | None = None,
             top: float = DEFAULT_TOP, bottom: float = 1.0,
             pad: float = DEFAULT_PAD) -> Box:
     """The crop window, from whichever of the three ways of naming it was used.

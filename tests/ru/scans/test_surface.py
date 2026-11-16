@@ -47,9 +47,10 @@ def test_every_module_s_all_is_its_row():
             assert public == row, (name, sorted(public ^ row))
         else:
             assert ".cli." in name, f"{name}: no row in docs/scans.md"
-            extra = {"leaf", "report"} if name == "verso.ru.scans.cli.rows" else set()
+            extra = {"verso.ru.scans.cli.rows": {"leaf", "report"},
+                     "verso.ru.scans.cli.zoom": {"Target", "cut", "locate"}}.get(name, set())
             assert public == PROTOCOL | extra, (name, sorted(public))
             assert extra <= subcommand
         seen.append(name)
-    assert PROTOCOL <= subcommand and "verso.ru.scans.cli.rows" in seen
+    assert PROTOCOL <= subcommand and {"verso.ru.scans.cli.rows", "verso.ru.scans.cli.zoom"} <= set(seen)
     assert {key for key in rows if key.startswith("`")} == {f"`{name}`" for name in seen if f"`{name}`" in rows}

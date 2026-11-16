@@ -82,7 +82,7 @@ pip install 'verso-core[heic]'     # и HEIC
 | `verso.ru.scans.zoom` | `COLUMNS`, `DEFAULT_TOP`, `column_window`, `row_band`, `resolve` |
 | `verso.ru.scans.rows` | `detect`, `count_window`, `ruler`, `sheet`, `parse_keys`, `pair`, `cuts_from` |
 | `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode` |
-| модуль подкоманды, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); у `verso.ru.scans.cli.rows` ещё `leaf`, `report` |
+| модуль подкоманды, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); у `verso.ru.scans.cli.rows` ещё `leaf`, `report`; у `verso.ru.scans.cli.zoom` ещё `locate`, `cut`, `Target` — найденная страница, затем окно, вырезанное из неё, — вызывающий может отдать своё окно и поворот |
 | `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag` |
 | `verso.core.scans.cli` | `main` — сам `verso scans` |
 

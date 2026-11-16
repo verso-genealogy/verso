@@ -18,6 +18,10 @@ A corpus's output does not move: the scan tools are new, and nothing the DSL pro
   the windows stay Verso's. The guide: [the scan tools](docs/scans.md).
   Their public names are what the guide's table lists — each module's `__all__` is exactly that, a subcommand's
   module public in `HELP`, `add_arguments` and `run` (`tests/ru/scans/test_surface.py`).
+- `verso.ru.scans.cli.zoom.locate` and `cut` (`Target`): `zoom`'s run in two steps — the page `--folio` names, then
+  the window cut from it, enlarged, written and said — so a caller with a window of its own (verso-app's
+  `verso-scans zoom --record`, a window remembered in `scans.toml` at the turn it was drawn) hands `cut` that window
+  and angle and its output is `zoom`'s. `zoom` itself writes what it wrote.
 - `Plugin.scans`: a plugin's subcommands of `verso scans`, as `Plugin.commands` are its commands.
 
 ## 0.1.40 — 2026-11-16

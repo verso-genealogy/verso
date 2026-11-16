@@ -81,7 +81,7 @@ The modules' `__all__` is public ([compatibility](compatibility.md)):
 | `verso.ru.scans.zoom` | `COLUMNS`, `DEFAULT_TOP`, `column_window`, `row_band`, `resolve` |
 | `verso.ru.scans.rows` | `detect`, `count_window`, `ruler`, `sheet`, `parse_keys`, `pair`, `cuts_from` |
 | `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode` |
-| a subcommand's module, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); `verso.ru.scans.cli.rows` also `leaf`, `report` |
+| a subcommand's module, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); `verso.ru.scans.cli.rows` also `leaf`, `report`; `verso.ru.scans.cli.zoom` also `locate`, `cut`, `Target` — the page found, then a window cut from it, which a caller may hand its own window and turn |
 | `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag` |
 | `verso.core.scans.cli` | `main`, `verso scans` itself |
 
