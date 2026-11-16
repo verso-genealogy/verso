@@ -3,6 +3,21 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## 0.1.41 — unreleased
+
+A corpus's output does not move: the scan tools are new, and nothing the DSL produces reads them.
+
+### Added
+
+- verso-core: `verso scans` and `verso.core.scans` (`[scans]`, `[heic]`); verso-ru: `verso.ru.scans` — from
+  verso-app, Apache-2.0 by its author. The tools work on the frames of a book already on disk: the core's `strips`,
+  `quadrants`, `descreen` (the reading plugin's scripts, which stay until its skills name `verso scans`) and `jpeg`
+  (a directory's HEIC frames as JPEG); verso-ru's `check`, `headers`, `crops`, `spread`, `zoom`, `rows` (verso-app's
+  `verso-scans` subcommands of those names, the same files, bytes and output — held by `tests/golden/scans`, captured
+  from verso-app) and `cards` (the 1917 census cards). They read an album's stanza of `scans.toml` and write none:
+  the windows stay Verso's. The guide: [the scan tools](docs/scans.md).
+- `Plugin.scans`: a plugin's subcommands of `verso scans`, as `Plugin.commands` are its commands.
+
 ## 0.1.40 — 2026-11-16
 
 A corpus's output does not move: a pin teaches a spelling and changes no answer the lexicon gave, and

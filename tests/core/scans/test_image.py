@@ -51,6 +51,7 @@ class _Decoded:
 def test_open_upright_does_not_reapply_original_orientation(monkeypatch: pytest.MonkeyPatch):
     frame = _Decoded((3024, 4032), {"original_orientation": 6})
     def decode(path: Path) -> _Decoded:
+        del path
         return frame
 
     def exif_transpose(im: _Decoded) -> _Decoded:

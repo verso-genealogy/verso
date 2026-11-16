@@ -1744,3 +1744,57 @@ estates = { one = "{count} estate", other = "{count} estates" }
 weddings = { one = "{count} wedding", other = "{count} weddings" }
 of_weddings = { one = "of {count} dated wedding", other = "of {count} dated weddings" }
 of_dated = "of {count} dated"
+
+[scans]
+frames_by_position = "{directory}: {count} frame(s) numbered by POSITION («кадр 1» …) — the filenames carry no лист. Continuity is unchecked in this mode; `--from`/`--to` select frames, and `spread` does not apply."
+
+[scans.headers]
+done = "\n{len} contact sheet(s). The printed running header names the part — «ЧАСТЬ ПЕРВАЯ, О РОДИВШИХСЯ» and so on; a leaf whose header strip is blank is a part TITLE page, which is where each part begins."
+
+[scans.crops]
+verso_only = "verso only: in ч.3 the recto carries no names at all, and in ч.1/ч.2 it carries the godparents/sureties — crop those with `spread` when a page turns up a record worth reading."
+
+[scans.spread]
+no_folios = "{directory}: no filename carries a лист, so «the facing recto» has no meaning here — `spread` is the one subcommand the frame fallback cannot serve. Rename the album (see the docs), or cut the two halves by hand with `crops --x0/--x1`. ({len} file(s), e.g. {join})"
+no_recto = "л. {p1} (the facing recto) is not in {directory}"
+
+[scans.help]
+frames = "number pages by FRAME position, not by лист (the default when no filename carries one)"
+verso_only = "only об pages — where the names are"
+part = "crop only the columns that carry names, at the zoom that affords: 1 родившихся, 2 бракосочетавшихся, 3 умершихъ"
+with_count = "keep the счётъ column the part preset drops — the only thing that says WHICH record a row is, so verifying a DSL номер against the book needs it"
+spread_folio = "the об page, e.g. \"120об\" or \"120\""
+folio = "e.g. \"420об\" (verso) or \"421\" (recto); under frame numbering a plain \"12\" means кадр 12"
+zoom_part = "which part's column names apply (1 родившихся, 2 бракосочетавшихся, 3 умершихъ)"
+
+[scans.folio]
+not_a_leaf = "not a leaf: {first_folio}"
+
+[scans.zoom]
+no_presets = "no column presets for ч. {part}"
+no_column = "ч. {part} has no column {column}. Known: {known}"
+from_stanza = ", enhance {enhance} from scans.toml"
+
+[scans.rows]
+bad_key = "not a record: {key} — write м12 or ж3 (ч. 1, ч. 3), 12 (ч. 2), - for a mark that is no record, * last for every mark left, +ж3 first for a record carried over from the leaf before"
+carried_not_first = "{key}: only the first record can be carried over from the leaf before"
+rest_not_last = "* stands last: it is every mark after the last one named"
+no_records = "the list names no record"
+counts_differ = "{keys} record(s) named for {marks} mark(s) — name every mark in page order (- for a total, a title, the column titles; * last for the rest), or give the cuts with --cuts. Nothing written."
+nothing_carried = "+ names a record carried over, but the first mark stands at the top: nothing is written above it"
+cuts_too_few = "--cuts needs two heights at least: where the first record begins and where the last one ends"
+cuts_not_rising = "--cuts takes fractions of the frame's height, each below the next: {cuts}"
+bad_leaf = "the leaf needs 0 ≤ x0 < x1 ≤ 1 and 0 ≤ top < bottom ≤ 1: x {x0}–{x1}, y {top}–{bottom}"
+no_page = "no page {folio} in {directory}. An об page is written «420об», its recto «421»; a frame «кадр12», or «12» when frames are numbered by position."
+found = "{where}, ч.{part}: {marks} mark(s) in the счётъ column below {top}"
+cut_at_top = "  a mark began on the top line and was left out: the column titles, or a number --top cuts in two"
+cuts = "  cuts {cuts}"
+sheet = "{path}: the marks (red, numbered in page order) and the cuts (blue) — check them before `windows`"
+help_rows = "where each record of a leaf begins: the marks in the счётъ column and the cuts between records, drawn on one sheet for several leaves"
+help_folios = "the leaves, e.g. 120об 121об, or кадр2 кадр3 (12 under frame numbering): one ruler each, side by side on one sheet"
+help_x0 = "where the leaf begins across the frame (fraction; default 0) — the left edge of every window"
+help_x1 = "where the leaf ends across the frame (fraction; default 1) — the right edge of every window"
+help_count = "where the счётъ column lies across the frame (fractions; default: the left of the leaf, as the part's form has it)"
+help_top = "where the writing begins under the column titles (fraction; default: the album's `top`, else {top})"
+help_bottom = "where the writing ends (fraction; default: the album's `bottom`, else 1)"
+help_out = "where to write the ruler sheet (default: rows_<leaf>_<part>.jpg in the album directory)"

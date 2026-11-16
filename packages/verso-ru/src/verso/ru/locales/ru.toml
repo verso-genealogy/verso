@@ -1,6 +1,20 @@
 # verso.ru's messages, Russian: the source's text verbatim where it was Russian.
 schema = 1
 untranslated = [
+    "scans.frames_by_position",
+    "scans.headers.done",
+    "scans.crops.verso_only",
+    "scans.spread.no_folios",
+    "scans.spread.no_recto",
+    "scans.help.frames",
+    "scans.help.verso_only",
+    "scans.help.part",
+    "scans.help.with_count",
+    "scans.help.spread_folio",
+    "scans.help.folio",
+    "scans.help.zoom_part",
+    "scans.zoom.no_presets",
+    "scans.zoom.no_column",
     "CML001.numbered",
     "CML001.unnumbered",
     "SYN001.bare",
@@ -1661,3 +1675,43 @@ estates = { one = "{count} сословие", few = "{count} сословия", 
 weddings = { one = "{count} венчание", few = "{count} венчания", many = "{count} венчаний", other = "{count} венчания" }
 of_weddings = { one = "из {count} датированного венчания", few = "из {count} датированных венчаний", many = "из {count} датированных венчаний", other = "из {count} датированных венчаний" }
 of_dated = { one = "из {count} датированного", few = "из {count} датированных", many = "из {count} датированных", other = "из {count} датированных" }
+
+[scans]
+
+[scans.headers]
+
+[scans.crops]
+
+[scans.spread]
+
+[scans.help]
+
+[scans.folio]
+not_a_leaf = "не лист: {first_folio}"
+
+[scans.zoom]
+from_stanza = ", enhance {enhance} из scans.toml"
+
+[scans.rows]
+bad_key = "не запись: {key} — пишите м12 или ж3 (ч. 1, ч. 3), 12 (ч. 2), - для метки, что не запись, * последним для всех оставшихся меток, +ж3 первым для записи, начатой на листе раньше"
+carried_not_first = "{key}: перенесённой с прошлого листа может быть только первая запись"
+rest_not_last = "* стоит последней: это все метки после последней названной"
+no_records = "в списке нет ни одной записи"
+counts_differ = "названо записей: {keys}, меток: {marks} — назовите каждую метку по порядку (- для итога, заголовка, шапки граф; * последней для остальных) или задайте разрезы --cuts. Ничего не записано."
+nothing_carried = "+ называет перенесённую запись, но первая метка стоит наверху: над ней ничего не написано"
+cuts_too_few = "--cuts — хотя бы две высоты: где начинается первая запись и где кончается последняя"
+cuts_not_rising = "--cuts — доли высоты кадра, каждая ниже следующей: {cuts}"
+bad_leaf = "лист — это 0 ≤ x0 < x1 ≤ 1 и 0 ≤ top < bottom ≤ 1: x {x0}–{x1}, y {top}–{bottom}"
+no_page = "нет страницы {folio} в {directory}. Оборот пишется «420об», лицевая «421»; кадр — «кадр12», или «12», когда кадры нумеруются по порядку."
+found = "{where}, ч.{part}: меток в графе счёта ниже {top}: {marks}"
+cut_at_top = "  метка начиналась на линии top и не взята: шапка граф или номер, который --top режет пополам"
+cuts = "  разрезы {cuts}"
+sheet = "{path}: метки (красные, по порядку на странице) и разрезы (синие) — сверьте их перед `windows`"
+help_rows = "где начинается каждая запись листа: метки в графе счёта и разрезы между записями, на одной линейке для нескольких страниц"
+help_folios = "страницы, напр. 120об 121об или кадр2 кадр3 (12 при нумерации кадров): по линейке на каждую, рядом на одном листе"
+help_x0 = "где лист начинается поперёк кадра (доля; по умолчанию 0) — левый край каждого окна"
+help_x1 = "где лист кончается поперёк кадра (доля; по умолчанию 1) — правый край каждого окна"
+help_count = "где поперёк кадра лежит графа счёта (доли; по умолчанию — слева на листе, как в форме части)"
+help_top = "где под шапкой граф начинаются записи (доля; по умолчанию `top` альбома, иначе {top})"
+help_bottom = "где записи кончаются (доля; по умолчанию `bottom` альбома, иначе 1)"
+help_out = "куда записать линейку (по умолчанию rows_<лист>_<часть>.jpg в каталоге альбома)"
