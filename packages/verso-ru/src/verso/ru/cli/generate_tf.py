@@ -18,7 +18,7 @@ from typing import Any
 from verso.ru import corpus_data
 from verso.core.pipeline.config import consolidation_state_blocks, village_config
 from verso.ru.pipeline.translate import feed_all_records, make_consolidation
-from verso.core.tools import find_tool
+from verso.core.targets.geni.fmt import terraform_fmt
 
 
 _MOVED_BLOCK_RE = re.compile(
@@ -400,16 +400,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _terraform_fmt(output_dir: Path) -> None:
-    """Run `terraform fmt -recursive` on the generated dir, best-effort."""
-    import subprocess
-    tf = find_tool("terraform")
-    if not tf:
-        return
-    try:
-        subprocess.run([tf, "fmt", "-recursive", str(output_dir)],
-                       check=False, capture_output=True)
-    except OSError:
-        pass
+    """`terraform fmt -recursive` on the generated dir, its files in parallel groups; best-effort."""
+    terraform_fmt(output_dir, recursive=True)
 
 
 if __name__ == "__main__":
