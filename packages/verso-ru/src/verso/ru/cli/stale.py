@@ -34,7 +34,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from verso.core.workspace import child_env
-from verso.core.tools import tool
+from verso.core.targets.geni.fmt import terraform_fmt
 
 # Filenames the generator OWNS. Anything else committed in terraform/geni/ is
 # hand-maintained (main.tf, projects.tf, managed.tf, _moved_manual_*.tf,
@@ -164,9 +164,7 @@ def check_tf(village: str, py: str = sys.executable) -> list[str]:
              "--strict", "--fail-on-conflicts", "--output-dir", str(fresh)],
             check=True, capture_output=True, text=True, env=child_env(),
         )
-        terraform = tool("terraform")
-        subprocess.run([terraform, f"-chdir={fresh}", "fmt"],
-                       check=True, capture_output=True, text=True)
+        terraform_fmt(fresh, check=True)
         return tf_stale(village, tf_dir, fresh)
 
 
@@ -199,9 +197,7 @@ def check_familio(village: str, py: str = sys.executable) -> list[str]:
              "--strict", "--output-dir", str(fresh)],
             check=True, capture_output=True, text=True, env=child_env(),
         )
-        terraform = tool("terraform")
-        subprocess.run([terraform, f"-chdir={fresh}", "fmt"],
-                       check=True, capture_output=True, text=True)
+        terraform_fmt(fresh, check=True)
         msgs: list[str] = []
         fresh_names = {p.name for p in fresh.glob("*.tf")}
         # git's index, not the glob — same reasoning as `committed_tf_names`.
