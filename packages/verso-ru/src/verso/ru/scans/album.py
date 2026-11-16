@@ -17,8 +17,7 @@ from verso.core.scans.image import cut_half, image_names, open_upright, pil, tur
 from verso.ru.messages import t
 from verso.ru.scans.folio import FRAME_PREFIX, Page, expand_spreads, frame_pages, parse_album
 
-__all__ = ["find", "load_pages", "note_frame_mode", "open_page", "page_named", "page_size", "standing_frames",
-           "titled", "where"]
+__all__ = ["find", "load_pages", "note_frame_mode", "open_page", "page_named", "page_size", "titled", "where"]
 
 
 def open_page(directory: Path, page: Page, rotate: int = 0) -> Any:

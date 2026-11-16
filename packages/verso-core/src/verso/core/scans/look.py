@@ -32,7 +32,7 @@ from dataclasses import dataclass
 from typing import Any
 from verso.core.messages import t
 
-__all__ = ["FADED", "INKS", "MAX_ENHANCE", "PLAIN", "Look", "coloured_ink", "legible"]
+__all__ = ["INKS", "MAX_ENHANCE", "PLAIN", "Look", "coloured_ink", "legible"]
 
 # Beyond this the push only crushes the hand; the dial that read a faded
 # book was 1.7.

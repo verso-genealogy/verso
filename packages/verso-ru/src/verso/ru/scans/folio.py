@@ -24,8 +24,8 @@ from dataclasses import dataclass
 
 from verso.ru.messages import t
 
-__all__ = ["FRAME_PREFIX", "VERSO_SUFFIX", "AlbumReport", "Page", "check_album", "expand_spreads", "format_report",
-           "frame_pages", "next_side", "parse_album", "parse_frame", "parse_name", "renumber_scans"]
+__all__ = ["FRAME_PREFIX", "VERSO_SUFFIX", "Page", "check_album", "expand_spreads", "format_report", "frame_pages",
+           "parse_album", "parse_frame", "renumber_scans"]
 
 # `0118_57.jpg`, `0119_57об.jpg`, and the cover/inventory frames that carry a
 # word instead of a folio (`001_обложка.jpg`, `002_внутр оп.jpg`).

@@ -29,7 +29,7 @@ from typing import Any
 from verso.core.messages import t
 from verso.core.scans.image import pil
 
-__all__ = ["HELP", "MODES", "add_arguments", "descreen", "run"]
+__all__ = ["HELP", "add_arguments", "run"]
 
 HELP = t("scans.cli.help_descreen")
 MODES = ("vertical", "horizontal", "raw")

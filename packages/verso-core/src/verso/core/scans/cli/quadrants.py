@@ -18,7 +18,7 @@ import os
 from verso.core.messages import t
 from verso.core.scans.image import pil
 
-__all__ = ["HELP", "OVERLAP_X", "OVERLAP_Y", "SCALE", "add_arguments", "quadrants", "run"]
+__all__ = ["HELP", "add_arguments", "run"]
 
 HELP = t("scans.cli.help_quadrants")
 OVERLAP_X = 60

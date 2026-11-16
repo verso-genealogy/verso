@@ -23,7 +23,7 @@ from typing import Any
 
 from verso.core.scans.window import Box
 
-__all__ = ["SPAN", "level_crop", "line_angle", "turn", "turned_size"]
+__all__ = ["level_crop", "line_angle", "turn", "turned_size"]
 
 # A window's slant is searched this far either side of where it stands.
 SPAN = 10.0

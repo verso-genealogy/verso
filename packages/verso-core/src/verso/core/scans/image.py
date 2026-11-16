@@ -18,9 +18,8 @@ from typing import Any
 from verso.core.messages import t
 from verso.core.scans.level import turned_size
 
-__all__ = ["HEIC_SUFFIXES", "IMAGE_SUFFIXES", "JPEG_QUALITY", "SPREAD_OVERLAP", "convert_heic_frames", "cut_half",
-           "half_size", "heic_clashes", "heic_to_jpeg", "image_names", "open_upright", "pil", "turn_upright",
-           "turned_frame_size", "upright_size"]
+__all__ = ["HEIC_SUFFIXES", "IMAGE_SUFFIXES", "convert_heic_frames", "cut_half", "heic_clashes", "heic_to_jpeg",
+           "image_names", "open_upright", "pil", "turn_upright", "turned_frame_size", "upright_size"]
 
 # `.heic` is what an Apple Photos export actually writes. While it was missing here `image_names()` returned
 # nothing for such an album, and an export reported «11 frame(s)» and «0 file(s)» in consecutive lines.

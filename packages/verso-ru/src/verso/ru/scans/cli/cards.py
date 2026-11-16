@@ -24,7 +24,7 @@ from typing import Any
 
 from verso.core.scans.image import pil
 
-__all__ = ["HEADER", "HELP", "LEAF", "NUMBER", "TABLE", "WIDTH", "add_arguments", "run"]
+__all__ = ["HELP", "add_arguments", "run"]
 
 HELP = "the readable windows of the 1917 farm-census cards: the table over the header, the card numbers, the leaves"
 TABLE = (0.00, 0.03, 0.66, 0.345)

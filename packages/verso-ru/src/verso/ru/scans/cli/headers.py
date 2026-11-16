@@ -12,7 +12,7 @@ from verso.ru.messages import t
 from verso.ru.scans.album import load_pages, note_frame_mode, open_page
 from verso.ru.scans.cli import add_frames_flag
 
-__all__ = ["CONTACT_SHEET_ROWS", "CONTACT_SHEET_WIDTH", "HEADER_STRIP", "HELP", "add_arguments", "run"]
+__all__ = ["HELP", "add_arguments", "run"]
 
 HELP = "contact sheets of the running headers (find the parts)"
 HEADER_STRIP = 0.17

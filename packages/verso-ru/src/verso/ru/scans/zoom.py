@@ -31,7 +31,7 @@ from __future__ import annotations
 from verso.core.scans.window import FULL_WIDTH, Box
 from verso.ru.messages import t
 
-__all__ = ["COLUMNS", "DEFAULT_PAD", "DEFAULT_TOP", "column_window", "resolve", "row_band"]
+__all__ = ["COLUMNS", "DEFAULT_TOP", "column_window", "resolve", "row_band"]
 
 # Fraction of the leaf that the printed running header and the column titles
 # occupy. Rows are numbered within the writing area BELOW it, because that is how

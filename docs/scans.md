@@ -71,13 +71,19 @@ The modules' `__all__` is public ([compatibility](compatibility.md)):
 
 | Module | What it gives |
 |---|---|
-| `verso.core.scans.image` | `open_upright`, `turn_upright`, `cut_half`, `upright_size`, `turned_frame_size`, `image_names`, `heic_to_jpeg`, `convert_heic_frames`, `heic_clashes` |
-| `verso.core.scans.window` | `Box`, a window in fractions |
+| `verso.core.scans.image` | `open_upright`, `turn_upright`, `cut_half`, `upright_size`, `turned_frame_size`, `image_names`, `heic_to_jpeg`, `convert_heic_frames`, `heic_clashes`, `pil`; `IMAGE_SUFFIXES`, `HEIC_SUFFIXES` |
+| `verso.core.scans.window` | `Box`, a window in fractions; `FULL_WIDTH` |
 | `verso.core.scans.level` | `turn`, `turned_size`, `level_crop`, `line_angle` |
-| `verso.core.scans.look` | `Look`, `legible`, `coloured_ink` |
+| `verso.core.scans.look` | `Look`, `legible`, `coloured_ink`; `PLAIN`, `INKS`, `MAX_ENHANCE` |
 | `verso.core.scans.stanza` | `Stanza`, `for_album`, `rotation`, `enhance_for` |
 | `verso.core.scans.sheets` | `contact_sheet`, `strips_sheet`, `fit_width` |
-| `verso.ru.scans.folio` | `Page`, `parse_album`, `check_album`, `format_report`, `expand_spreads`, `renumber_scans` |
-| `verso.ru.scans.zoom` | `COLUMNS`, `column_window`, `row_band`, `resolve` |
-| `verso.ru.scans.rows` | `detect`, `ruler`, `sheet`, `parse_keys`, `pair`, `cuts_from` |
-| `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size` |
+| `verso.ru.scans.folio` | `Page`, `parse_album`, `parse_frame`, `frame_pages`, `check_album`, `format_report`, `expand_spreads`, `renumber_scans`; `FRAME_PREFIX`, `VERSO_SUFFIX` |
+| `verso.ru.scans.zoom` | `COLUMNS`, `DEFAULT_TOP`, `column_window`, `row_band`, `resolve` |
+| `verso.ru.scans.rows` | `detect`, `count_window`, `ruler`, `sheet`, `parse_keys`, `pair`, `cuts_from` |
+| `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode` |
+| a subcommand's module, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); `verso.ru.scans.cli.rows` also `leaf`, `report` |
+| `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag` |
+| `verso.core.scans.cli` | `main`, `verso scans` itself |
+
+Nothing else of these modules is public — a value of a type they do not list (`Stanzas`, `Rows`) is read by its
+attributes, not imported.

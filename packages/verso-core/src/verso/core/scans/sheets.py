@@ -12,7 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-__all__ = ["GAP", "LABEL", "contact_sheet", "fit_width", "label_font", "strips_sheet"]
+__all__ = ["contact_sheet", "fit_width", "strips_sheet"]
 
 # px reserved for a strip's label, and between two strips.
 LABEL = 28

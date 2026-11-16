@@ -19,7 +19,7 @@ from verso.ru.scans.album import load_pages, note_frame_mode, open_page
 from verso.ru.scans.cli import add_enhance_flag, add_frames_flag
 from verso.ru.scans.folio import Page
 
-__all__ = ["DEFAULT_SCALE", "HALF_OVERLAP", "HELP", "PART_WINDOWS", "add_arguments", "crop_window", "run"]
+__all__ = ["HELP", "add_arguments", "run"]
 
 HELP = "half-page upscaled crops, the unit that reads"
 

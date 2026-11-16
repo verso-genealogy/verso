@@ -17,7 +17,7 @@ from collections.abc import Mapping
 
 from verso.core.messages import t
 
-__all__ = ["CORE", "build_parser", "main", "subcommands"]
+__all__ = ["main"]
 
 # The core's own subcommands; each installed plugin brings its own (`Plugin.scans`).
 CORE: dict[str, str] = {

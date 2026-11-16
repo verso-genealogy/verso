@@ -16,6 +16,8 @@ A corpus's output does not move: the scan tools are new, and nothing the DSL pro
   `verso-scans` subcommands of those names, the same files, bytes and output — held by `tests/golden/scans`, captured
   from verso-app) and `cards` (the 1917 census cards). They read an album's stanza of `scans.toml` and write none:
   the windows stay Verso's. The guide: [the scan tools](docs/scans.md).
+  Their public names are what the guide's table lists — each module's `__all__` is exactly that, a subcommand's
+  module public in `HELP`, `add_arguments` and `run` (`tests/ru/scans/test_surface.py`).
 - `Plugin.scans`: a plugin's subcommands of `verso scans`, as `Plugin.commands` are its commands.
 
 ## 0.1.40 — 2026-11-16
