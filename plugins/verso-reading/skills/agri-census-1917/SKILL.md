@@ -25,7 +25,7 @@ The input is a directory of the cards' frames (`$FR` below); откуда кад
 Cards downloaded from an archive's site often arrive named by the head of household
 (`Манилов Иван Яковлевич. … уезд, … ф.1 оп.1 д.100.jpg`), so the directory carries no лист
 numbers and `verso scans` reads it in frame mode. It needs
-`pip install 'verso-core[scans]>=0.1.40' 'verso-ru>=0.1.40'`.
+`pip install 'verso-core[scans]>=0.1.41' 'verso-ru>=0.1.41'`.
 
 A card is ~8800×6700 px. Read whole, it is downscaled to ~1.1 MP and nothing on it resolves.
 

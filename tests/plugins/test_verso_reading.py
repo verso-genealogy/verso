@@ -227,3 +227,26 @@ def test_skills_sh_finds_the_skills():
     paths = json.loads((ROOT / "skills.sh.json").read_text(encoding="utf-8"))["paths"]
     assert paths == ["./plugins/verso-reading/skills"]
     assert {p.parent.name for p in (ROOT / paths[0]).glob("*/" + SKILL_FILE)} == SKILLS
+
+
+#: A requirement of the library as the plugin writes it: `verso-core[scans]>=0.1.41`, `'verso-ru>=0.1.41'`.
+_FLOOR = re.compile(r"verso-(core|ru)(?:\[[a-z,]+\])?>=(\d+(?:\.\d+)+)")
+
+
+def _stamped(package: str) -> str:
+    """The version `packages/<package>/pyproject.toml` stamps, its `.devN` cut: the release this tree becomes."""
+    text = (ROOT / "packages" / package / "pyproject.toml").read_text(encoding="utf-8")
+    version = re.search(r'^version = "([^"]+)"', text, re.MULTILINE)
+    assert version, package
+    return re.sub(r"\.dev\d+$", "", version.group(1))
+
+
+def test_the_install_floor_is_the_release_this_tree_becomes():
+    """A floor below it is satisfied by a release without what the skills name (`verso scans` came in 0.1.41, a
+    release after 0.1.40 was cut): pip installs that one, or keeps it, and the command is missing."""
+    floors = [(path.relative_to(ROOT).as_posix(), m.group(1), m.group(2))
+              for path in _texts() for m in _FLOOR.finditer(path.read_text(encoding="utf-8"))]
+    assert floors, "the skills say how to install the library"
+    wrong = [f"{rel}: verso-{package}>={floor}, the tree stamps {_stamped('verso-' + package)}"
+             for rel, package, floor in floors if floor != _stamped("verso-" + package)]
+    assert wrong == [], "\n".join(wrong)

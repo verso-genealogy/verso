@@ -21,8 +21,8 @@ tool helps with that.
 first and last лист, its parts) is kept, and the surnames and estates of each village.
 `verso scans check DIR` says whether the дело is whole.
 
-`verso scans` needs Pillow: `pip install 'verso-core[scans]>=0.1.40' 'verso-ru>=0.1.40'`. A phone's own
-format needs `'verso-core[heic]>=0.1.40'`; with it, `verso scans jpeg DIR` can also turn each HEIC frame into a JPEG in place.
+`verso scans` needs Pillow: `pip install 'verso-core[scans]>=0.1.41' 'verso-ru>=0.1.41'`. A phone's own
+format needs `'verso-core[heic]>=0.1.41'`; with it, `verso scans jpeg DIR` can also turn each HEIC frame into a JPEG in place.
 
 ## The four steps
 
@@ -276,6 +276,6 @@ show it, and let the person who knows the hand read it.
 ## Limits
 
 `verso scans` fetches nothing: it works on frames already on disk, and getting them there is the
-project's (the AGENTS.md проекта). It needs Pillow only — `verso-core[scans]>=0.1.40`, and
-`verso-core[heic]>=0.1.40` for a phone's own format; without them the pure parts (filenames, continuity,
+project's (the AGENTS.md проекта). It needs Pillow only — `verso-core[scans]>=0.1.41`, and
+`verso-core[heic]>=0.1.41` for a phone's own format; without them the pure parts (filenames, continuity,
 the windows' arithmetic) still run.
