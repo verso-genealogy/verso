@@ -1,6 +1,8 @@
 """`verso scans check|headers|crops|spread|zoom|rows` write what the App's `verso-scans` wrote on the same album
 (`tests/golden/scans`, captured by `python -m tests.scans_album golden`): the same files under the same names, the same
 bytes, the same stdout and stderr (`<DIR>` for the album's root), the same exit code — in English and in Russian.
+One line was reworded after the capture, on purpose: the one `rows` ends with named the App's `windows`, which
+`verso scans` has not.
 
 The golden bytes were captured on macOS. A platform whose JPEG coder writes other bytes for the same pixels still
 matches by the decoded image (`pixels`, the SHA-256 of `Image.tobytes()`); the names, the output and the exit code

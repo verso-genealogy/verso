@@ -21,7 +21,7 @@ from verso.core.scans.level import turned_size
 __all__ = ["HEIC_SUFFIXES", "IMAGE_SUFFIXES", "convert_heic_frames", "cut_half", "heic_clashes", "heic_to_jpeg",
            "image_names", "open_upright", "pil", "turn_upright", "turned_frame_size", "upright_size"]
 
-# `.heic` is what an Apple Photos export actually writes. While it was missing here `image_names()` returned
+# `.heic` is what a phone's photo library exports. While it was missing here `image_names()` returned
 # nothing for such an album, and an export reported «11 frame(s)» and «0 file(s)» in consecutive lines.
 IMAGE_SUFFIXES = (".jpg", ".jpeg", ".png", ".tif", ".tiff", ".heic", ".heif")
 HEIC_SUFFIXES = (".heic", ".heif")
@@ -43,7 +43,7 @@ def pil() -> tuple[Any, Any, Any]:
         raise SystemExit(
             "Pillow is not installed in this environment.\n"
             "  pip install 'verso-core[scans]'") from exc
-    # Pillow cannot decode HEIC on its own, and an Apple Photos export is all HEIC. Register the opener when it is
+    # Pillow cannot decode HEIC on its own, and a phone's export is all HEIC. Register the opener when it is
     # available; a missing plugin is not fatal here because every other format still works — `open_upright` is
     # where the reader finds out, with a message naming the fix.
     try:  # pragma: no cover - depends on the machine
@@ -69,7 +69,7 @@ def open_upright(path: Path) -> Any:
     tag instead of rotating the pixels; Pillow does not apply that tag on open. Every window is a FRACTION of width
     and height, so on a frame tagged «rotate 90°» a crop of a column cuts a band across the columns rather than
     along them — the picture comes out unreadable and nothing says why. Albums shot straight by an archive carry
-    no tag and are unaffected; the ones exported out of Apple Photos mix tagged and untagged frames in one album.
+    no tag and are unaffected; the ones exported out of a phone's photo library mix tagged and untagged frames in one album.
 
     A HEIC arrives here ALREADY turned. libheif applies the container's `irot` box while decoding, and pillow-heif
     then resets the EXIF tag to 1 so that `exif_transpose` cannot turn it a second time, keeping the old value in

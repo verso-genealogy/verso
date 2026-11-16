@@ -9,7 +9,7 @@ the faded hand's `enhance`; a window remembered there is the review page's (Vers
 
 `run` is two steps a caller may take apart: `locate` finds the album's stanza and the page `--folio` names (a
 `Target`), `cut` cuts the window from it and says what it wrote. A program that knows a window of its own — the
-review page's `verso-scans zoom --record`, which reads one remembered in `scans.toml` with the turn it was drawn at —
+review page's own command, which reads one remembered in `scans.toml` with the turn it was drawn at —
 hands `cut` that window and angle, and the crop, its file and its line are this command's.
 """
 from __future__ import annotations

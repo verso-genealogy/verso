@@ -23,6 +23,19 @@ A corpus's output does not move: the scan tools are new, and nothing the DSL pro
   `verso-scans zoom --record`, a window remembered in `scans.toml` at the turn it was drawn) hands `cut` that window
   and angle and its output is `zoom`'s. `zoom` itself writes what it wrote.
 - `Plugin.scans`: a plugin's subcommands of `verso scans`, as `Plugin.commands` are its commands.
+- `frames = "spread"` in an album's stanza is read by `check`, `headers`, `crops` and `spread` too, not only by
+  `zoom` and `rows`: a frame named by its left leaf is the two pages it holds, each cut from its half, unless it
+  stands up as one page (`verso.ru.scans.album.album_of`, `spread_frames`; `check_album(spreads=)`). `check`
+  expects such an album's sides from its first to its last — the recto before its first spread and the verso after
+  its last are the neighbouring albums' — and counts «N page(s) on M frame(s)». An album with no such stanza reads
+  as before; `tests/golden/scans-spread` holds the six subcommands on an album of spreads.
+- A `scans.toml` that is no TOML is refused by every subcommand that reads it, in a line, exit 2
+  (`verso.core.scans.stanza.StanzaError`), not a traceback.
+- A frame of every suffix the tools open (`IMAGE_SUFFIXES`, HEIC included) is read by its лист when its name carries
+  one; `cards` and `strips` take the same suffixes, and `quadrants` and `descreen` stand a frame up by its EXIF tag,
+  as the other subcommands do.
+- `rows` ends by naming no subcommand of the App's: «check them before a window is cut by them» — the one line of
+  `tests/golden/scans` that differs from the capture.
 
 ## 0.1.40 — 2026-11-16
 

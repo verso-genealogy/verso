@@ -14,9 +14,10 @@ from __future__ import annotations
 
 import argparse
 import os
+from pathlib import Path
 
 from verso.core.messages import t
-from verso.core.scans.image import pil
+from verso.core.scans.image import open_upright, pil
 
 __all__ = ["HELP", "add_arguments", "run"]
 
@@ -31,7 +32,7 @@ def quadrants(image_path: str, out_dir: str) -> list[str]:
     Image, _, _ = pil()
     from PIL import ImageFilter
     stem = os.path.splitext(os.path.basename(image_path))[0]
-    img = Image.open(image_path).convert("L")
+    img = open_upright(Path(image_path)).convert("L")       # a phone's frame by its EXIF tag, as every subcommand
     w, h = img.size
     mid_x, mid_y = w // 2, h // 2
     boxes = {

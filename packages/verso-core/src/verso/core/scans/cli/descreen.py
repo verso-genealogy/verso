@@ -24,10 +24,11 @@ from __future__ import annotations
 
 import argparse
 import os
+from pathlib import Path
 from typing import Any
 
 from verso.core.messages import t
-from verso.core.scans.image import pil
+from verso.core.scans.image import open_upright, pil
 
 __all__ = ["HELP", "add_arguments", "run"]
 
@@ -63,7 +64,7 @@ def run(args: argparse.Namespace) -> int:
     box = [float(x) for x in args.box.split(",")] if args.box != "-" else None
     scale, mode, rot = args.scale, args.mode, args.rot
 
-    im = Image.open(path).convert("L")
+    im = open_upright(Path(path)).convert("L")              # a phone's frame by its EXIF tag, then ROT on top
     if rot:
         im = im.rotate(rot, expand=True)
     w, h = im.size
