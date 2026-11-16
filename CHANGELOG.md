@@ -3,6 +3,18 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## 0.1.40 — unreleased
+
+A corpus's output does not move: the change is in how `terraform fmt` is run over a generated tree.
+
+### Fixed
+
+- `terraform fmt` formats one file after another in a single thread: over a village's tree of 30 MB it was two thirds
+  of the Terraform translation, and `verso stale --tf` paid it twice. `verso generate-tf` and both checks of
+  `verso stale` now hand it the tree's files in up to eight groups of about equal bytes, one `terraform fmt` a group,
+  at once (`verso.core.targets.geni.fmt.terraform_fmt`); the files formatted are those `terraform fmt DIR` reads, and
+  the bytes are the same. A village's translation went from about 14 s to 7, `verso stale --tf` from 23–29 s to 9.
+
 ## 0.1.39 — 2026-11-15
 
 A corpus's output does not move: the change is in how often the transliteration's rules are read.
