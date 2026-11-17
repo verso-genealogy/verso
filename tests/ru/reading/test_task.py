@@ -4,7 +4,10 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import re
 import sys
+import tomllib
+from importlib import resources
 from pathlib import Path
 
 import pytest
@@ -16,7 +19,7 @@ from verso.ru.reading import marking, task
 GROUPS = ("births", "marriages", "deaths", "census")
 #: sha256 of the cleaned prompts and schemas. A change of a prompt or a schema changes what a model
 #: answers: change it on purpose, re-measure it, then update this.
-PROMPT_HASH = "c4040a842142c277460dc18cc3dbaef3a3e00b6a63f0bc8eb706d58ee9a9fb86"
+PROMPT_HASH = "6bdd41c2fe0bedf986d923349fe31add13a0afd8aa68f18eb42a992da9f5f63f"
 
 
 def test_prompts_present():
@@ -52,6 +55,7 @@ def test_schema_closed(group):
     assert persons["slot"]["enum"] == list(task.FAMILIES[group])
     assert tuple(schema["properties"]["record"]["properties"]) == task.RECORD_FIELDS[group]
     assert ("previous_age" in persons) == (group == "census")
+    assert ("role" in persons) == (group == "census")
 
 
 def test_marking_schema_converts():
@@ -91,6 +95,88 @@ def test_schemas_in_geminis_subset(group):
             check(node["items"])
 
     check(schema)
+
+
+def _persons(group):
+    return task.output_schema(group)["properties"]["persons"]["items"]["properties"]
+
+
+def _nullable_count(group):
+    """What Gemini counts over the whole schema: an `anyOf` with a null branch, a `type` list holding "null"."""
+    n = 0
+    for node in _walk(task.output_schema(group)):
+        if not isinstance(node, dict):
+            continue
+        n += any(b == {"type": "null"} for b in node.get("anyOf", ())) or (
+            isinstance(node.get("type"), list) and "null" in node["type"])
+    return n
+
+
+def _records_dir():
+    return resources.files("verso.ru.records")
+
+
+def test_relationships_are_records_v1s():
+    schema = json.loads(_records_dir().joinpath("records-v1.json").read_text(encoding="utf-8"))
+    enum = schema["$defs"]["written_relative"]["properties"]["relationship"]["enum"]
+    assert enum == [*task.RELATIONSHIPS, None]
+
+
+def _ref_choices(kind):
+    hints = tomllib.loads(_records_dir().joinpath("ui-hints.toml").read_text(encoding="utf-8"))
+    refs = [node["ref"] for node in _walk(hints["kinds"][kind]) if isinstance(node, dict)
+            if node.get("path") == "relationship_ref" and "ref" in node]
+    assert len(refs) == 1
+    return refs[0]["choices"]
+
+
+@pytest.mark.parametrize("group,kind", (("births", "birth"), ("marriages", "marriage")))
+def test_relationship_of_is_the_ui_hints_choices(group, kind):
+    """The role part of a choice is a `relationship_ref` choice; a numbered role is one whose word has `{n}`."""
+    choices = _ref_choices(kind)
+    assert task.RELATIONSHIP_OF[group] == tuple(c["role"] for c in choices)
+    numbered = {c["role"] for c in choices if "{n}" in c["word"]}
+    assert numbered == set(task.NUMBERED_PARTIES) & set(task.RELATIONSHIP_OF[group])
+    enum = _persons(group)["relationship_of"]["anyOf"][0]["enum"]
+    assert enum == task.relationship_of_choices(group)
+    assert {c.split(" ")[0] for c in enum} == set(task.RELATIONSHIP_OF[group])
+    assert all((" " in c) == (c.split(" ")[0] in numbered) for c in enum)
+    assert "relationship_of_number" not in _persons(group)
+
+
+@pytest.mark.parametrize("group", ("births", "marriages", "deaths"))
+def test_relationship_in_person(group):
+    persons = _persons(group)
+    assert persons["relationship"]["anyOf"][0]["enum"] == list(task.RELATIONSHIPS)
+    assert ("relationship_of" in persons) == (group != "deaths")
+    assert "role" not in persons
+
+
+def test_party_counts_are_records_v1s():
+    """How many godparents and witnesses a record can hold: the `god_parentN` and `witnessN` properties."""
+    defs = json.loads(_records_dir().joinpath("records-v1.json").read_text(encoding="utf-8"))["$defs"]
+
+    def numbered(kind, stem):
+        return sum(bool(re.fullmatch(stem + r"\d+", p)) for p in defs[kind]["properties"])
+    assert task.NUMBERED_PARTIES == {"godparent": numbered("written_birth", "god_parent"),
+                                     "witness": numbered("written_marriage", "witness")}
+
+
+def test_relationship_of_choices():
+    assert task.relationship_of_choices("births") == ["mother", "godparent 1", "godparent 2", "godparent 3",
+                                                      "godparent 4"]
+    assert task.relationship_of_choices("marriages") == ["groom", "bride", *(f"witness {n}" for n in range(1, 7))]
+
+
+def test_census_person_has_no_relationship():
+    assert not {"relationship", "relationship_of"} & set(_persons("census"))
+
+
+def test_nullable_count_per_group():
+    """Gemini takes 16 nullable fields at most (record + person): every group stays within it."""
+    counts = {g: _nullable_count(g) for g in GROUPS}
+    assert counts == {"births": 16, "marriages": 16, "deaths": 16, "census": 10}
+    assert max(counts.values()) <= 16
 
 
 def test_census_roles_are_the_dsls():

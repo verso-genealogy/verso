@@ -12,5 +12,9 @@
 - `child` — новорождённый, только имя;
 - `father`, `mother` — родители; если мать не названа, её нет. Восприемница — не мать;
 - `godparent` — восприемники (крёстные), по порядку записи;
-- `relative` — другие названные родственники;
+- `relative` — другие названные родственники. `relationship` — кем он приходится тому, при ком назван
+  (`father`, `mother`, `husband`, `wife`, `son`, `daughter`, …), `relationship_of` — при ком: `mother` или
+  восприемник с номером по порядку записи (`godparent 1` … `godparent 4`); null — при ребёнке (и если запись не
+  говорит, при ком). «Муж второй восприемницы Марьи» — `husband`, `godparent 2`. `relationship` — null, если
+  персона не `relative` или подходящего кода нет (брат, …); `relationship_of` — null у всех, кроме `relative`;
 - `priest`, `deacon`, `dyachok`, `sexton` — причт, если назван.
