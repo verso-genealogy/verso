@@ -5,15 +5,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ## Unreleased
 
+### Added
+
+- verso-ru: the reading schema (`verso.ru.reading.task`) lets a model read a relative's relationship. In the groups
+  `births`, `marriages` and `deaths` a person gains `relationship` (the records-v1 relationship codes; null for any
+  slot but `relative`, and where no code fits). In `births` and `marriages` also `relationship_of`, whose relative it
+  is, one closed choice with the party's number in it: `mother`, `godparent 1`…`godparent 4`; `groom`, `bride`,
+  `witness 1`…`witness 6`. Null is the child in `births` (or an unsaid party), an unsaid party in `marriages`. New
+  public names: `RELATIONSHIPS`, `RELATIONSHIP_OF`, `NUMBERED_PARTIES` (the counts are records-v1's, held by a test) and
+  `relationship_of_choices`. The prompts name the fields, so their hash moves: a bench needs re-measuring.
+
 ### Changed
 
-- verso-ru: the reading schema (`verso.ru.reading.task`) lets a model read a relative's relationship. In the
-  groups `births`, `marriages` and `deaths` a person gains `relationship` (the records-v1 relationship codes,
-  null for any slot but `relative` or where the record does not say); in `births` and `marriages` also
-  `relationship_of` (the party the relative hangs off, one closed choice: `mother`, `godparent 1`…`godparent 4`; `groom`, `bride`, `witness 1`…`witness 8` — null is the record's main person).
-  Persons of the three groups no longer carry `role` (a census-only field), so each group stays within Gemini's sixteen
-  nullable fields. The prompts name them, so the prompts' hash moves: a bench needs re-measuring. Records and
-  `census` do not change.
+- verso-ru: **breaking, the shape of a reading's answer.** A person of `births`, `marriages` and `deaths` no longer
+  carries `role` (it was always null outside a census), so that each group stays within Gemini's sixteen nullable
+  fields; `census` keeps its `role`.
 
 ## 0.1.41 — 2026-11-16
 

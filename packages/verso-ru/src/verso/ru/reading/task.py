@@ -40,8 +40,9 @@ RELATIONSHIP_OF: Mapping[str, tuple[str, ...]] = {
     "marriages": ("groom", "bride", "witness"),
 }
 #: Of those, the parties that are numbered, with how many a record can name: «witness 2» is a choice of
-#: `relationship_of` (a test ties them to the ui-hints' choices whose word has `{n}`).
-NUMBERED_PARTIES: Mapping[str, int] = {"godparent": 4, "witness": 8}
+#: `relationship_of`. A test ties the roles to the ui-hints' choices whose word has `{n}` and the counts to
+#: records-v1's `god_parentN` and `witnessN`.
+NUMBERED_PARTIES: Mapping[str, int] = {"godparent": 4, "witness": 6}
 TASK_LINE = "Прочитай запись на снимке и верни её поля в JSON по схеме."
 
 #: The census roles as the records JSON codes them, with the source's word for each: the DSL's

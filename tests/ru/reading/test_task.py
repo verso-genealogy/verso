@@ -4,6 +4,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import re
 import sys
 import tomllib
 from importlib import resources
@@ -18,7 +19,7 @@ from verso.ru.reading import marking, task
 GROUPS = ("births", "marriages", "deaths", "census")
 #: sha256 of the cleaned prompts and schemas. A change of a prompt or a schema changes what a model
 #: answers: change it on purpose, re-measure it, then update this.
-PROMPT_HASH = "4a012d299d619c2c03c9b99503bdeda9613fa589fbf7d64dad5b249a87cbeff0"
+PROMPT_HASH = "6bdd41c2fe0bedf986d923349fe31add13a0afd8aa68f18eb42a992da9f5f63f"
 
 
 def test_prompts_present():
@@ -101,12 +102,13 @@ def _persons(group):
 
 
 def _nullable_count(group):
-    """The nullable fields of the record and of a person: the API's limit (16) is on their sum."""
-    schema = task.output_schema(group)
+    """What Gemini counts over the whole schema: an `anyOf` with a null branch, a `type` list holding "null"."""
     n = 0
-    for obj in (schema["properties"]["record"], schema["properties"]["persons"]["items"]):
-        for sub in obj["properties"].values():
-            n += "anyOf" in sub or (isinstance(sub.get("type"), list) and "null" in sub["type"])
+    for node in _walk(task.output_schema(group)):
+        if not isinstance(node, dict):
+            continue
+        n += any(b == {"type": "null"} for b in node.get("anyOf", ())) or (
+            isinstance(node.get("type"), list) and "null" in node["type"])
     return n
 
 
@@ -118,14 +120,6 @@ def test_relationships_are_records_v1s():
     schema = json.loads(_records_dir().joinpath("records-v1.json").read_text(encoding="utf-8"))
     enum = schema["$defs"]["written_relative"]["properties"]["relationship"]["enum"]
     assert enum == [*task.RELATIONSHIPS, None]
-
-
-def _ref_roles(kind):
-    hints = tomllib.loads(_records_dir().joinpath("ui-hints.toml").read_text(encoding="utf-8"))
-    refs = [f["ref"] for node in _walk(hints["kinds"][kind]) if isinstance(node, dict)
-            if node.get("path") == "relationship_ref" and (f := node) and "ref" in f]
-    assert len(refs) == 1
-    return tuple(c["role"] for c in refs[0]["choices"])
 
 
 def _ref_choices(kind):
@@ -158,10 +152,20 @@ def test_relationship_in_person(group):
     assert "role" not in persons
 
 
+def test_party_counts_are_records_v1s():
+    """How many godparents and witnesses a record can hold: the `god_parentN` and `witnessN` properties."""
+    defs = json.loads(_records_dir().joinpath("records-v1.json").read_text(encoding="utf-8"))["$defs"]
+
+    def numbered(kind, stem):
+        return sum(bool(re.fullmatch(stem + r"\d+", p)) for p in defs[kind]["properties"])
+    assert task.NUMBERED_PARTIES == {"godparent": numbered("written_birth", "god_parent"),
+                                     "witness": numbered("written_marriage", "witness")}
+
+
 def test_relationship_of_choices():
     assert task.relationship_of_choices("births") == ["mother", "godparent 1", "godparent 2", "godparent 3",
                                                       "godparent 4"]
-    assert task.relationship_of_choices("marriages") == ["groom", "bride", *(f"witness {n}" for n in range(1, 9))]
+    assert task.relationship_of_choices("marriages") == ["groom", "bride", *(f"witness {n}" for n in range(1, 7))]
 
 
 def test_census_person_has_no_relationship():
