@@ -3,6 +3,17 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased
+
+### Changed
+
+- verso-ru: the reading schema (`verso.ru.reading.task`) lets a model read a relative's relationship. In the
+  groups `births`, `marriages` and `deaths` a person gains `relationship` (the records-v1 relationship codes,
+  null for any slot but `relative` or where the record does not say); in `births` and `marriages` also
+  `relationship_of` (the party the relative hangs off — `mother`, `godparent`; `groom`, `bride`, `witness` — null
+  is the record's main person) and `relationship_of_number` (the party's number for a godparent or a witness).
+  The prompts name them, so the prompts' hash moves: a bench needs re-measuring. Records and `census` do not change.
+
 ## 0.1.41 — 2026-11-16
 
 A corpus's output does not move: the scan tools are new, and nothing the DSL produces reads them.

@@ -29,6 +29,18 @@ CARD_KEYS = ("village", "parish", "year", "kind", "folio", "part")
 _CARD_LABELS = {"village": "Село", "parish": "Приход", "year": "Год", "kind": "Вид записи", "folio": "Лист",
                 "part": "Часть книги"}
 _PERSON_FIELDS = ("number", "name", "patronymic", "surname", "status", "residence", "role", "age", "previous_age")
+#: What a relative is to the person they hang off, as records v1 codes it (`written_relative.relationship`;
+#: a test keeps the two equal).
+RELATIONSHIPS = ("father", "mother", "husband", "wife", "son", "daughter", "father_in_law", "mother_in_law",
+                 "son_in_law", "daughter_in_law", "foster_father", "foster_mother", "step_mother", "step_father")
+#: The party a relative hangs off, by group, as the ui-hints' `relationship_ref` choices name them (a test
+#: keeps the two equal). Null is the record's main person. A death has one party, so no choice.
+RELATIONSHIP_OF: Mapping[str, tuple[str, ...]] = {
+    "births": ("mother", "godparent"),
+    "marriages": ("groom", "bride", "witness"),
+}
+#: Of those, the parties that are numbered: a relative of «witness 2» says `relationship_of_number` "2".
+NUMBERED_PARTIES = ("godparent", "witness")
 TASK_LINE = "Прочитай запись на снимке и верни её поля в JSON по схеме."
 
 #: The census roles as the records JSON codes them, with the source's word for each: the DSL's
@@ -83,5 +95,11 @@ def output_schema(group: str) -> dict[str, Any]:
                               **{f: {"type": ["string", "null"]} for f in fields}}
     if group == "census":
         person["role"] = _nullable(type="string", enum=list(CENSUS_ROLES))
+    else:
+        # a relative's relationship to the person they hang off, and, with `relationship_of`, which party that is
+        person["relationship"] = _nullable(type="string", enum=list(RELATIONSHIPS))
+        if group in RELATIONSHIP_OF:
+            person["relationship_of"] = _nullable(type="string", enum=list(RELATIONSHIP_OF[group]))
+            person["relationship_of_number"] = {"type": ["string", "null"]}
     return closed({"record": closed(record), "persons": {"type": "array", "items": closed(person)},
                    "doubtful": {"type": "array", "items": {"type": "string"}}})

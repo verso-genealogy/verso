@@ -5,6 +5,8 @@ import ast
 import hashlib
 import json
 import sys
+import tomllib
+from importlib import resources
 from pathlib import Path
 
 import pytest
@@ -16,7 +18,7 @@ from verso.ru.reading import marking, task
 GROUPS = ("births", "marriages", "deaths", "census")
 #: sha256 of the cleaned prompts and schemas. A change of a prompt or a schema changes what a model
 #: answers: change it on purpose, re-measure it, then update this.
-PROMPT_HASH = "c4040a842142c277460dc18cc3dbaef3a3e00b6a63f0bc8eb706d58ee9a9fb86"
+PROMPT_HASH = "efd0eac9d3b130d4282b9a3c45937aaf4b072339fb755c2dbb17c089df01ffb7"
 
 
 def test_prompts_present():
@@ -91,6 +93,65 @@ def test_schemas_in_geminis_subset(group):
             check(node["items"])
 
     check(schema)
+
+
+def _persons(group):
+    return task.output_schema(group)["properties"]["persons"]["items"]["properties"]
+
+
+def _nullable_count(group):
+    """The nullable fields of the record and of a person: the API's limit (16) is on their sum."""
+    schema = task.output_schema(group)
+    n = 0
+    for obj in (schema["properties"]["record"], schema["properties"]["persons"]["items"]):
+        for sub in obj["properties"].values():
+            n += "anyOf" in sub or (isinstance(sub.get("type"), list) and "null" in sub["type"])
+    return n
+
+
+def _records_dir():
+    return resources.files("verso.ru.records")
+
+
+def test_relationships_are_records_v1s():
+    schema = json.loads(_records_dir().joinpath("records-v1.json").read_text(encoding="utf-8"))
+    enum = schema["$defs"]["written_relative"]["properties"]["relationship"]["enum"]
+    assert enum == [*task.RELATIONSHIPS, None]
+
+
+def _ref_roles(kind):
+    hints = tomllib.loads(_records_dir().joinpath("ui-hints.toml").read_text(encoding="utf-8"))
+    refs = [f["ref"] for node in _walk(hints["kinds"][kind]) if isinstance(node, dict)
+            if node.get("path") == "relationship_ref" and (f := node) and "ref" in f]
+    assert len(refs) == 1
+    return tuple(c["role"] for c in refs[0]["choices"])
+
+
+@pytest.mark.parametrize("group,kind", (("births", "birth"), ("marriages", "marriage")))
+def test_relationship_of_is_the_ui_hints_choices(group, kind):
+    assert task.RELATIONSHIP_OF[group] == _ref_roles(kind)
+    persons = _persons(group)
+    assert persons["relationship_of"]["anyOf"][0]["enum"] == list(task.RELATIONSHIP_OF[group])
+    assert set(task.NUMBERED_PARTIES) & set(task.RELATIONSHIP_OF[group])
+    assert persons["relationship_of_number"] == {"type": ["string", "null"]}
+
+
+@pytest.mark.parametrize("group", ("births", "marriages", "deaths"))
+def test_relationship_in_person(group):
+    persons = _persons(group)
+    assert persons["relationship"]["anyOf"][0]["enum"] == list(task.RELATIONSHIPS)
+    assert ("relationship_of" in persons) == (group != "deaths")
+    assert ("relationship_of_number" in persons) == (group != "deaths")
+
+
+def test_census_person_has_no_relationship():
+    assert not {"relationship", "relationship_of", "relationship_of_number"} & set(_persons("census"))
+
+
+def test_nullable_count_per_group():
+    """Gemini takes 16 nullable fields at most (record + person). The relationship fields lift births and
+    marriages to 18 and deaths to 17: recorded here, the report names the smallest way back."""
+    assert {g: _nullable_count(g) for g in GROUPS} == {"births": 18, "marriages": 18, "deaths": 17, "census": 10}
 
 
 def test_census_roles_are_the_dsls():
