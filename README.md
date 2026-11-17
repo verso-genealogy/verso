@@ -80,6 +80,30 @@ book's defaults) is derived; what it says is kept verbatim. Then:
 - `verso facts`, `verso date-order`, `verso reconcile`, … — checks over the records
   ([all commands](docs/reference/commands.md)).
 
+## Reading the scans: a Claude Code plugin
+
+The repository is also a Claude Code marketplace, `verso`, with one plugin, **verso-reading**: skills and
+agents that read handwritten scans — metric books, revision and confession lists, the 1917 farm-census
+cards — and write what they say into the DSL.
+
+```text
+/plugin marketplace add verso-genealogy/verso
+/plugin install verso-reading@verso
+```
+
+| Skill | What for |
+|---|---|
+| `verso-reading:metric-books` | a year of a metric book: is the дело whole, where the parts begin, legible crops, reading in two tiers |
+| `verso-reading:census` | a family in a revision or confession list by its age fingerprint, then its households |
+| `verso-reading:agri-census-1917` | the 1917 household cards |
+| `verso-reading:transcription` | the transcribe-first route: a reviewable `.txt` of a page |
+| `verso-reading:names` | the names lexicon and its lint findings |
+
+Its agents are `verso-reading:dsl-writer` (a scan straight to the DSL) and `verso-reading:scan-reader`
+(reading that writes no DSL). The plugin names no corpus: the project's AGENTS.md says where its rules,
+regional notes and frames are. The skills work in other agents too, through skills.sh. See
+[the plugin](plugins/verso-reading/README.md).
+
 ## What is public
 
 The library promises, to a corpus that is not its author's, what a corpus is written against:
