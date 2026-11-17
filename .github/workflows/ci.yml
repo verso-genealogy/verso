@@ -2,8 +2,10 @@ name: CI
 
 # The library (verso-core, verso-ru): what `make ci` runs, on every Python the classifiers name, then the
 # tests from the repository's own archive in a clean venv of its wheels (tools/standalone.py) and gitleaks.
-# A new push to a PR cancels the run it supersedes, a push to main never does. Every PR and every push to main
-# runs all of it, standalone too, since the repository is public and its minutes cost nothing. A tag runs nothing
+# A new push to a PR cancels the run it supersedes, a push to main never does. Every push to main runs all of it,
+# standalone too, and so does every PR but one of prose alone (job «What changed»: the root's Markdown, docs/,
+# the IDE plugins' READMEs): that one runs the text checks and gitleaks. Its jobs still report under their
+# names — the steps skip, not the jobs — since the ruleset requires them by name. A tag runs nothing
 # here: it names a «Release» commit main has just run (publish.yml takes the tag), and the «Open X.Y.Z.dev0»
 # commit after it says `[skip ci]` (AGENTS.md).
 on:
@@ -20,9 +22,41 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: What changed
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      # A PR's checkout is its merge commit: HEAD^1 is main as it is now, so the diff is what the PR changes.
+      # Prose is the Markdown no test reads with the library installed: the root's, docs/*.md (not docs/reference,
+      # written from the code, nor docs/scans*.md, which tests/ru/scans/test_surface.py reads) and the IDE
+      # plugins' READMEs. Anything else is code — the plugin's skills, the reading prompts, packages/, examples/
+      # included — and so is an empty diff. A test that starts reading a prose file takes it out of the pattern.
+      - name: Code, or prose alone
+        id: diff
+        run: |
+          set -euo pipefail
+          code=true
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
+            changed=$(git diff --name-only HEAD^1 HEAD)
+            others=$(grep -vE '^([^/]+\.md|docs/[^/]+\.md|ide/[^/]+/README\.md)$' <<<"$changed" || true)
+            scans=$(grep -E '^docs/scans(\.ru)?\.md$' <<<"$changed" || true)
+            if [ -n "$changed" ] && [ -z "$others" ] && [ -z "$scans" ]; then code=false; fi
+            printf '%s\n' "$changed"
+          fi
+          echo "code=$code" | tee -a "$GITHUB_OUTPUT"
+
   test:
     name: 'Tests (Python ${{ matrix.python }})'
+    needs: changes
     runs-on: ubuntu-latest
+    env:
+      CODE: ${{ needs.changes.outputs.code }}
     strategy:
       fail-fast: false
       matrix:
@@ -43,20 +77,29 @@ jobs:
           version: "0.12.16"
           enable-cache: true
 
+      - name: Texts alone (prose changed, nothing else)
+        if: env.CODE != 'true'
+        run: uv run --no-project --with pytest==9.2.0 -- python -m pytest --noconftest -q tests/repo/test_public_texts.py
+
       - name: Install
+        if: env.CODE == 'true'
         run: make bootstrap PYTHON_VERSION=${{ matrix.python }}
 
       - name: Lint (ruff, pyright)
+        if: env.CODE == 'true'
         run: make lint
 
       - name: Tests
+        if: env.CODE == 'true'
         run: make test
 
       - name: Core alone
+        if: env.CODE == 'true'
         run: make test-core
 
       # The interface's Cyrillic text only shrinks — against the base commit, counted by this commit's rules.
       - name: UI text
+        if: env.CODE == 'true'
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
@@ -73,6 +116,7 @@ jobs:
           fi
 
       - name: Reference and schemas are current
+        if: env.CODE == 'true'
         run: |
           make reference-check
           make records-schema
@@ -80,22 +124,29 @@ jobs:
 
   standalone:
     name: Standalone
+    needs: changes
     runs-on: ubuntu-latest
+    env:
+      CODE: ${{ needs.changes.outputs.code }}
     steps:
       - uses: actions/checkout@v7
+        if: env.CODE == 'true'
 
       - name: Set up Python
+        if: env.CODE == 'true'
         uses: actions/setup-python@v7
         with:
           python-version: '3.14'
 
       - name: Set up uv
+        if: env.CODE == 'true'
         uses: astral-sh/setup-uv@v10.3.3
         with:
           version: "0.12.16"
           enable-cache: true
 
       - name: Tests from git archive HEAD, wheels only, the sentinel on
+        if: env.CODE == 'true'
         run: python3 tools/standalone.py
 
   secrets:
