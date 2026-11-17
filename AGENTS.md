@@ -40,7 +40,7 @@ packages/verso-ru/src/verso/ru/       the plugin: dsl (the facade and its catalo
                                       tools of a metric book's numbering (scans: `Plugin.scans`)
 tests/                                the library's tests; tests/core — the core alone on a toy plugin;
                                       tests/repo — this repository's own tools
-tools/                                layers, reference, release, standalone, secrets check, i18n codemod, CI's «what changed»
+tools/                                layers, reference, release, standalone, secrets check, i18n codemod
 docs/                                 the public guides, each with its Russian translation beside it (X.ru.md);
                                       docs/reference is written from the code and stays English
 examples/                             the toy example (`examples/run.py`)
