@@ -39,8 +39,9 @@ RELATIONSHIP_OF: Mapping[str, tuple[str, ...]] = {
     "births": ("mother", "godparent"),
     "marriages": ("groom", "bride", "witness"),
 }
-#: Of those, the parties that are numbered: a relative of «witness 2» says `relationship_of_number` "2".
-NUMBERED_PARTIES = ("godparent", "witness")
+#: Of those, the parties that are numbered, with how many a record can name: «witness 2» is a choice of
+#: `relationship_of` (a test ties them to the ui-hints' choices whose word has `{n}`).
+NUMBERED_PARTIES: Mapping[str, int] = {"godparent": 4, "witness": 8}
 TASK_LINE = "Прочитай запись на снимке и верни её поля в JSON по схеме."
 
 #: The census roles as the records JSON codes them, with the source's word for each: the DSL's
@@ -85,12 +86,20 @@ def closed(properties: dict[str, Any]) -> dict[str, Any]:
             "additionalProperties": False}
 
 
+def relationship_of_choices(group: str) -> list[str]:
+    """The parties a relative hangs off, a numbered one with its number: `godparent 2`, `witness 1`."""
+    return [c for role in RELATIONSHIP_OF[group]
+            for c in ([f"{role} {n}" for n in range(1, NUMBERED_PARTIES[role] + 1)]
+                      if role in NUMBERED_PARTIES else [role])]
+
+
 def output_schema(group: str) -> dict[str, Any]:
     record: dict[str, Any] = {f: {"type": ["string", "null"]} for f in RECORD_FIELDS[group]}
     if "gender" in record:
         record["gender"] = _nullable(type="string", enum=["male", "female"])
-    # a metric book states no previous revision's age, and the API takes 16 nullable fields at most
-    fields = _PERSON_FIELDS if group == "census" else tuple(f for f in _PERSON_FIELDS if f != "previous_age")
+    # a metric book states no previous revision's age and no census role, and the API takes 16 nullable fields at most
+    fields = _PERSON_FIELDS if group == "census" else tuple(
+        f for f in _PERSON_FIELDS if f not in ("previous_age", "role"))
     person: dict[str, Any] = {"slot": {"type": "string", "enum": list(FAMILIES[group])},
                               **{f: {"type": ["string", "null"]} for f in fields}}
     if group == "census":
@@ -99,7 +108,6 @@ def output_schema(group: str) -> dict[str, Any]:
         # a relative's relationship to the person they hang off, and, with `relationship_of`, which party that is
         person["relationship"] = _nullable(type="string", enum=list(RELATIONSHIPS))
         if group in RELATIONSHIP_OF:
-            person["relationship_of"] = _nullable(type="string", enum=list(RELATIONSHIP_OF[group]))
-            person["relationship_of_number"] = {"type": ["string", "null"]}
+            person["relationship_of"] = _nullable(type="string", enum=relationship_of_choices(group))
     return closed({"record": closed(record), "persons": {"type": "array", "items": closed(person)},
                    "doubtful": {"type": "array", "items": {"type": "string"}}})

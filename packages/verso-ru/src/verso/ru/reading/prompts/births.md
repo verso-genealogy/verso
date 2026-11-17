@@ -14,6 +14,6 @@
 - `godparent` — восприемники (крёстные), по порядку записи;
 - `relative` — другие названные родственники. `relationship` — кем он приходится тому, при ком назван
   (`father`, `mother`, `husband`, `wife`, `son`, `daughter`, …), `relationship_of` — при ком: `mother` или
-  `godparent` (тогда `relationship_of_number` — номер восприемника), null — при ребёнке. «Муж восприемницы
-  Марьи» — `husband`, `godparent`, «2». У остальных персон и если запись не говорит — null;
+  восприемник с номером по порядку записи (`godparent 1` … `godparent 4`), null — при ребёнке. «Муж
+  второй восприемницы Марьи» — `husband`, `godparent 2`. У остальных персон и если запись не говорит — null;
 - `priest`, `deacon`, `dyachok`, `sexton` — причт, если назван.

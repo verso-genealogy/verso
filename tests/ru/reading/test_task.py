@@ -54,6 +54,7 @@ def test_schema_closed(group):
     assert persons["slot"]["enum"] == list(task.FAMILIES[group])
     assert tuple(schema["properties"]["record"]["properties"]) == task.RECORD_FIELDS[group]
     assert ("previous_age" in persons) == (group == "census")
+    assert ("role" in persons) == (group == "census")
 
 
 def test_marking_schema_converts():
@@ -127,13 +128,26 @@ def _ref_roles(kind):
     return tuple(c["role"] for c in refs[0]["choices"])
 
 
+def _ref_choices(kind):
+    hints = tomllib.loads(_records_dir().joinpath("ui-hints.toml").read_text(encoding="utf-8"))
+    refs = [node["ref"] for node in _walk(hints["kinds"][kind]) if isinstance(node, dict)
+            if node.get("path") == "relationship_ref" and "ref" in node]
+    assert len(refs) == 1
+    return refs[0]["choices"]
+
+
 @pytest.mark.parametrize("group,kind", (("births", "birth"), ("marriages", "marriage")))
 def test_relationship_of_is_the_ui_hints_choices(group, kind):
-    assert task.RELATIONSHIP_OF[group] == _ref_roles(kind)
-    persons = _persons(group)
-    assert persons["relationship_of"]["anyOf"][0]["enum"] == list(task.RELATIONSHIP_OF[group])
-    assert set(task.NUMBERED_PARTIES) & set(task.RELATIONSHIP_OF[group])
-    assert persons["relationship_of_number"] == {"type": ["string", "null"]}
+    """The role part of a choice is a `relationship_ref` choice; a numbered role is one whose word has `{n}`."""
+    choices = _ref_choices(kind)
+    assert task.RELATIONSHIP_OF[group] == tuple(c["role"] for c in choices)
+    numbered = {c["role"] for c in choices if "{n}" in c["word"]}
+    assert numbered == set(task.NUMBERED_PARTIES) & set(task.RELATIONSHIP_OF[group])
+    enum = _persons(group)["relationship_of"]["anyOf"][0]["enum"]
+    assert enum == task.relationship_of_choices(group)
+    assert {c.split(" ")[0] for c in enum} == set(task.RELATIONSHIP_OF[group])
+    assert all((" " in c) == (c.split(" ")[0] in numbered) for c in enum)
+    assert "relationship_of_number" not in _persons(group)
 
 
 @pytest.mark.parametrize("group", ("births", "marriages", "deaths"))
@@ -141,17 +155,24 @@ def test_relationship_in_person(group):
     persons = _persons(group)
     assert persons["relationship"]["anyOf"][0]["enum"] == list(task.RELATIONSHIPS)
     assert ("relationship_of" in persons) == (group != "deaths")
-    assert ("relationship_of_number" in persons) == (group != "deaths")
+    assert "role" not in persons
+
+
+def test_relationship_of_choices():
+    assert task.relationship_of_choices("births") == ["mother", "godparent 1", "godparent 2", "godparent 3",
+                                                      "godparent 4"]
+    assert task.relationship_of_choices("marriages") == ["groom", "bride", *(f"witness {n}" for n in range(1, 9))]
 
 
 def test_census_person_has_no_relationship():
-    assert not {"relationship", "relationship_of", "relationship_of_number"} & set(_persons("census"))
+    assert not {"relationship", "relationship_of"} & set(_persons("census"))
 
 
 def test_nullable_count_per_group():
-    """Gemini takes 16 nullable fields at most (record + person). The relationship fields lift births and
-    marriages to 18 and deaths to 17: recorded here, the report names the smallest way back."""
-    assert {g: _nullable_count(g) for g in GROUPS} == {"births": 18, "marriages": 18, "deaths": 17, "census": 10}
+    """Gemini takes 16 nullable fields at most (record + person): every group stays within it."""
+    counts = {g: _nullable_count(g) for g in GROUPS}
+    assert counts == {"births": 16, "marriages": 16, "deaths": 16, "census": 10}
+    assert max(counts.values()) <= 16
 
 
 def test_census_roles_are_the_dsls():
