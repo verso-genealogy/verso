@@ -298,12 +298,24 @@ def _stamped(package: str) -> str:
     return re.sub(r"\.dev\d+$", "", version.group(1))
 
 
-def test_the_install_floor_is_the_release_this_tree_becomes():
-    """A floor below it is satisfied by a release without what the skills name (`verso scans` came in 0.1.41, a
-    release after 0.1.40 was cut): pip installs that one, or keeps it, and the command is missing."""
+#: The oldest release the skills may name: the one that brought `verso scans`. Raise it when a skill names a
+#: newer command.
+_MINIMUM_FLOOR = (0, 1, 41)
+
+
+def _version(text: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in text.split("."))
+
+
+def test_the_install_floor_is_what_the_skills_need_and_no_later_than_this_tree():
+    """A floor above the release this tree becomes cannot be installed; one below what the skills name (`verso
+    scans` came in 0.1.41) is satisfied by a release without the command. In between it is the skills' own call:
+    a floor is not bumped at every release."""
     floors = [(path.relative_to(ROOT).as_posix(), m.group(1), m.group(2))
               for path in _texts() for m in _FLOOR.finditer(path.read_text(encoding="utf-8"))]
     assert floors, "the skills say how to install the library"
-    wrong = [f"{rel}: verso-{package}>={floor}, the tree stamps {_stamped('verso-' + package)}"
-             for rel, package, floor in floors if floor != _stamped("verso-" + package)]
+    wrong = [f"{rel}: verso-{package}>={floor}, the tree becomes {_stamped('verso-' + package)}, "
+             f"the minimum is {'.'.join(map(str, _MINIMUM_FLOOR))}"
+             for rel, package, floor in floors
+             if not _MINIMUM_FLOOR <= _version(floor) <= _version(_stamped("verso-" + package))]
     assert wrong == [], "\n".join(wrong)
