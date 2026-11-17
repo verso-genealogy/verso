@@ -18,7 +18,7 @@ from verso.ru.reading import marking, task
 GROUPS = ("births", "marriages", "deaths", "census")
 #: sha256 of the cleaned prompts and schemas. A change of a prompt or a schema changes what a model
 #: answers: change it on purpose, re-measure it, then update this.
-PROMPT_HASH = "efd0eac9d3b130d4282b9a3c45937aaf4b072339fb755c2dbb17c089df01ffb7"
+PROMPT_HASH = "4a012d299d619c2c03c9b99503bdeda9613fa589fbf7d64dad5b249a87cbeff0"
 
 
 def test_prompts_present():

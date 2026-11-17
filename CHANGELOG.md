@@ -10,9 +10,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - verso-ru: the reading schema (`verso.ru.reading.task`) lets a model read a relative's relationship. In the
   groups `births`, `marriages` and `deaths` a person gains `relationship` (the records-v1 relationship codes,
   null for any slot but `relative` or where the record does not say); in `births` and `marriages` also
-  `relationship_of` (the party the relative hangs off — `mother`, `godparent`; `groom`, `bride`, `witness` — null
-  is the record's main person) and `relationship_of_number` (the party's number for a godparent or a witness).
-  The prompts name them, so the prompts' hash moves: a bench needs re-measuring. Records and `census` do not change.
+  `relationship_of` (the party the relative hangs off, one closed choice: `mother`, `godparent 1`…`godparent 4`; `groom`, `bride`, `witness 1`…`witness 8` — null is the record's main person).
+  Persons of the three groups no longer carry `role` (a census-only field), so each group stays within Gemini's sixteen
+  nullable fields. The prompts name them, so the prompts' hash moves: a bench needs re-measuring. Records and
+  `census` do not change.
 
 ## 0.1.41 — 2026-11-16
 
