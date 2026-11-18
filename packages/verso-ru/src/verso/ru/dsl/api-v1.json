@@ -2890,6 +2890,11 @@
     "value": "солдатская девка",
     "gender": "FEMALE"
    },
+   "SOLDIER_LEGAL_WIFE": {
+    "kind": "constant",
+    "value": "законная жена солдата",
+    "gender": "FEMALE"
+   },
    "SOLDIER_SON": {
     "kind": "constant",
     "value": "солдатский сын",
@@ -2908,6 +2913,11 @@
    "SOLDIER_WIFE": {
     "kind": "constant",
     "value": "солдатка",
+    "gender": "FEMALE"
+   },
+   "SOLDIER_ZHONKA": {
+    "kind": "constant",
+    "value": "солдатская женка",
     "gender": "FEMALE"
    },
    "STATE_PEASANT_DAUGHTER": {

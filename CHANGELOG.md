@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 ## Unreleased
 
 A corpus's output does not move: without `--angle` the scan tools cut what they cut, and nothing the DSL produces
-reads them.
+reads them; the statuses are new, and no record names them yet.
 
 ### Added
 
@@ -16,6 +16,9 @@ reads them.
   around their middle; `rows` draws its ruler on the turned page and still writes no window, and `zoom`'s line says
   the turn. verso-core: `verso.core.scans.level` gains `carry`, `slant`, `STRAIGHT` (a slant under 0.1° is none) and
   `MAX_ANGLE`; `verso.ru.scans.cli` gains `add_angle_flag`. New catalog keys `scans.angle.*`.
+- verso-ru: the statuses `SOLDIER_LEGAL_WIFE` («законная жена солдата») and `SOLDIER_ZHONKA` («солдатская женка») in
+  `verso.ru.dsl.statuses`. Their child, as any soldier's wife's, is a `SOLDIER_SON` / `SOLDIER_DAUGHTER`
+  (`child_status_for`).
 - The plugin `verso-reading`: the skills `metric-books` and `census` cut a slanted leaf level with `--angle`, and
   their install floors and the plugin README's rise to 0.1.43, the release that brings it.
 

@@ -71,7 +71,7 @@ def test_the_corpus_statuses_stand_before_the_landlord(tmp_path: Path):
 def test_a_workspace_without_corpus_statuses_has_the_library_s_alone(tmp_path: Path):
     with workspace.use(_workspace(tmp_path, statuses_py=None)):
         assert corpus_statuses() is None
-        assert len(catalog()) == 109
+        assert len(catalog()) == 111
         assert corpus_aliases() == statuses.CorpusAliases({}, {})
         assert child_status_for("крестьянин", Gender.MALE) == "крестьянский сын"
 

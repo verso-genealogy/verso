@@ -113,7 +113,8 @@ class TestChildStatusFor(unittest.TestCase):
         the SOLDIER_WIFE-role override, incl. «ясачная солдатская жена» and
         «солдатская жена из крестьян помещицы …» that name-split to peasant
         estates."""
-        for mother in (st.SOLDIER_WIFE, st.SOLDIER_SPOUSE, st.SOLDIER_WIDOW,
+        for mother in (st.SOLDIER_WIFE, st.SOLDIER_SPOUSE, st.SOLDIER_LEGAL_WIFE,
+                       st.SOLDIER_ZHONKA, st.SOLDIER_WIDOW,
                        st.YASAK_SOLDIER_WIFE, cs.MANILOV_LK_SOLDIER_WIFE):
             self.assertEqual(child_status_for(str(mother), Gender.MALE),
                              st.SOLDIER_SON, mother)
