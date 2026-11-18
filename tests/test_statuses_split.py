@@ -20,14 +20,14 @@ def test_the_corpus_block_stands_where_it_stood() -> None:
     assert names[start - 1] == "BUDNY_PEASANT"
     assert names[start:start + len(corpus.statuses.__all__)] == list(corpus.statuses.__all__)
     assert names[start + len(corpus.statuses.__all__)] == "LANDLORD"
-    assert (len(names), len(corpus.statuses.__all__)) == (162, 53)   # the synthetic corpus
+    assert (len(names), len(corpus.statuses.__all__)) == (164, 53)   # the synthetic corpus
 
 
 def test_a_corpus_constant_is_the_corpus_s_object_and_not_the_library_s() -> None:
     assert statuses.catalog()["GOLOVLEV_PEASANT"] is corpus.statuses.GOLOVLEV_PEASANT
     assert not hasattr(statuses, "GOLOVLEV_PEASANT")
     own = [n for n, v in vars(statuses).items() if n.isupper() and isinstance(v, Status)]
-    assert len(own) == 109 and not set(own) & set(corpus.statuses.__all__)
+    assert len(own) == 111 and not set(own) & set(corpus.statuses.__all__)
 
 
 def test_the_corpus_aliases_reach_both_readers() -> None:
