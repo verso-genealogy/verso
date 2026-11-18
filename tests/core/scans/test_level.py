@@ -12,7 +12,7 @@ pytest.importorskip("PIL")
 
 from PIL import Image, ImageDraw
 
-from verso.core.scans.level import level_crop, line_angle, turn
+from verso.core.scans.level import STRAIGHT, carry, level_crop, line_angle, slant, turn
 from verso.core.scans.window import Box
 
 
@@ -97,3 +97,51 @@ def test_the_angle_is_found_inside_a_window_of_a_turned_frame():
 
 def test_blank_paper_leaves_the_angle_as_it_was():
     assert line_angle(Image.new("RGB", (800, 600), "white"), angle=1.5) == 1.5
+
+
+def _ink_middle(im: Image.Image) -> tuple[float, float]:
+    """The middle of the dark pixels of `im`, as fractions of it."""
+    grey = im.convert("L")
+    dark = [(x, y) for y in range(grey.height) for x in range(grey.width)
+            if grey.getpixel((x, y)) < 100]  # type: ignore[operator]
+    return (sum(x for x, _ in dark) / len(dark) / grey.width,
+            sum(y for _, y in dark) / len(dark) / grey.height)
+
+
+@pytest.mark.parametrize("angle", [2.0, -3.5, 12.0])
+def test_a_window_carried_to_the_turned_frame_frames_the_same_ink(angle):
+    # A blot off the middle of the frame, a window around it as the frame lies: carried to the frame turned
+    # `angle`, the window is as many pixels and the blot is still where it was in it.
+    im = Image.new("RGB", (900, 600), "white")
+    ImageDraw.Draw(im).rectangle([600, 120, 640, 150], fill="black")
+    box = (0.6, 0.15, 0.8, 0.3)
+    carried = carry(box, *im.size, 0.0, angle)
+    turned = turn(im, angle)
+    window = turned.crop(Box(*carried).pixels(*turned.size))
+    assert abs(window.width - 180) <= 2 and abs(window.height - 90) <= 2
+    mx, my = _ink_middle(window)
+    assert abs(mx - 0.444) < 0.03 and abs(my - 0.5) < 0.04
+    # And back: the window as the frame lies, to a pixel.
+    back = carry(carried, *im.size, angle, 0.0)
+    assert all(abs(a - b) <= 2 / 600 for a, b in zip(back, box, strict=True))
+
+
+def test_no_turn_carries_a_window_nowhere():
+    assert carry((0.1, 0.2, 0.5, 0.6), 1000, 800, 0.0, 0.0) == (0.1, 0.2, 0.5, 0.6)
+    assert carry((0.1, 0.2, 0.5, 0.6), 1000, 800, 3.0, 3.0) == (0.1, 0.2, 0.5, 0.6)
+
+
+def test_a_window_carried_stays_on_the_frame():
+    assert carry((0.0, 0.0, 1.0, 1.0), 900, 600, 0.0, 5.0) == pytest.approx((0.0, 0.0, 1.0, 1.0), abs=0.06)
+    assert all(0.0 <= v <= 1.0 for v in carry((0.0, 0.0, 0.02, 1.0), 900, 600, 0.0, -8.0))
+
+
+def test_a_slant_under_straight_is_none():
+    assert slant(_lines()) == 0.0
+    assert abs(slant(turn(_lines(), 2)) + 2) <= 0.3
+    assert STRAIGHT == 0.1
+
+
+def test_a_slant_is_found_inside_a_window_too():
+    turned = turn(_lines(), -3)
+    assert abs(slant(turned, (0.1, 0.1, 0.9, 0.9)) - 3) <= 0.3

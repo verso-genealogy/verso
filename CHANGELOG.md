@@ -5,10 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ## Unreleased
 
-A corpus's output does not move: statuses are added, and no record names them yet.
+A corpus's output does not move: without `--angle` the scan tools cut what they cut, and nothing the DSL produces
+reads them; the statuses are new, and no record names them yet.
 
 ### Added
 
+- verso-ru: `verso scans rows|zoom --angle DEG|auto` turn a slanted leaf level before it is read (degrees
+  counter-clockwise, within ±45; `auto` measures the lines — `rows` the leaf's, `zoom` the writing inside the
+  window). The leaf, `--count` and a zoom's window, measured on the page as it lies, are carried to the turned page
+  around their middle; `rows` draws its ruler on the turned page and still writes no window, and `zoom`'s line says
+  the turn. verso-core: `verso.core.scans.level` gains `carry`, `slant`, `STRAIGHT` (a slant under 0.1° is none) and
+  `MAX_ANGLE`; `verso.ru.scans.cli` gains `add_angle_flag`. New catalog keys `scans.angle.*`.
 - verso-ru: the statuses `SOLDIER_LEGAL_WIFE` («законная жена солдата») and `SOLDIER_ZHONKA` («солдатская женка») in
   `verso.ru.dsl.statuses`. Their child, as any soldier's wife's, is a `SOLDIER_SON` / `SOLDIER_DAUGHTER`
   (`child_status_for`).

@@ -23,7 +23,11 @@ from typing import Any
 
 from verso.core.scans.window import Box
 
-__all__ = ["level_crop", "line_angle", "turn", "turned_size"]
+__all__ = ["MAX_ANGLE", "STRAIGHT", "carry", "level_crop", "line_angle", "slant", "turn", "turned_size"]
+
+# A frame slanted further than this is no slanted leaf but a frame standing up: it is
+# rotated by a quarter turn (`rotate`), not levelled.
+MAX_ANGLE = 45.0
 
 # A window's slant is searched this far either side of where it stands.
 SPAN = 10.0
@@ -84,6 +88,46 @@ def turned_size(w: int, h: int, angle: float) -> tuple[int, int]:
         return w, h
     _, nw, nh = _turn_matrix(w, h, angle)
     return nw, nh
+
+
+def _to_turned(m: list[float], x: float, y: float) -> tuple[float, float]:
+    """A pixel of the frame on the frame turned through `m` — `_turn_matrix`'s
+    map run the other way: its 2×2 part is a rotation, so its inverse is its
+    transpose."""
+    dx, dy = x - m[2], y - m[5]
+    return m[0] * dx + m[3] * dy, m[1] * dx + m[4] * dy
+
+
+def carry(box: tuple[float, float, float, float], w: int, h: int,
+          angle_from: float, angle_to: float) -> tuple[float, float, float, float]:
+    """The window `box` — fractions of the w×h frame turned by `angle_from` —
+    on the frame turned by `angle_to`: as many pixels wide and high, around the
+    same point of the leaf.
+
+    What a window measured on the frame as it lies becomes once the frame is
+    turned level: its middle goes where the turn takes it, and its sides, which
+    framed a slanted leaf, now frame the same leaf lying straight. Held within
+    the frame, to a ten-thousandth.
+
+    >>> carry((0.1, 0.2, 0.5, 0.6), 1000, 800, 0.0, 0.0)
+    (0.1, 0.2, 0.5, 0.6)
+    """
+    if angle_from == angle_to:
+        return box
+    m_from, fw, fh = _turn_matrix(w, h, angle_from)
+    m_to, tw, th = _turn_matrix(w, h, angle_to)
+    x0, y0, x1, y1 = box
+    mx, my = (x0 + x1) / 2 * fw, (y0 + y1) / 2 * fh
+    fx = m_from[0] * mx + m_from[1] * my + m_from[2]
+    fy = m_from[3] * mx + m_from[4] * my + m_from[5]
+    cx, cy = _to_turned(m_to, fx, fy)
+    half_w, half_h = (x1 - x0) * fw / 2, (y1 - y0) * fh / 2
+
+    def held(value: float) -> float:
+        return round(min(1.0, max(0.0, value)), 4)
+
+    return (held((cx - half_w) / tw), held((cy - half_h) / th),
+            held((cx + half_w) / tw), held((cy + half_h) / th))
 
 
 def level_crop(im: Any, box: tuple[float, float, float, float], angle: float) -> Any:
@@ -158,3 +202,16 @@ def line_angle(im: Any, box: tuple[float, float, float, float] | None = None,
         return angle
     _, _, fine = best(_steps(coarse - _COARSE, coarse + _COARSE, _FINE))
     return round(angle + fine, 2)
+
+
+# A slant smaller than this is a leaf lying straight: 0.1° moves a line 5 px
+# across a 3000-px leaf, less than a stroke is thick.
+STRAIGHT = 0.1
+
+
+def slant(im: Any, box: tuple[float, float, float, float] | None = None,
+          angle: float = 0.0) -> float:
+    """`line_angle`, with a slant under `STRAIGHT` taken as none — so a leaf
+    that lies straight is cut as it always was, with no turn."""
+    found = line_angle(im, box, angle)
+    return found if abs(found) >= STRAIGHT else 0.0
