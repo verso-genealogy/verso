@@ -11,6 +11,10 @@ the faded hand's `enhance`; a window remembered there is the review page's (Vers
 `Target`), `cut` cuts the window from it and says what it wrote. A program that knows a window of its own — the
 review page's own command, which reads one remembered in `scans.toml` with the turn it was drawn at —
 hands `cut` that window and angle, and the crop, its file and its line are this command's.
+
+`--angle DEG|auto` cuts a slanted record level (`auto` measures the writing inside the window): the window, named on
+the page as it lies, is carried to the page turned by the angle around its middle (`verso.core.scans.level.carry`)
+and cut from it, as many pixels wide and high. The line it writes says the turn and the window on the turned page.
 """
 from __future__ import annotations
 
@@ -18,16 +22,17 @@ import argparse
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from verso.core.scans import stanza
 from verso.core.scans.image import pil
-from verso.core.scans.level import turn
+from verso.core.scans.level import carry, slant, turn
 from verso.core.scans.look import legible
 from verso.core.scans.stanza import Stanza
 from verso.core.scans.window import Box
 from verso.ru.messages import t
 from verso.ru.scans.album import find, load_pages, open_page
-from verso.ru.scans.cli import add_enhance_flag, add_frames_flag
+from verso.ru.scans.cli import add_angle_flag, add_enhance_flag, add_frames_flag
 from verso.ru.scans.folio import FRAME_PREFIX, Page
 from verso.ru.scans.zoom import COLUMNS, DEFAULT_PAD, DEFAULT_TOP, resolve
 
@@ -67,6 +72,7 @@ def add_arguments(p: argparse.ArgumentParser) -> None:
     add_frames_flag(p)
     p.add_argument("--tag", default="a", help="suffix for the output filename")
     p.add_argument("--out")
+    add_angle_flag(p, str(t("scans.angle.help_zoom")))
 
 
 @dataclass(frozen=True)
@@ -119,20 +125,11 @@ def cut(args: argparse.Namespace, target: Target, *, box: Sequence[float] | None
     counter-clockwise — stands for `--box` (a caller's own window: one remembered with the turn it was drawn at);
     without it `--box`, else `--col`/`--row`, name the window, on the page as it lies. SystemExit when the window does
     not read."""
-    album, page = target.album, target.page
-    try:
-        window = resolve(part=args.part, column=args.col, row=args.row,
-                         box=box if box is not None else args.box,
-                         top=(album.top if album and album.top is not None
-                              and args.top == DEFAULT_TOP else args.top),
-                         bottom=(album.bottom if album and album.bottom is not None
-                                 else 1.0),
-                         pad=args.pad)
-    except ValueError as exc:
-        raise SystemExit(str(exc)) from None
+    page = target.page
+    window = _window(args, target, box)
 
     Image, _, _ = pil()
-    im = turn(open_page(target.directory, page, album.rotation_for(page.label) if album else 0), angle)
+    im = turn(_upright(target), angle)
     crop = im.crop(window.pixels(im.width, im.height))
     crop = crop.resize((int(crop.width * args.scale), int(crop.height * args.scale)), Image.Resampling.LANCZOS)
     # Greyscale + autocontrast is what makes a faded iron-gall hand legible at this zoom, so it is the DEFAULT here
@@ -147,7 +144,8 @@ def cut(args: argparse.Namespace, target: Target, *, box: Sequence[float] | None
     where = page.label if target.by_frame else f"л. {page.label}"  # i18n: content — the book's own words: лист, ч., об, счётъ, кадр, the sex codes
     pushed = (str(t("scans.zoom.from_stanza", enhance=f"{enhance:g}"))
               if target.from_stanza and enhance > 1 and not args.colour else "")
-    print(f"{out}: {where} — {window}{named}{rowed} at {args.scale:g}×{pushed}")
+    turned = str(t("scans.angle.turned", angle=f"{angle:g}")) if angle else ""
+    print(f"{out}: {where} — {window}{turned}{named}{rowed} at {args.scale:g}×{pushed}")
     if args.row:
         print("⚠ Rows are an EVEN division of the writing area; records are not "
               "equal height (a monthly total eats a row). If the band missed, "
@@ -155,6 +153,39 @@ def cut(args: argparse.Namespace, target: Target, *, box: Sequence[float] | None
     return window
 
 
+def _window(args: argparse.Namespace, target: Target, box: Sequence[float] | None = None) -> Box:
+    """The window `box`, else `--box`, else `--col`/`--row` name; SystemExit when it does not read."""
+    album = target.album
+    try:
+        return resolve(part=args.part, column=args.col, row=args.row,
+                       box=box if box is not None else args.box,
+                       top=(album.top if album and album.top is not None
+                            and args.top == DEFAULT_TOP else args.top),
+                       bottom=(album.bottom if album and album.bottom is not None
+                               else 1.0),
+                       pad=args.pad)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
+
+
+def _upright(target: Target) -> Any:
+    """`target`'s page as it lies, the album's quarter turn of it applied."""
+    album, page = target.album, target.page
+    return open_page(target.directory, page, album.rotation_for(page.label) if album else 0)
+
+
 def run(args: argparse.Namespace) -> int:
-    cut(args, locate(args))
+    target = locate(args)
+    if args.angle is None:
+        cut(args, target)
+        return 0
+    window = _window(args, target)
+    named = (window.x0, window.y0, window.x1, window.y1)
+    upright = _upright(target)
+    angle = slant(upright, named) if args.angle == "auto" else args.angle
+    if not angle:
+        cut(args, target)
+        return 0
+    width, height = upright.size
+    cut(args, target, box=carry(named, width, height, 0.0, angle), angle=angle)
     return 0
