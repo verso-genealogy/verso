@@ -3,6 +3,16 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased
+
+A corpus's output does not move: statuses are added, and no record names them yet.
+
+### Added
+
+- verso-ru: the statuses `SOLDIER_LEGAL_WIFE` («законная жена солдата») and `SOLDIER_ZHONKA` («солдатская женка») in
+  `verso.ru.dsl.statuses`. Their child, as any soldier's wife's, is a `SOLDIER_SON` / `SOLDIER_DAUGHTER`
+  (`child_status_for`).
+
 ## 0.1.42 — 2026-11-17
 
 A corpus's output does not move: the reading task changes, and nothing the DSL produces reads it.

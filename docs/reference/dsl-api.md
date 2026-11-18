@@ -204,10 +204,12 @@ What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only 
 - `SOLDIER` = `солдат`
 - `SOLDIER_DAUGHTER` = `солдатская дочь`
 - `SOLDIER_GIRL` = `солдатская девка`
+- `SOLDIER_LEGAL_WIFE` = `законная жена солдата`
 - `SOLDIER_SON` = `солдатский сын`
 - `SOLDIER_SPOUSE` = `солдатская жена`
 - `SOLDIER_WIDOW` = `солдатская вдова`
 - `SOLDIER_WIFE` = `солдатка`
+- `SOLDIER_ZHONKA` = `солдатская женка`
 - `STATE_PEASANT_DAUGHTER` = `государственная крестьянская дочь`
 - `STATE_PEASANT_FEMALE` = `государственная крестьянка`
 - `STATE_PEASANT_LEGAL_WIFE` = `законная жена государственного крестьянина`
