@@ -1,14 +1,14 @@
 """The people of the neighbouring years: a village's proofread people, as a reading vocabulary.
 
 A reader reads a record better given the people the corpus already holds for its village in the nearest
-years. The list is built from records-v1 documents (`verso.core.records`) and names the scored record's
-people as other records name them; what it never holds is the scored record itself, its other copy (a
+years. The list is built from records-v1 documents (`verso.core.records`) and names the people of the record
+being read as other records name them; what it never holds is that record itself, its other copy (a
 консисторская копия, a duplicate book) or anything read off it: every record of the asked year is left out.
 Only the names, a status the scribe wrote and the years leave a record; never a note, and never a record
 not yet proofread.
 
-Only the standard library is imported here, as in the rest of `verso.ru.reading`, so a server and a
-benchmark can build the list with one code. The places' canonical names are a parameter.
+Only the standard library is imported here, as in the rest of `verso.ru.reading`, so every caller builds
+the list with one code. The places' canonical names are a parameter.
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from typing import Any
 
 #: The years asked for, ±.
 WINDOW = 10
-#: The list's ceiling in characters: about 20 thousand tokens, at the 1.71 characters a token these lists measured.
+#: The list's ceiling in characters: about 20 thousand tokens, at some 1.7 characters a token for such name lists.
 MAX_PEOPLE_CHARS = 34_000
 NO_SURNAME = "—"
 #: The roles of the clergy a record names; they are never in the list.
@@ -61,7 +61,7 @@ class Entry:
 @dataclass(frozen=True)
 class PeopleList:
     village: str
-    year: int               # the scored records' year: never one of the entries' years
+    year: int               # the year being read: never one of the entries' years
     window: int             # the years asked for: ±window
     reach: int              # the years the ceiling let in: ±reach (≤ window)
     entries: tuple[Entry, ...]

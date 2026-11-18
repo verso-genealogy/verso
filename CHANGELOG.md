@@ -14,7 +14,7 @@ A corpus's output does not move: the list is new, and nothing the DSL produces r
   never the clergy (`CLERGY`), the nearest pair always in and the next pairs only whole under `MAX_PEOPLE_CHARS`.
   `mentions(docs, places)` reads the documents (`places` maps a place as written to its canonical name), `people_list`
   builds the list, `render` and `people_text` write it. Standard library only, like the rest of `verso.ru.reading`, so
-  a server and a benchmark build the list with one code.
+  every caller builds the list with one code.
 
 ## 0.1.43 — 2026-11-18
 
