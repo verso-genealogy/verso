@@ -34,8 +34,8 @@ pip install 'verso-core[heic]'     # и HEIC
 | `headers DIR --out OUT [--strip 0.17] [--rows 8] [--frames]` | ru | `headers_NN.jpg`, контактные листы колонтитулов | 0 |
 | `crops DIR --out OUT [--verso-only] [--part 1\|2\|3] [--from N] [--to N] [--with-count] [--x0] [--x1] [--scale] [--top 0.07] [--grey] [--enhance N] [--frames]` | ru | `<кадр:04d>_<лист>_{a,b}.jpg`, вырезки по полстраницы | 0 |
 | `spread DIR --folio 120об [--band 0.07 0.56] [--scale 2.6] [--enhance N] [--out F]` | ru | `spread_<лист>_<y0>-<y1>.jpg` в DIR: полоса оборота над полосой лицевой стороны напротив | 1, если у альбома нет номеров листов или нет такой страницы |
-| `zoom DIR --folio F [--part] [--col] [--row N OF] [--box X0 Y0 X1 Y1] [--scale 6] [--top 0.17] [--pad 0.02] [--colour] [--enhance N] [--frames] [--tag a] [--out F] [--layout F] [--village DIR] [--album-title T]` | ru | `zoom_<лист>_<tag>.jpg` в DIR: одна запись, в сером и с автоконтрастом | 1, если нет такой страницы или окно не читается |
-| `rows DIR --part N --folio F… [--x0] [--x1] [--count X0 X1] [--top] [--bottom] [--layout] [--village] [--album-title] [--out] [--frames]` | ru | `rows_<first>[-<last>]_<part>.jpg` в DIR: метки и разрезы каждого листа; метки печатаются | 1, если лист задан неверно или нет такой страницы |
+| `zoom DIR --folio F [--part] [--col] [--row N OF] [--box X0 Y0 X1 Y1] [--scale 6] [--top 0.17] [--pad 0.02] [--colour] [--enhance N] [--frames] [--tag a] [--out F] [--layout F] [--village DIR] [--album-title T] [--angle DEG|auto]` | ru | `zoom_<лист>_<tag>.jpg` в DIR: одна запись, в сером и с автоконтрастом | 1, если нет такой страницы или окно не читается |
+| `rows DIR --part N --folio F… [--x0] [--x1] [--count X0 X1] [--top] [--bottom] [--layout] [--village] [--album-title] [--out] [--angle DEG|auto] [--frames]` | ru | `rows_<first>[-<last>]_<part>.jpg` в DIR: метки и разрезы каждого листа; метки печатаются | 1, если лист задан неверно или нет такой страницы |
 | `cards ALBUM OUT [--header B] [--table B] [--number B] [--leaf B] [--zoom IDX:x0:y0:x1:y1]` | ru | `NN.jpg`, `numbers.jpg`, `leaves.jpg` (или `zoom_NN.jpg`) карточек с/х переписи 1917 года | 1, если в ALBUM нет ни одного снимка |
 
 Аргумент, который argparse не может прочитать, даёт код 2, как у любой команды `verso`.
@@ -71,6 +71,13 @@ pip install 'verso-core[heic]'     # и HEIC
 `zoom --record --remember` или все окна листа сразу через `windows`. `verso scans rows` находит метки и рисует их;
 он ничего не пишет.
 
+Лист, снятый наискось, берёт `--angle DEG|auto` (градусы против часовой стрелки, в пределах ±45; `auto` меряет
+строки). `rows` поворачивает страницу ровно, прежде чем искать строки: лист, `--x0`/`--x1`, `--top`/`--bottom` и
+`--count` меряются на странице как она лежит и переносятся на повёрнутую страницу вокруг своей середины, а линейка
+рисуется на ней — её метки и разрезы в долях повёрнутой страницы. `zoom` переносит своё окно, названное на странице
+как она лежит, на повёрнутую страницу и вырезает его ровно; строка, которую он пишет, называет поворот. Без
+`--angle` ничего не поворачивается.
+
 ## В Python
 
 `__all__` модулей публичен ([совместимость](compatibility.ru.md)):
@@ -79,7 +86,7 @@ pip install 'verso-core[heic]'     # и HEIC
 |---|---|
 | `verso.core.scans.image` | `open_upright`, `turn_upright`, `cut_half`, `upright_size`, `turned_frame_size`, `image_names`, `heic_to_jpeg`, `convert_heic_frames`, `heic_clashes`, `pil`; `IMAGE_SUFFIXES`, `HEIC_SUFFIXES` |
 | `verso.core.scans.window` | `Box`, окно в долях; `FULL_WIDTH` |
-| `verso.core.scans.level` | `turn`, `turned_size`, `level_crop`, `line_angle` |
+| `verso.core.scans.level` | `turn`, `turned_size`, `level_crop`, `line_angle`, `slant`, `carry`; `STRAIGHT`, `MAX_ANGLE` |
 | `verso.core.scans.look` | `Look`, `legible`, `coloured_ink`; `PLAIN`, `INKS`, `MAX_ENHANCE` |
 | `verso.core.scans.stanza` | `Stanza`, `StanzaError`, `for_album`, `rotation`, `enhance_for` |
 | `verso.core.scans.sheets` | `contact_sheet`, `strips_sheet`, `fit_width` |
@@ -88,7 +95,7 @@ pip install 'verso-core[heic]'     # и HEIC
 | `verso.ru.scans.rows` | `detect`, `count_window`, `ruler`, `sheet`, `parse_keys`, `pair`, `cuts_from` |
 | `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode`, `album_of`, `spread_frames` |
 | модуль подкоманды, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); у `verso.ru.scans.cli.rows` ещё `leaf`, `report`; у `verso.ru.scans.cli.zoom` ещё `locate`, `cut`, `Target` — найденная страница, затем окно, вырезанное из неё, — вызывающий может отдать своё окно и поворот |
-| `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag` |
+| `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag`, `add_angle_flag` |
 | `verso.core.scans.cli` | `main` — сам `verso scans` |
 
 Больше ничего в этих модулях не публично: значение типа, которого здесь нет (`Stanzas`, `Rows`), читают по его

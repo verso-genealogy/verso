@@ -1768,6 +1768,13 @@ spread_folio = "the об page, e.g. \"120об\" or \"120\""
 folio = "e.g. \"420об\" (verso) or \"421\" (recto); under frame numbering a plain \"12\" means кадр 12"
 zoom_part = "which part's column names apply (1 родившихся, 2 бракосочетавшихся, 3 умершихъ)"
 
+[scans.angle]
+bad = "--angle takes degrees within ±{limit}, or auto: {angle}"
+help_rows = "turn the page level before the rows are read: degrees counter-clockwise, or auto — measured on the leaf's lines. The leaf and --count, measured on the page as it lies, are carried to the turned page, and the ruler is drawn on it: its marks and cuts are the turned page's fractions"
+help_zoom = "cut the window level: degrees counter-clockwise, or auto — measured on the writing inside it. The window, named on the page as it lies, is carried to the turned page around its middle"
+level = "  the page turned {angle}° to lie level: the marks and cuts are the turned page's fractions"
+turned = ", turned {angle}°"
+
 [scans.folio]
 not_a_leaf = "not a leaf: {first_folio}"
 

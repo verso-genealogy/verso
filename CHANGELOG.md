@@ -3,6 +3,20 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased
+
+A corpus's output does not move: without `--angle` the scan tools cut what they cut, and nothing the DSL produces
+reads them.
+
+### Added
+
+- verso-ru: `verso scans rows|zoom --angle DEG|auto` turn a slanted leaf level before it is read (degrees
+  counter-clockwise, within ±45; `auto` measures the lines — `rows` the leaf's, `zoom` the writing inside the
+  window). The leaf, `--count` and a zoom's window, measured on the page as it lies, are carried to the turned page
+  around their middle; `rows` draws its ruler on the turned page and still writes no window, and `zoom`'s line says
+  the turn. verso-core: `verso.core.scans.level` gains `carry`, `slant`, `STRAIGHT` (a slant under 0.1° is none) and
+  `MAX_ANGLE`; `verso.ru.scans.cli` gains `add_angle_flag`. New catalog keys `scans.angle.*`.
+
 ## 0.1.42 — 2026-11-17
 
 A corpus's output does not move: the reading task changes, and nothing the DSL produces reads it.

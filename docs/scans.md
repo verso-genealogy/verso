@@ -34,8 +34,8 @@ the frames of one дело drift by a few pixels in size.
 | `headers DIR --out OUT [--strip 0.17] [--rows 8] [--frames]` | ru | `headers_NN.jpg`, contact sheets of the running headers | 0 |
 | `crops DIR --out OUT [--verso-only] [--part 1\|2\|3] [--from N] [--to N] [--with-count] [--x0] [--x1] [--scale] [--top 0.07] [--grey] [--enhance N] [--frames]` | ru | `<frame:04d>_<leaf>_{a,b}.jpg`, half-page crops | 0 |
 | `spread DIR --folio 120об [--band 0.07 0.56] [--scale 2.6] [--enhance N] [--out F]` | ru | `spread_<leaf>_<y0>-<y1>.jpg` in DIR: an об page's band over the facing recto's | 1 when the album has no leaf numbers, or no such page |
-| `zoom DIR --folio F [--part] [--col] [--row N OF] [--box X0 Y0 X1 Y1] [--scale 6] [--top 0.17] [--pad 0.02] [--colour] [--enhance N] [--frames] [--tag a] [--out F] [--layout F] [--village DIR] [--album-title T]` | ru | `zoom_<leaf>_<tag>.jpg` in DIR: one record, grey and autocontrasted | 1 when there is no such page or the window does not read |
-| `rows DIR --part N --folio F… [--x0] [--x1] [--count X0 X1] [--top] [--bottom] [--layout] [--village] [--album-title] [--out] [--frames]` | ru | `rows_<first>[-<last>]_<part>.jpg` in DIR: each leaf's marks and cuts drawn; the marks printed | 1 on a leaf that does not read, or no such page |
+| `zoom DIR --folio F [--part] [--col] [--row N OF] [--box X0 Y0 X1 Y1] [--scale 6] [--top 0.17] [--pad 0.02] [--colour] [--enhance N] [--frames] [--tag a] [--out F] [--layout F] [--village DIR] [--album-title T] [--angle DEG|auto]` | ru | `zoom_<leaf>_<tag>.jpg` in DIR: one record, grey and autocontrasted | 1 when there is no such page or the window does not read |
+| `rows DIR --part N --folio F… [--x0] [--x1] [--count X0 X1] [--top] [--bottom] [--layout] [--village] [--album-title] [--out] [--angle DEG|auto] [--frames]` | ru | `rows_<first>[-<last>]_<part>.jpg` in DIR: each leaf's marks and cuts drawn; the marks printed | 1 on a leaf that does not read, or no such page |
 | `cards ALBUM OUT [--header B] [--table B] [--number B] [--leaf B] [--zoom IDX:x0:y0:x1:y1]` | ru | `NN.jpg`, `numbers.jpg`, `leaves.jpg` (or `zoom_NN.jpg`) of the 1917 farm-census cards | 1 when ALBUM holds no image |
 
 An argument argparse cannot read exits 2, as every command of `verso` does.
@@ -69,6 +69,12 @@ The windows are the review page's: Verso writes them, and `verso-scans` (the App
 `zoom --record --remember` or a leaf's at once with `windows`. `verso scans rows` finds the marks and draws them; it
 writes nothing.
 
+A leaf photographed at a slant takes `--angle DEG|auto` (degrees counter-clockwise, within ±45; `auto` measures
+the lines). `rows` turns the page level before it reads the rows: the leaf, `--x0`/`--x1`, `--top`/`--bottom` and
+`--count` are measured on the page as it lies and carried to the turned page around their middle, and the ruler is
+drawn on it, so its marks and cuts are the turned page's fractions. `zoom` carries its window, named on the page as
+it lies, to the turned page and cuts it level; the line it writes says the turn. Without `--angle` nothing turns.
+
 ## In Python
 
 The modules' `__all__` is public ([compatibility](compatibility.md)):
@@ -77,7 +83,7 @@ The modules' `__all__` is public ([compatibility](compatibility.md)):
 |---|---|
 | `verso.core.scans.image` | `open_upright`, `turn_upright`, `cut_half`, `upright_size`, `turned_frame_size`, `image_names`, `heic_to_jpeg`, `convert_heic_frames`, `heic_clashes`, `pil`; `IMAGE_SUFFIXES`, `HEIC_SUFFIXES` |
 | `verso.core.scans.window` | `Box`, a window in fractions; `FULL_WIDTH` |
-| `verso.core.scans.level` | `turn`, `turned_size`, `level_crop`, `line_angle` |
+| `verso.core.scans.level` | `turn`, `turned_size`, `level_crop`, `line_angle`, `slant`, `carry`; `STRAIGHT`, `MAX_ANGLE` |
 | `verso.core.scans.look` | `Look`, `legible`, `coloured_ink`; `PLAIN`, `INKS`, `MAX_ENHANCE` |
 | `verso.core.scans.stanza` | `Stanza`, `StanzaError`, `for_album`, `rotation`, `enhance_for` |
 | `verso.core.scans.sheets` | `contact_sheet`, `strips_sheet`, `fit_width` |
@@ -86,7 +92,7 @@ The modules' `__all__` is public ([compatibility](compatibility.md)):
 | `verso.ru.scans.rows` | `detect`, `count_window`, `ruler`, `sheet`, `parse_keys`, `pair`, `cuts_from` |
 | `verso.ru.scans.album` | `load_pages`, `open_page`, `page_size`, `find`, `page_named`, `where`, `titled`, `note_frame_mode`, `album_of`, `spread_frames` |
 | a subcommand's module, `verso.core.scans.cli.<sub>`, `verso.ru.scans.cli.<sub>` | `HELP`, `add_arguments`, `run` (`Plugin.scans`); `verso.ru.scans.cli.rows` also `leaf`, `report`; `verso.ru.scans.cli.zoom` also `locate`, `cut`, `Target` — the page found, then a window cut from it, which a caller may hand its own window and turn |
-| `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag` |
+| `verso.ru.scans.cli` | `add_frames_flag`, `add_enhance_flag`, `add_angle_flag` |
 | `verso.core.scans.cli` | `main`, `verso scans` itself |
 
 Nothing else of these modules is public — a value of a type they do not list (`Stanzas`, `Rows`) is read by its
