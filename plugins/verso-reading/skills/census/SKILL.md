@@ -8,8 +8,8 @@ description: >
   directory of a дело's frames into what reads, or when scans are photographs of a screen
   and the handwriting will not resolve.
 compatibility: >
-  Needs Python 3.14+ and the verso library on PATH — pip install 'verso-core[scans]>=0.1.41'
-  'verso-ru>=0.1.41' (verso-core[heic] for a phone's own format) — and an agent that can open
+  Needs Python 3.14+ and the verso library on PATH — pip install 'verso-core[scans]>=0.1.43'
+  'verso-ru>=0.1.43' (verso-core[heic] for a phone's own format) — and an agent that can open
   local image files.
 ---
 
@@ -77,7 +77,7 @@ believing either figure.
 **Кадры дела — каталог.** The input is a directory of the дело's frames, best named by folio
 (`<кадр>_<лист>[об]`: `0118_57.jpg`, `0119_57об.jpg`). Откуда кадры — в AGENTS.md проекта: an
 archive's download, an export of a photo library, a shared folder. `verso scans check DIR` says
-whether the дело is whole; `verso scans` needs `pip install 'verso-core[scans]>=0.1.41' 'verso-ru>=0.1.41'`.
+whether the дело is whole; `verso scans` needs `pip install 'verso-core[scans]>=0.1.43' 'verso-ru>=0.1.43'`.
 
 ```bash
 FR=/path/to/the/frames/rs1834          # the дело's frames, as the project keeps them
@@ -130,6 +130,12 @@ half is the male page, then declare it so the next reader need not. Never «fix�
 by applying pillow-heif's `info["original_orientation"]`: the decoder has already applied it, and
 applying it again turns the frame twice.
 
+A ledger photographed a little crooked — its lines falling a degree or two, so a window around one
+двор takes in the next one's rows — takes `zoom --angle auto` (or `--angle DEG`, counter-clockwise,
+within ±45): the window, named on the frame as it lies, is cut from the frame turned level, and the
+line `zoom` writes says the turn. `rotate` is for quarter turns only; the `metric-books` skill has
+the details, `rows --angle` among them.
+
 Comparing digits (is this «3» or «5»?) still wants a strip of one column at 3–4× beside the
 same digit elsewhere on the page — cut it with `zoom --box` too, each to its own `--out`.
 
@@ -138,7 +144,7 @@ Two traps that renumber the frames under you:
 - **Never write anything into the frames' directory.** Every image file there is a frame, so
   a `contact.jpg` saved beside the originals shifts «кадр 6» onto a different page (in one
   album the births spread came up where the burials were). Send crops to `--out` elsewhere.
-  A phone's own format is read as it is with `verso-core[heic]>=0.1.41`, and converting it is done in
+  A phone's own format is read as it is with `verso-core[heic]>=0.1.43`, and converting it is done in
   place: `verso scans jpeg DIR` replaces each HEIC with a JPEG of the same name, keeping the count.
 - **A number in the filename is read as the лист.** Scans named `000.png … 048.png` are often
   FILE numbers, but the tools read them as листы: `--folio 41` opens `041.png` although the page

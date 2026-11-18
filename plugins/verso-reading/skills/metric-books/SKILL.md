@@ -8,8 +8,8 @@ description: >
   what the corpus already holds. For revision and confession lists use the `census` skill
   instead; for producing a reviewable .txt, the `transcription` skill.
 compatibility: >
-  Needs Python 3.14+ and the verso library on PATH — pip install 'verso-core[scans]>=0.1.41'
-  'verso-ru>=0.1.41' (verso-core[heic] for a phone's own format) — and an agent that can open
+  Needs Python 3.14+ and the verso library on PATH — pip install 'verso-core[scans]>=0.1.43'
+  'verso-ru>=0.1.43' (verso-core[heic] for a phone's own format) — and an agent that can open
   local image files.
 ---
 
@@ -28,8 +28,8 @@ plugin they are `verso-reading:census`, `verso-reading:transcription`.
 first and last лист, its parts) is kept, and the surnames and estates of each village.
 `verso scans check DIR` says whether the дело is whole.
 
-`verso scans` needs Pillow: `pip install 'verso-core[scans]>=0.1.41' 'verso-ru>=0.1.41'`. A phone's own
-format needs `'verso-core[heic]>=0.1.41'`; with it, `verso scans jpeg DIR` can also turn each HEIC frame into a JPEG in place.
+`verso scans` needs Pillow: `pip install 'verso-core[scans]>=0.1.43' 'verso-ru>=0.1.43'`. A phone's own
+format needs `'verso-core[heic]>=0.1.43'`; with it, `verso scans jpeg DIR` can also turn each HEIC frame into a JPEG in place.
 
 ## The four steps
 
@@ -129,6 +129,24 @@ frame shot differently (below). Upright is what the phone's own viewer shows: co
 A phone's own format is decoded already turned, and pillow-heif keeps the old tag in
 `info["original_orientation"]` only as a record of what was applied: applying it again turns
 every frame twice (it would have put four years of one village's albums upside down).
+
+**A leaf photographed at a slant takes `--angle`.** `rotate` turns a frame by quarter turns; a
+phone held a little crooked over the book leaves the lines falling a degree or three, and a
+window cut straight around a slanted record takes in the next record's lines — which is how a
+godparent gets read off the wrong row. `zoom` and `rows` take `--angle DEG|auto` (degrees
+counter-clockwise, within ±45; `auto` measures the lines — `zoom` the writing inside its window,
+`rows` the leaf's). A slant under 0.1° counts as none, so `--angle auto` on a straight leaf cuts
+what it always did: give it whenever a page looks crooked.
+
+- `zoom --angle`: the window is named on the frame **as it lies** — the fractions you read off a
+  crop — and cut from the frame turned level, as many pixels as it was. Its line says the turn
+  («, turned 2°») and the window on the turned page.
+- `rows --angle`: the page is turned level before the marks are found. On a leaf turned 2° it
+  found one mark too many as the page lay (the slanted rules broke into a mark of their own) and
+  the right ones turned. Its marks, cuts and ruler are then the **turned page's** fractions: use
+  them to count and place the records, and do not hand them to `zoom --box`, which takes the
+  frame as it lies — name that window off the frame, or with `--row N OF`, and give it the same
+  `--angle`.
 
 **`check` before reading, always.** Two failures are invisible to a reader and expensive:
 a page never photographed (the godparents of a whole spread simply absent), and a leaf
@@ -249,6 +267,7 @@ settled on into the project's notes on the дело.
 verso scans rows $FR --part 1 --folio 47об 48об --out $SC/rows_47об.jpg   # where each record begins
 verso scans zoom $FR --folio 47об --part 1 --row 3 8 --out $SC/z47об_3.jpg   # the 3rd of the page's 8
 verso scans zoom $FR --folio 47об --box 0.18 0.44 0.60 0.97 --scale 9 --out $SC/z47об_3.jpg
+verso scans zoom $FR --folio 47об --box 0.18 0.44 0.60 0.97 --scale 9 --angle auto --out $SC/z47об_3.jpg   # slanted: cut level
 ```
 
 ⚠ **A reading of mine is not a finding.** Twice in one session a model read this kind
@@ -290,6 +309,6 @@ show it, and let the person who knows the hand read it.
 ## Limits
 
 `verso scans` fetches nothing: it works on frames already on disk, and getting them there is the
-project's (the AGENTS.md проекта). It needs Pillow only — `verso-core[scans]>=0.1.41`, and
-`verso-core[heic]>=0.1.41` for a phone's own format; without them the pure parts (filenames, continuity,
+project's (the AGENTS.md проекта). It needs Pillow only — `verso-core[scans]>=0.1.43`, and
+`verso-core[heic]>=0.1.43` for a phone's own format; without them the pure parts (filenames, continuity,
 the windows' arithmetic) still run.

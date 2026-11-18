@@ -16,6 +16,8 @@ reads them.
   around their middle; `rows` draws its ruler on the turned page and still writes no window, and `zoom`'s line says
   the turn. verso-core: `verso.core.scans.level` gains `carry`, `slant`, `STRAIGHT` (a slant under 0.1° is none) and
   `MAX_ANGLE`; `verso.ru.scans.cli` gains `add_angle_flag`. New catalog keys `scans.angle.*`.
+- The plugin `verso-reading`: the skills `metric-books` and `census` cut a slanted leaf level with `--angle`, and
+  their install floors and the plugin README's rise to 0.1.43, the release that brings it.
 
 ## 0.1.42 — 2026-11-17
 
