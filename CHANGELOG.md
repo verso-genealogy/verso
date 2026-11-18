@@ -3,7 +3,7 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased
+## 0.1.43 — 2026-11-18
 
 A corpus's output does not move: without `--angle` the scan tools cut what they cut, and nothing the DSL produces
 reads them; the statuses are new, and no record names them yet.
