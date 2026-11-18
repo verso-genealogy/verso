@@ -3,7 +3,7 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## 0.1.44 — unreleased
+## 0.1.44 — 2026-11-18
 
 A corpus's output does not move: the list is new, and nothing the DSL produces reads it.
 
