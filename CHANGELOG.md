@@ -19,6 +19,8 @@ reads them; the statuses are new, and no record names them yet.
 - verso-ru: the statuses `SOLDIER_LEGAL_WIFE` («законная жена солдата») and `SOLDIER_ZHONKA` («солдатская женка») in
   `verso.ru.dsl.statuses`. Their child, as any soldier's wife's, is a `SOLDIER_SON` / `SOLDIER_DAUGHTER`
   (`child_status_for`).
+- The plugin `verso-reading`: the skills `metric-books` and `census` cut a slanted leaf level with `--angle`, and
+  their install floors and the plugin README's rise to 0.1.43, the release that brings it.
 
 ## 0.1.42 — 2026-11-17
 
