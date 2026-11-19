@@ -115,3 +115,16 @@ def test_years_label_for():
     assert years_label_for([1805]) == "1805"
     assert years_label_for([1832, 1833, 1834]) == "1832-1834"
     assert years_label_for([1799, 1805]) == "1799, 1805"
+
+
+def test_a_field_the_columns_have_no_place_for_moves_no_cell(sets):
+    """A record's attribute the familio columns do not read — the notes a later release adds to a birth and a
+    death (`lag_note`) and to a marriage (`age_note`) — changes no row: the workbook is what it was."""
+    before = collect(sets.values(), reviewed_only=False)
+    noted = records_fixture.namespace()
+    for variable, note in (("births", "lag_note"), ("hlestakovka_deaths_1913", "lag_note"), ("marriages", "age_note")):
+        for record in noted[variable].records:
+            vars(record)[note] = "так в подлиннике"
+    after = collect(noted.values(), reviewed_only=False)
+    assert after.records_by_type == before.records_by_type
+    assert (after.taken, after.left_out) == (before.taken, before.left_out)
