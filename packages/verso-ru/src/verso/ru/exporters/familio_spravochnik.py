@@ -23,7 +23,7 @@ import csv
 import re
 import xml.etree.ElementTree as ET
 import zipfile
-from collections.abc import Collection, Iterable
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
@@ -33,12 +33,14 @@ if TYPE_CHECKING:
     from openpyxl.workbook.workbook import Workbook
     from openpyxl.worksheet.worksheet import Worksheet
 
+    from verso.core.places import Places
+
 from verso.core.ratchet import unreviewed
 from verso.ru.dsl.records.births import BirthRecords
 from verso.ru.dsl.records.deaths import DeathRecords
 from verso.ru.dsl.records.marriages import MarriageRecords
 from verso.ru.exporters.csv_familio import exporter_of
-from verso.ru.exporters.familio_layout import LOCATION_HELPER_HEADERS, build_workbook
+from verso.ru.exporters.familio_layout import LOCATION_HELPER_HEADERS, Layout, build_workbook, load_layout
 from verso.ru.exporters.familio_template import (
     TEMPLATE_DATA_START_ROW, TEMPLATE_MAPS, TEMPLATE_SHEET_TITLES, remap_row)
 
@@ -266,6 +268,86 @@ def read_location_rows(path: Path) -> list[LocationRow] | None:
             for r in reader
             if (r.get("place") or "").strip()
         ]
+
+
+# What a place's `city` begins with → the `type` Familio's `location` sheet writes. A word that is not here
+# leaves the type blank: the indexer writes it.
+_PLACE_TYPES: dict[str, str] = {
+    "село": "с.", "деревня": "д.", "город": "г.", "слобода": "сл.", "посёлок": "пос.", "поселок": "пос.",
+    "хутор": "х.", "сельцо": "сц.", "погост": "пог.", "выселок": "выс.", "местечко": "м.", "станция": "ст.",
+}
+_FAMILIO_SETTLEMENT = "https://familio.org/settlements/"
+
+
+def referenced_places(spravochnik: Spravochnik, layout: Layout | None = None) -> list[str]:
+    """Every place a row of the справочник names — the value on the left of each location helper column —
+    as it is written, once, in the order first met: what the `location` sheet must list for no lookup to miss."""
+    layout = layout or load_layout()
+    found: dict[str, None] = {}
+    for sheet in spravochnik.sheets:
+        sources = sorted(c - 2 for c in layout.sheets[sheet.record_type].helpers)     # 0-based, left of the helper
+        for row in sheet.rows:
+            for index in sources:
+                if index < len(row) and row[index] != "":
+                    found.setdefault(row[index], None)
+    return list(found)
+
+
+def derive_location(place: str, fields: Mapping[str, str], attributes: Mapping[str, str]) -> LocationRow:
+    """The `location` row of `place` (kept as written: it is the lookup's key) from a place's fields — only
+    what they say unambiguously. `city` «село X» gives the type «с.» (`_PLACE_TYPES`); `county` «A уезд, B
+    волость» the district A and the volost B; `state` «A губерния» the region A, any other state whole; the
+    attribute `familio` the settlement's link. Whatever is not said so stays blank."""
+    kind, _, rest = fields.get("city", "").strip().partition(" ")
+    place_type = _PLACE_TYPES.get(kind.lower(), "") if rest else ""
+    district = volost = ""
+    for part in (part.strip() for part in fields.get("county", "").split(",")):
+        if part.endswith(" уезд"):
+            district = part.removesuffix(" уезд").strip()
+        elif part.endswith(" волость"):
+            volost = part.removesuffix(" волость").strip()
+    state = fields.get("state", "").strip()
+    region = state.removesuffix(" губерния").strip() if state.endswith(" губерния") else state
+    settlement = attributes.get("familio", "").strip()
+    return LocationRow(place=place, type=place_type, region=region, district=district, volost=volost,
+                       link=f"{_FAMILIO_SETTLEMENT}{settlement}" if settlement else "")
+
+
+def known_from(places: Places) -> Callable[[str], LocationRow | None]:
+    """What a places dictionary knows of a place, as `location_rows` asks it: the row `derive_location` makes of
+    the place's fields — a spelling's (`same_as`) are its canon's —, None for a place the dictionary lacks. A
+    place written with a space around it is found without the space, and kept as written."""
+    from verso.core.places import parse_body
+
+    def known(place: str) -> LocationRow | None:
+        canon = places.canonicals.get(place) or places.canonicals.get(place.strip())
+        body = places.bodies.get(canon) if canon is not None else None
+        if canon is None or body is None:
+            return None
+        attributes = {name: values[canon] for name, values in places.attributes.items() if canon in values}
+        return derive_location(place, parse_body(body), attributes)
+
+    return known
+
+
+def location_rows(places: Sequence[str], *, curated: Sequence[LocationRow] = (),
+                  known: Callable[[str], LocationRow | None] = lambda place: None) -> list[LocationRow]:
+    """The `location` sheet's rows for a справочник that names `places`: the curated rows first, as they are and
+    in their order (a row no record names stays); then every other place named — what `known` says of it, a
+    row of its name alone where it says nothing."""
+    rows = list(curated)
+    listed = {row.place for row in rows}
+    for place in places:
+        if place in listed:
+            continue
+        listed.add(place)
+        rows.append(known(place) or LocationRow(place, "", "", "", "", ""))
+    return rows
+
+
+def blank_places(rows: Sequence[LocationRow]) -> int:
+    """How many rows say nothing but the place's name: what is left for the indexer to fill."""
+    return sum(1 for row in rows if not (row.type or row.region or row.district or row.volost or row.link))
 
 
 @dataclass(frozen=True)
