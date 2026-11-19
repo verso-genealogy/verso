@@ -45,6 +45,17 @@ on purpose — see **Changed**; the workbook it writes is no output a corpus com
   places it lacks, from the workspace's places. A lookup no longer answers `#N/A` for a place the CSV forgot.
 - A value of a record, of `about.json` or of `location.csv` that begins with `=` is written as text, never as
   a formula.
+- Two record sets of one parish, year and kind — two дела of a year — both go in; read from the CSVs, the
+  second file's CSV had overwritten the first's.
+- With `--template` and no curated `location.csv` the template's sample `location` rows are replaced by the
+  places the rows name (they were left as they came). The built workbook given no `location` rows lists the
+  places by name.
+- A cell is written as a number only when it is a plain one — ASCII digits, no leading nought, fifteen digits
+  at most: a лист «007», a long run of digits and a digit of another script stay the text they are (the last
+  two raised or changed the value). A place name the `location` sheet is asked for is always text.
+- A place written with its type («с. X», «село X») gets no type on the `location` sheet: the sheet's formula
+  writes «type place».
+- The command's `location:` line says how many places are listed and how many of them the curated file gave.
 - `--no-regenerate` is accepted and does nothing.
 
 ### Removed

@@ -282,11 +282,15 @@ def referenced_places(spravochnik: Spravochnik, layout: Layout | None = None) ->
 
 def derive_location(place: str, fields: Mapping[str, str], attributes: Mapping[str, str]) -> LocationRow:
     """The `location` row of `place` (kept as written: it is the lookup's key) from a place's fields — only
-    what they say unambiguously. `city` «село X» gives the type «с.» (`_PLACE_TYPES`); `county` «A уезд, B
+    what they say unambiguously. `city` «село X» gives the type «с.» (`_PLACE_TYPES`) — unless the place is
+    written with its type already («с. X», «село X») —; `county` «A уезд, B
     волость» the district A and the volost B; `state` «A губерния» the region A, any other state whole; the
     attribute `familio` the settlement's link. Whatever is not said so stays blank."""
     kind, _, rest = fields.get("city", "").strip().partition(" ")
     place_type = _PLACE_TYPES.get(kind.lower(), "") if rest else ""
+    written = place.strip().lower()
+    if place_type and (written.startswith(place_type) or written.startswith(f"{kind.lower()} ")):
+        place_type = ""         # «с. X», «село X»: the sheet's formula writes «type place» — no «с. с. X»
     district = volost = ""
     for part in (part.strip() for part in fields.get("county", "").split(",")):
         if part.endswith(" уезд"):
@@ -330,6 +334,11 @@ def location_rows(places: Sequence[str], *, curated: Sequence[LocationRow] = (),
         listed.add(place)
         rows.append(known(place) or LocationRow(place, "", "", "", "", ""))
     return rows
+
+
+def _places_named(spravochnik: Spravochnik) -> list[LocationRow]:
+    """The `location` rows of a справочник nobody gave any: the places its rows name, their names alone."""
+    return location_rows(referenced_places(spravochnik))
 
 
 def blank_places(rows: Sequence[LocationRow]) -> int:
@@ -402,9 +411,18 @@ _YEARS_LABELS = frozenset({"Годы, охватываемые индексац�
 _NO_ABOUT = AboutInfo("", "", "", "", "", "", False, "")
 
 
+# A spreadsheet keeps fifteen digits of a number; a longer run of digits is a text.
+_MAX_NUMBER_DIGITS = 15
+
+
 def _coerce(value: str) -> str | int:
-    """Write purely-numeric cells as numbers so Excel doesn't flag them as text."""
-    return int(value) if value.isdigit() else value
+    """Write purely-numeric cells as numbers so Excel doesn't flag them as text — a plain number only: ASCII
+    digits, no leading nought (a лист «007» is its text), no more of them than a spreadsheet keeps. A digit
+    of another script, a superscript or a circled number stays the text it is (`str.isdigit` would take
+    them, and `int` would change them or refuse)."""
+    plain = (value.isascii() and value.isdigit() and len(value) <= _MAX_NUMBER_DIGITS
+             and (value == "0" or not value.startswith("0")))
+    return int(value) if plain else value
 
 
 def _put(ws: Worksheet, row: int, column: int, value: str | int) -> None:
@@ -520,6 +538,9 @@ class FamilioTemplateWriter:
             }
             # Capture the template's per-row data-row formatting before clearing, so
             # generated rows keep the same borders/fonts/number formats.
+            # The Н.П. cells the helpers look up: written as text whatever they hold — the `location` sheet's
+            # names are text, and a lookup of a number among texts misses.
+            looked_up = {c - 1 for c in helper_cols}
             styles = _capture_row_styles(ws, TEMPLATE_DATA_START_ROW)
             tpl_last_row = ws.max_row
             # Clear any sample/leftover data rows below the header.
@@ -532,7 +553,7 @@ class FamilioTemplateWriter:
                         src_col = get_column_letter(c_off - 1)
                         ws.cell(row=excel_row, column=c_off, value=_location_vlookup(src_col, excel_row))
                     elif value != "":
-                        _put(ws, excel_row, c_off, _coerce(value))
+                        _put(ws, excel_row, c_off, value if c_off in looked_up else _coerce(value))
                 _apply_row_styles(ws, excel_row, r_off, styles)
             # Stretch the template's conditional formatting over the generated rows.
             new_last_row = TEMPLATE_DATA_START_ROW + len(sheet.rows) - 1
@@ -540,6 +561,10 @@ class FamilioTemplateWriter:
             # Thicken the bottom border at each дело boundary.
             self._mark_delo_boundaries(ws, TEMPLATE_DATA_START_ROW, len(sheet.rows))
 
+        if location_rows is None and self.template_path is None:
+            # The built workbook has no sample rows to keep, and a lookup against an empty sheet misses: it
+            # lists at least the names of the places its rows name.
+            location_rows = _places_named(spravochnik)
         if location_rows is not None:
             self._write_location_sheet(wb, location_rows)
         if about is not None:

@@ -180,3 +180,34 @@ def test_a_template_about_is_left_alone_without_an_about(tmp_path):
     template.save(tmp_path / "template.xlsx")
     out = FamilioTemplateWriter(tmp_path / "template.xlsx").write(_spravochnik(), tmp_path / "mk.xlsx")
     assert openpyxl.load_workbook(out)["about"]["B5"].value == "образец годов"
+
+
+def test_built_workbook_lists_its_places_when_given_no_location(tmp_path):
+    """No lookup of the built workbook may miss: given no rows for `location`, the writer lists the places the
+    rows name — their names alone."""
+    out = FamilioTemplateWriter().write(_spravochnik(), tmp_path / "mk.xlsx")
+    ws = openpyxl.load_workbook(out)["location"]
+    assert [ws.cell(r, 1).value for r in range(3, ws.max_row + 1)] == ["Маниловка"]
+    assert [ws.cell(3, c).value for c in (2, 3, 4, 5, 8)] == [None] * 5
+
+
+def test_a_template_location_is_left_alone_when_given_none(tmp_path):
+    template = build_workbook()
+    template["location"]["A3"] = "Образцовка"
+    template.save(tmp_path / "template.xlsx")
+    out = FamilioTemplateWriter(tmp_path / "template.xlsx").write(_spravochnik(), tmp_path / "mk.xlsx")
+    ws = openpyxl.load_workbook(out)["location"]
+    assert [ws.cell(r, 1).value for r in range(3, ws.max_row + 1)] == ["Образцовка"]
+
+
+@pytest.mark.parametrize(("written", "cell"), [
+    ("42", 42), ("0", 0), ("1900", 1900),
+    ("007", "007"),                              # a leading nought is part of the text
+    ("12345678901234567890", "12345678901234567890"),   # more digits than a spreadsheet's number keeps
+    ("²", "²"), ("①", "①"),                      # digits to str.isdigit, no number to int()
+    ("١٢٣", "١٢٣"), ("１２", "１２"),             # digits of another script stay as written
+    ("341об", "341об"),
+])
+def test_only_a_plain_number_is_written_as_a_number(tmp_path, written, cell):
+    out = FamilioTemplateWriter().write(_spravochnik(c5=written), tmp_path / "mk.xlsx")     # births «Лист»
+    assert openpyxl.load_workbook(out)["РОЖДЕНИЕ"].cell(TEMPLATE_DATA_START_ROW, 6).value == cell

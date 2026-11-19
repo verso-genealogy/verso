@@ -91,7 +91,19 @@ def test_derive_location_reads_the_fields_alone():
 def test_spelling_takes_its_canon():
     row = known_from(PLACES)("с. Маниловка")
     assert row.place == "с. Маниловка"
-    assert (row.type, row.district, row.link[-2:]) == ("с.", "Маниловский", "aa")
+    assert (row.district, row.volost, row.link[-2:]) == ("Маниловский", "Заманиловская", "aa")
+
+
+def test_a_place_written_with_its_type_gets_no_second_one():
+    """The sheet's own formula writes «type place»: a key that already says the type — «с. Маниловка»,
+    «село Маниловка» — would read «с. с. Маниловка»."""
+    fields = {"city": "село Маниловка", "county": "Маниловский уезд", "state": "Энская губерния"}
+    assert derive_location("с. Маниловка", fields, {}).type == ""
+    assert derive_location("С. Маниловка", fields, {}).type == ""
+    assert derive_location("село Маниловка", fields, {}).type == ""
+    assert derive_location("Маниловка", fields, {}).type == "с."
+    assert derive_location("с.Маниловка", fields, {}).type == ""
+    assert derive_location("Старая Маниловка", fields, {}).type == "с."      # «с» begins the name, no type
 
 
 def test_a_place_written_with_a_space_is_found_and_kept_as_written():
@@ -122,11 +134,11 @@ def test_location_rows_without_a_dictionary():
 
 
 def test_no_vlookup_misses(tmp_path):
-    sp = _spravochnik({6: "Маниловка", 20: "с. Маниловка", 36: "Чужая"}, {6: "Маниловка ", 44: "Энск"})
+    sp = _spravochnik({6: "Маниловка", 20: "с. Маниловка", 36: "Чужая"}, {6: "Маниловка ", 44: "Энск", 20: "17"})
     rows = location_rows(referenced_places(sp), known=known_from(PLACES))
     out = FamilioTemplateWriter().write(sp, tmp_path / "mk.xlsx", location_rows=rows)
     wb = openpyxl.load_workbook(out)
-    listed = {str(wb["location"].cell(r, 1).value) for r in range(3, wb["location"].max_row + 1)}
+    listed = [wb["location"].cell(r, 1).value for r in range(3, wb["location"].max_row + 1)]
     ws = wb["РОЖДЕНИЕ"]
     looked_up = 0
     for row in ws.iter_rows(min_row=TEMPLATE_DATA_START_ROW):
@@ -134,5 +146,6 @@ def test_no_vlookup_misses(tmp_path):
             source = row[column - 2].value
             if source not in (None, ""):
                 looked_up += 1
-                assert str(source) in listed, source
-    assert looked_up == 5
+                assert source in listed, source          # as Excel compares: a number is no text
+    assert looked_up == 6
+    assert "17" in listed and 17 not in listed            # a place written in digits is a text on both sheets
