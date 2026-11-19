@@ -125,6 +125,24 @@ def name_identity(fold: Fold = canonical_fold) -> Identity:
     return make
 
 
+def self_identity() -> Identity:
+    """Every appearance its own person: no fold at all.
+
+    What a rule sees of ONE entry read alone, with no consolidation to say
+    which appearances are one man: two claims meet only when one persona holds
+    both. A persona's id is its entry's, so nothing is compared across entries.
+    """
+    return _own_keys
+
+
+def _own_keys(_record: Record) -> Callable[[Persona], IdentityKey | None]:
+    return _own_key
+
+
+def _own_key(ref: Persona) -> IdentityKey | None:
+    return (ref.id,)
+
+
 class IdentityCache:
     """Identity lookups for ONE entry, memoised.
 

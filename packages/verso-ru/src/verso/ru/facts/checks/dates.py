@@ -12,11 +12,12 @@ names none of this.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
-from verso.ru.facts.identity import Identity
+from verso.ru.facts.identity import Identity, self_identity
 from verso.ru.facts.model import (
-    AssertionSet, BaptizedOn, BornOn, Bound, BuriedOn, DiedOn, FactDate, MarriedOn, SurvivedUntil)
+    Assertion, AssertionSet, BaptizedOn, BornOn, Bound, BuriedOn, DiedOn, FactDate, MarriedOn, SurvivedUntil)
 from verso.ru.facts.projection import canonical_name
 from verso.ru.facts.rules.disagreement import contradictions, held
 from verso.ru.messages import t
@@ -163,3 +164,41 @@ def date_order_findings(facts: AssertionSet,
             bucket.setdefault(canonical_name(c.who) or "", []).append(
                 (kind, event, reference, c.left, c.right))
     return within, across
+
+
+@dataclass(frozen=True)
+class WithinFinding:
+    """One appearance holding two dates its own entry orders wrongly: `left`
+    is dated before `right`, which `kind` (an ordering of `orderings()`) says
+    cannot be."""
+    kind: str
+    left: Assertion
+    right: Assertion
+
+
+def _before(a: Any, b: Any) -> str | None:
+    return "before" if definitely_before(a.date, b.date) else None
+
+
+def within_entry(facts: AssertionSet) -> list[WithinFinding]:
+    """The class «inside one entry» of `date_order_findings`, asked without a
+    consolidation: every appearance is its own person (`self_identity`), so
+    what is compared is what ONE persona of ONE entry is said to have lived.
+
+    The same table and the same comparison; the burial rows defer to a dated
+    death of the same appearance, as there. It is what an entry read alone — a
+    record on its card — can be asked. Two appearances of one entry that a
+    consolidation folds into one person are not compared here, and are there.
+    """
+    believed = facts.believed()
+    identity = self_identity()
+    dated_death = held(believed, kind=DiedOn, identity=identity)
+    found: list[WithinFinding] = []
+    for left, right, kind, _event, _reference in orderings():
+        for c in contradictions(believed, left=left, right=right,
+                                identity=identity, incompatible=_before):
+            if kind in _BURIAL_DEFERS_TO_DEATH and c.who in dated_death:
+                continue
+            found.append(WithinFinding(kind=kind, left=c.left, right=c.right))
+    found.sort(key=lambda f: (f.left.sort_key, f.right.sort_key, f.kind))
+    return found
