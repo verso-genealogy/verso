@@ -23,20 +23,29 @@ import csv
 import re
 import xml.etree.ElementTree as ET
 import zipfile
+from collections.abc import Collection, Iterable
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from openpyxl.workbook.workbook import Workbook
     from openpyxl.worksheet.worksheet import Worksheet
 
+from verso.core.ratchet import unreviewed
+from verso.ru.dsl.records.births import BirthRecords
+from verso.ru.dsl.records.deaths import DeathRecords
+from verso.ru.dsl.records.marriages import MarriageRecords
+from verso.ru.exporters.csv_familio import exporter_of
 from verso.ru.exporters.familio_template import (
     TEMPLATE_DATA_START_ROW, TEMPLATE_MAPS, TEMPLATE_SHEET_TITLES, remap_row)
 
 # Record types in canonical справочник order.
 RECORD_TYPES: tuple[str, ...] = ("births", "marriages", "deaths")
+
+# The record sets a справочник reads — the three parts of a metric book — and the tab each fills.
+RECORD_SET_TYPES: dict[type, str] = {BirthRecords: "births", MarriageRecords: "marriages", DeathRecords: "deaths"}
 
 # Source CSV columns identifying the archival дело (Архив, Фонд, Опись, Дело),
 # used to group records of the same book together.
@@ -72,6 +81,62 @@ class Spravochnik:
     to_year: int
     sheets: list[SpravochnikSheet]
     years_label: str = ""  # human label for the year set ("1832-1840" or "1799, 1805")
+
+
+@dataclass(frozen=True)
+class Collected:
+    """What `collect` read of the record sets it was given: the rows by tab, a year's a `YearRecords`; how many
+    records they are and how many were left out as unreviewed; the parishes the rows are of, in the order met."""
+
+    records_by_type: dict[str, list[YearRecords]]
+    taken: int
+    left_out: int
+    parishes: tuple[str, ...]
+
+
+def collect(record_sets: Iterable[object], *, parish: str | None = None, years: Collection[int] | None = None,
+            reviewed_only: bool = True) -> Collected:
+    """A справочник's source rows from record sets, in their order — what the per-year familio CSVs held, read
+    from no file. A set that is no part of a metric book (`RECORD_SET_TYPES`) is passed over and counted
+    nowhere; a set bound twice (an alias) is read once. `parish` keeps the sets of that parish (the set's
+    `village`), `years` the sets of those years. With `reviewed_only` an unreviewed record
+    (`verso.core.ratchet.unreviewed`) gives no row and is counted in `left_out`; a set left with no row gives
+    no year."""
+    records_by_type: dict[str, list[YearRecords]] = {record_type: [] for record_type in RECORD_TYPES}
+    taken = left_out = 0
+    parishes: list[str] = []
+    seen: set[int] = set()
+    for record_set in record_sets:
+        record_type = RECORD_SET_TYPES.get(type(record_set))
+        exporter = exporter_of(record_set)
+        if record_type is None or exporter is None or id(record_set) in seen:
+            continue
+        seen.add(id(record_set))
+        book: Any = record_set
+        if parish is not None and book.village != parish:
+            continue
+        if years is not None and book.year not in years:
+            continue
+        records = [r for r in book.records if not (reviewed_only and unreviewed(r))]
+        left_out += len(book.records) - len(records)
+        if not records:
+            continue
+        taken += len(records)
+        if book.village not in parishes:
+            parishes.append(book.village)
+        records_by_type[record_type].append(
+            YearRecords(year=book.year, rows=exporter.table(book, records=records).text_rows()))
+    return Collected(records_by_type, taken, left_out, tuple(parishes))
+
+
+def years_label_for(years: list[int]) -> str:
+    """Human label: a single year as ``1805``, a contiguous run as ``1832-1840``,
+    else an explicit list ``1799, 1805``."""
+    if len(years) == 1:
+        return str(years[0])
+    if years == list(range(years[0], years[-1] + 1)):
+        return f"{years[0]}-{years[-1]}"
+    return ", ".join(str(y) for y in years)
 
 
 def _delo_id(row: list[str]) -> str:

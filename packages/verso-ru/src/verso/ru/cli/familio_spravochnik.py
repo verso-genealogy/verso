@@ -19,7 +19,8 @@ import sys
 from pathlib import Path
 
 from verso.ru.exporters.familio_spravochnik import (
-    RECORD_TYPES, FamilioTemplateWriter, YearRecords, build_spravochnik, read_about, read_location_rows, read_year_records)
+    RECORD_TYPES, FamilioTemplateWriter, YearRecords, build_spravochnik, read_about, read_location_rows, read_year_records,
+    years_label_for)
 from verso.ru.naming.transliteration import generate_res_name
 from verso.core import workspace
 from verso.core.workspace import child_env
@@ -64,16 +65,6 @@ def collect_records(
             if year_records is not None and year_records.rows:
                 records_by_type[record_type].append(year_records)
     return records_by_type
-
-
-def years_label_for(years: list[int]) -> str:
-    """Human label: a single year as ``1805``, a contiguous run as ``1832-1840``,
-    else an explicit list ``1799, 1805``."""
-    if len(years) == 1:
-        return str(years[0])
-    if years == list(range(years[0], years[-1] + 1)):
-        return f"{years[0]}-{years[-1]}"
-    return ", ".join(str(y) for y in years)
 
 
 def default_out_path(village_dir: Path, village: str, years_label: str) -> Path:
