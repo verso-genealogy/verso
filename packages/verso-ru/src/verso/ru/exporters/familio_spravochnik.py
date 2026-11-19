@@ -38,6 +38,7 @@ from verso.ru.dsl.records.births import BirthRecords
 from verso.ru.dsl.records.deaths import DeathRecords
 from verso.ru.dsl.records.marriages import MarriageRecords
 from verso.ru.exporters.csv_familio import exporter_of
+from verso.ru.exporters.familio_layout import LOCATION_HELPER_HEADERS, build_workbook
 from verso.ru.exporters.familio_template import (
     TEMPLATE_DATA_START_ROW, TEMPLATE_MAPS, TEMPLATE_SHEET_TITLES, remap_row)
 
@@ -332,11 +333,19 @@ def _coerce(value: str) -> str | int:
     return int(value) if value.isdigit() else value
 
 
-# Template helper columns that hold a place-name lookup. Each such column resolves
-# the Н.П. cell immediately to its left into a full location string via VLOOKUP
-# against the ``location`` sheet. Identified by their row-2 header (works across
-# all three record tabs and is robust to template column reordering).
-LOCATION_HELPER_HEADERS: frozenset[str] = frozenset({"full_location", "person_location"})
+def _put(ws: Worksheet, row: int, column: int, value: str | int) -> None:
+    """A value that came from a record or from a person's own words, written as what it is: a text beginning
+    with ``=`` is a text, never a formula (openpyxl reads such a string as one). The workbook's formulas are
+    the writer's own."""
+    cell = ws.cell(row=row, column=column, value=value)
+    if isinstance(value, str) and cell.data_type == "f":
+        cell.data_type = "s"
+
+
+# Template helper columns that hold a place-name lookup (`LOCATION_HELPER_HEADERS`, of the layout). Each such
+# column resolves the Н.П. cell immediately to its left into a full location string via VLOOKUP against the
+# ``location`` sheet. Identified by their row-2 header (works across all three record tabs and is robust to
+# template column reordering).
 
 # Column on the ``location`` sheet that VLOOKUP returns (col G, 1-based 7).
 _LOCATION_RESULT_COL = 7
@@ -407,9 +416,13 @@ class FamilioTemplateWriter:
     ``full_location`` / ``person_location`` helper columns are filled with VLOOKUP
     formulas against the ``location`` sheet, which can optionally be (re)populated
     from curated :class:`LocationRow` data.
+
+    With no ``template_path`` the workbook is the one the library builds of the template's layout
+    (:func:`verso.ru.exporters.familio_layout.build_workbook`): the same sheets, header rows and columns, none
+    of Familio's helper sheets, dropdowns or formatting — and the same cells written into it.
     """
 
-    def __init__(self, template_path: Path):
+    def __init__(self, template_path: Path | None = None):
         self.template_path = template_path
 
     def write(
@@ -422,7 +435,7 @@ class FamilioTemplateWriter:
         from openpyxl import load_workbook
         from openpyxl.utils import get_column_letter
 
-        wb = load_workbook(self.template_path)
+        wb = load_workbook(self.template_path) if self.template_path is not None else build_workbook()
         for sheet in spravochnik.sheets:
             ws = wb[sheet.title]
             # Columns whose value is a VLOOKUP formula rather than copied data.
@@ -445,7 +458,7 @@ class FamilioTemplateWriter:
                         src_col = get_column_letter(c_off - 1)
                         ws.cell(row=excel_row, column=c_off, value=_location_vlookup(src_col, excel_row))
                     elif value != "":
-                        ws.cell(row=excel_row, column=c_off, value=_coerce(value))
+                        _put(ws, excel_row, c_off, _coerce(value))
                 _apply_row_styles(ws, excel_row, r_off, styles)
             # Stretch the template's conditional formatting over the generated rows.
             new_last_row = TEMPLATE_DATA_START_ROW + len(sheet.rows) - 1
@@ -462,7 +475,8 @@ class FamilioTemplateWriter:
         wb.save(out_path)
         # openpyxl drops the template's x14 (extension) data-validation dropdowns
         # on load; splice them back from the template so the dropdowns survive.
-        self._preserve_data_validations(self.template_path, out_path)
+        if self.template_path is not None:
+            self._preserve_data_validations(self.template_path, out_path)
         return out_path
 
     @staticmethod
@@ -482,12 +496,9 @@ class FamilioTemplateWriter:
             ws.delete_rows(start, ws.max_row - start + 1)
         for i, loc in enumerate(location_rows):
             r = start + i
-            ws.cell(row=r, column=1, value=loc.place)
-            ws.cell(row=r, column=2, value=loc.type)
-            ws.cell(row=r, column=3, value=loc.region)
-            ws.cell(row=r, column=4, value=loc.district)
-            ws.cell(row=r, column=5, value=loc.volost)
-            ws.cell(row=r, column=8, value=loc.link)
+            for column, value in ((1, loc.place), (2, loc.type), (3, loc.region), (4, loc.district),
+                                  (5, loc.volost), (8, loc.link)):
+                _put(ws, r, column, value)
             ws.cell(row=r, column=6, value=f'=CONCATENATE(B{r}," ",A{r})')
             ws.cell(
                 row=r,
@@ -529,7 +540,7 @@ class FamilioTemplateWriter:
             if isinstance(label, str) and label.strip() in values:
                 value = values[label.strip()]
                 if value != "":
-                    ws.cell(row=r, column=2, value=value)
+                    _put(ws, r, 2, value)
 
     @staticmethod
     def _extend_conditional_formatting(ws: Worksheet, tpl_last: int, new_last: int) -> None:
