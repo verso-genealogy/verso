@@ -329,3 +329,16 @@ def test_the_table_is_read_once_and_each_call_has_its_own(monkeypatch: pytest.Mo
     assert len(reads) == 1 and first == second and first is not second
     first.pop("NAM001")
     assert "NAM001" in hosted.readiness()
+
+
+def test_stand_down_names_the_field_that_answers_a_code():
+    """`stand_down`: the key of a record's `written` that stands a code down once the scan confirms the source —
+    «так в подлиннике». A store that refuses a write for the code can offer the field instead of knowing the code."""
+    from verso.core.records.fields import vocabulary
+
+    table = hosted.readiness()
+    assert {code: row.stand_down for code, row in table.items() if row.stand_down} == {
+        "DBD001": "source_date_error", "DBD002": "source_date_error"}
+    keys = {key for by_attr in vocabulary().json_keys.values() for key in by_attr.values()}
+    assert all(row.stand_down in keys for row in table.values() if row.stand_down)
+    assert table["DRA001"].stand_down is None
