@@ -418,3 +418,44 @@ The rules are not asserted equal to the checks; two oracles compare them, both o
   silent on the corpus, so the samples are what judges them), no linter crash. `lint_records` over all 85
   codes takes about 42 s for the whole corpus (median 16 ms a file, 36 % of the time is replay), against about 52 s
   for `dsllint` — which also reads the source and the four `source` codes, so the figure is context, not a target.
+
+## The signals of one record
+
+Six checks of the facts layer need one record and nothing else: a wedding on a day the Church did not marry
+(`wedding-calendar`), a newborn's name no saint near the birth supports (`name-days`), a christening or a burial long
+after (`baptism-lag`, `burial-lag`), an age at the wedding the law cannot hold (`wedding-ages`), two dates the entry
+itself orders wrongly (`date-order`, its class «inside one entry»). A store that holds one record per row asks them
+of the row, the way it lints it:
+
+```python
+from verso.ru.pipeline.signals import signals_on_json
+
+got = signals_on_json(node, header=header, page=page, position=position)   # what lint_record takes
+for signal in got.found:              # HIGH before LOW, then in the order of signals.CHECKS
+    signal.check, signal.variant      # "wedding-calendar", "strict"
+    signal.confidence                 # "HIGH" | "LOW" — the finding's own
+    signal.said, signal.why           # messages of verso.ru's catalog: a key and plain params
+    signal.details                    # more of them: Pascha's date, an open day beside, a look-alike name
+    signal.locator                    # the slot: "child", "groom", "bride", "deceased"; "" — the entry
+    signal.stand_down                 # the key of `written` that answers it, or None
+got.unanswered                        # the checks that could not be asked
+```
+
+- **The rules are the report's.** `signals_on_json` builds the record alone (`replay_alone`) and hands it to
+  `verso.ru.facts.signals.signals_of`, which reads its assertions with the record's own extractor and calls the
+  functions `verso facts --check` calls, with their thresholds. `signal_of(finding)` is the one place a finding
+  becomes words; the report prints from it too (`verso.ru.cli.facts.format_signals`).
+- **A record is read whether it is reviewed or not.** `verso facts --check` reads what is reviewed; a card is where
+  a record gets reviewed. On reviewed records the two agree record by record.
+- **A signal refuses nothing.** It is a prompt to look at the scan again. Nothing raises for what the record holds: a
+  record the factories cannot build, or a workspace with no names table, leaves the checks `unanswered`.
+- **«Так в подлиннике» is a field of the record.** `stand_down` names it: `calendar_note` (`name-days`,
+  `wedding-calendar`), `lag_note` (the two lags), `age_note` (`wedding-ages`) — notes, the value stays believed — and
+  `source_date_error` for a christening before the birth or a burial before the death, which withdraws that date. An
+  edit that writes the field is the whole answer; `facts.signal.note_default` is the text a page may offer for it.
+  A linter's code may name such a field too: `hosted.readiness()[code].stand_down` (DBD001, DBD002).
+- A message's params are text and whole numbers, so a page renders it from its copy of the catalog as Python does.
+- Not thread-safe, as `lint_record` is not: the workspace is a process-global stack.
+
+A household of a roll, a card and a line of a list answer none of these checks; the checks that compare records need
+the people folded first and are not asked of one record.

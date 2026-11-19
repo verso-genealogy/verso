@@ -3,6 +3,49 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## 0.1.45 — unreleased
+
+A corpus's output does not move — its Terraform, CSVs, records export and the counts of `facts_findings.tsv` are the
+same bytes. What moves is the TEXT of six reports of `verso facts --check` (`name-days`, `wedding-calendar`,
+`baptism-lag`, `burial-lag`, `wedding-ages` and the class «inside one entry» of `date-order`): they name the same
+records at the same level in new words — the words a record's card says.
+
+### Added
+
+- verso-ru: `verso.ru.facts.signals` — the six checks one record answers alone, asked of ONE record:
+  `signals_of(record, record_id=…)` reads a built birth, wedding or death (reviewed or not) and gives its `Signals` —
+  each `Signal` a message of the catalog with plain params (`said`), why it is worth a second look (`why`), the lines
+  that help the re-reading (`details`), the finding's own confidence, the slot, and `stand_down`, the key of the
+  record's `written` that answers it. `signal_of(finding)` is the one translation of a check's finding; `CHECKS`,
+  `STAND_DOWN`. `verso.ru.pipeline.signals.signals_on_json(node, header=…, page=…, position=…)` asks the same of one
+  record of a records-v1 file, built alone as `lint_record` builds it; a record that cannot be built, or a workspace
+  with no names table, leaves the checks `unanswered` and raises nothing. `svyatcy_cached()` reads the святцы once.
+- verso-ru: `verso.ru.facts.checks.dates.within_entry(facts)` — `date-order`'s class «inside one entry» without a
+  consolidation, on `verso.ru.facts.identity.self_identity()` (every appearance its own person).
+- DSL v1: `birth(lag_note=)`, `death(lag_note=)`, `marriage(age_note=)` — the author's note that a late christening,
+  a late burial, the ages at a wedding are RIGHT (re-read on the scan). Each stands its check's findings down for
+  the record (`baptism-lag`, `burial-lag`, `wedding-ages`) and nothing else: no retraction, both dates and both ages
+  stay believed; never emitted. In the vocabulary (`records-v1.json`), in the interface's schema with `checks = true`
+  (`ui.field.lag_note_birth`, `ui.field.lag_note_death`, `ui.field.age_note`). `baptism_lags`, `burial_lags` and
+  `wedding_age_findings` now return their findings with the count the notes stood down (`Lags`, `WeddingAges`:
+  `.findings`, `.noted`).
+- verso-ru: `hosted.toml` rows may name `stand_down`, the key of `written` that stands the code down once the scan
+  confirms the source (`hosted.readiness()[code].stand_down`): `source_date_error` for DBD001 and DBD002.
+
+### Changed
+
+- verso-ru: the six reports above are printed by one function, `verso.ru.cli.facts.format_signals`, from the signals
+  (`signal_report(check, result)`); `format_name_days`, `format_wedding_calendar`, `format_lags` and
+  `format_wedding_ages` are gone. A finding is one line in the signal's words, the helping lines under it, then the
+  file, the number and the leaf; why a kind of finding is worth a look is said once, under the report's first line.
+
+### Deprecated
+
+- verso-ru: the catalog lines those reports printed from — `cli.facts.name_days.{finding,lookalikes,note}`,
+  `cli.facts.wedding_calendar.{note,pascha,other_months,other_days}`, `cli.facts.lags.{finding,baptism_note,burial_note}`,
+  `cli.facts.wedding_ages.{under_age,gap,note,groom,bride}`, `cli.facts.abbr.{born,christened,died,buried}` — are
+  called by nothing; they stay in the catalogs until 0.2.
+
 ## 0.1.44 — 2026-11-18
 
 A corpus's output does not move: the list is new, and nothing the DSL produces reads it.
