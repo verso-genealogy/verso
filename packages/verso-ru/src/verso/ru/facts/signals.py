@@ -21,6 +21,7 @@ fathers, a roll against a metric book. Those need the people folded first.
 """
 from __future__ import annotations
 
+import copy
 from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
@@ -74,21 +75,15 @@ class Signal:
 
     @property
     def key(self) -> str:
+        """The key of what it says — what names this kind of signal. Its params are `said`'s; `why` and each of
+        `details` are messages of their own, with params of their own."""
         return self.said.key
-
-    @property
-    def params(self) -> Mapping[str, object]:
-        return self.said.params
-
-    @property
-    def why_key(self) -> str:
-        return self.why.key
 
 
 @dataclass(frozen=True)
 class Signals:
     found: tuple[Signal, ...]       # HIGH before LOW, then in the order of CHECKS
-    unanswered: tuple[str, ...]     # the checks that could not be asked (no names table)
+    unanswered: tuple[str, ...]     # the checks that could not be asked: no names table, a record that does not build
 
 
 def _dmy(day: JulianDate | None) -> str:
@@ -145,7 +140,7 @@ def _lag(f: LagFinding) -> tuple[str, str, Message, Message, tuple[Message, ...]
         why = (_said(_key("baptism-lag", "month_carried_why")) if f.month_carried
                else _said(_key("baptism-lag", "late_why"), {"limit": BAPTISM_DAYS}))
         return variant, "child", said, why, ()
-    very = f.days > BURIAL_HIGH_DAYS
+    very = f.confidence == "HIGH"       # the check's own judgement (past BURIAL_HIGH_DAYS), never a second comparison
     variant = "very_late" if very else "late"
     said = _said(_key("burial-lag", variant), {"died": _dmy(f.first), "buried": _dmy(f.second), "days": f.days})
     why = _said(_key("burial-lag", f"{variant}_why"), {"limit": BURIAL_HIGH_DAYS if very else BURIAL_DAYS})
@@ -189,17 +184,15 @@ def signal_of(finding: Finding, *, record: str = "") -> Signal:
 
 def _assertions(record: Any, extract: Extract, record_id: str, village: str, book_year: int | None) -> AssertionSet:
     """The record's assertions, read whether it is reviewed or not. A record that writes no year is dated by its
-    book for the reading — as every reader of a book dates it — and left as it was."""
-    borrowed = getattr(record, "year", None) is None and book_year is not None
-    if borrowed:
+    book — as every reader of a book dates it — on a COPY: the caller's record is never changed, not even while it
+    is read (an adapter may be writing the same object out)."""
+    if getattr(record, "year", None) is None and book_year is not None:
+        record = copy.copy(record)
         record.year = book_year
-    try:
-        def named(_record: object) -> str:
-            return record_id
-        return AssertionSet(list(extract([(record, "")], village=village, drafts=True, ids=named)))
-    finally:
-        if borrowed:
-            record.year = None
+
+    def named(_record: object) -> str:
+        return record_id
+    return AssertionSet(list(extract([(record, "")], village=village, drafts=True, ids=named)))
 
 
 def asked(checks: Collection[str]) -> list[str]:

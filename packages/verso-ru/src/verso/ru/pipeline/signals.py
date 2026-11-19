@@ -19,10 +19,11 @@ from verso.core import workspace as workspaces
 from verso.core.records import FormatError
 from verso.core.records.replay import Position, replay_alone
 from verso.core.workspace import WorkspaceError
-from verso.ru.church_calendar.svyatcy import Svyatcy, load_svyatcy
+from verso.ru.church_calendar.svyatcy import Commemorated, Svyatcy, read_rows
 from verso.ru.domain import statuses
 from verso.ru.facts.signals import CHECKS, Signals, asked, signals_of
 from verso.ru.linters.on_json.walk import names_table_present
+from verso.ru.naming.names_registry import current_lexicon
 
 __all__ = ["signals_on_json", "svyatcy_cached"]
 
@@ -31,10 +32,30 @@ _NEEDS_NAMES = "name-days"
 
 
 @cache
+def _rows() -> tuple[Commemorated, ...]:
+    """The package's святцы as rows, read once for the process: data of the package, the same for every workspace."""
+    return tuple(read_rows())
+
+
+#: The tables built lately, by the lexicon each was indexed through (held, so its identity is not reused).
+_tables: dict[int, tuple[object, Svyatcy]] = {}
+#: How many are kept: a server holds a project a workspace, and each has a lexicon of its own.
+_KEPT = 16
+
+
 def svyatcy_cached() -> Svyatcy:
-    """The package's святцы, read once for the process: the table is data of the package and does not change,
-    and a card cannot afford the read (a thousand names) on every record."""
-    return load_svyatcy()
+    """The святцы for the CURRENT workspace, built once per names lexicon. The rows are the package's and never
+    change, but the table's index is read through the workspace's lexicon (a people's form is kept under its saint
+    only where the lexicon ties them), so a table built for one project answers wrongly for another, and a card
+    cannot afford the build (a thousand names) on every record. A workspace with no names table has no lexicon
+    (`LexiconNotConfigured`): ask only where there is one."""
+    lexicon = current_lexicon()
+    kept = _tables.get(id(lexicon))
+    if kept is None or kept[0] is not lexicon:
+        while len(_tables) >= _KEPT:
+            del _tables[next(iter(_tables))]
+        kept = _tables[id(lexicon)] = (lexicon, Svyatcy(_rows()))
+    return kept[1]
 
 
 def signals_on_json(node: Mapping[str, Any], *, header: Mapping[str, Any], page: str | None, position: Position,
@@ -47,7 +68,8 @@ def signals_on_json(node: Mapping[str, Any], *, header: Mapping[str, Any], page:
 
     A card must open whatever its record holds, so nothing here refuses: a record the factories cannot build, or a
     workspace with no names table to build its people from, leaves every check asked `unanswered`; a workspace whose
-    table is absent while the record still builds leaves `name-days` so. A name `checks` does not know is the
+    table is absent while the record still builds leaves `name-days` so (and the святцы are not asked for). A node
+    with no `id` is answered, its signals addressed to "". A name `checks` does not know is the
     caller's mistake (`ValueError`; a text given for the collection, `TypeError`).
 
     `workspace` is the one whose tables are read (`None`: the current one). Not thread-safe, as `lint_record` is
@@ -62,8 +84,8 @@ def signals_on_json(node: Mapping[str, Any], *, header: Mapping[str, Any], page:
             if names_table_present():
                 raise
             return Signals((), tuple(wanted))
-        named = names_table_present()
-        got = signals_of(record, record_id=str(node["id"]), book_year=getattr(built, "year", None),
-                         checks=[c for c in wanted if named or c != _NEEDS_NAMES], svyatcy=svyatcy_cached())
-        unanswered = {*got.unanswered, *(() if named else {_NEEDS_NAMES} & set(wanted))}
+        ask = [c for c in wanted if c != _NEEDS_NAMES or names_table_present()]
+        got = signals_of(record, record_id=str(node.get("id", "")), book_year=getattr(built, "year", None), checks=ask,
+                         svyatcy=svyatcy_cached() if _NEEDS_NAMES in ask else None)
+        unanswered = {*got.unanswered, *(set(wanted) - set(ask))}
         return Signals(got.found, tuple(c for c in wanted if c in unanswered))

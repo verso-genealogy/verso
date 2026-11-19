@@ -455,6 +455,9 @@ got.unanswered                        # the checks that could not be asked
   edit that writes the field is the whole answer; `facts.signal.note_default` is the text a page may offer for it.
   A linter's code may name such a field too: `hosted.readiness()[code].stand_down` (DBD001, DBD002).
 - A message's params are text and whole numbers, so a page renders it from its copy of the catalog as Python does.
+  `said`, `why` and each of `details` carry their own; `signal.key` is `said`'s key and nothing more.
+- `svyatcy_cached()` is the святцы of the current workspace, built once per names lexicon: the rows are the
+  package's, the index is read through the lexicon, so a host with a workspace per project gets a table per project.
 - Not thread-safe, as `lint_record` is not: the workspace is a process-global stack.
 
 A household of a roll, a card and a line of a list answer none of these checks; the checks that compare records need

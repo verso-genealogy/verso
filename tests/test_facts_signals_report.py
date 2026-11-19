@@ -70,7 +70,19 @@ def test_an_explanation_is_printed_once_per_variant():
     for why in {s.why for s in signals}:
         assert report.count(str(why)) == 1
     lines = report.splitlines()
-    assert lines.index(str(signals[0].why)) < next(i for i, line in enumerate(lines) if line.startswith("["))
+    assert lines[1:3] == [f"HIGH — {signals[0].why}", f"LOW — {signals[1].why}"]      # each says whose it is
+    assert lines.index(f"HIGH — {signals[0].why}") < next(i for i, line in enumerate(lines) if line.startswith("["))
+
+
+def test_the_report_says_how_a_finding_the_scan_confirms_is_answered():
+    """The field that stands a finding down, named once under the explanations — what the card's button writes."""
+    lags = burial_lags(_deaths(_died(1, 3, 8), _died(9, 3, 1, Month.APRIL)))
+    report = signal_report("burial-lag", lags)
+    assert report.count('Так в подлиннике — впишите в запись lag_note="…".') == 1
+    within = [signal_of(f) for f in within_entry(_births(birth(
+        1, M, 18, 11, Month.OCTOBER, Month.OCTOBER, year=1850, child=person("Иван"), father=person("Петр", "Иванов"))))]
+    assert 'source_date_error="…"' in format_signals(within, head="внутри записи:")
+    assert "впишите" not in signal_report("baptism-lag", baptism_lags(_births(_born(2, 3, 4))))
 
 
 def test_the_helping_lines_stand_under_their_finding():
@@ -107,8 +119,8 @@ def test_a_note_s_count_is_in_the_head():
 def test_format_signals_prints_any_signals_under_any_head():
     within = [signal_of(f) for f in within_entry(_deaths(_died(4, 9, 8)))]
     assert format_signals(within, head="внутри записи:").splitlines() == [
-        "внутри записи:", str(within[0].why), "", "[HIGH] Погребение 08.03.1850 раньше смерти 09.03.1850.",
-        "    deaths_1850.py №4, л. 12об"]
+        "внутри записи:", f"HIGH — {within[0].why}", 'Так в подлиннике — впишите в запись source_date_error="…".', "",
+        "[HIGH] Погребение 08.03.1850 раньше смерти 09.03.1850.", "    deaths_1850.py №4, л. 12об"]
 
 
 def test_date_order_s_class_inside_one_entry_is_said_by_the_signal():
@@ -132,6 +144,7 @@ def test_the_reports_speak_english():
     with i18n.use("en"):
         report = signal_report("burial-lag", lags)
     assert "[HIGH] Buried 01.04.1850, 29 days after the death on 03.03.1850." in report
+    assert 'If the source says so, write lag_note="…" in the record.' in report
 
 
 def test_no_printer_of_its_own_is_left_for_any_of_the_six():

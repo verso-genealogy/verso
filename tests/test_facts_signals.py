@@ -7,6 +7,7 @@ checks `facts-check` asks a village — the same functions, the same thresholds 
 from __future__ import annotations
 
 from calendar import Month
+from typing import Any
 
 import pytest
 
@@ -73,9 +74,9 @@ def test_a_wedding_in_the_nativity_fast_is_a_strict_signal():
     [s] = _of("wedding-calendar", _wedding())
     assert (s.variant, s.confidence, s.stand_down) == ("strict", "HIGH", "calendar_note")
     assert s.key == "facts.signal.wedding_calendar.strict"
-    assert s.why_key == "facts.signal.wedding_calendar.strict_why"
+    assert s.why.key == "facts.signal.wedding_calendar.strict_why"
     assert (s.record, s.locator) == (RID, "")
-    assert s.params["date"] == "01.12.1850"
+    assert s.said.params["date"] == "01.12.1850"
     assert s.cite.record_num == "3"
 
 
@@ -117,6 +118,12 @@ def test_a_movable_ban_names_pascha():
     assert t("facts.signal.wedding_calendar.pascha", date="23.04") in s.details
 
 
+def test_the_loose_bans_explanation_names_every_loose_ban():
+    """Tuesdays, Thursdays, Saturdays, the eves of feasts — and Meatfare Sunday, which the check also holds loose."""
+    for lang, word in (("ru", "мясопустное воскресенье"), ("en", "Meatfare Sunday")):
+        assert word in str(i18n.catalog("verso.ru", lang)["facts.signal.wedding_calendar.loose_why"])
+
+
 def test_a_weekday_the_church_did_not_marry_on_is_a_loose_signal():
     day = next(d for d in range(8, 32) if (ban := wedding_ban(1850, 1, d)) is not None and not ban.strict)
     [s] = _of("wedding-calendar", _wedding(day, Month.JANUARY))
@@ -134,7 +141,7 @@ def test_calendar_note_stands_the_wedding_down():
 def test_a_name_far_from_its_saint():
     [s] = _of("name-days", _born(15, 16, Month.MAY, name="Екатерина", gender=F))
     assert (s.variant, s.confidence, s.locator, s.stand_down) == ("far", "LOW", "child", "calendar_note")
-    assert (s.params["name"], s.params["nearest"]) == ("Екатерина", "24.11")
+    assert (s.said.params["name"], s.said.params["nearest"]) == ("Екатерина", "24.11")
 
 
 def test_a_look_alike_kept_in_the_window_makes_it_high():
@@ -152,7 +159,7 @@ def test_calendar_note_stands_the_name_down():
 def test_a_late_christening():
     [s] = _of("baptism-lag", _born(3, 20, Month.JANUARY))
     assert (s.variant, s.confidence, s.locator, s.stand_down) == ("late", "LOW", "child", "lag_note")
-    assert (s.params["born"], s.params["christened"], s.params["days"]) == ("03.01.1850", "20.01.1850", 17)
+    assert (s.said.params["born"], s.said.params["christened"], s.said.params["days"]) == ("03.01.1850", "20.01.1850", 17)
 
 
 def test_a_christening_carried_into_the_next_month_is_high():
@@ -164,7 +171,7 @@ def test_a_late_burial_and_a_very_late_one():
     [late] = _of("burial-lag", _died(3, 8, Month.MARCH))
     [very] = _of("burial-lag", _died(3, 1, Month.MARCH, Month.APRIL))
     assert (late.variant, late.confidence, late.locator, late.stand_down) == ("late", "LOW", "deceased", "lag_note")
-    assert (very.variant, very.confidence, very.params["days"]) == ("very_late", "HIGH", 29)
+    assert (very.variant, very.confidence, very.said.params["days"]) == ("very_late", "HIGH", 29)
 
 
 def test_lag_note_stands_a_lag_down():
@@ -177,13 +184,15 @@ def test_an_under_age_groom_and_bride():
     [bride] = _of("wedding-ages", _wedding(groom_age=25, bride_age=14))
     assert (groom.variant, groom.confidence, groom.locator, groom.key) == (
         "under_age", "HIGH", "groom", "facts.signal.wedding_ages.under_age_groom")
-    assert (bride.locator, bride.key, bride.params["minimum"]) == ("bride", "facts.signal.wedding_ages.under_age_bride", 16)
+    assert (bride.locator, bride.key, bride.said.params["minimum"]) == ("bride", "facts.signal.wedding_ages.under_age_bride", 16)
     assert groom.stand_down == "age_note"
 
 
 def test_spouses_far_apart():
     [s] = _of("wedding-ages", _wedding(groom_age=45, bride_age=20))
-    assert (s.variant, s.confidence, s.locator, s.params["years"]) == ("age_gap", "LOW", "", "25")
+    assert (s.variant, s.confidence, s.locator, s.said.params["years"]) == ("age_gap", "LOW", "", "25")
+    with i18n.use("ru"):
+        assert str(s.said) == "Жениху «45», невесте «20»: разница в возрасте — 25."
 
 
 def test_age_note_stands_the_ages_down():
@@ -194,8 +203,8 @@ def test_a_christening_before_the_birth():
     [s] = _of("date-order", _born(18, 11, Month.OCTOBER))
     assert (s.variant, s.confidence, s.locator, s.stand_down) == ("baptism_before_birth", "HIGH", "child", "source_date_error")
     assert s.key == "facts.signal.date_order.baptism_before_birth"
-    assert s.why_key == "facts.date_order.hint.baptism_before_birth"
-    assert (s.params["left"], s.params["right"]) == ("11.10.1850", "18.10.1850")
+    assert s.why.key == "facts.date_order.hint.baptism_before_birth"
+    assert (s.said.params["left"], s.said.params["right"]) == ("11.10.1850", "18.10.1850")
 
 
 def test_a_burial_before_the_death_and_its_retraction():
@@ -221,7 +230,7 @@ def test_the_book_s_year_dates_a_record_that_writes_none_and_is_not_left_on_it()
     record = _wedding(year=None)
     assert _of("wedding-calendar", record) == []
     [s] = _of("wedding-calendar", record, book_year=1850)
-    assert s.params["date"] == "01.12.1850"
+    assert s.said.params["date"] == "01.12.1850"
     assert record.year is None
 
 
@@ -236,6 +245,61 @@ def test_the_book_s_year_dates_a_record_that_writes_none_and_is_not_left_on_it()
 def test_dates_the_rules_do_not_ask(record):
     got = signals_of(record, record_id=RID, svyatcy=_SVYATCY)
     assert got == Signals((), ())
+
+
+def test_more_dates_the_rules_do_not_ask():
+    """A wedding with no month, ages no one can count, a birth with no day, a christening in the next year: nothing
+    raises, and no check invents a finding."""
+    no_month = marriage(3, 1, None, person("Иван", "Петров"), person("Анна", "Ильина"), groom_age=16, bride_age=18)
+    no_month.year = 1850
+    assert {s.check for s in signals_of(no_month, record_id=RID).found} == {"wedding-ages"}
+    for age in ("лет", "", "17 л 9 мес"):               # no age to count, and one inside the half-year the books allow
+        text_age = _wedding(*_open_day(), groom_age=age, bride_age=18)
+        assert signals_of(text_age, record_id=RID).found == ()
+    # …while an age that CAN be counted is judged as the rule judges it, however it is spelt: a groom of «полгода»
+    [half] = signals_of(_wedding(*_open_day(), groom_age="полгода", bride_age=18), record_id=RID, checks=["wedding-ages"]).found
+    assert (half.variant, half.locator, half.said.params["age"]) == ("under_age", "groom", "полгода")
+    no_birth_day = _born(None, 20, Month.JANUARY)
+    assert _of("baptism-lag", no_birth_day) == [] and _of("date-order", no_birth_day) == []
+    next_year = birth(1, M, 30, 2, Month.DECEMBER, Month.JANUARY, year=1850, k_year=1851, child=person("Иван"),
+                      father=person("Петр", "Иванов"))
+    assert _of("date-order", next_year) == [] and _of("baptism-lag", next_year) == []
+
+
+def test_the_record_is_never_changed_while_it_is_read(monkeypatch):
+    """A card's adapter may be writing the same object out while it is asked: the book's year dates a COPY."""
+    import verso.ru.facts.signals as module
+
+    record = _wedding(year=None)
+    seen: list[object] = []
+
+    def spying(items: Any, **kwargs: Any) -> Any:
+        seen.append(record.year)
+        return facts_from_marriages(items, **kwargs)
+
+    def extractor(_record: object) -> Any:
+        return spying
+
+    monkeypatch.setattr(module, "extractor_of", extractor)
+    [signal] = [s for s in signals_of(record, record_id=RID, book_year=1850).found if s.check == "wedding-calendar"]
+    assert signal.said.params["date"] == "01.12.1850"
+    assert seen == [None] and record.year is None
+
+
+def test_a_signal_has_no_shortcut_to_one_message_s_params():
+    """`said`, `why` and each of `details` carry their own params; a shortcut to `said`'s alone would leave a page
+    rendering «{limit}» raw in `why`."""
+    [s] = _of("burial-lag", _died(3, 8, Month.MARCH))
+    assert not hasattr(s, "params") and not hasattr(s, "why_key")
+    assert (s.key, s.said.key, s.why.key) == ("facts.signal.burial_lag.late",) * 2 + ("facts.signal.burial_lag.late_why",)
+    assert s.why.params == {"limit": 3}
+
+
+def test_the_variant_and_the_level_of_a_burial_are_one_judgement():
+    """`very_late` is the check's HIGH, read off the finding — never a second comparison with the threshold."""
+    for d_day, b_day, b_month in ((3, 8, Month.MARCH), (3, 13, Month.MARCH), (3, 1, Month.APRIL)):
+        [s] = _of("burial-lag", _died(d_day, b_day, Month.MARCH, b_month))
+        assert (s.variant == "very_late") == (s.confidence == "HIGH")
 
 
 def test_a_civil_register_s_second_date_is_no_christening_and_no_burial():

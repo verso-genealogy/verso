@@ -1102,6 +1102,7 @@ dumped = { one = "{count} assertion → {path}", other = "{count} assertions →
 leaf = ", f. {page}"
 calendar_noted = "; stood down by a calendar_note — {noted}"
 noted = "; stood down by a {field} — {noted}"
+stand_down = "If the source says so, write {field}=\"…\" in the record."
 
 [cli.familio_spravochnik]
 no_template = "no Familio metric-book template: --template FILE or <corpus>/familio/Shablon_MK.xlsx"
@@ -1618,7 +1619,7 @@ note_default = "так в подлиннике"
 strict = "A wedding on {date} ({weekday}) — {ban}."
 strict_why = "The Church did not marry in the fasts, in Cheesefare and Bright weeks, in Svyatki, on 29.08 and 14.09: almost always a misread month or day."
 loose = "A wedding on {date} ({weekday}) — {ban}."
-loose_why = "Tuesdays, Thursdays, Saturdays and the eves of feasts the books keep loosely: a day to read again, not a verdict."
+loose_why = "Tuesdays, Thursdays, Saturdays, the eves of feasts and Meatfare Sunday the books keep loosely: a day to read again, not a verdict."
 pascha = "Pascha {date}."
 other_months = "The same day a month either side is open: {dates}."
 other_days = "A day either side is open: {dates}."

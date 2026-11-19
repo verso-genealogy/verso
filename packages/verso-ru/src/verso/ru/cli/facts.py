@@ -662,10 +662,15 @@ def _dmy(day: tuple[int, int, int] | None) -> str:
 
 
 def format_signals(signals: Sequence[Signal], *, head: str) -> str:
-    """The findings of one check as a report: `head`, why each kind of finding met is worth a second look (once
-    each), then every finding in the words of its signal — the words a record's card says
-    (`verso.ru.facts.signals.signal_of`) — with the lines that help the re-reading and where it was read."""
-    lines = [head, *(str(why) for why in dict.fromkeys(s.why for s in signals))]
+    """The findings of one check as a report: `head`; why each kind of finding met is worth a second look, once
+    each and under its level; how a finding the scan confirms is answered — the field of the record that stands it
+    down, the one a card's «Так в подлиннике» writes; then every finding in the words of its signal — the words a
+    record's card says (`verso.ru.facts.signals.signal_of`) — with the lines that help the re-reading and where it
+    was read."""
+    whys = dict((s.why, s.confidence) for s in reversed(signals))
+    lines = [head, *(f"{whys[why]} — {why}" for why in dict.fromkeys(s.why for s in signals))]
+    lines += [str(t("cli.facts.stand_down", field=field))
+              for field in dict.fromkeys(s.stand_down for s in signals if s.stand_down)]
     for s in signals:
         page = str(t("cli.facts.leaf", page=s.cite.page)) if s.cite.page else ""
         lines += ["", f"[{s.confidence}] {s.said}", *(f"    {detail}" for detail in s.details),

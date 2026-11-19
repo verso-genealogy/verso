@@ -120,7 +120,7 @@ def test_the_book_s_year_dates_its_records() -> None:
     """No record of the invented book writes a year: the wedding of 1 December is in the Nativity fast of 1850."""
     wedding = next(item for item in located(_book()) if item.node["id"].endswith("/marriage/1"))
     [signal] = signals_on_json(wedding.node, header=wedding.header, page=wedding.page, position=wedding.position).found
-    assert signal.params["date"] == "01.12.1850"
+    assert signal.said.params["date"] == "01.12.1850"
 
 
 def test_only_the_checks_asked() -> None:
@@ -165,9 +165,48 @@ def test_a_workspace_without_a_names_table_leaves_name_days_unanswered(tmp_path:
     assert all(s.check != "name-days" for s in got.found)
 
 
-def test_the_svyatcy_are_read_once() -> None:
-    assert svyatcy_cached() is svyatcy_cached()
-    assert len(svyatcy_cached()) > 1000
+def test_a_record_that_builds_where_no_names_table_is_asks_for_no_table(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A record with no person builds in a workspace that has no names table at all. `name-days` is then unanswered —
+    and the святцы, whose index is read through the names table, are never asked for: nothing raises."""
+    import verso.ru.pipeline.signals as module
+
+    def never() -> object:
+        raise AssertionError("the святцы were asked for in a workspace with no names table")
+
+    monkeypatch.setattr(module, "svyatcy_cached", never)
+    bare = thin_workspace(tmp_path / "bare", names=False)
+    item = next(i for i in located(_book()) if i.node["id"].endswith("/birth/m1"))
+    node = {**item.node, "persons": []}
+    got = signals_on_json(node, header=item.header, page=item.page, position=item.position, workspace=bare)
+    assert got.unanswered == ("name-days",)
+    assert all(s.check != "name-days" for s in got.found)
+
+
+def test_a_node_without_an_id_is_answered_all_the_same() -> None:
+    item = next(i for i in located(_book()) if i.node["id"].endswith("/marriage/1"))
+    node = {k: v for k, v in item.node.items() if k != "id"}
+    got = signals_on_json(node, header=item.header, page=item.page, position=item.position)
+    assert [(s.check, s.record) for s in got.found] == [("wedding-calendar", "")]
+
+
+def test_the_svyatcy_are_built_once_for_a_lexicon_and_again_for_another(tmp_path: Path) -> None:
+    """The table's rows are the package's, but its index is read through the workspace's names lexicon («Ульяна»
+    is kept under Иулиания only where the lexicon says so): one table per lexicon, never one per process."""
+    from thin_dictionary import FIXTURE
+    from verso.core import workspace
+    from verso.ru.gender import Gender
+
+    thin = thin_workspace(tmp_path / "thin", drop=frozenset({"Ульяна", "Иулиания", "Юлиания"}))
+    with workspace.use(thin):
+        lacking = svyatcy_cached()
+        assert svyatcy_cached() is lacking
+    with workspace.use(FIXTURE):
+        full = svyatcy_cached()
+        assert svyatcy_cached() is full
+        assert len(full) > 1000
+    assert full is not lacking
+    assert full.commemorations("Ульяна", Gender.FEMALE)
+    assert full.commemorations("Ульяна", Gender.FEMALE) != lacking.commemorations("Ульяна", Gender.FEMALE)
 
 
 def test_checks_as_a_text_are_refused() -> None:

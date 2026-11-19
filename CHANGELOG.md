@@ -19,7 +19,8 @@ records at the same level in new words — the words a record's card says.
   record's `written` that answers it. `signal_of(finding)` is the one translation of a check's finding; `CHECKS`,
   `STAND_DOWN`. `verso.ru.pipeline.signals.signals_on_json(node, header=…, page=…, position=…)` asks the same of one
   record of a records-v1 file, built alone as `lint_record` builds it; a record that cannot be built, or a workspace
-  with no names table, leaves the checks `unanswered` and raises nothing. `svyatcy_cached()` reads the святцы once.
+  with no names table, leaves the checks `unanswered` and raises nothing. `svyatcy_cached()` is the святцы of the
+  current workspace, built once per names lexicon (the rows are the package's; the index is read through the lexicon).
 - verso-ru: `verso.ru.facts.checks.dates.within_entry(facts)` — `date-order`'s class «inside one entry» without a
   consolidation, on `verso.ru.facts.identity.self_identity()` (every appearance its own person).
 - DSL v1: `birth(lag_note=)`, `death(lag_note=)`, `marriage(age_note=)` — the author's note that a late christening,
@@ -37,7 +38,8 @@ records at the same level in new words — the words a record's card says.
 - verso-ru: the six reports above are printed by one function, `verso.ru.cli.facts.format_signals`, from the signals
   (`signal_report(check, result)`); `format_name_days`, `format_wedding_calendar`, `format_lags` and
   `format_wedding_ages` are gone. A finding is one line in the signal's words, the helping lines under it, then the
-  file, the number and the leaf; why a kind of finding is worth a look is said once, under the report's first line.
+  file, the number and the leaf; why a kind of finding is worth a look is said once, under the report's first line
+  and with its level, and so is the field that answers a finding the scan confirms (`cli.facts.stand_down`).
 
 ### Deprecated
 
