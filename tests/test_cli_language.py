@@ -45,7 +45,7 @@ def test_lags_report_speaks_english():
         [(death(2, Gender.MALE, 3, 20, Month.MARCH, Month.MARCH, year=1850, deceased=person("Иван")),
           "d.py")], village=_VILLAGE)).believed()
     with i18n.use("en"):
-        text = format_lags(baptism_lags(births), "baptism-lag") + format_lags(burial_lags(deaths), "burial-lag")
+        text = format_lags(baptism_lags(births).findings, "baptism-lag") + format_lags(burial_lags(deaths).findings, "burial-lag")
     assert english_but(text, "Иван", "Петр", "Иванов", _VILLAGE) == ""
 
 
@@ -55,7 +55,7 @@ def test_wedding_ages_report_speaks_english():
     rec.year = 1850
     facts = AssertionSet(facts_from_marriages([(rec, "m.py")], village=_VILLAGE)).believed()
     with i18n.use("en"):
-        text = format_wedding_ages(wedding_age_findings(facts))
+        text = format_wedding_ages(wedding_age_findings(facts).findings)
     assert "groom «15»" in text
     assert english_but(text, "Иван", "Петров", "Анна", "Ильина", _VILLAGE) == ""
 

@@ -55,7 +55,8 @@ class Birth:
                  christening_age: int | None = None,
                  source_date_error: str | None = None,
                  reviewed: bool | None = None,
-                 calendar_note: str | None = None):
+                 calendar_note: str | None = None,
+                 lag_note: str | None = None):
         self.record_num = record_num
         # `None` is «not stated»: `page()` and then the record set fill it,
         # so a whole лист can be held (`verso.ru.dsl.records.reviewed`).
@@ -74,6 +75,12 @@ class Birth:
         # conflict caused by consolidation — that is a real error about two
         # people, not about one scribe's slip.
         self.source_date_error = source_date_error
+        # The author's note that the christening is RIGHTLY this long after the
+        # birth — both dates re-read on the scan. Stands `facts-check
+        # check=baptism-lag` down for this record and nothing else; never
+        # emitted to terraform. Not a retraction (cf. `source_date_error`):
+        # both dates stay believed. An empty string is no note.
+        self.lag_note = lag_note or None
         self.gender = gender
         self.b_day = b_day
         self.b_month = b_month
@@ -399,6 +406,7 @@ def birth(
         source_date_error: str | None = None,
         reviewed: bool | None = None,
         calendar_note: str | None = None,
+        lag_note: str | None = None,
 ) -> Birth:
     return Birth(record_num,
                  gender,
@@ -425,7 +433,8 @@ def birth(
                  k_year=k_year,
                  source_date_error=source_date_error,
                  reviewed=reviewed,
-                 calendar_note=calendar_note)
+                 calendar_note=calendar_note,
+                 lag_note=lag_note)
 
 
 @captures_written

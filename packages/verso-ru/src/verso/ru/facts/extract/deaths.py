@@ -84,7 +84,8 @@ def _facts_from_death(rec: Any, village: str, source_file: str, entry: int,
             reason = getattr(rec, "source_date_error", None)
             e.facts.append(BuriedOn(
                 subject=deceased, cite=e.cite("deceased"), date=buried,
-                basis=stated_unless(reason)))
+                basis=stated_unless(reason),
+                lag_note=getattr(rec, "lag_note", None) or None))
         if rec.age is not None:
             # An author who has re-read the scan and still cannot reconcile the
             # age withdraws it — and everything derived from it inherits that.

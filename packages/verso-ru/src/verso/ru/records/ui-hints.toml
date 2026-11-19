@@ -43,6 +43,7 @@ fields = [
   { path = "baptism.year", label = "ui.field.baptism_year" },
   { path = "source_date_error", label = "ui.field.source_date_error", checks = true },
   { path = "calendar_note", label = "ui.field.calendar_note_birth", checks = true },
+  { path = "lag_note", label = "ui.field.lag_note_birth", checks = true },
 ]
 hidden = [
   "civil",
@@ -107,6 +108,7 @@ hidden = [
   "civil",
   "reviewed",
   "source_date_error",
+  "lag_note",
   "birth.day",
   "birth.month",
   "baptism.year",
@@ -158,6 +160,7 @@ fields = [
   { path = "bride_takes_groom_surname", label = "ui.field.bride_takes_groom_surname" },
   { path = "source_kin_error", label = "ui.field.source_kin_error", checks = true },
   { path = "calendar_note", label = "ui.field.calendar_note_marriage", checks = true },
+  { path = "age_note", label = "ui.field.age_note", checks = true },
 ]
 hidden = [
   "civil",
@@ -214,6 +217,7 @@ fields = [
   { path = "source_age_error", label = "ui.field.source_age_error", checks = true },
   { path = "source_date_error", label = "ui.field.source_date_error", checks = true },
   { path = "namesake", label = "ui.field.namesake", checks = true },
+  { path = "lag_note", label = "ui.field.lag_note_death", checks = true },
 ]
 hidden = [
   "civil",

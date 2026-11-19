@@ -576,6 +576,9 @@ year = "год"
 baptism_year = "год крещ."
 source_date_error = "ошибка даты в подлиннике"
 calendar_note_birth = "имя не по святцам — верно"
+lag_note_birth = "позднее крещение — верно"
+lag_note_death = "позднее погребение — верно"
+age_note = "возраст при венчании — верно"
 relationship = "кем приходится"
 relationship_ref = "чей родственник"
 baptism_age = "возраст при крещении"
@@ -1030,6 +1033,7 @@ skipped = "пропущено файлов: {count} (см. {where})"
 dumped = { one = "{count} утверждение → {path}", few = "{count} утверждения → {path}", many = "{count} утверждений → {path}", other = "{count} утверждения → {path}" }
 leaf = ", л. {page}"
 calendar_noted = "; снято заметкой calendar_note — {noted}"
+noted = "; снято заметкой {field} — {noted}"
 
 [cli.familio_spravochnik]
 no_template = "нет шаблона МК Familio: --template ФАЙЛ или <корпус>/familio/Shablon_MK.xlsx"

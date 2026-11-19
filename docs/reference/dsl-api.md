@@ -19,7 +19,7 @@ What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only 
 - `Status` (class)
 - `WwiDocumentType` (enum): `CASUALTY_LISTS`, `CASUALTY_CARD_LOWER`, `WOUNDED_NOTICE`, `ARRIVAL_CARD_HIGHER`, `ARRIVAL_CARD_LOWER`, `AWARD_LISTS`, `REPORTING_CARD`, `POW_CARD`
 - `WwiiDocumentType` (enum): `NAGRADNOY_LIST`, `AWARD_ORDER`, `ANNIVERSARY_AWARD`, `CASUALTY_REPORT`, `MEMORY_BOOK`, `SERVICE_CARD`, `POW_CARD`, `AWARD_CARD`, `CASUALTY_CLARIFICATION`, `WOUND_CARD`, `TRANSIT_POINT`, `UNIT_ROSTER`
-- `birth(record_num, gender, b_day=None, k_day=None, b_month=None, k_month=None, child=None, father=None, mother=None, god_parent1=None, god_parent2=None, god_parent3=None, god_parent4=None, priest=None, deacon=None, dyachok=None, sexton=None, page=None, case=None, comment=None, relatives=None, year=None, k_year=None, source_date_error=None, reviewed=None, calendar_note=None)`
+- `birth(record_num, gender, b_day=None, k_day=None, b_month=None, k_month=None, child=None, father=None, mother=None, god_parent1=None, god_parent2=None, god_parent3=None, god_parent4=None, priest=None, deacon=None, dyachok=None, sexton=None, page=None, case=None, comment=None, relatives=None, year=None, k_year=None, source_date_error=None, reviewed=None, calendar_note=None, lag_note=None)`
 - `birth_month(month, *records)`
 - `birth_month_year(month, year, *records)`
 - `birth_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`
@@ -27,7 +27,7 @@ What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only 
 - `census_records(archive, fund, inventory, case, village, year, *households, record_day=None, record_month=None, archive_suffix=None, suffix_in_res_names=False, prev_revision_year=None, document_type=None, document_type_genitive=None, district=None, volost=None, reviewed=True, household_label='семья', household_number_label='№ семьи / № Двора', file_prefix='rs', doc_res_prefix='census_of_the_family_number', single_age_column=False, record_type='ревизия', defaults=None, female_previous_age=None)`
 - `christening(record_num, gender, k_day=None, k_month=None, *, age=None, child=None, father=None, mother=None, god_parent1=None, god_parent2=None, god_parent3=None, god_parent4=None, priest=None, deacon=None, dyachok=None, sexton=None, page=None, case=None, comment=None, relatives=None, year=None, reviewed=None, calendar_note=None)`
 - `criminal_record(person, *, original_text, record_number=None, age=None, birth_year=None, date=None, page=None, bibliography=None, source_url, archive=None, fund=None, inventory=None, case=None, scan_file=None, scan_content_type=None, labels=None, comment=None, reviewed=True)`
-- `death(record_num, gender, d_day=None, b_day=None, d_month=None, b_month=None, deceased=None, age=None, relatives=None, witness1=None, witness2=None, priest=None, deacon=None, dyachok=None, sexton=None, cause_of_death=None, page=None, case=None, comment=None, year=None, reviewed=None, source_age_error=None, source_date_error=None, namesake=None)`
+- `death(record_num, gender, d_day=None, b_day=None, d_month=None, b_month=None, deceased=None, age=None, relatives=None, witness1=None, witness2=None, priest=None, deacon=None, dyachok=None, sexton=None, cause_of_death=None, page=None, case=None, comment=None, year=None, reviewed=None, source_age_error=None, source_date_error=None, namesake=None, lag_note=None)`
 - `death_month(month, *records)`
 - `death_month_year(month, year, *records)`
 - `death_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`
@@ -37,7 +37,7 @@ What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only 
 - `external_source_records(village, *records)`
 - `household(family_id, *members, page=None, comment=None, record_day=None, record_month=None, reviewed=None)`
 - `listed_person(number, person, *, age=None, comment=None, reviewed=None, page=None)`
-- `marriage(record_num, w_day=None, w_month=None, groom=None, bride=None, groom_marriage_num=None, bride_marriage_num=None, groom_age=None, bride_age=None, witness1=None, witness2=None, witness3=None, witness4=None, witness5=None, witness6=None, page=None, case=None, village=None, church=None, comment=None, priest=None, deacon=None, dyachok=None, sexton=None, relatives=None, year=None, bride_takes_groom_surname=True, reviewed=None, source_kin_error=None, calendar_note=None)`
+- `marriage(record_num, w_day=None, w_month=None, groom=None, bride=None, groom_marriage_num=None, bride_marriage_num=None, groom_age=None, bride_age=None, witness1=None, witness2=None, witness3=None, witness4=None, witness5=None, witness6=None, page=None, case=None, village=None, church=None, comment=None, priest=None, deacon=None, dyachok=None, sexton=None, relatives=None, year=None, bride_takes_groom_surname=True, reviewed=None, source_kin_error=None, calendar_note=None, age_note=None)`
 - `marriage_month(month, *records)`
 - `marriage_month_year(month, year, *records)`
 - `marriage_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`

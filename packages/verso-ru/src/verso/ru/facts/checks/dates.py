@@ -17,7 +17,7 @@ from typing import Any
 
 from verso.ru.facts.identity import Identity, self_identity
 from verso.ru.facts.model import (
-    Assertion, AssertionSet, BaptizedOn, BornOn, Bound, BuriedOn, DiedOn, FactDate, MarriedOn, SurvivedUntil)
+    AssertionSet, BaptizedOn, BornOn, Bound, BuriedOn, Dated, DiedOn, FactDate, MarriedOn, SurvivedUntil)
 from verso.ru.facts.projection import canonical_name
 from verso.ru.facts.rules.disagreement import contradictions, held
 from verso.ru.messages import t
@@ -172,8 +172,8 @@ class WithinFinding:
     is dated before `right`, which `kind` (an ordering of `orderings()`) says
     cannot be."""
     kind: str
-    left: Assertion
-    right: Assertion
+    left: Dated
+    right: Dated
 
 
 def _before(a: Any, b: Any) -> str | None:

@@ -802,6 +802,12 @@
       "null"
      ]
     },
+    "lag_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
     "inventory": {
      "type": [
       "string",
@@ -917,6 +923,12 @@
      ]
     },
     "source_date_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "lag_note": {
      "type": [
       "string",
       "null"
@@ -1319,6 +1331,12 @@
       "null"
      ]
     },
+    "lag_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
     "gender": {
      "enum": [
       "male",
@@ -1609,6 +1627,12 @@
       "null"
      ]
     },
+    "age_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
     "archive": {
      "type": [
       "string",
@@ -1715,6 +1739,12 @@
      ]
     },
     "source_kin_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "age_note": {
      "type": [
       "string",
       "null"
@@ -2022,6 +2052,12 @@
       "null"
      ]
     },
+    "lag_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
     "archive": {
      "type": [
       "string",
@@ -2163,6 +2199,12 @@
      ]
     },
     "namesake": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "lag_note": {
      "type": [
       "string",
       "null"

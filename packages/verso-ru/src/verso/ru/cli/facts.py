@@ -735,10 +735,16 @@ def wedding_calendar_report(village_dir: Path) -> tuple[str, int]:
     return format_wedding_calendar(result), (1 if result.findings else 0)
 
 
-def format_lags(found: list[LagFinding], kind: str) -> str:
+def _noted(field: str, noted: int) -> str:
+    """The tail of a report's first line: how many findings the author's note stood down."""
+    return str(t("cli.facts.noted", field=field, noted=noted)) if noted else ""
+
+
+def format_lags(found: list[LagFinding], kind: str, *, noted: int = 0) -> str:
     check = f"{kind}-lag"
+    tail = _noted("lag_note", noted)
     if not found:
-        return f"{check}: OK — 0 findings."
+        return f"{check}: OK — 0 findings{tail}."
     high = sum(1 for f in found if f.confidence == "HIGH")
     if kind == "baptism":
         head = str(t("cli.facts.lags.baptism_head", check=check, count=len(found), days=BAPTISM_DAYS, high=high,
@@ -750,7 +756,7 @@ def format_lags(found: list[LagFinding], kind: str) -> str:
                      low=len(found) - high))
         note = str(t("cli.facts.lags.burial_note", days=BURIAL_HIGH_DAYS))
         words = (str(t("cli.facts.abbr.died")), str(t("cli.facts.abbr.buried")))
-    lines = [head, note]
+    lines = [head + tail, note]
     for f in found:
         page = str(t("cli.facts.leaf", page=f.cite.page)) if f.cite.page else ""
         lines += ["", str(t("cli.facts.lags.finding", confidence=f.confidence, first_word=words[0],
@@ -763,8 +769,8 @@ def lags_report(village_dir: Path, kind: str) -> tuple[str, int]:
     """`facts-check check=baptism-lag|burial-lag`: the snapshot's loader."""
     facts, _gen, _slots = consolidated_facts(village_dir)
     believed = facts.believed()
-    found = baptism_lags(believed) if kind == "baptism" else burial_lags(believed)
-    return format_lags(found, kind), (1 if found else 0)
+    lags = baptism_lags(believed) if kind == "baptism" else burial_lags(believed)
+    return format_lags(lags.findings, kind, noted=lags.noted), (1 if lags.findings else 0)
 
 
 def _where(cite: Citation) -> str:
@@ -823,13 +829,14 @@ def parenthood_report(village_dir: Path, check: str) -> tuple[str, int]:
     return format_children_span(spans, name_of), (1 if spans else 0)
 
 
-def format_wedding_ages(found: list[WeddingAgeFinding]) -> str:
+def format_wedding_ages(found: list[WeddingAgeFinding], *, noted: int = 0) -> str:
+    tail = _noted("age_note", noted)
     if not found:
         return ("wedding-ages: OK — 0 findings (no age half a year under the minimum, no "
-                f"spouses more than {GAP_YEARS:g} years apart).")
+                f"spouses more than {GAP_YEARS:g} years apart){tail}.")
     high = sum(1 for f in found if f.confidence == "HIGH")
     lines = [str(t("cli.facts.wedding_ages.head", count=len(found), high=high, dispensation=DISPENSATION_YEARS,
-                   low=len(found) - high, gap=GAP_YEARS)),
+                   low=len(found) - high, gap=GAP_YEARS)) + tail,
              str(t("cli.facts.wedding_ages.note"))]
     for f in found:
         page = str(t("cli.facts.leaf", page=f.cite.page)) if f.cite.page else ""
@@ -848,8 +855,8 @@ def format_wedding_ages(found: list[WeddingAgeFinding]) -> str:
 def wedding_ages_report(village_dir: Path) -> tuple[str, int]:
     """`facts-check check=wedding-ages`: the snapshot's loader."""
     facts, _gen, _slots = consolidated_facts(village_dir)
-    found = wedding_age_findings(facts.believed())
-    return format_wedding_ages(found), (1 if found else 0)
+    ages = wedding_age_findings(facts.believed())
+    return format_wedding_ages(ages.findings, noted=ages.noted), (1 if ages.findings else 0)
 
 
 def name_days_report(village_dir: Path) -> tuple[str, int]:

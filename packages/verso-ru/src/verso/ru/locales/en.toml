@@ -644,6 +644,9 @@ year = "year"
 baptism_year = "baptism year"
 source_date_error = "date error in the original"
 calendar_note_birth = "a name out of the calendar — it is right"
+lag_note_birth = "a late christening — it is right"
+lag_note_death = "a late burial — it is right"
+age_note = "the ages at the wedding — they are right"
 relationship = "relation"
 relationship_ref = "whose relative"
 baptism_age = "age at baptism"
@@ -1098,6 +1101,7 @@ skipped = "files skipped: {count} (see {where})"
 dumped = { one = "{count} assertion → {path}", other = "{count} assertions → {path}" }
 leaf = ", f. {page}"
 calendar_noted = "; stood down by a calendar_note — {noted}"
+noted = "; stood down by a {field} — {noted}"
 
 [cli.familio_spravochnik]
 no_template = "no Familio metric-book template: --template FILE or <corpus>/familio/Shablon_MK.xlsx"

@@ -105,7 +105,8 @@ def _facts_from_birth(birth: Any, village: str, source_file: str, entry: int,
             reason = getattr(birth, "source_date_error", None)
             e.facts.append(BaptizedOn(
                 subject=child_ref, cite=e.cite("child"), date=christened,
-                basis=stated_unless(reason)))
+                basis=stated_unless(reason),
+                lag_note=getattr(birth, "lag_note", None) or None))
 
     # The parents. ORDER MATTERS: the report's tie-break follows insertion
     # order, and the oracle walks father before mother.

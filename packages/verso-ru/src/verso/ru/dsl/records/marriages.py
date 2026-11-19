@@ -53,6 +53,7 @@ class Marriage:
             reviewed: bool | None = None,
             source_kin_error: str | None = None,
             calendar_note: str | None = None,
+            age_note: str | None = None,
     ):
         self.record_num = record_num
         # `None` is «not stated»: `page()` and then the record set fill it,
@@ -69,6 +70,12 @@ class Marriage:
         # it and stop reporting (cf. source_date_error for dates). Never emitted
         # to terraform.
         self.source_kin_error = source_kin_error
+        # The author's note that the ages at the wedding are RIGHT although
+        # one is under the age of marriage or the two are far apart — re-read
+        # on the scan. Stands `facts-check check=wedding-ages` down for this
+        # record and nothing else; never emitted to terraform. Not a
+        # retraction: both ages stay believed. An empty string is no note.
+        self.age_note = age_note or None
         self.w_day = w_day
         self.w_month = w_month
         self.groom = groom
@@ -315,6 +322,7 @@ def marriage(
         reviewed: bool | None = None,
         source_kin_error: str | None = None,
         calendar_note: str | None = None,
+        age_note: str | None = None,
 ) -> Marriage:
     return Marriage(
         record_num,
@@ -347,6 +355,7 @@ def marriage(
         reviewed=reviewed,
         source_kin_error=source_kin_error,
         calendar_note=calendar_note,
+        age_note=age_note,
     )
 
 

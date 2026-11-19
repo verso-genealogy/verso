@@ -22,6 +22,9 @@ Measured on the five villages (2026-09-30), both dates to the day:
 
 Negative distances — a christening before the birth, a burial before the
 death — are `date-order`'s and not repeated here.
+
+A lag the scan confirms carries `birth(lag_note=)` / `death(lag_note=)` and is
+counted (`Lags.noted`), not reported again; both dates stay believed.
 """
 from __future__ import annotations
 
@@ -57,6 +60,13 @@ class LagFinding:
         return "HIGH" if self.month_carried else "LOW"
 
 
+@dataclass(frozen=True)
+class Lags:
+    findings: list[LagFinding]
+    #: Findings the author stood down with `lag_note=`.
+    noted: int
+
+
 def _day(date: FactDate) -> JulianDate | None:
     if date.year is None or date.month is None or date.day is None:
         return None
@@ -64,8 +74,9 @@ def _day(date: FactDate) -> JulianDate | None:
 
 
 def _lags(facts: AssertionSet, *, kind: str, record_kind: str, early: type, late: type,
-          threshold: int) -> list[LagFinding]:
+          threshold: int) -> Lags:
     found: list[LagFinding] = []
+    noted = 0
     for record in facts.records():
         a, b = record.of(early), record.of(late)
         if not a or not b or a[0].cite.record_kind != record_kind:
@@ -76,20 +87,23 @@ def _lags(facts: AssertionSet, *, kind: str, record_kind: str, early: type, late
         days = days_between(first, second)
         if days <= threshold:
             continue
+        if b[0].lag_note:
+            noted += 1
+            continue
         carried = second[1] == first[1] % 12 + 1 and second[2] < first[2]
         found.append(LagFinding(cite=a[0].cite, kind=kind, first=first, second=second,
                                 days=days, month_carried=carried))
     found.sort(key=lambda f: (f.confidence != "HIGH", -f.days, f.cite.sort_key))
-    return found
+    return Lags(findings=found, noted=noted)
 
 
-def baptism_lags(facts: AssertionSet) -> list[LagFinding]:
+def baptism_lags(facts: AssertionSet) -> Lags:
     """Births christened more than `BAPTISM_DAYS` after the birth."""
     return _lags(facts, kind="baptism", record_kind="birth", early=BornOn, late=BaptizedOn,
                  threshold=BAPTISM_DAYS)
 
 
-def burial_lags(facts: AssertionSet) -> list[LagFinding]:
+def burial_lags(facts: AssertionSet) -> Lags:
     """Deaths buried more than `BURIAL_DAYS` after the death."""
     return _lags(facts, kind="burial", record_kind="death", early=DiedOn, late=BuriedOn,
                  threshold=BURIAL_DAYS)

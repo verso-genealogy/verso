@@ -78,6 +78,12 @@
      "checks": true
     },
     {
+     "path": "lag_note",
+     "type": "text",
+     "label": "ui.field.lag_note_birth",
+     "checks": true
+    },
+    {
      "path": "civil",
      "type": "boolean",
      "hidden": true
@@ -310,6 +316,11 @@
      "hidden": true
     },
     {
+     "path": "lag_note",
+     "type": "text",
+     "hidden": true
+    },
+    {
      "path": "birth.day",
      "type": "integer",
      "hidden": true
@@ -527,6 +538,12 @@
      "path": "calendar_note",
      "type": "text",
      "label": "ui.field.calendar_note_marriage",
+     "checks": true
+    },
+    {
+     "path": "age_note",
+     "type": "text",
+     "label": "ui.field.age_note",
      "checks": true
     },
     {
@@ -765,6 +782,12 @@
      "path": "namesake",
      "type": "text",
      "label": "ui.field.namesake",
+     "checks": true
+    },
+    {
+     "path": "lag_note",
+     "type": "text",
+     "label": "ui.field.lag_note_death",
      "checks": true
     },
     {

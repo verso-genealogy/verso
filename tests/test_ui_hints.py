@@ -65,7 +65,7 @@ def test_every_record_field_is_placed():
                     assert f.name in defaults, f"{spec.code}.{f.name}"
                 continue
             assert keys[f.name] in placed.get(spec.code, set()), f"{spec.code}: {keys[f.name]}"
-    assert count == 276
+    assert count == 280
 
 
 def test_every_label_has_both_languages():
@@ -128,6 +128,9 @@ def test_the_page_s_tables_are_in_the_hints():
 
     assert label("death", "burial.day") == "день погреб." and label("birth", "birth.day") == "день рожд."
     assert label("birth", "calendar_note") == "имя не по святцам — верно"
+    assert label("birth", "lag_note") == "позднее крещение — верно"
+    assert label("death", "lag_note") == "позднее погребение — верно"
+    assert label("marriage", "age_note") == "возраст при венчании — верно"
     late = {k: [r["days"] for r in v["rules"] if r["rule"] == "late"] for k, v in schema["kinds"].items()}
     assert (late["birth"], late["death"], late["marriage"]) == ([12], [4], [])
     follows = [r for r in schema["kinds"]["birth"]["rules"] if r["rule"] == "follows"]
@@ -172,7 +175,8 @@ def _fields(node: object) -> list[dict[str, Any]]:
 def test_the_notes_to_the_checks_are_marked_and_nothing_else():
     """«Так в подлиннике», «не по святцам — верно», «тёзка»: what only stands a check down is offered in no «+ поле»
     (`checks`) — on every kind that has it, a roll member's two age notes too; a field of the record is never so marked."""
-    notes = {"source_date_error", "calendar_note", "source_kin_error", "source_age_error", "namesake", "previous_age_error"}
+    notes = {"source_date_error", "calendar_note", "source_kin_error", "source_age_error", "namesake", "previous_age_error",
+             "lag_note", "age_note"}
     shown = [f for kind in _schema()["kinds"].values() for f in _fields(kind) if not f.get("hidden")]
     assert {f["path"] for f in shown if f.get("checks")} == notes
     assert all(f.get("checks") for f in shown if f["path"] in notes)
