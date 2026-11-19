@@ -4,7 +4,7 @@ from __future__ import annotations
 import unittest
 from calendar import Month
 
-from verso.ru.cli.facts import format_lags
+from verso.ru.cli.facts import signal_report
 from verso.ru.domain import person
 from verso.ru.dsl.records.births import birth
 from verso.ru.dsl.records.deaths import death
@@ -69,9 +69,8 @@ class BurialLag(unittest.TestCase):
         self.assertEqual((29, "HIGH"), (f.days, f.confidence))
 
     def test_the_report(self):
-        text = format_lags(burial_lags(_deaths(_died(9, 3, 1, Month.MARCH, Month.APRIL))).findings,
-                           "burial")
-        self.assertIn("[HIGH] ум. 03.03.1850, погр. 01.04.1850 — 29 дн.", text)
+        text = signal_report("burial-lag", burial_lags(_deaths(_died(9, 3, 1, Month.MARCH, Month.APRIL))))
+        self.assertIn("[HIGH] Погребение 01.04.1850 — через 29 дн. после смерти 03.03.1850.", text)
         self.assertIn("d.py №9", text)
 
 

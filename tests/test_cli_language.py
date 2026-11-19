@@ -9,7 +9,7 @@ from calendar import Month
 from pathlib import Path
 
 from verso.core import i18n, workspace
-from verso.ru.cli.facts import format_lags, format_wedding_ages
+from verso.ru.cli.facts import signal_report
 from verso.ru.cli.names import main as names_main
 from verso.ru.domain import person
 from verso.ru.dsl.records.births import birth
@@ -45,7 +45,7 @@ def test_lags_report_speaks_english():
         [(death(2, Gender.MALE, 3, 20, Month.MARCH, Month.MARCH, year=1850, deceased=person("Иван")),
           "d.py")], village=_VILLAGE)).believed()
     with i18n.use("en"):
-        text = format_lags(baptism_lags(births).findings, "baptism-lag") + format_lags(burial_lags(deaths).findings, "burial-lag")
+        text = signal_report("baptism-lag", baptism_lags(births)) + signal_report("burial-lag", burial_lags(deaths))
     assert english_but(text, "Иван", "Петр", "Иванов", _VILLAGE) == ""
 
 
@@ -55,8 +55,8 @@ def test_wedding_ages_report_speaks_english():
     rec.year = 1850
     facts = AssertionSet(facts_from_marriages([(rec, "m.py")], village=_VILLAGE)).believed()
     with i18n.use("en"):
-        text = format_wedding_ages(wedding_age_findings(facts).findings)
-    assert "groom «15»" in text
+        text = signal_report("wedding-ages", wedding_age_findings(facts))
+    assert "The groom, «15», is under 18" in text
     assert english_but(text, "Иван", "Петров", "Анна", "Ильина", _VILLAGE) == ""
 
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 import unittest
 from calendar import Month
 
-from verso.ru.cli.facts import format_wedding_ages
+from verso.ru.cli.facts import signal_report
 from verso.ru.domain import person
 from verso.ru.dsl.records.marriages import marriage
 from verso.ru.facts.checks.wedding_ages import minimum_age, wedding_age_findings
@@ -55,8 +55,8 @@ class AgeGap(unittest.TestCase):
         self.assertEqual(("age_gap", 28.0, "LOW"), (f.kind, f.gap_years, f.confidence))
 
     def test_the_report(self):
-        text = format_wedding_ages(wedding_age_findings(_facts(1888, "17 л 3 мес", 18)).findings)
-        self.assertIn("[HIGH] 20.10.1888, жених «17 л 3 мес» — моложе 18", text)
+        text = signal_report("wedding-ages", wedding_age_findings(_facts(1888, "17 л 3 мес", 18)))
+        self.assertIn("[HIGH] Жениху «17 л 3 мес» — меньше 18 лет на венчании 20.10.1888.", text)
         self.assertIn("m.py №1", text)
 
 

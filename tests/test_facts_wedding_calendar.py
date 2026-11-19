@@ -7,7 +7,7 @@ from __future__ import annotations
 import unittest
 from calendar import Month
 
-from verso.ru.cli.facts import format_wedding_calendar
+from verso.ru.cli.facts import signal_report
 from verso.ru.domain import person
 from verso.ru.dsl.records.marriages import marriage
 from verso.ru.facts.checks.wedding_calendar import wedding_calendar_findings
@@ -68,10 +68,11 @@ class WeddingCalendar(unittest.TestCase):
         self.assertEqual(0, result.checked)
 
     def test_the_report_gives_pascha_for_a_movable_ban(self):
-        text = format_wedding_calendar(wedding_calendar_findings(
+        text = signal_report("wedding-calendar", wedding_calendar_findings(
             _facts((1850, 8, Month.MARCH))))
-        self.assertIn("[HIGH] 08.03.1850 (ср) — Великий пост (Пасха 23.04)", text)
-        self.assertIn("тот же день в соседнем месяце разрешён: 08.02.1850", text)
+        self.assertIn("[HIGH] Венчание 08.03.1850 (ср) — Великий пост.", text)
+        self.assertIn("    Пасха 23.04.", text)
+        self.assertIn("    Тот же день в соседнем месяце разрешён: 08.02.1850.", text)
 
 
 if __name__ == "__main__":

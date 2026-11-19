@@ -18,6 +18,17 @@ LINTER_KEY = re.compile(r"^[A-Z]{2,4}\d{3}\.")
 DEPRECATED = {
     "statuses.unknown_key": "0.1.20: an unknown key of statuses.toml is corpus_data.unknown_key's (the same "
                             "text); kept until 0.2",
+    # 0.1.45: the six single-record reports of `facts-check` print a finding in the words of its signal
+    # (`facts.signal.*`, `verso.ru.cli.facts.format_signals`), the words a record's card says; the lines the
+    # reports printed from before are called by nothing. Kept until 0.2.
+    **{key: "0.1.45: said by facts.signal.* (format_signals); kept until 0.2" for key in (
+        "cli.facts.name_days.finding", "cli.facts.name_days.lookalikes", "cli.facts.name_days.note",
+        "cli.facts.wedding_calendar.note", "cli.facts.wedding_calendar.pascha",
+        "cli.facts.wedding_calendar.other_months", "cli.facts.wedding_calendar.other_days",
+        "cli.facts.lags.finding", "cli.facts.lags.baptism_note", "cli.facts.lags.burial_note",
+        "cli.facts.wedding_ages.under_age", "cli.facts.wedding_ages.gap", "cli.facts.wedding_ages.note",
+        "cli.facts.wedding_ages.groom", "cli.facts.wedding_ages.bride",
+        "cli.facts.abbr.born", "cli.facts.abbr.christened", "cli.facts.abbr.died", "cli.facts.abbr.buried")},
 }
 
 

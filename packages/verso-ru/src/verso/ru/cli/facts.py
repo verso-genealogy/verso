@@ -19,13 +19,12 @@ import functools
 import json
 import re
 import sys
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 from verso.core import workspace
-from verso.ru.church_calendar.paschalion import pascha
 from verso.ru.facts.extract.births import facts_from_births
 from verso.ru.facts.extract.census import facts_from_census
 from verso.ru.facts.extract.deaths import facts_from_deaths
@@ -36,25 +35,22 @@ from verso.core.records.ids import RecordIds
 from verso.ru.facts.identity import (
     canonical_fold, conclusions, display_name, matching_fold, name_identity)
 from verso.ru.facts.checks.births import BirthFinding, birth_claims_of, birth_span
-from verso.ru.facts.checks.dates import HINTS, OrderFindings, date_order_findings
+from verso.ru.facts.checks.dates import OrderFindings, WithinFinding, date_order_findings
 from verso.ru.facts.checks.deaths import DeathFinding, death_claims
 from verso.ru.facts.checks.fathers import FatherClaim, FatherFinding, father_findings
-from verso.ru.facts.checks.lags import (
-    BAPTISM_DAYS, BURIAL_DAYS, BURIAL_HIGH_DAYS, LagFinding, baptism_lags, burial_lags)
-from verso.ru.facts.checks.name_days import (
-    AFTER, BEFORE, FAR_DAYS, NameDays, name_day_findings)
+from verso.ru.facts.checks.lags import BAPTISM_DAYS, BURIAL_DAYS, Lags, baptism_lags, burial_lags
+from verso.ru.facts.checks.name_days import FAR_DAYS, NameDays, name_day_findings
 from verso.ru.facts.checks.parenthood import (
     FATHER_DAYS, MOTHER_SPAN_YEARS, PosthumousFinding, SpanFinding, children_spans, posthumous_births)
 from verso.ru.facts.checks.reach import identity_reach
-from verso.ru.facts.checks.wedding_ages import (
-    DISPENSATION_YEARS, GAP_YEARS, WeddingAgeFinding, wedding_age_findings)
-from verso.ru.facts.checks.wedding_calendar import (
-    WeddingCalendar, wedding_calendar_findings, weekday_name)
+from verso.ru.facts.checks.wedding_ages import DISPENSATION_YEARS, GAP_YEARS, WeddingAges, wedding_age_findings
+from verso.ru.facts.checks.wedding_calendar import WeddingCalendar, wedding_calendar_findings
 from verso.ru.facts.model import (
     Assertion, AssertionSet, Citation, Derived, DiedOn, GodparentOf, NameClaim, ParentOf, Persona, Record, Relational, ResidedIn, Retracted, SpouseOf, WitnessedAt, why)
 from verso.ru.facts.projection import (
     LooseIndex, canonical_key, canonical_name, consolidated_identity)
 from verso.ru.facts.rules.cooccurrence import Occurrence, Pair, cooccurrences
+from verso.ru.facts.signals import Signal, signal_of
 from verso.ru.pipeline.facts import consolidated_facts
 from verso.core.tools import tool
 from verso.ru.messages import t
@@ -344,10 +340,10 @@ def date_order_report(within: OrderFindings, across: OrderFindings,
         lines += ["", str(t("cli.facts.date_order.within"))]
         for res_name in sorted(within):
             lines.append(f"  {name_of(res_name)} ({res_name}):")
-            for kind, event, reference, a, b in within[res_name]:
-                lines.append(f"      {event} {a.date} < {reference} {b.date}  "
-                             f"[{kind}]  {a.cite.source_file} №{a.cite.record_num}")
-                lines.append(f"      → {HINTS[kind]}")
+            for kind, _event, _reference, a, b in within[res_name]:
+                signal = signal_of(WithinFinding(kind=kind, left=a, right=b))
+                lines.append(f"      {signal.said}  [{kind}]  {a.cite.source_file} №{a.cite.record_num}")
+                lines.append(f"      → {signal.why}")
     if across:
         lines += ["", str(t("cli.facts.date_order.across"))]
         for res_name in sorted(across):
@@ -665,74 +661,16 @@ def _dmy(day: tuple[int, int, int] | None) -> str:
     return f"{day[2]:02d}.{day[1]:02d}.{day[0]}" if day else "—"
 
 
-def format_name_days(result: NameDays) -> str:
-    found = result.findings
-    unknown_births = sum(result.unknown.values())
-    tail = (str(t("cli.facts.name_days.unknown", births=t("counted.births", count=unknown_births),
-                      names=t("counted.names", count=len(result.unknown))))
-            if result.unknown else "")
-    noted = str(t("cli.facts.calendar_noted", noted=result.noted)) if result.noted else ""
-    if not found:
-        return str(t("cli.facts.name_days.ok", of_births=t("counted.of_births", count=result.checked), tail=tail,
-                         noted=noted))
-    high = sum(1 for f in found if f.confidence == "HIGH")
-    lines = [str(t("cli.facts.name_days.head", count=len(found),
-                   of_births=t("counted.of_births", count=result.checked), far=FAR_DAYS, high=high,
-                   low=len(found) - high, tail=tail, noted=noted)),
-             str(t("cli.facts.name_days.note", before=BEFORE, after=AFTER))]
-    for f in found:
-        page = str(t("cli.facts.leaf", page=f.cite.page)) if f.cite.page else ""
-        lines += ["", str(t("cli.facts.name_days.finding", confidence=f.confidence, name=f.name,
-                            gender=f.gender.value, born=_dmy(f.born), christened=_dmy(f.christened),
-                            day=f.nearest[1], month=f.nearest[0], outside=f.outside))]
-        if f.lookalikes:
-            alts = ", ".join(
-                f"{n.name}{f' ({n.base})' if n.base != n.name else ''} "
-                f"{n.day[1]:02d}.{n.day[0]:02d}" for n in f.lookalikes)
-            lines.append(str(t("cli.facts.name_days.lookalikes", alts=alts)))
-        lines.append(f"    {f.cite.source_file} №{f.cite.record_num}{page}")
+def format_signals(signals: Sequence[Signal], *, head: str) -> str:
+    """The findings of one check as a report: `head`, why each kind of finding met is worth a second look (once
+    each), then every finding in the words of its signal — the words a record's card says
+    (`verso.ru.facts.signals.signal_of`) — with the lines that help the re-reading and where it was read."""
+    lines = [head, *(str(why) for why in dict.fromkeys(s.why for s in signals))]
+    for s in signals:
+        page = str(t("cli.facts.leaf", page=s.cite.page)) if s.cite.page else ""
+        lines += ["", f"[{s.confidence}] {s.said}", *(f"    {detail}" for detail in s.details),
+                  f"    {s.cite.source_file} №{s.cite.record_num}{page}"]
     return "\n".join(lines)
-
-
-_MOVABLE_BANS = frozenset({"cheesefare_week", "great_lent", "bright_week",
-                           "apostles_fast", "meatfare_sunday"})
-
-
-def format_wedding_calendar(result: WeddingCalendar) -> str:
-    found = result.findings
-    noted = str(t("cli.facts.calendar_noted", noted=result.noted)) if result.noted else ""
-    if not found:
-        return str(t("cli.facts.wedding_calendar.ok", of_weddings=t("counted.of_weddings", count=result.checked),
-                         noted=noted))
-    strict = result.strict
-    lines = [str(t("cli.facts.wedding_calendar.head", strict=t("counted.weddings", count=strict),
-                   loose=len(found) - strict, of_dated=t("counted.of_dated", count=result.checked), noted=noted)),
-             str(t("cli.facts.wedding_calendar.note"))]
-    for f in found:
-        y, m, d = f.day
-        page = str(t("cli.facts.leaf", page=f.cite.page)) if f.cite.page else ""
-        why = f.ban.label
-        if f.ban.kind in _MOVABLE_BANS:
-            pm, pd = pascha(y)
-            why += str(t("cli.facts.wedding_calendar.pascha", day=pd, month=pm))
-        lines += ["", f"[{f.confidence}] {d:02d}.{m:02d}.{y} ({weekday_name(f.day)}) — {why}"]
-        if f.other_months:
-            lines.append(str(t("cli.facts.wedding_calendar.other_months")) + ", ".join(
-                f"{dd:02d}.{mm:02d}.{yy}" for yy, mm, dd in f.other_months))
-        if f.other_days:
-            lines.append(str(t("cli.facts.wedding_calendar.other_days")) + ", ".join(
-                f"{dd:02d}.{mm:02d} ({weekday_name((yy, mm, dd))})"
-                for yy, mm, dd in f.other_days))
-        lines.append(f"    {f.cite.source_file} №{f.cite.record_num}{page}")
-    return "\n".join(lines)
-
-
-def wedding_calendar_report(village_dir: Path) -> tuple[str, int]:
-    """`facts-check check=wedding-calendar`: the same loader as the snapshot,
-    whose strict count it must match."""
-    facts, _gen, _slots = consolidated_facts(village_dir)
-    result = wedding_calendar_findings(facts.believed())
-    return format_wedding_calendar(result), (1 if result.findings else 0)
 
 
 def _noted(field: str, noted: int) -> str:
@@ -740,29 +678,57 @@ def _noted(field: str, noted: int) -> str:
     return str(t("cli.facts.noted", field=field, noted=noted)) if noted else ""
 
 
-def format_lags(found: list[LagFinding], kind: str, *, noted: int = 0) -> str:
-    check = f"{kind}-lag"
-    tail = _noted("lag_note", noted)
-    if not found:
-        return f"{check}: OK — 0 findings{tail}."
+def _head(check: str, result: NameDays | WeddingCalendar | Lags | WeddingAges) -> str:
+    """A check's own first line: what it asked, how many it found at each level, what the notes stood down."""
+    found = result.findings
     high = sum(1 for f in found if f.confidence == "HIGH")
-    if kind == "baptism":
-        head = str(t("cli.facts.lags.baptism_head", check=check, count=len(found), days=BAPTISM_DAYS, high=high,
-                     low=len(found) - high))
-        note = str(t("cli.facts.lags.baptism_note"))
-        words = (str(t("cli.facts.abbr.born")), str(t("cli.facts.abbr.christened")))
-    else:
-        head = str(t("cli.facts.lags.burial_head", check=check, count=len(found), days=BURIAL_DAYS, high=high,
-                     low=len(found) - high))
-        note = str(t("cli.facts.lags.burial_note", days=BURIAL_HIGH_DAYS))
-        words = (str(t("cli.facts.abbr.died")), str(t("cli.facts.abbr.buried")))
-    lines = [head + tail, note]
-    for f in found:
-        page = str(t("cli.facts.leaf", page=f.cite.page)) if f.cite.page else ""
-        lines += ["", str(t("cli.facts.lags.finding", confidence=f.confidence, first_word=words[0],
-                            first=_dmy(f.first), second_word=words[1], second=_dmy(f.second), days=_days(f.days),
-                            file=f.cite.source_file, number=f.cite.record_num, page=page))]
-    return "\n".join(lines)
+    if isinstance(result, NameDays):
+        unknown_births = sum(result.unknown.values())
+        tail = (str(t("cli.facts.name_days.unknown", births=t("counted.births", count=unknown_births),
+                      names=t("counted.names", count=len(result.unknown))))
+                if result.unknown else "")
+        noted = str(t("cli.facts.calendar_noted", noted=result.noted)) if result.noted else ""
+        of_births = t("counted.of_births", count=result.checked)
+        if not found:
+            return str(t("cli.facts.name_days.ok", of_births=of_births, tail=tail, noted=noted))
+        return str(t("cli.facts.name_days.head", count=len(found), of_births=of_births, far=FAR_DAYS, high=high,
+                     low=len(found) - high, tail=tail, noted=noted))
+    if isinstance(result, WeddingCalendar):
+        noted = str(t("cli.facts.calendar_noted", noted=result.noted)) if result.noted else ""
+        if not found:
+            return str(t("cli.facts.wedding_calendar.ok", of_weddings=t("counted.of_weddings", count=result.checked),
+                         noted=noted))
+        return str(t("cli.facts.wedding_calendar.head", strict=t("counted.weddings", count=result.strict),
+                     loose=len(found) - result.strict, of_dated=t("counted.of_dated", count=result.checked), noted=noted))
+    if isinstance(result, Lags):
+        tail = _noted("lag_note", result.noted)
+        if not found:
+            return f"{check}: OK — 0 findings{tail}."
+        if check == "baptism-lag":
+            return str(t("cli.facts.lags.baptism_head", check=check, count=len(found), days=BAPTISM_DAYS, high=high,
+                         low=len(found) - high)) + tail
+        return str(t("cli.facts.lags.burial_head", check=check, count=len(found), days=BURIAL_DAYS, high=high,
+                     low=len(found) - high)) + tail
+    tail = _noted("age_note", result.noted)
+    if not found:
+        return ("wedding-ages: OK — 0 findings (no age half a year under the minimum, no "
+                f"spouses more than {GAP_YEARS:g} years apart){tail}.")
+    return str(t("cli.facts.wedding_ages.head", count=len(found), high=high, dispensation=DISPENSATION_YEARS,
+                 low=len(found) - high, gap=GAP_YEARS)) + tail
+
+
+def signal_report(check: str, result: NameDays | WeddingCalendar | Lags | WeddingAges) -> str:
+    """The report of one of the checks a record answers alone (`verso.ru.facts.signals.CHECKS`): its line of
+    counts, and its findings as `format_signals` prints them."""
+    return format_signals([signal_of(f) for f in result.findings], head=_head(check, result))
+
+
+def wedding_calendar_report(village_dir: Path) -> tuple[str, int]:
+    """`facts-check check=wedding-calendar`: the same loader as the snapshot,
+    whose strict count it must match."""
+    facts, _gen, _slots = consolidated_facts(village_dir)
+    result = wedding_calendar_findings(facts.believed())
+    return signal_report("wedding-calendar", result), (1 if result.findings else 0)
 
 
 def lags_report(village_dir: Path, kind: str) -> tuple[str, int]:
@@ -770,7 +736,7 @@ def lags_report(village_dir: Path, kind: str) -> tuple[str, int]:
     facts, _gen, _slots = consolidated_facts(village_dir)
     believed = facts.believed()
     lags = baptism_lags(believed) if kind == "baptism" else burial_lags(believed)
-    return format_lags(lags.findings, kind, noted=lags.noted), (1 if lags.findings else 0)
+    return signal_report(f"{kind}-lag", lags), (1 if lags.findings else 0)
 
 
 def _where(cite: Citation) -> str:
@@ -829,34 +795,11 @@ def parenthood_report(village_dir: Path, check: str) -> tuple[str, int]:
     return format_children_span(spans, name_of), (1 if spans else 0)
 
 
-def format_wedding_ages(found: list[WeddingAgeFinding], *, noted: int = 0) -> str:
-    tail = _noted("age_note", noted)
-    if not found:
-        return ("wedding-ages: OK — 0 findings (no age half a year under the minimum, no "
-                f"spouses more than {GAP_YEARS:g} years apart){tail}.")
-    high = sum(1 for f in found if f.confidence == "HIGH")
-    lines = [str(t("cli.facts.wedding_ages.head", count=len(found), high=high, dispensation=DISPENSATION_YEARS,
-                   low=len(found) - high, gap=GAP_YEARS)) + tail,
-             str(t("cli.facts.wedding_ages.note"))]
-    for f in found:
-        page = str(t("cli.facts.leaf", page=f.cite.page)) if f.cite.page else ""
-        where = f"[{f.cite.source_file} №{f.cite.record_num}{page}]"
-        if f.kind == "under_age":
-            who = str(t("cli.facts.wedding_ages.groom") if f.role == "groom" else t("cli.facts.wedding_ages.bride"))
-            lines += ["", str(t("cli.facts.wedding_ages.under_age", confidence=f.confidence, married=f.married,
-                                who=who, age=f.age, minimum=f.minimum, where=where))]
-        else:
-            groom, bride = f.ages or ("?", "?")
-            lines += ["", str(t("cli.facts.wedding_ages.gap", confidence=f.confidence, married=f.married,
-                                groom=groom, bride=bride, years=f.gap_years, where=where))]
-    return "\n".join(lines)
-
-
 def wedding_ages_report(village_dir: Path) -> tuple[str, int]:
     """`facts-check check=wedding-ages`: the snapshot's loader."""
     facts, _gen, _slots = consolidated_facts(village_dir)
     ages = wedding_age_findings(facts.believed())
-    return format_wedding_ages(ages.findings, noted=ages.noted), (1 if ages.findings else 0)
+    return signal_report("wedding-ages", ages), (1 if ages.findings else 0)
 
 
 def name_days_report(village_dir: Path) -> tuple[str, int]:
@@ -864,7 +807,7 @@ def name_days_report(village_dir: Path) -> tuple[str, int]:
     from verso.ru.church_calendar.svyatcy import load_svyatcy
 
     result = name_day_findings(load(village_dir, "birth").believed(), load_svyatcy())
-    return format_name_days(result), (1 if result.findings else 0)
+    return signal_report("name-days", result), (1 if result.findings else 0)
 
 
 def father_claims_report(village_dir: Path) -> tuple[str, int]:
