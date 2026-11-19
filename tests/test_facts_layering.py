@@ -59,6 +59,13 @@ _BUDGET: dict[str, tuple[str, ...]] = {
                     # A check's reasons and hints are words a person reads — the catalog's,
                     # rendered when read (`verso.ru.messages`, a leaf: no file, no record).
                     "verso.ru.messages"),
+    # What ONE record answers alone (a record on its card): the entry's own
+    # extractor, picked by what the record is (`extract.one` — signals.py names
+    # no DSL class), the six checks that need no second record, and the
+    # Church's calendar for the days a signal names. `verso.core.workspace`
+    # for one name: the error that says a workspace has no names table.
+    "signals.py": ("verso.ru.facts.model", "verso.ru.facts.extract", "verso.ru.facts.checks",
+                   "verso.ru.church_calendar", "verso.ru.messages", "verso.core.workspace"),
 }
 
 #: Nobody in the package may reach the CLI — I/O lives there, one way only.

@@ -1611,6 +1611,57 @@ burial_before_baptism = "a burial before the christening — a day or a month sw
 death_before_alive = "died before a roll counted him alive — two people folded into one (a father and a son of one name), or the death's year swapped"
 burial_before_alive = "buried before a roll counted him alive — two people folded into one, or a year swapped"
 
+[facts.signal]
+note_default = "так в подлиннике"
+
+[facts.signal.wedding_calendar]
+strict = "A wedding on {date} ({weekday}) — {ban}."
+strict_why = "The Church did not marry in the fasts, in Cheesefare and Bright weeks, in Svyatki, on 29.08 and 14.09: almost always a misread month or day."
+loose = "A wedding on {date} ({weekday}) — {ban}."
+loose_why = "Tuesdays, Thursdays, Saturdays and the eves of feasts the books keep loosely: a day to read again, not a verdict."
+pascha = "Pascha {date}."
+other_months = "The same day a month either side is open: {dates}."
+other_days = "A day either side is open: {dates}."
+
+[facts.signal.name_days]
+far = "{name}: the nearest saint of the name is kept on {nearest}, {outside} days outside the window (born {born}, christened {christened})."
+far_why = "The window: birth −{before} … max(christening, 8th day) +{after} days. Most often the name was simply given out of the calendar."
+lookalike = "{name}: the nearest saint of the name is kept on {nearest}, {outside} days outside the window (born {born}, christened {christened})."
+lookalike_why = "A look-alike name is kept inside the window: start the re-reading of the scan with it."
+lookalikes = "Kept in the window: {names}."
+
+[facts.signal.baptism_lag]
+late = "Christened {christened}, {days} days after the birth on {born}."
+late_why = "A child was christened a day or two after the birth, seldom later than {limit} days."
+month_carried = "Christened {christened}, {days} days after the birth on {born}."
+month_carried_why = "The christening's day is smaller than the birth's and its month was taken as the next one: one of the two days is probably misread."
+
+[facts.signal.burial_lag]
+late = "Buried {buried}, {days} days after the death on {died}."
+late_why = "The dead were buried on the third day; past {limit} days the days are worth a second look."
+very_late = "Buried {buried}, {days} days after the death on {died}."
+very_late_why = "The dead were buried on the third day; more than {limit} days no weather and no absent priest explains."
+
+[facts.signal.wedding_ages]
+under_age_groom = "The groom, «{age}», is under {minimum} at the wedding of {married}."
+under_age_bride = "The bride, «{age}», is under {minimum} at the wedding of {married}."
+under_age_why = "The minimum follows the wedding's date: 15/13 from 17.12.1774, 18/16 from 19.07.1830; the books themselves allow half a year short."
+age_gap = "The groom «{groom}», the bride «{bride}»: {years} years apart."
+age_gap_why = "Spouses more than {gap} years apart: the books hold almost none — read the ages again."
+
+[facts.signal.date_order]
+baptism_before_birth = "The christening {left} is before the birth {right}."
+death_before_birth = "The death {left} is before the birth {right}."
+burial_before_death = "The burial {left} is before the death {right}."
+burial_before_birth = "The burial {left} is before the birth {right}."
+marriage_before_birth = "The wedding {left} is before the birth {right}."
+death_before_marriage = "The death {left} is before the wedding {right}."
+burial_before_marriage = "The burial {left} is before the wedding {right}."
+death_before_baptism = "The death {left} is before the christening {right}."
+burial_before_baptism = "The burial {left} is before the christening {right}."
+death_before_alive = "The death {left} is before the day counted alive ({right})."
+burial_before_alive = "The burial {left} is before the day counted alive ({right})."
+
 [facts.reconcile]
 born = "b. {date} [{cite}]"
 same_list = "the canonical holds an entry of this same list already — two entries of one list are two people"

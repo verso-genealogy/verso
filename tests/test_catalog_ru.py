@@ -21,8 +21,13 @@ DEPRECATED = {
 }
 
 
+# A signal's message is `facts.signal.<check>.<name>`, built by `verso.ru.facts.signals.signal_of` from the check
+# and what it found; tests/test_facts_signals.py holds the catalogs to the table of them, none missing or left over.
+SIGNAL_KEY = "facts.signal."
+
+
 def _computed(key: str) -> bool:
-    return LINTER_KEY.match(key) is not None or key.startswith("ui.") or key in DEPRECATED
+    return (LINTER_KEY.match(key) is not None or key.startswith(("ui.", SIGNAL_KEY)) or key in DEPRECATED)
 
 
 def test_catalogs_have_no_problems():
@@ -65,6 +70,8 @@ _UNQUOTED = {
     "scans.rows.help_rows": "the book's счётъ column, moved byte for byte from verso-app",
     "scans.rows.help_folios": "the book's own words (лист, л., об, ч., кадр), moved byte for byte from verso-app's scan tools",
     "scans.rows.help_count": "the book's счётъ column, moved byte for byte from verso-app",
+    "facts.signal.note_default": "the note a card writes INTO a record («так в подлиннике»): a word of the record, not of the "
+                                 "interface — the same in every language",
 }
 
 
