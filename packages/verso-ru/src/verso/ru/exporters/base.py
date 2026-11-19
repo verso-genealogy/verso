@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 
 import csv
+import os
+from dataclasses import dataclass
 from pathlib import Path
 
 
@@ -25,6 +27,36 @@ def csv_dict_writer(f, fieldnames):
     `csv_writer`, so the terminator is stated in exactly one place.
     """
     return csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
+
+
+@dataclass(frozen=True)
+class CsvTable:
+    """A CSV before it is a file: its name (`<parish>_<year>_births_familio.csv`), its header and its rows as
+    the exporter built them. `write_table` writes it; `text_rows` is what reading that file back gives."""
+    name: str
+    headers: list[str]
+    rows: list[list[object]]
+
+    def text_rows(self) -> list[list[str]]:
+        """The rows as the csv module writes a value and reads it back: None is empty, a float its repr,
+        anything else its str."""
+        return [[_text(value) for value in row] for row in self.rows]
+
+
+def _text(value: object) -> str:
+    if value is None:
+        return ""
+    return repr(value) if isinstance(value, float) else str(value)
+
+
+def write_table(table: CsvTable, target_dir: str | Path) -> str:
+    """`table` as a file of `target_dir`, UTF-8, LF; its path."""
+    filename = os.path.join(str(target_dir), table.name)
+    with open(filename, "w", encoding="utf-8", newline="") as f:
+        writer = csv_writer(f)
+        writer.writerow(table.headers)
+        writer.writerows(table.rows)
+    return filename
 
 
 class RecordsExporter(ABC):
