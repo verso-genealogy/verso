@@ -1,21 +1,25 @@
 """Familio справочник submission exporter.
 
 A *справочник* is one Familio submission file (`.xlsx`) covering many years of a
-village's records, with one tab per record type (РОЖДЕНИЕ / БРАК / СМЕРТЬ). It is
-built by aggregating the per-year ``*_familio.csv`` files emitted by
-:mod:`verso.ru.exporters.csv_familio` and projecting them onto the official Familio
-**МК** template (``Shablon_MK.xlsx``) — see :mod:`verso.ru.exporters.familio_template`
-for the column mapping.
+parish's records, with one tab per record type (РОЖДЕНИЕ / БРАК / СМЕРТЬ). It is
+built from the record sets themselves — the rows :mod:`verso.ru.exporters.csv_familio`
+gives of each, no CSV read from a disk — projected onto the columns of the official
+Familio **МК** template (see :mod:`verso.ru.exporters.familio_template` for the column
+mapping) and written into a workbook of that template's layout
+(:mod:`verso.ru.exporters.familio_layout`), or into Familio's own file.
 
 This module is layered for testability:
 
-* **Domain** (pure, no I/O): :func:`build_sheet`, :func:`build_spravochnik` and the
+* **Domain** (pure, no I/O): :func:`collect` (record sets → source rows, the unreviewed
+  left out), :func:`build_sheet`, :func:`build_spravochnik` and the
   :class:`Spravochnik` / :class:`SpravochnikSheet` / :class:`YearRecords` value
   objects. Rows are concatenated in year order, projected onto the template's
   columns, and given a continuous *сквозная нумерация* (template column "А").
-* **Infrastructure**: :func:`read_year_records` (CSV reader) and
-  :class:`FamilioTemplateWriter` (fills a copy of the template ``.xlsx`` — the only
-  ``openpyxl``-touching code).
+  :func:`referenced_places`, :func:`location_rows` and :func:`known_from` make the
+  ``location`` sheet's rows of the places the rows name and a places dictionary.
+* **Infrastructure**: :func:`read_location_rows`, :func:`read_about` (a village's curated
+  files) and :class:`FamilioTemplateWriter` (fills the workbook — the only
+  ``openpyxl``-touching code besides the layout's).
 """
 from __future__ import annotations
 
@@ -220,23 +224,6 @@ def build_spravochnik(
     )
 
 
-def read_year_records(
-    village_dir: Path, village: str, year: int, record_type: str
-) -> YearRecords | None:
-    """Read one per-year familio CSV (dropping its header), or ``None`` if absent.
-
-    Looks for ``{village_dir}/{year}/{village}_{year}_{record_type}_familio.csv``.
-    """
-    path = village_dir / str(year) / f"{village}_{year}_{record_type}_familio.csv"
-    if not path.exists():
-        return None
-    with path.open(encoding="utf-8", newline="") as f:
-        all_rows = list(csv.reader(f))
-    if len(all_rows) <= 1:
-        return None
-    return YearRecords(year=year, rows=all_rows[1:])
-
-
 @dataclass(frozen=True)
 class LocationRow:
     """One curated ``location`` sheet entry (the durable input columns)."""
@@ -410,6 +397,11 @@ def read_about(
     )
 
 
+# The rows of `about` the year range alone answers, and the about of a справочник that was given none.
+_YEARS_LABELS = frozenset({"Годы, охватываемые индексацией", "Наименьший год, охватываемый индексацией"})
+_NO_ABOUT = AboutInfo("", "", "", "", "", "", False, "")
+
+
 def _coerce(value: str) -> str | int:
     """Write purely-numeric cells as numbers so Excel doesn't flag them as text."""
     return int(value) if value.isdigit() else value
@@ -552,6 +544,9 @@ class FamilioTemplateWriter:
             self._write_location_sheet(wb, location_rows)
         if about is not None:
             self._write_about_sheet(wb, about, spravochnik)
+        elif self.template_path is None:
+            # The built workbook has no sample to keep: it says at least the years it covers.
+            self._write_about_sheet(wb, _NO_ABOUT, spravochnik, years_only=True)
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
         wb.save(out_path)
@@ -596,11 +591,11 @@ class FamilioTemplateWriter:
             _apply_row_styles(ws, r, i, styles)
 
     @staticmethod
-    def _write_about_sheet(wb: Workbook, about: AboutInfo, sp: Spravochnik) -> None:
+    def _write_about_sheet(wb: Workbook, about: AboutInfo, sp: Spravochnik, *, years_only: bool = False) -> None:
         """Fill the ``about`` sheet's value column (B) by matching row labels (A).
 
         Labels and helper text shipped in the template are preserved; only the
-        per-submission values are written.
+        per-submission values are written — with ``years_only`` the two rows of the years alone.
         """
         ws = wb["about"]
         values: dict[str, str | int] = {
@@ -617,6 +612,8 @@ class FamilioTemplateWriter:
             ),
             "Ссылка на загруженный ранее справочник на сайте familio.org": about.prior_catalog_url,
         }
+        if years_only:
+            values = {label: value for label, value in values.items() if label in _YEARS_LABELS}
         for r in range(1, ws.max_row + 1):
             label = ws.cell(row=r, column=1).value
             if isinstance(label, str) and label.strip() in values:

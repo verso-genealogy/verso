@@ -1,70 +1,64 @@
-"""Assemble a Familio submission ``.xlsx`` справочник from per-year records.
+"""Assemble a Familio submission ``.xlsx`` справочник from a parish's records.
 
-Aggregates a village's per-year ``*_familio.csv`` files across a year range into a
-single workbook with one tab per record type (рождение / брак / смерть) and a
-continuous сквозная нумерация — the form Familio's indexing program expects.
+Reads the record sets of a village's DSL files (the records export with ``VERSO_RECORDS``) across a year range
+and writes one workbook with a tab per record type (рождение / брак / смерть) and a continuous сквозная
+нумерация — the form Familio's indexing program expects. Only proofread records go in: a record held back as
+``reviewed=False`` is left out and counted (``--with-unreviewed`` puts them in).
+
+The workbook is the one the library builds of the МК template's layout (its record sheets, ``about`` and
+``location``); ``--template FILE`` fills Familio's own file instead.
 
 Usage::
 
-    python -m verso.ru.cli.familio_spravochnik <village> <from_year> <to_year> \
-        [--village-dir DIR] [--out FILE] [--no-regenerate]
+    python -m verso.ru.cli.familio_spravochnik <parish> <from_year> <to_year> \
+        [--village-dir DIR] [--out FILE] [--template FILE] [--with-unreviewed]
+
+``<parish>`` is the parish the books are of — a record set's village — and, unless ``--village-dir`` says
+otherwise, the directory holding them.
 
 Example::
 
     python -m verso.ru.cli.familio_spravochnik Горюхино 1832 1840
 """
 import argparse
-import subprocess
-import sys
 from pathlib import Path
 
+from verso.core import places
+from verso.core.pipeline.load import record_namespace, village_modules
+from verso.ru import corpus_data
 from verso.ru.exporters.familio_spravochnik import (
-    RECORD_TYPES, FamilioTemplateWriter, YearRecords, build_spravochnik, read_about, read_location_rows, read_year_records,
-    years_label_for)
-from verso.ru.naming.transliteration import generate_res_name
-from verso.core import workspace
-from verso.core.workspace import child_env
+    FamilioTemplateWriter, blank_places, build_spravochnik, collect, known_from, location_rows, read_about,
+    read_location_rows, referenced_places, years_label_for)
 from verso.ru.messages import t
+from verso.ru.naming.transliteration import generate_res_name
 
-# The official Familio МК template is Familio's file, and the corpus's data: `--template`,
-# else this path under the workspace's corpus.
-TEMPLATE_IN_CORPUS = Path("familio") / "Shablon_MK.xlsx"
-
-
-def default_template() -> Path:
-    """The workspace corpus's Familio МК template; a refusal saying where to put one when there is none."""
-    corpus = workspace.current().corpus_dir
-    if corpus is None or not (corpus / TEMPLATE_IN_CORPUS).is_file():
-        raise SystemExit(t("cli.familio_spravochnik.no_template"))
-    return corpus / TEMPLATE_IN_CORPUS
+__all__ = ["default_out_path", "main", "record_sets", "years_label_for"]
 
 
-def regenerate_year_csvs(village_dir: Path, year: int) -> None:
-    """Re-run every DSL ``.py`` in ``village_dir/year`` so its CSVs are current.
+class NotImported(Exception):
+    """DSL files of the years asked for that do not import: a справочник without them would be short."""
 
-    Mirrors the root ``make generate_csv`` target: each year file, run as
-    ``__main__``, writes its own ``*_familio.csv`` into the year directory.
-    """
-    year_dir = village_dir / str(year)
-    if not year_dir.is_dir():
-        return
-    for py_file in sorted(year_dir.glob("*.py")):
-        subprocess.run([sys.executable, py_file.name], cwd=year_dir, check=True, env=child_env())
+    def __init__(self, files: list[Path]) -> None:
+        super().__init__(", ".join(str(f) for f in files))
+        self.files = files
 
 
-def collect_records(
-    village_dir: Path, village: str, years: list[int], regenerate: bool
-) -> dict[str, list[YearRecords]]:
-    """Read per-year records for every record type across the given years."""
-    records_by_type: dict[str, list[YearRecords]] = {rt: [] for rt in RECORD_TYPES}
-    for year in years:
-        if regenerate:
-            regenerate_year_csvs(village_dir, year)
-        for record_type in RECORD_TYPES:
-            year_records = read_year_records(village_dir, village, year, record_type)
-            if year_records is not None and year_records.rows:
-                records_by_type[record_type].append(year_records)
-    return records_by_type
+def record_sets(village_dir: Path, years: list[int]) -> list[object]:
+    """The record sets of the village's DSL files of `years`, in the order of the files — each once, the files
+    `village.toml` names in `[csv] skip` passed over (they wrote no CSV, and go into no справочник). A file
+    that does not import is refused (`NotImported`), never skipped."""
+    skip = set(corpus_data.village(village_dir).csv_skip)
+    skipped: list[tuple[Path, Exception]] = []
+    found: dict[int, object] = {}
+    for path, module in village_modules(village_dir, year=years, skipped=skipped):
+        if path.relative_to(village_dir).as_posix() in skip:
+            continue
+        for value in record_namespace(module).values():
+            found.setdefault(id(value), value)
+    broken = [path for path, _ in skipped if path.relative_to(village_dir).as_posix() not in skip]
+    if broken:
+        raise NotImported(broken)
+    return list(found.values())
 
 
 def default_out_path(village_dir: Path, village: str, years_label: str) -> Path:
@@ -75,7 +69,7 @@ def default_out_path(village_dir: Path, village: str, years_label: str) -> Path:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("village", help="Village name (its directory)")
+    parser.add_argument("village", help="The parish of the books (and their directory, without --village-dir)")
     parser.add_argument("from_year", type=int, nargs="?", help="First year (inclusive)")
     parser.add_argument("to_year", type=int, nargs="?", help="Last year (inclusive)")
     parser.add_argument(
@@ -102,7 +96,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--location-csv", type=Path, default=None,
-        help="Curated location.csv to populate the workbook's location sheet "
+        help="Curated location.csv whose rows open the workbook's location sheet "
              "(default: <village-dir>/familio_submissions/location.csv if present)",
     )
     parser.add_argument(
@@ -111,12 +105,17 @@ def main(argv: list[str] | None = None) -> int:
              "(default: <village-dir>/familio_submissions/about.json if present)",
     )
     parser.add_argument(
+        "--with-unreviewed", action="store_true",
+        help=str(t("cli.familio_spravochnik.help_with_unreviewed")),
+    )
+    parser.add_argument(
         "--no-regenerate", action="store_true",
-        help="Skip re-running the DSL files; use the CSVs already on disk",
+        help=str(t("cli.familio_spravochnik.help_no_regenerate")),
     )
     args = parser.parse_args(argv)
 
-    template: Path = args.template or default_template()
+    if args.template is not None and not args.template.is_file():
+        parser.error(f"template not found: {args.template}")
     village_dir: Path = args.village_dir or Path(args.village)
     if not village_dir.is_dir():
         parser.error(f"village directory not found: {village_dir}")
@@ -137,28 +136,38 @@ def main(argv: list[str] | None = None) -> int:
         if args.cases else None
     )
 
-    records_by_type = collect_records(
-        village_dir, args.village, years, regenerate=not args.no_regenerate
-    )
+    try:
+        sets = record_sets(village_dir, years)
+    except NotImported as refused:
+        parser.error(str(t("cli.familio_spravochnik.not_imported", count=len(refused.files), files=str(refused))))
+    collected = collect(sets, parish=args.village, years=years, reviewed_only=not args.with_unreviewed)
     spravochnik = build_spravochnik(
-        args.village, from_year, to_year, records_by_type, years_label=years_label, cases=cases
+        args.village, from_year, to_year, collected.records_by_type, years_label=years_label, cases=cases
     )
 
     if not spravochnik.sheets:
-        parser.error(f"no records found for {args.village} {years_label}")
+        left_out = (" — " + str(t("cli.familio_spravochnik.only_unreviewed", count=collected.left_out))
+                    if collected.left_out else "")
+        parser.error(f"no records found for {args.village} {years_label}{left_out}")
 
     out_path = args.out or default_out_path(village_dir, args.village, years_label)
     location_csv: Path = args.location_csv or (village_dir / "familio_submissions" / "location.csv")
-    location_rows = read_location_rows(location_csv)
+    curated = read_location_rows(location_csv)
+    locations = location_rows(referenced_places(spravochnik), curated=curated or (),
+                              known=known_from(places.current()))
     about_json: Path = args.about_json or (village_dir / "familio_submissions" / "about.json")
     about = read_about(about_json, args.village, from_year, to_year, years_label)
-    FamilioTemplateWriter(template).write(spravochnik, out_path, location_rows=location_rows, about=about)
+    FamilioTemplateWriter(args.template).write(spravochnik, out_path, location_rows=locations, about=about)
 
     print(f"Wrote {out_path}")
     for sheet in spravochnik.sheets:
         print(f"  {sheet.title}: {len(sheet.rows)} records")
-    if location_rows is not None:
-        print(f"  location: {len(location_rows)} places from {location_csv}")
+    if collected.left_out:
+        print(t("cli.familio_spravochnik.left_out", count=collected.left_out))
+    source = f" ({len(curated)} from {location_csv})" if curated is not None else ""
+    print(f"  location: {len(locations)} places{source}")
+    if blank_places(locations):
+        print(t("cli.familio_spravochnik.blank_places", count=blank_places(locations)))
     if about is not None:
         print(f"  about: filled from {about_json}")
     return 0

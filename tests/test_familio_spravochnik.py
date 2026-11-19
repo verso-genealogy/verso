@@ -290,36 +290,5 @@ class TestReadAbout(unittest.TestCase):
             self.assertEqual(labelled["Наименьший год, охватываемый индексацией"], 1799)
 
 
-def _workspace(root: Path, corpus: bool = True) -> Path:
-    root.mkdir(parents=True, exist_ok=True)
-    (root / "verso.toml").write_text('schema = 4\nplugins = ["ru"]\nvillages = []\n'
-                                     + ('[corpus]\ndir = "corpus"\n' if corpus else ""), encoding="utf-8")
-    return root
-
-
-def test_default_template_is_the_corpus_one(tmp_path):
-    from verso.core import workspace
-    from verso.ru.cli.familio_spravochnik import TEMPLATE_IN_CORPUS, default_template
-
-    root = _workspace(tmp_path)
-    template = build_template(root / "corpus" / TEMPLATE_IN_CORPUS)
-    with workspace.use(root):
-        assert default_template() == template.resolve()
-    assert TEMPLATE_IN_CORPUS == Path("familio") / "Shablon_MK.xlsx"
-
-
-def test_no_template_says_where_to_put_it(tmp_path):
-    import pytest
-
-    from verso.core import workspace
-    from verso.ru.cli.familio_spravochnik import default_template
-
-    for corpus in (True, False):
-        root = _workspace(tmp_path / str(corpus), corpus)
-        with workspace.use(root), pytest.raises(SystemExit) as refused:
-            default_template()
-        assert str(refused.value) == "нет шаблона МК Familio: --template ФАЙЛ или <корпус>/familio/Shablon_MK.xlsx"
-
-
 if __name__ == "__main__":
     unittest.main()

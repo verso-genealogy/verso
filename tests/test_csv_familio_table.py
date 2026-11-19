@@ -1,7 +1,7 @@
 """A familio CSV as a table in memory (`table()`), and the file `export()` writes from it.
 
 The golden files are what `export()` wrote of `tests/records_fixture.py` before the table existed
-(0.1.44): the refactor moves no byte of a corpus's CSVs.
+(verso 0.1.44): the refactor moves no byte of a corpus's CSVs.
 """
 from __future__ import annotations
 

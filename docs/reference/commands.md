@@ -41,7 +41,7 @@
 | `verso export-records` | `verso.ru.cli.export_records` | export-records: |
 | `verso facts` | `verso.ru.cli.facts` | Extract assertions from a village's records and ask a rule about them. |
 | `verso facts-snapshot` | `verso.ru.cli.facts_snapshot` | The findings snapshot — a ratchet on the checks that read the assertions. |
-| `verso familio-spravochnik` | `verso.ru.cli.familio_spravochnik` | Assemble a Familio submission ``.xlsx`` справочник from per-year records. |
+| `verso familio-spravochnik` | `verso.ru.cli.familio_spravochnik` | Assemble a Familio submission ``.xlsx`` справочник from a parish's records. |
 | `verso fetch-record` | `verso.ru.cli.fetch_record` | Fetches a specific record from both the Google Sheet and CSV by key, displaying all fields side-by-side for easy comparison. |
 | `verso find-person` | `verso.ru.cli.find_person` | Search village.db by name fragment, with optional year/type filters. |
 | `verso fix-combined-name-patronymic` | `verso.ru.cli.fix_combined_name_patronymic` | Fix: |

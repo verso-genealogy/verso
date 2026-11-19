@@ -163,3 +163,20 @@ def test_about_and_location_values_are_never_formulas(tmp_path):
     assert {c.coordinate for row in wb["about"].iter_rows() for c in row if c.data_type == "f"} == set()
     assert {c.column for c in wb["location"][3] if c.data_type == "f"} == {6, 7, 9}
     assert wb["location"]["A3"].value == "=Маниловка"
+
+
+def test_built_workbook_says_its_years_without_an_about(tmp_path):
+    out = FamilioTemplateWriter().write(_spravochnik(), tmp_path / "mk.xlsx")
+    ws = openpyxl.load_workbook(out)["about"]
+    said = {ws.cell(r, 1).value: ws.cell(r, 2).value for r, _ in load_layout().about_labels}
+    assert said.pop("Годы, охватываемые индексацией") == "1900-1901"
+    assert said.pop("Наименьший год, охватываемый индексацией") == 1900
+    assert set(said.values()) == {None}
+
+
+def test_a_template_about_is_left_alone_without_an_about(tmp_path):
+    template = build_workbook()
+    template["about"]["B5"] = "образец годов"
+    template.save(tmp_path / "template.xlsx")
+    out = FamilioTemplateWriter(tmp_path / "template.xlsx").write(_spravochnik(), tmp_path / "mk.xlsx")
+    assert openpyxl.load_workbook(out)["about"]["B5"].value == "образец годов"

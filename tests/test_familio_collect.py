@@ -21,7 +21,7 @@ def sets() -> dict[str, object]:
 
 
 def _rows_through_a_file(record_set, tmp_path: Path) -> list[list[str]]:
-    """The set's rows as the CLI read them until 0.1.45: `export()` into a directory, the file read back."""
+    """The set's rows as the CLI once read them: `export()` into a directory, the file read back."""
     exporter = exporter_of(record_set)
     assert exporter is not None
     with open(exporter.export(record_set, target_dir=tmp_path), encoding="utf-8", newline="") as f:
@@ -62,7 +62,7 @@ def test_unreviewed_left_out_and_counted(sets, tmp_path):
     assert year_records.rows == kept
     assert collected.left_out == 2
     assert collected.taken == len(births.records) - 2
-    # …and with the switch off they are in, as the CLI wrote them until 0.1.45.
+    # …and with the switch off they are in, as the CLI once wrote them.
     all_in = collect([births], reviewed_only=False)
     assert all_in.records_by_type["births"][0].rows == every
     assert all_in.left_out == 0
