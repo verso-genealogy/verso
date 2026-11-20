@@ -117,14 +117,31 @@ def test_years_label_for():
     assert years_label_for([1799, 1805]) == "1799, 1805"
 
 
-def test_a_field_the_columns_have_no_place_for_moves_no_cell(sets):
-    """A record's attribute the familio columns do not read — the notes a later release adds to a birth and a
-    death (`lag_note`) and to a marriage (`age_note`) — changes no row: the workbook is what it was."""
-    before = collect(sets.values(), reviewed_only=False)
-    noted = records_fixture.namespace()
-    for variable, note in (("births", "lag_note"), ("hlestakovka_deaths_1913", "lag_note"), ("marriages", "age_note")):
-        for record in noted[variable].records:
-            vars(record)[note] = "так в подлиннике"
-    after = collect(noted.values(), reviewed_only=False)
-    assert after.records_by_type == before.records_by_type
-    assert (after.taken, after.left_out) == (before.taken, before.left_out)
+def _noted_pair(**notes: str):
+    """A birth, a marriage and a death written by the DSL's factories, with `notes` — the fields that stand a single-record
+    check down (`lag_note` of a birth and a death, `age_note` of a marriage) — or none."""
+    from verso.ru.dsl.records.deaths import death, death_records
+    from verso.ru.dsl.records.marriages import marriage, marriage_records
+
+    lag = {"lag_note": notes["lag_note"]} if "lag_note" in notes else {}
+    age = {"age_note": notes["age_note"]} if "age_note" in notes else {}
+    births = birth_records("ЦГА", "47", "9", "755", "Маниловка", "Церковь", 1900, *page("1", *birth_month(
+        Month.JANUARY, birth(1, Gender.MALE, 3, 30, child=person("Иванъ"), father=person("Петръ"), **lag))))
+    marriages = marriage_records("ЦГА", "47", "9", "755", "Маниловка", "Церковь", 1900, *page("2",
+        marriage(1, 12, Month.JANUARY, groom=person("Петръ", "Ивановъ"), bride=person("Анна", "Петрова"),
+                 groom_age=60, bride_age=15, **age)))
+    deaths = death_records("ЦГА", "47", "9", "755", "Маниловка", "Церковь", 1900, *page("3",
+        death(1, Gender.MALE, 3, 20, Month.JANUARY, deceased=person("Петръ", "Ивановъ"), age=40, **lag)))
+    return [births, marriages, deaths]
+
+
+def test_a_field_the_columns_have_no_place_for_moves_no_cell():
+    """The notes of the single-record checks (verso 0.1.45: `lag_note` of a birth and a death, `age_note` of a marriage) are
+    no column of a familio CSV: a record that carries them gives the very rows it gives without them."""
+    plain = collect(_noted_pair(), reviewed_only=False)
+    noted_sets = _noted_pair(lag_note="крещён по болезни поздно", age_note="так в подлиннике")
+    assert [r.lag_note for s in (noted_sets[0], noted_sets[2]) for r in s.records] == ["крещён по болезни поздно"] * 2
+    assert noted_sets[1].records[0].age_note == "так в подлиннике"
+    noted = collect(noted_sets, reviewed_only=False)
+    assert noted.records_by_type == plain.records_by_type
+    assert (noted.taken, noted.left_out) == (plain.taken, plain.left_out) == (3, 0)
