@@ -1,0 +1,59 @@
+# Invented: the six checks one record answers alone (verso.ru.facts.signals), each variant once, and beside each
+# the quiet case its note makes: calendar_note (a name out of the calendar, a wedding in a fast), lag_note (a late
+# christening, a late burial), age_note (the ages at a wedding), source_date_error (a christening before the birth,
+# a burial before the death). No record writes a year — the book's dates them; one is held (reviewed=False).
+from verso.ru.dsl import Gender, Month, birth, birth_records, death, death_records, marriage, marriage_records, person
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4070", "Маниловка", "Церковь", 1850,
+    # baptism-lag: late (LOW), carried into the next month (HIGH), and stood down
+    birth(1, Gender.MALE, 3, 20, Month.JANUARY, Month.JANUARY, child=person("Иванъ"), father=person("Петръ", "Лукинъ")),
+    birth(2, Gender.MALE, 20, 5, Month.JANUARY, Month.FEBRUARY, child=person("Иванъ"), father=person("Петръ", "Лукинъ")),
+    birth(3, Gender.MALE, 3, 20, Month.JANUARY, Month.JANUARY, child=person("Иванъ"), father=person("Петръ", "Лукинъ"),
+          lag_note="так в подлиннике"),
+    # date-order inside the entry, and its retraction
+    birth(4, Gender.MALE, 18, 11, Month.OCTOBER, Month.OCTOBER, child=person("Иванъ"), father=person("Петръ", "Лукинъ")),
+    birth(5, Gender.MALE, 18, 11, Month.OCTOBER, Month.OCTOBER, child=person("Иванъ"), father=person("Петръ", "Лукинъ"),
+          source_date_error="крещёнъ раньше рожденія — такъ въ подлинникѣ"),
+    # name-days: far (LOW), a look-alike in the window (HIGH), and stood down
+    birth(6, Gender.FEMALE, 15, 16, Month.MAY, Month.MAY, child=person("Екатерина"), father=person("Петръ", "Лукинъ")),
+    birth(7, Gender.MALE, 28, 29, Month.AUGUST, Month.AUGUST, child=person("Симонъ"), father=person("Петръ", "Лукинъ")),
+    birth(8, Gender.FEMALE, 15, 16, Month.MAY, Month.MAY, child=person("Екатерина"), father=person("Петръ", "Лукинъ"),
+          calendar_note="такъ въ подлинникѣ"),
+    # a held record is read like any other
+    birth(9, Gender.MALE, 3, 20, Month.JANUARY, Month.JANUARY, child=person("Иванъ"), father=person("Петръ", "Лукинъ"),
+          reviewed=False),
+    # quiet: christened the next day
+    birth(10, Gender.MALE, 3, 4, Month.JANUARY, Month.JANUARY, child=person("Иванъ"), father=person("Петръ", "Лукинъ")),
+)
+
+weddings = marriage_records(
+    "ГА Глуповской области", "10", "4", "4070", "Маниловка", "Церковь", 1850,
+    # wedding-calendar: a fixed fast, a movable one, a weekday, and stood down
+    marriage(1, 1, Month.DECEMBER, person("Иванъ", "Петровъ"), person("Анна", "Ильина")),
+    marriage(2, 15, Month.MARCH, person("Иванъ", "Петровъ"), person("Анна", "Ильина")),
+    marriage(3, 10, Month.JANUARY, person("Иванъ", "Петровъ"), person("Анна", "Ильина")),
+    marriage(4, 1, Month.DECEMBER, person("Иванъ", "Петровъ"), person("Анна", "Ильина"),
+             calendar_note="такъ въ подлинникѣ"),
+    # wedding-ages: under age, far apart, and stood down
+    marriage(5, 9, Month.JANUARY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), groom_age=16, bride_age=18),
+    marriage(6, 9, Month.JANUARY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), groom_age=45, bride_age=20),
+    marriage(7, 9, Month.JANUARY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), groom_age=16, bride_age=18,
+             age_note="такъ въ подлинникѣ"),
+    # quiet: an open day, ages the law holds
+    marriage(8, 9, Month.JANUARY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), groom_age=20, bride_age=18),
+)
+
+deaths = death_records(
+    "ГА Глуповской области", "10", "4", "4070", "Маниловка", "Церковь", 1850,
+    # burial-lag: late (LOW), very late (HIGH), and stood down
+    death(1, Gender.MALE, 3, 8, Month.MARCH, Month.MARCH, deceased=person("Иванъ")),
+    death(2, Gender.MALE, 3, 1, Month.MARCH, Month.APRIL, deceased=person("Иванъ")),
+    death(3, Gender.MALE, 3, 1, Month.MARCH, Month.APRIL, deceased=person("Иванъ"), lag_note="такъ въ подлинникѣ"),
+    # date-order inside the entry, and its retraction
+    death(4, Gender.MALE, 9, 8, Month.MARCH, Month.MARCH, deceased=person("Иванъ")),
+    death(5, Gender.MALE, 9, 8, Month.MARCH, Month.MARCH, deceased=person("Иванъ"),
+          source_date_error="погребёнъ 8, умеръ 9 — такъ въ подлинникѣ"),
+    # quiet: the third day
+    death(6, Gender.MALE, 3, 5, Month.MARCH, Month.MARCH, deceased=person("Иванъ")),
+)

@@ -85,7 +85,8 @@ def _facts_from_marriage(rec: Any, village: str, source_file: str, entry: int,
         # reached no check (~700 entries across the five villages).
         if age_recorded(age):
             e.facts.append(AgedYears(subject=ref, cite=e.cite(locator), age=age,
-                                     as_of=wed, basis=Stated()))
+                                     as_of=wed, basis=Stated(),
+                                     age_note=getattr(rec, "age_note", None) or None))
 
     # The поручители. One whose side the record states (`side=`) vouched for
     # that party, and the book's word for it rides on the citation. One whose

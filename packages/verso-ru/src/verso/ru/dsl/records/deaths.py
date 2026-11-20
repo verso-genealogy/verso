@@ -48,7 +48,8 @@ class Death:
                  reviewed: bool | None = None,
                  source_age_error: str | None = None,
                  source_date_error: str | None = None,
-                 namesake: str | None = None):
+                 namesake: str | None = None,
+                 lag_note: str | None = None):
         self.record_num = record_num
         # `None` is «not stated»: `page()` and then the record set fill it,
         # so a whole лист can be held (`verso.ru.dsl.records.reviewed`).
@@ -78,6 +79,12 @@ class Death:
         # dates the birth.
         # (Until 2026-09-25 this case was written as `source_age_error`.)
         self.namesake = namesake
+        # The author's note that the burial is RIGHTLY this long after the
+        # death — both dates re-read on the scan. Stands `facts-check
+        # check=burial-lag` down for this record and nothing else; never
+        # emitted to terraform. Not a retraction (cf. `source_date_error`):
+        # both dates stay believed. An empty string is no note.
+        self.lag_note = lag_note or None
         self.gender = gender
         self.year = year
         self.d_day = d_day
@@ -325,7 +332,8 @@ def death(record_num: int | None,
           reviewed: bool | None = None,
           source_age_error: str | None = None,
           source_date_error: str | None = None,
-          namesake: str | None = None) -> Death:
+          namesake: str | None = None,
+          lag_note: str | None = None) -> Death:
     return Death(record_num,
                  gender,
                  d_day,
@@ -349,7 +357,8 @@ def death(record_num: int | None,
                  reviewed=reviewed,
                  source_age_error=source_age_error,
                  source_date_error=source_date_error,
-                 namesake=namesake)
+                 namesake=namesake,
+                 lag_note=lag_note)
 
 
 @captures_written

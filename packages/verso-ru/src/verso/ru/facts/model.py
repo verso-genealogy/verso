@@ -394,7 +394,12 @@ class BornOn(Dated):
 
 @dataclass(frozen=True, kw_only=True)
 class BaptizedOn(Dated):
-    pass
+    #: The author's note that this date is RIGHTLY so long after the one it
+    #: follows — the birth, the death (`birth(lag_note=)`, `death(lag_note=)`).
+    #: Not a retraction: the date stays believed; only
+    #: `verso.ru.facts.checks.lags` reads it. Outside the payload, like
+    #: `MarriedOn.calendar_note`.
+    lag_note: str | None = None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -416,6 +421,12 @@ class BuriedOn(Dated):
     """«погребенъ». A burial is not a death and neither is a birth — the DSL
     spells all three with fields named `b_day`/`b_month` depending on the
     record kind, which is how 3198 burials came to be filed as birth dates."""
+    #: The author's note that this date is RIGHTLY so long after the one it
+    #: follows — the birth, the death (`birth(lag_note=)`, `death(lag_note=)`).
+    #: Not a retraction: the date stays believed; only
+    #: `verso.ru.facts.checks.lags` reads it. Outside the payload, like
+    #: `MarriedOn.calendar_note`.
+    lag_note: str | None = None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -449,6 +460,11 @@ class AgedYears(Quantified):
     #: — which christening this age may be measured from — so only the check
     #: asking it reads the note (`verso.ru.facts.checks.stated_age.stated_age_findings`).
     namesake: str | None = None
+    #: The author's note that the ages at a wedding are RIGHT although one is
+    #: under the age of marriage or the two are far apart
+    #: (`marriage(age_note=)`). Not a retraction: the age stays believed and
+    #: still dates the birth; only `verso.ru.facts.checks.wedding_ages` reads it.
+    age_note: str | None = None
 
 
 @dataclass(frozen=True, kw_only=True)

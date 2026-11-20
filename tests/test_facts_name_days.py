@@ -6,7 +6,7 @@ from calendar import Month
 
 from verso.ru.church_calendar.julian import jdn
 from verso.ru.church_calendar.svyatcy import Commemorated, Svyatcy
-from verso.ru.cli.facts import format_name_days
+from verso.ru.cli.facts import signal_report
 from verso.ru.domain import person
 from verso.ru.dsl.records.births import birth, birth_month, birth_records, christening
 from verso.ru.facts.checks.name_days import name_day_findings, window
@@ -128,9 +128,10 @@ class Findings(unittest.TestCase):
             Commemorated(gender=M, headword="Симон", name="Симон", dates=((5, 10),)),
             Commemorated(gender=M, headword="Симеон", name="Симеон", dates=((9, 1),)),
         ]))
-        text = format_name_days(result)
-        self.assertIn("[HIGH] Симон (муж), р. 28.08.1850, кр. 29.08.1850", text)
-        self.assertIn("в окне поминается: Симеон", text)
+        text = signal_report("name-days", result)
+        self.assertIn("[HIGH] Симон: ближайший святой имени 10.05", text)
+        self.assertIn("(р. 28.08.1850, кр. 29.08.1850)", text)
+        self.assertIn("    В окне поминается: Симеон", text)
         self.assertIn("b.py №7", text)
 
 

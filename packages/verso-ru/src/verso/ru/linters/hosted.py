@@ -26,6 +26,9 @@ The table is `hosted.toml`, one row per code of `codes.LINTER_CODES`:
   inherits (the book's default, a derivation of the factory), which the fix removes. Every such code is
   `derived`, and a positional code folding into one (`as`) says it too; absent, false. Read it as
   `readiness()[code].redundant`;
+* `stand_down` — the key of a record's `written` that stands the code down once the scan confirms the source
+  («так в подлиннике»: `source_date_error` for DBD001 and DBD002). A store that refuses a write for the code can
+  offer the field without knowing the code; absent, none. Read it as `readiness()[code].stand_down`;
 * `note` — one line: what it checks and what it reads.
 
 `verso.ru.linters.on_json` walks the JSON for the codes it supports; the table says how far the
@@ -69,6 +72,7 @@ class Readiness:
     forms: tuple[Form, ...] = ()
     redundant: bool = False         # the finding is a redundant argument (`redundant` of `hosted.toml`)
     scope: str = "record"           # where the code is answered (`scope` of `hosted.toml`)
+    stand_down: str | None = None   # the key of `written` that stands the code down (`stand_down` of `hosted.toml`)
 
 
 def readiness() -> dict[str, Readiness]:
@@ -85,13 +89,15 @@ def _read_table() -> dict[str, Readiness]:
         cls, severity, needs = row["class"], row["severity"], tuple(row.get("needs", ()))
         redundant = row.get("redundant", False)
         scope = row.get("scope")
+        stand_down = row.get("stand_down")
         if (cls not in CLASSES or severity not in ("refuse", "warn") or not set(needs) <= set(NEEDS)
                 or not isinstance(redundant, bool) or (redundant and cls != "derived")
-                or scope not in SCOPES or (scope == "source") != (cls == "source")):
+                or scope not in SCOPES or (scope == "source") != (cls == "source")
+                or not (stand_down is None or (isinstance(stand_down, str) and stand_down))):
             raise ValueError(t("hosted.bad_row", code=code, row=repr(row)))
         forms = tuple(Form(f["said"], f["read"], tuple(f.get("rename", {}).items()), tuple(f.get("unquote", ())))
                       for f in row.get("forms", ()))
-        out[code] = Readiness(cls, severity, needs, row["note"], row.get("as"), forms, redundant, scope)
+        out[code] = Readiness(cls, severity, needs, row["note"], row.get("as"), forms, redundant, scope, stand_down)
     return out
 
 

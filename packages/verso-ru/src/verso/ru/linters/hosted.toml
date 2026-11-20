@@ -213,6 +213,7 @@ class = "derived"
 severity = "refuse"
 scope = "record"
 needs = ["names"]
+stand_down = "source_date_error"
 note = "a burial before the death; the month from the section, the year from the record or the book"
 
 [DBD002]
@@ -220,6 +221,7 @@ class = "derived"
 severity = "refuse"
 scope = "record"
 needs = ["names"]
+stand_down = "source_date_error"
 note = "a death or burial day its month does not have; the month and the year derived"
 
 [MRA001]

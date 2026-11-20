@@ -99,11 +99,11 @@ def findings_snapshot(village_dir: Path) -> str:
                                  name_variants_channel(lambda key: key in loose))
                 if r.is_candidate]
     weddings = wedding_calendar_findings(believed)
-    late_baptisms = baptism_lags(believed)
-    late_burials = burial_lags(believed)
+    late_baptisms = baptism_lags(believed).findings
+    late_burials = burial_lags(believed).findings
     posthumous = posthumous_births(believed, identity)
     spans = children_spans(believed, identity)
-    wedding_ages = wedding_age_findings(believed)
+    wedding_ages = wedding_age_findings(believed).findings
 
     rows: list[tuple[str, int, int | None]] = [
         ("baptism-lag", len(late_baptisms),

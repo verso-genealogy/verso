@@ -33,7 +33,9 @@ no `__main__`: `verso export-csv` writes its CSVs. The full surface, with every 
   years), a place is a key of the corpus's places, looked up verbatim.
 - **A record the source contradicts is declared, not corrected**: `source_date_error=` (a
   christening dated before the birth), `source_age_error=`, `source_kin_error=`,
-  `calendar_note=` — free text, never emitted, read by the checks they stand down.
+  `calendar_note=` — free text, never emitted, read by the checks they stand down. A value that is RIGHT and only
+  looks wrong is noted the same way and withdraws nothing: `calendar_note=` (a name out of the calendar, a wedding
+  in a fast), `lag_note=` (a christening or a burial long after), `age_note=` (the ages at a wedding).
 - **`reviewed=False`** holds a record off Geni and out of the facts layer until read against the
   scan (see [the review ratchet](review-ratchet.md)).
 - **A book of the civil registry is `civil=True`** on its record set — `birth_records`,

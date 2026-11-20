@@ -576,6 +576,9 @@ year = "год"
 baptism_year = "год крещ."
 source_date_error = "ошибка даты в подлиннике"
 calendar_note_birth = "имя не по святцам — верно"
+lag_note_birth = "позднее крещение — верно"
+lag_note_death = "позднее погребение — верно"
+age_note = "возраст при венчании — верно"
 relationship = "кем приходится"
 relationship_ref = "чей родственник"
 baptism_age = "возраст при крещении"
@@ -1030,6 +1033,8 @@ skipped = "пропущено файлов: {count} (см. {where})"
 dumped = { one = "{count} утверждение → {path}", few = "{count} утверждения → {path}", many = "{count} утверждений → {path}", other = "{count} утверждения → {path}" }
 leaf = ", л. {page}"
 calendar_noted = "; снято заметкой calendar_note — {noted}"
+noted = "; снято заметкой {field} — {noted}"
+stand_down = "Так в подлиннике — впишите в запись {field}=\"…\"."
 
 [cli.familio_spravochnik]
 no_template = "нет шаблона МК Familio: --template ФАЙЛ или <корпус>/familio/Shablon_MK.xlsx"
@@ -1538,6 +1543,57 @@ death_before_baptism = "смерть раньше крещения — пере�
 burial_before_baptism = "погребение раньше крещения — перепутаны день или месяц, либо сведены два младенца-тёзки"
 death_before_alive = "умер раньше, чем ревизия учла его живым — в одного сведены двое (отец и сын одного имени), либо перепутан год смерти"
 burial_before_alive = "погребён раньше, чем ревизия учла его живым — в одного сведены двое, либо перепутан год"
+
+[facts.signal]
+note_default = "так в подлиннике"
+
+[facts.signal.wedding_calendar]
+strict = "Венчание {date} ({weekday}) — {ban}."
+strict_why = "В посты, на сырной и Светлой седмицах, в Святки, 29.08 и 14.09 не венчали: почти всегда неверно прочитан месяц или день."
+loose = "Венчание {date} ({weekday}) — {ban}."
+loose_why = "Вторник, четверг, субботу, кануны праздников и мясопустное воскресенье книги соблюдают нестрого: повод перечитать день, не приговор."
+pascha = "Пасха {date}."
+other_months = "Тот же день в соседнем месяце разрешён: {dates}."
+other_days = "День рядом разрешён: {dates}."
+
+[facts.signal.name_days]
+far = "{name}: ближайший святой имени {nearest} — {outside} дн. за окном (р. {born}, кр. {christened})."
+far_why = "Окно: рождение −{before} … max(крещение, 8-й день) +{after} дн. Чаще всего имя просто дано не по святцам."
+lookalike = "{name}: ближайший святой имени {nearest} — {outside} дн. за окном (р. {born}, кр. {christened})."
+lookalike_why = "В окне поминается похожее имя: с него и начинать сверку по скану."
+lookalikes = "В окне поминается: {names}."
+
+[facts.signal.baptism_lag]
+late = "Крещение {christened} — через {days} дн. после рождения {born}."
+late_why = "Крестили на первый-второй день, редко позже {limit} дн."
+month_carried = "Крещение {christened} — через {days} дн. после рождения {born}."
+month_carried_why = "День крещения меньше дня рождения, и месяц крещения выведен как следующий: один из двух дней, вероятно, прочитан неверно."
+
+[facts.signal.burial_lag]
+late = "Погребение {buried} — через {days} дн. после смерти {died}."
+late_why = "Хоронили на третий день; позже {limit} дн. — повод перечитать дни."
+very_late = "Погребение {buried} — через {days} дн. после смерти {died}."
+very_late_why = "Хоронили на третий день; больше {limit} дн. не объяснить ни погодой, ни отлучкой причта."
+
+[facts.signal.wedding_ages]
+under_age_groom = "Жениху «{age}» — меньше {minimum} лет на венчании {married}."
+under_age_bride = "Невесте «{age}» — меньше {minimum} лет на венчании {married}."
+under_age_why = "Минимум — по дате венчания: с 17.12.1774 15/13, с 19.07.1830 18/16; полгода книги допускают сами."
+age_gap = "Жениху «{groom}», невесте «{bride}»: разница в возрасте — {years}."
+age_gap_why = "Супруги дальше {gap} лет друг от друга: в книгах такого почти нет — повод перечитать возраст."
+
+[facts.signal.date_order]
+baptism_before_birth = "Крещение {left} раньше рождения {right}."
+death_before_birth = "Смерть {left} раньше рождения {right}."
+burial_before_death = "Погребение {left} раньше смерти {right}."
+burial_before_birth = "Погребение {left} раньше рождения {right}."
+marriage_before_birth = "Венчание {left} раньше рождения {right}."
+death_before_marriage = "Смерть {left} раньше венчания {right}."
+burial_before_marriage = "Погребение {left} раньше венчания {right}."
+death_before_baptism = "Смерть {left} раньше крещения {right}."
+burial_before_baptism = "Погребение {left} раньше крещения {right}."
+death_before_alive = "Смерть {left} раньше, чем учтён живым ({right})."
+burial_before_alive = "Погребение {left} раньше, чем учтён живым ({right})."
 
 [facts.reconcile]
 born = "р. {date} [{cite}]"

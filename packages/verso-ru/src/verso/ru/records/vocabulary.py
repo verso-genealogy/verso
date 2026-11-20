@@ -57,18 +57,18 @@ _PERSON = _f("""name_orig:str name_modern:str='' patr_orig:str patr_old:str='' p
     occupation:str side:Side""")
 _CLERGY = "priest:person deacon:person dyachok:person sexton:person"
 _BIRTH = _f(f"""record_num:intstr reviewed:bool calendar_note:str source_date_error:str
-    gender:Gender b_day:int b_month:Month k_day:int k_month:Month year:int k_year:int
+    lag_note:str gender:Gender b_day:int b_month:Month k_day:int k_month:Month year:int k_year:int
     christening_age:int child:person father:person mother:person god_parent1:person
     god_parent2:person god_parent3:person god_parent4:person {_CLERGY} page:str inventory:str
     case:str book:str comment:str civil:bool=False relatives:Relatives=[]""")
 _MARRIAGE = _f(f"""record_num:intstr reviewed:bool calendar_note:str source_kin_error:str
-    w_day:int w_month:Month groom:person bride:person groom_marriage_num:int
+    age_note:str w_day:int w_month:Month groom:person bride:person groom_marriage_num:int
     bride_marriage_num:int groom_age:age bride_age:age witness1:person witness2:person
     witness3:person witness4:person witness5:person witness6:person page:str archive:str
     fund:str inventory:str case:str village:str church:str book:str comment:str {_CLERGY}
     relatives:Relatives=[] year:int bride_takes_groom_surname:bool=True civil:bool=False""")
 _DEATH = _f(f"""record_num:intstr reviewed:bool source_date_error:str source_age_error:str
-    namesake:str gender:Gender year:int d_day:int d_month:Month b_day:int b_month:Month
+    namesake:str lag_note:str gender:Gender year:int d_day:int d_month:Month b_day:int b_month:Month
     deceased:person relatives:Relatives=[] witness1:person witness2:person {_CLERGY}
     cause_of_death:cause age:age page:str archive:str fund:str inventory:str case:str
     church:str book:str comment:str civil:bool=False""")

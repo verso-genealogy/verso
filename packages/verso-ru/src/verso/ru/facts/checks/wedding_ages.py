@@ -21,6 +21,9 @@ re-crop.
 302 within five years, 38 within ten, 10 within fifteen, one at fifteen, no
 bride ten or more years older. A gap past `GAP_YEARS` is a LOW finding,
 standing guard: a widower may marry young, and the books hold none today.
+
+Ages the scan confirms carry `marriage(age_note=)`: the entry's findings are
+counted (`WeddingAges.noted`), not reported again; both ages stay believed.
 """
 from __future__ import annotations
 
@@ -70,9 +73,18 @@ class WeddingAgeFinding:
         return "HIGH" if self.kind == "under_age" else "LOW"
 
 
-def wedding_age_findings(facts: AssertionSet) -> list[WeddingAgeFinding]:
-    found: list[WeddingAgeFinding] = []
+@dataclass(frozen=True)
+class WeddingAges:
+    findings: list[WeddingAgeFinding]
+    #: Findings the author stood down with `age_note=`.
+    noted: int
+
+
+def wedding_age_findings(facts: AssertionSet) -> WeddingAges:
+    kept: list[WeddingAgeFinding] = []
+    noted = 0
     for record in facts.records():
+        found: list[WeddingAgeFinding] = []
         wed = record.of(MarriedOn)
         if not wed:
             continue
@@ -98,5 +110,10 @@ def wedding_age_findings(facts: AssertionSet) -> list[WeddingAgeFinding]:
                     cite=wed[0].cite, kind="age_gap", married=married,
                     ages=(stated["groom"][2], stated["bride"][2]),
                     gap_years=round(abs(groom - bride), 1)))
-    found.sort(key=lambda f: (f.confidence != "HIGH", f.cite.sort_key))
-    return found
+        # One note speaks for the entry: it stands down every finding its ages make.
+        if any(claim.age_note for claim in record.of(AgedYears)):
+            noted += len(found)
+        else:
+            kept += found
+    kept.sort(key=lambda f: (f.confidence != "HIGH", f.cite.sort_key))
+    return WeddingAges(findings=kept, noted=noted)
