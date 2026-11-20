@@ -1,21 +1,25 @@
 """Familio справочник submission exporter.
 
 A *справочник* is one Familio submission file (`.xlsx`) covering many years of a
-village's records, with one tab per record type (РОЖДЕНИЕ / БРАК / СМЕРТЬ). It is
-built by aggregating the per-year ``*_familio.csv`` files emitted by
-:mod:`verso.ru.exporters.csv_familio` and projecting them onto the official Familio
-**МК** template (``Shablon_MK.xlsx``) — see :mod:`verso.ru.exporters.familio_template`
-for the column mapping.
+parish's records, with one tab per record type (РОЖДЕНИЕ / БРАК / СМЕРТЬ). It is
+built from the record sets themselves — the rows :mod:`verso.ru.exporters.csv_familio`
+gives of each, no CSV read from a disk — projected onto the columns of the official
+Familio **МК** template (see :mod:`verso.ru.exporters.familio_template` for the column
+mapping) and written into a workbook of that template's layout
+(:mod:`verso.ru.exporters.familio_layout`), or into Familio's own file.
 
 This module is layered for testability:
 
-* **Domain** (pure, no I/O): :func:`build_sheet`, :func:`build_spravochnik` and the
+* **Domain** (pure, no I/O): :func:`collect` (record sets → source rows, the unreviewed
+  left out), :func:`build_sheet`, :func:`build_spravochnik` and the
   :class:`Spravochnik` / :class:`SpravochnikSheet` / :class:`YearRecords` value
   objects. Rows are concatenated in year order, projected onto the template's
   columns, and given a continuous *сквозная нумерация* (template column "А").
-* **Infrastructure**: :func:`read_year_records` (CSV reader) and
-  :class:`FamilioTemplateWriter` (fills a copy of the template ``.xlsx`` — the only
-  ``openpyxl``-touching code).
+  :func:`referenced_places`, :func:`location_rows` and :func:`known_from` make the
+  ``location`` sheet's rows of the places the rows name and a places dictionary.
+* **Infrastructure**: :func:`read_location_rows`, :func:`read_about` (a village's curated
+  files) and :class:`FamilioTemplateWriter` (fills the workbook — the only
+  ``openpyxl``-touching code besides the layout's).
 """
 from __future__ import annotations
 
@@ -23,20 +27,32 @@ import csv
 import re
 import xml.etree.ElementTree as ET
 import zipfile
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 from copy import copy
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from openpyxl.workbook.workbook import Workbook
     from openpyxl.worksheet.worksheet import Worksheet
 
+    from verso.core.places import Places
+
+from verso.core.ratchet import unreviewed
+from verso.ru.dsl.records.births import BirthRecords
+from verso.ru.dsl.records.deaths import DeathRecords
+from verso.ru.dsl.records.marriages import MarriageRecords
+from verso.ru.exporters.csv_familio import exporter_of
+from verso.ru.exporters.familio_layout import LOCATION_HELPER_HEADERS, Layout, build_workbook, load_layout
 from verso.ru.exporters.familio_template import (
     TEMPLATE_DATA_START_ROW, TEMPLATE_MAPS, TEMPLATE_SHEET_TITLES, remap_row)
 
 # Record types in canonical справочник order.
 RECORD_TYPES: tuple[str, ...] = ("births", "marriages", "deaths")
+
+# The record sets a справочник reads — the three parts of a metric book — and the tab each fills.
+RECORD_SET_TYPES: dict[type, str] = {BirthRecords: "births", MarriageRecords: "marriages", DeathRecords: "deaths"}
 
 # Source CSV columns identifying the archival дело (Архив, Фонд, Опись, Дело),
 # used to group records of the same book together.
@@ -72,6 +88,62 @@ class Spravochnik:
     to_year: int
     sheets: list[SpravochnikSheet]
     years_label: str = ""  # human label for the year set ("1832-1840" or "1799, 1805")
+
+
+@dataclass(frozen=True)
+class Collected:
+    """What `collect` read of the record sets it was given: the rows by tab, a year's a `YearRecords`; how many
+    records they are and how many were left out as unreviewed; the parishes the rows are of, in the order met."""
+
+    records_by_type: dict[str, list[YearRecords]]
+    taken: int
+    left_out: int
+    parishes: tuple[str, ...]
+
+
+def collect(record_sets: Iterable[object], *, parish: str | None = None, years: Collection[int] | None = None,
+            reviewed_only: bool = True) -> Collected:
+    """A справочник's source rows from record sets, in their order — what the per-year familio CSVs held, read
+    from no file. A set that is no part of a metric book (`RECORD_SET_TYPES`) is passed over and counted
+    nowhere; a set bound twice (an alias) is read once. `parish` keeps the sets of that parish (the set's
+    `village`), `years` the sets of those years. With `reviewed_only` an unreviewed record
+    (`verso.core.ratchet.unreviewed`) gives no row and is counted in `left_out`; a set left with no row gives
+    no year."""
+    records_by_type: dict[str, list[YearRecords]] = {record_type: [] for record_type in RECORD_TYPES}
+    taken = left_out = 0
+    parishes: list[str] = []
+    seen: set[int] = set()
+    for record_set in record_sets:
+        record_type = RECORD_SET_TYPES.get(type(record_set))
+        exporter = exporter_of(record_set)
+        if record_type is None or exporter is None or id(record_set) in seen:
+            continue
+        seen.add(id(record_set))
+        book: Any = record_set
+        if parish is not None and book.village != parish:
+            continue
+        if years is not None and book.year not in years:
+            continue
+        records = [r for r in book.records if not (reviewed_only and unreviewed(r))]
+        left_out += len(book.records) - len(records)
+        if not records:
+            continue
+        taken += len(records)
+        if book.village not in parishes:
+            parishes.append(book.village)
+        records_by_type[record_type].append(
+            YearRecords(year=book.year, rows=exporter.table(book, records=records).text_rows()))
+    return Collected(records_by_type, taken, left_out, tuple(parishes))
+
+
+def years_label_for(years: list[int]) -> str:
+    """Human label: a single year as ``1805``, a contiguous run as ``1832-1840``,
+    else an explicit list ``1799, 1805``."""
+    if len(years) == 1:
+        return str(years[0])
+    if years == list(range(years[0], years[-1] + 1)):
+        return f"{years[0]}-{years[-1]}"
+    return ", ".join(str(y) for y in years)
 
 
 def _delo_id(row: list[str]) -> str:
@@ -152,23 +224,6 @@ def build_spravochnik(
     )
 
 
-def read_year_records(
-    village_dir: Path, village: str, year: int, record_type: str
-) -> YearRecords | None:
-    """Read one per-year familio CSV (dropping its header), or ``None`` if absent.
-
-    Looks for ``{village_dir}/{year}/{village}_{year}_{record_type}_familio.csv``.
-    """
-    path = village_dir / str(year) / f"{village}_{year}_{record_type}_familio.csv"
-    if not path.exists():
-        return None
-    with path.open(encoding="utf-8", newline="") as f:
-        all_rows = list(csv.reader(f))
-    if len(all_rows) <= 1:
-        return None
-    return YearRecords(year=year, rows=all_rows[1:])
-
-
 @dataclass(frozen=True)
 class LocationRow:
     """One curated ``location`` sheet entry (the durable input columns)."""
@@ -202,6 +257,95 @@ def read_location_rows(path: Path) -> list[LocationRow] | None:
         ]
 
 
+# What a place's `city` begins with → the `type` Familio's `location` sheet writes. A word that is not here
+# leaves the type blank: the indexer writes it.
+_PLACE_TYPES: dict[str, str] = {
+    "село": "с.", "деревня": "д.", "город": "г.", "слобода": "сл.", "посёлок": "пос.", "поселок": "пос.",
+    "хутор": "х.", "сельцо": "сц.", "погост": "пог.", "выселок": "выс.", "местечко": "м.", "станция": "ст.",
+}
+_FAMILIO_SETTLEMENT = "https://familio.org/settlements/"
+
+
+def referenced_places(spravochnik: Spravochnik, layout: Layout | None = None) -> list[str]:
+    """Every place a row of the справочник names — the value on the left of each location helper column —
+    as it is written, once, in the order first met: what the `location` sheet must list for no lookup to miss."""
+    layout = layout or load_layout()
+    found: dict[str, None] = {}
+    for sheet in spravochnik.sheets:
+        sources = sorted(c - 2 for c in layout.sheets[sheet.record_type].helpers)     # 0-based, left of the helper
+        for row in sheet.rows:
+            for index in sources:
+                if index < len(row) and row[index] != "":
+                    found.setdefault(row[index], None)
+    return list(found)
+
+
+def derive_location(place: str, fields: Mapping[str, str], attributes: Mapping[str, str]) -> LocationRow:
+    """The `location` row of `place` (kept as written: it is the lookup's key) from a place's fields — only
+    what they say unambiguously. `city` «село X» gives the type «с.» (`_PLACE_TYPES`) — unless the place is
+    written with its type already («с. X», «село X») —; `county` «A уезд, B
+    волость» the district A and the volost B; `state` «A губерния» the region A, any other state whole; the
+    attribute `familio` the settlement's link. Whatever is not said so stays blank."""
+    kind, _, rest = fields.get("city", "").strip().partition(" ")
+    place_type = _PLACE_TYPES.get(kind.lower(), "") if rest else ""
+    written = place.strip().lower()
+    if place_type and (written.startswith(place_type) or written.startswith(f"{kind.lower()} ")):
+        place_type = ""         # «с. X», «село X»: the sheet's formula writes «type place» — no «с. с. X»
+    district = volost = ""
+    for part in (part.strip() for part in fields.get("county", "").split(",")):
+        if part.endswith(" уезд"):
+            district = part.removesuffix(" уезд").strip()
+        elif part.endswith(" волость"):
+            volost = part.removesuffix(" волость").strip()
+    state = fields.get("state", "").strip()
+    region = state.removesuffix(" губерния").strip() if state.endswith(" губерния") else state
+    settlement = attributes.get("familio", "").strip()
+    return LocationRow(place=place, type=place_type, region=region, district=district, volost=volost,
+                       link=f"{_FAMILIO_SETTLEMENT}{settlement}" if settlement else "")
+
+
+def known_from(places: Places) -> Callable[[str], LocationRow | None]:
+    """What a places dictionary knows of a place, as `location_rows` asks it: the row `derive_location` makes of
+    the place's fields — a spelling's (`same_as`) are its canon's —, None for a place the dictionary lacks. A
+    place written with a space around it is found without the space, and kept as written."""
+    from verso.core.places import parse_body
+
+    def known(place: str) -> LocationRow | None:
+        canon = places.canonicals.get(place) or places.canonicals.get(place.strip())
+        body = places.bodies.get(canon) if canon is not None else None
+        if canon is None or body is None:
+            return None
+        attributes = {name: values[canon] for name, values in places.attributes.items() if canon in values}
+        return derive_location(place, parse_body(body), attributes)
+
+    return known
+
+
+def location_rows(places: Sequence[str], *, curated: Sequence[LocationRow] = (),
+                  known: Callable[[str], LocationRow | None] = lambda place: None) -> list[LocationRow]:
+    """The `location` sheet's rows for a справочник that names `places`: the curated rows first, as they are and
+    in their order (a row no record names stays); then every other place named — what `known` says of it, a
+    row of its name alone where it says nothing."""
+    rows = list(curated)
+    listed = {row.place for row in rows}
+    for place in places:
+        if place in listed:
+            continue
+        listed.add(place)
+        rows.append(known(place) or LocationRow(place, "", "", "", "", ""))
+    return rows
+
+
+def _places_named(spravochnik: Spravochnik) -> list[LocationRow]:
+    """The `location` rows of a справочник nobody gave any: the places its rows name, their names alone."""
+    return location_rows(referenced_places(spravochnik))
+
+
+def blank_places(rows: Sequence[LocationRow]) -> int:
+    """How many rows say nothing but the place's name: what is left for the indexer to fill."""
+    return sum(1 for row in rows if not (row.type or row.region or row.district or row.volost or row.link))
+
+
 @dataclass(frozen=True)
 class AboutInfo:
     """Values for the ``about`` (INFO) sheet of a Familio submission.
@@ -224,11 +368,10 @@ class AboutInfo:
 def read_about(
     path: Path, village: str, from_year: int, to_year: int, years_label: str = ""
 ) -> AboutInfo | None:
-    """Read a per-village ``about.json``, substituting village/year placeholders.
+    """Read a per-village ``about.json``, substituting village/year placeholders (:func:`about_of`).
 
     Returns ``None`` if the file is absent (the template's ``about`` sheet is then
-    left untouched). ``{years}`` expands to ``years_label`` (a contiguous range like
-    ``1832-1840`` or an explicit list like ``1799, 1805``).
+    left untouched).
     """
     import json
 
@@ -236,7 +379,16 @@ def read_about(
         return None
     with path.open(encoding="utf-8") as f:
         data: dict[str, object] = json.load(f)
+    return about_of(data, village, from_year, to_year, years_label)
 
+
+def about_of(
+    data: Mapping[str, object], village: str, from_year: int, to_year: int, years_label: str = ""
+) -> AboutInfo:
+    """The ``about`` values a mapping holds — ``about.json``'s keys, from wherever a host keeps them — with the
+    village/year placeholders substituted: ``{village}``, ``{from_year}``, ``{to_year}``, and ``{years}``, which
+    expands to ``years_label`` (a contiguous range like ``1832-1840`` or an explicit list like ``1799, 1805``).
+    A key the mapping lacks is empty; ``otchestvo_type`` is ``современный`` by default, ``is_update`` false."""
     label = years_label or f"{from_year}-{to_year}"
 
     def sub(value: str) -> str:
@@ -262,16 +414,38 @@ def read_about(
     )
 
 
+# The rows of `about` the year range alone answers, and the about of a справочник that was given none.
+_YEARS_LABELS = frozenset({"Годы, охватываемые индексацией", "Наименьший год, охватываемый индексацией"})
+_NO_ABOUT = AboutInfo("", "", "", "", "", "", False, "")
+
+
+# A spreadsheet keeps fifteen digits of a number; a longer run of digits is a text.
+_MAX_NUMBER_DIGITS = 15
+
+
 def _coerce(value: str) -> str | int:
-    """Write purely-numeric cells as numbers so Excel doesn't flag them as text."""
-    return int(value) if value.isdigit() else value
+    """Write purely-numeric cells as numbers so Excel doesn't flag them as text — a plain number only: ASCII
+    digits, no leading nought (a лист «007» is its text), no more of them than a spreadsheet keeps. A digit
+    of another script, a superscript or a circled number stays the text it is (`str.isdigit` would take
+    them, and `int` would change them or refuse)."""
+    plain = (value.isascii() and value.isdigit() and len(value) <= _MAX_NUMBER_DIGITS
+             and (value == "0" or not value.startswith("0")))
+    return int(value) if plain else value
 
 
-# Template helper columns that hold a place-name lookup. Each such column resolves
-# the Н.П. cell immediately to its left into a full location string via VLOOKUP
-# against the ``location`` sheet. Identified by their row-2 header (works across
-# all three record tabs and is robust to template column reordering).
-LOCATION_HELPER_HEADERS: frozenset[str] = frozenset({"full_location", "person_location"})
+def _put(ws: Worksheet, row: int, column: int, value: str | int) -> None:
+    """A value that came from a record or from a person's own words, written as what it is: a text beginning
+    with ``=`` is a text, never a formula (openpyxl reads such a string as one). The workbook's formulas are
+    the writer's own."""
+    cell = ws.cell(row=row, column=column, value=value)
+    if isinstance(value, str) and cell.data_type == "f":
+        cell.data_type = "s"
+
+
+# Template helper columns that hold a place-name lookup (`LOCATION_HELPER_HEADERS`, of the layout). Each such
+# column resolves the Н.П. cell immediately to its left into a full location string via VLOOKUP against the
+# ``location`` sheet. Identified by their row-2 header (works across all three record tabs and is robust to
+# template column reordering).
 
 # Column on the ``location`` sheet that VLOOKUP returns (col G, 1-based 7).
 _LOCATION_RESULT_COL = 7
@@ -342,9 +516,13 @@ class FamilioTemplateWriter:
     ``full_location`` / ``person_location`` helper columns are filled with VLOOKUP
     formulas against the ``location`` sheet, which can optionally be (re)populated
     from curated :class:`LocationRow` data.
+
+    With no ``template_path`` the workbook is the one the library builds of the template's layout
+    (:func:`verso.ru.exporters.familio_layout.build_workbook`): the same sheets, header rows and columns, none
+    of Familio's helper sheets, dropdowns or formatting — and the same cells written into it.
     """
 
-    def __init__(self, template_path: Path):
+    def __init__(self, template_path: Path | None = None):
         self.template_path = template_path
 
     def write(
@@ -357,7 +535,7 @@ class FamilioTemplateWriter:
         from openpyxl import load_workbook
         from openpyxl.utils import get_column_letter
 
-        wb = load_workbook(self.template_path)
+        wb = load_workbook(self.template_path) if self.template_path is not None else build_workbook()
         for sheet in spravochnik.sheets:
             ws = wb[sheet.title]
             # Columns whose value is a VLOOKUP formula rather than copied data.
@@ -368,6 +546,9 @@ class FamilioTemplateWriter:
             }
             # Capture the template's per-row data-row formatting before clearing, so
             # generated rows keep the same borders/fonts/number formats.
+            # The Н.П. cells the helpers look up: written as text whatever they hold — the `location` sheet's
+            # names are text, and a lookup of a number among texts misses.
+            looked_up = {c - 1 for c in helper_cols}
             styles = _capture_row_styles(ws, TEMPLATE_DATA_START_ROW)
             tpl_last_row = ws.max_row
             # Clear any sample/leftover data rows below the header.
@@ -380,7 +561,7 @@ class FamilioTemplateWriter:
                         src_col = get_column_letter(c_off - 1)
                         ws.cell(row=excel_row, column=c_off, value=_location_vlookup(src_col, excel_row))
                     elif value != "":
-                        ws.cell(row=excel_row, column=c_off, value=_coerce(value))
+                        _put(ws, excel_row, c_off, value if c_off in looked_up else _coerce(value))
                 _apply_row_styles(ws, excel_row, r_off, styles)
             # Stretch the template's conditional formatting over the generated rows.
             new_last_row = TEMPLATE_DATA_START_ROW + len(sheet.rows) - 1
@@ -388,16 +569,24 @@ class FamilioTemplateWriter:
             # Thicken the bottom border at each дело boundary.
             self._mark_delo_boundaries(ws, TEMPLATE_DATA_START_ROW, len(sheet.rows))
 
+        if location_rows is None and self.template_path is None:
+            # The built workbook has no sample rows to keep, and a lookup against an empty sheet misses: it
+            # lists at least the names of the places its rows name.
+            location_rows = _places_named(spravochnik)
         if location_rows is not None:
             self._write_location_sheet(wb, location_rows)
         if about is not None:
             self._write_about_sheet(wb, about, spravochnik)
+        elif self.template_path is None:
+            # The built workbook has no sample to keep: it says at least the years it covers.
+            self._write_about_sheet(wb, _NO_ABOUT, spravochnik, years_only=True)
 
         out_path.parent.mkdir(parents=True, exist_ok=True)
         wb.save(out_path)
         # openpyxl drops the template's x14 (extension) data-validation dropdowns
         # on load; splice them back from the template so the dropdowns survive.
-        self._preserve_data_validations(self.template_path, out_path)
+        if self.template_path is not None:
+            self._preserve_data_validations(self.template_path, out_path)
         return out_path
 
     @staticmethod
@@ -417,12 +606,9 @@ class FamilioTemplateWriter:
             ws.delete_rows(start, ws.max_row - start + 1)
         for i, loc in enumerate(location_rows):
             r = start + i
-            ws.cell(row=r, column=1, value=loc.place)
-            ws.cell(row=r, column=2, value=loc.type)
-            ws.cell(row=r, column=3, value=loc.region)
-            ws.cell(row=r, column=4, value=loc.district)
-            ws.cell(row=r, column=5, value=loc.volost)
-            ws.cell(row=r, column=8, value=loc.link)
+            for column, value in ((1, loc.place), (2, loc.type), (3, loc.region), (4, loc.district),
+                                  (5, loc.volost), (8, loc.link)):
+                _put(ws, r, column, value)
             ws.cell(row=r, column=6, value=f'=CONCATENATE(B{r}," ",A{r})')
             ws.cell(
                 row=r,
@@ -438,11 +624,11 @@ class FamilioTemplateWriter:
             _apply_row_styles(ws, r, i, styles)
 
     @staticmethod
-    def _write_about_sheet(wb: Workbook, about: AboutInfo, sp: Spravochnik) -> None:
+    def _write_about_sheet(wb: Workbook, about: AboutInfo, sp: Spravochnik, *, years_only: bool = False) -> None:
         """Fill the ``about`` sheet's value column (B) by matching row labels (A).
 
         Labels and helper text shipped in the template are preserved; only the
-        per-submission values are written.
+        per-submission values are written — with ``years_only`` the two rows of the years alone.
         """
         ws = wb["about"]
         values: dict[str, str | int] = {
@@ -459,12 +645,14 @@ class FamilioTemplateWriter:
             ),
             "Ссылка на загруженный ранее справочник на сайте familio.org": about.prior_catalog_url,
         }
+        if years_only:
+            values = {label: value for label, value in values.items() if label in _YEARS_LABELS}
         for r in range(1, ws.max_row + 1):
             label = ws.cell(row=r, column=1).value
             if isinstance(label, str) and label.strip() in values:
                 value = values[label.strip()]
                 if value != "":
-                    ws.cell(row=r, column=2, value=value)
+                    _put(ws, r, 2, value)
 
     @staticmethod
     def _extend_conditional_formatting(ws: Worksheet, tpl_last: int, new_last: int) -> None:

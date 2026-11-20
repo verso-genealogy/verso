@@ -3,6 +3,69 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## 0.1.46 — unreleased
+
+A corpus's CSVs do not move: `verso export-csv` writes the bytes it wrote. `verso familio-spravochnik` changes
+on purpose — see **Changed**; the workbook it writes is no output a corpus commits.
+
+### Added
+
+- verso-ru: a familio CSV as a table in memory. `verso.ru.exporters.base` gains `CsvTable` (`name`, `headers`,
+  `rows`, `text_rows()` — the rows as the csv module writes and reads them back) and `write_table`;
+  `verso.ru.exporters.csv_familio` gains `FamilioCsvExporter` (the four exporters' base: `table(record_set,
+  records=None)`, and `export()` writing it), `exporter_of`, `tables(record_sets, parish=, years=,
+  reviewed_only=)` and `merge_tables`.
+- verso-ru: `verso.ru.exporters.familio_spravochnik.collect(record_sets, parish=, years=, reviewed_only=True)`
+  → `Collected` (`records_by_type`, `taken`, `left_out`, `parishes`): a справочник's source rows from record
+  sets, the unreviewed left out and counted. `RECORD_SET_TYPES`; `years_label_for` (moved from the command).
+- verso-ru: `verso.ru.exporters.familio_layout` — the layout of Familio's МК template as data
+  (`familio_mk.json`: the record sheets' titles and two header rows, the labels of `about`, the head of
+  `location`; no sample value, no list and no text of Familio's file) and `build_workbook()`, an empty workbook
+  of it. `FamilioTemplateWriter()` with no template path fills that workbook — and, given no `about`, still
+  writes the years it covers (a template's `about` is left as it came).
+- verso-ru: the `location` sheet from the records and the places — `referenced_places`, `derive_location`,
+  `known_from(places)`, `location_rows(places, curated=, known=)`, `blank_places`: every place a row names
+  gets a line; its type, region, district, volost and Familio link are filled where the places dictionary
+  says them unambiguously, and left blank where it does not.
+- verso-ru: `familio_spravochnik.about_of(data, village, from_year, to_year, years_label)` — the `about` values of a
+  mapping (`read_about` is it over a JSON file), for a host that keeps them elsewhere.
+- `verso familio-spravochnik --with-unreviewed`. New catalog keys `cli.familio_spravochnik.left_out`,
+  `only_unreviewed`, `blank_places`, `not_imported`, `help_with_unreviewed`, `help_no_regenerate`.
+
+### Changed
+
+- `verso familio-spravochnik` reads the village's **records** (the DSL files, or the records export with
+  `VERSO_RECORDS`), no `*_familio.csv` from the disk: the workbook no longer depends on the CSVs being fresh.
+  A file of `[csv] skip` stays out; a file that does not import is refused, not skipped.
+- `verso familio-spravochnik` puts in **only proofread records**: a record held back as `reviewed=False` is
+  left out and counted («пропущено невычитанных: N»). `--with-unreviewed` gives the former workbook.
+- `verso familio-spravochnik` needs **no template**: without `--template` it writes a workbook the library
+  builds — `about`, `location` and the three record sheets, with the template's header rows and columns and
+  none of its helper sheets (`INFO`, `spiski`, `Name_M`, `Ends`), dropdowns or formatting. `--template FILE`
+  fills Familio's own file as before; `<corpus>/familio/Shablon_MK.xlsx` is no longer read by default.
+- The `location` sheet lists every place the rows name: the curated `location.csv` first, as it is, then the
+  places it lacks, from the workspace's places. A lookup no longer answers `#N/A` for a place the CSV forgot.
+- A value of a record, of `about.json` or of `location.csv` that begins with `=` is written as text, never as
+  a formula.
+- Two record sets of one parish, year and kind — two дела of a year — both go in; read from the CSVs, the
+  second file's CSV had overwritten the first's.
+- With `--template` and no curated `location.csv` the template's sample `location` rows are replaced by the
+  places the rows name (they were left as they came). The built workbook given no `location` rows lists the
+  places by name.
+- A cell is written as a number only when it is a plain one — ASCII digits, no leading nought, fifteen digits
+  at most: a лист «007», a long run of digits and a digit of another script stay the text they are (the last
+  two raised or changed the value). A place name the `location` sheet is asked for is always text.
+- A place written with its type («с. X», «село X») gets no type on the `location` sheet: the sheet's formula
+  writes «type place».
+- The command's `location:` line says how many places are listed and how many of them the curated file gave.
+- `--no-regenerate` is accepted and does nothing.
+
+### Removed
+
+- `verso.ru.exporters.familio_spravochnik.read_year_records`; `verso.ru.cli.familio_spravochnik`'s
+  `regenerate_year_csvs`, `collect_records`, `default_template`, `TEMPLATE_IN_CORPUS`; the catalog key
+  `cli.familio_spravochnik.no_template`.
+
 ## 0.1.45 — 2026-11-20
 
 A corpus's output does not move — its Terraform, CSVs, records export and the counts of `facts_findings.tsv` are the

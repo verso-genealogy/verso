@@ -1105,9 +1105,14 @@ noted = "; stood down by a {field} — {noted}"
 stand_down = "If the source says so, write {field}=\"…\" in the record."
 
 [cli.familio_spravochnik]
-no_template = "no Familio metric-book template: --template FILE or <corpus>/familio/Shablon_MK.xlsx"
 help_cases = "Limit output to these cases (fund-inventory-case), comma-separated, e.g. 2162-74-12,64-9-956 — keeps only matching records across the years"
-help_template = "Familio's metric-book template .xlsx to fill (default: <corpus>/familio/Shablon_MK.xlsx)"
+help_template = "Familio's metric-book template (.xlsx) to fill; without it the workbook is built of the library's layout: the record sheets, about and location"
+help_with_unreviewed = "put the unreviewed records (reviewed=False) into the workbook too; without the flag they are left out"
+help_no_regenerate = "does nothing: the workbook is built from the records, no CSV is read"
+left_out = "unreviewed left out: {count}"
+only_unreviewed = "unreviewed left out: {count}; --with-unreviewed puts them in"
+blank_places = "places with no data: {count} — fill in the location sheet"
+not_imported = "files that do not import: {count} — the workbook would be short: {files}"
 
 [cli.fetch_record]
 layout = "fetch_record reads familio-extended sheets only, and «{site}» is {layout}"

@@ -270,6 +270,21 @@ class TestReadAbout(unittest.TestCase):
     def test_missing_file_returns_none(self):
         self.assertIsNone(read_about(Path("/no/such/about.json"), "X", 1, 2))
 
+    def test_about_of_a_mapping_is_what_the_file_gives(self):
+        """`about_of` reads the values from a mapping — a host that keeps them elsewhere than a JSON file
+        (a project's TOML) gets the same `AboutInfo`, the same placeholders, the same defaults."""
+        import json
+
+        from verso.ru.exporters.familio_spravochnik import about_of
+
+        with tempfile.TemporaryDirectory() as d:
+            path = self._about_json(d)
+            data = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(about_of(data, "Горюхино", 1799, 1805, "1799, 1805"),
+                             read_about(path, "Горюхино", 1799, 1805, "1799, 1805"))
+        bare = about_of({}, "Горюхино", 1832, 1840)
+        self.assertEqual((bare.otchestvo_type, bare.is_update, bare.spravochnik_name), ("современный", False, ""))
+
     def test_about_sheet_годы_cell_uses_years_label(self):
         import openpyxl
 
@@ -288,37 +303,6 @@ class TestReadAbout(unittest.TestCase):
             labelled = {ws.cell(r, 1).value: ws.cell(r, 2).value for r in range(1, ws.max_row + 1)}
             self.assertEqual(labelled["Годы, охватываемые индексацией"], "1799, 1805")
             self.assertEqual(labelled["Наименьший год, охватываемый индексацией"], 1799)
-
-
-def _workspace(root: Path, corpus: bool = True) -> Path:
-    root.mkdir(parents=True, exist_ok=True)
-    (root / "verso.toml").write_text('schema = 4\nplugins = ["ru"]\nvillages = []\n'
-                                     + ('[corpus]\ndir = "corpus"\n' if corpus else ""), encoding="utf-8")
-    return root
-
-
-def test_default_template_is_the_corpus_one(tmp_path):
-    from verso.core import workspace
-    from verso.ru.cli.familio_spravochnik import TEMPLATE_IN_CORPUS, default_template
-
-    root = _workspace(tmp_path)
-    template = build_template(root / "corpus" / TEMPLATE_IN_CORPUS)
-    with workspace.use(root):
-        assert default_template() == template.resolve()
-    assert TEMPLATE_IN_CORPUS == Path("familio") / "Shablon_MK.xlsx"
-
-
-def test_no_template_says_where_to_put_it(tmp_path):
-    import pytest
-
-    from verso.core import workspace
-    from verso.ru.cli.familio_spravochnik import default_template
-
-    for corpus in (True, False):
-        root = _workspace(tmp_path / str(corpus), corpus)
-        with workspace.use(root), pytest.raises(SystemExit) as refused:
-            default_template()
-        assert str(refused.value) == "нет шаблона МК Familio: --template ФАЙЛ или <корпус>/familio/Shablon_MK.xlsx"
 
 
 if __name__ == "__main__":

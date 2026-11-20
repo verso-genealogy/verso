@@ -1037,9 +1037,14 @@ noted = "; снято заметкой {field} — {noted}"
 stand_down = "Так в подлиннике — впишите в запись {field}=\"…\"."
 
 [cli.familio_spravochnik]
-no_template = "нет шаблона МК Familio: --template ФАЙЛ или <корпус>/familio/Shablon_MK.xlsx"
 help_cases = "Limit output to these дела (Фонд-Опись-Дело), comma-separated, e.g. 2162-74-12,64-9-956 — keeps only matching records across the years"
-help_template = "Familio МК template .xlsx to fill (default: <corpus>/familio/Shablon_MK.xlsx)"
+help_template = "шаблон МК Familio (.xlsx), который заполнить; без него книга собирается из раскладки библиотеки: листы записей, about и location"
+help_with_unreviewed = "положить в справочник и невычитанные записи (reviewed=False); без флага они пропускаются"
+help_no_regenerate = "ничего не делает: справочник строится из записей, CSV не читаются"
+left_out = "пропущено невычитанных: {count}"
+only_unreviewed = "пропущено невычитанных: {count}; --with-unreviewed положит и их"
+blank_places = "мест без данных: {count} — дополните лист location"
+not_imported = "файлов, которые не импортируются: {count} — справочник был бы неполон: {files}"
 
 [cli.fetch_record]
 layout = "fetch_record читает только таблицы familio-extended, а у «{site}» — {layout}"
