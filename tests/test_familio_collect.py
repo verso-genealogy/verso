@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 from calendar import Month
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -117,7 +118,7 @@ def test_years_label_for():
     assert years_label_for([1799, 1805]) == "1799, 1805"
 
 
-def _noted_pair(**notes: str):
+def _noted_pair(**notes: str) -> tuple[Any, Any, Any]:
     """A birth, a marriage and a death written by the DSL's factories, with `notes` — the fields that stand a single-record
     check down (`lag_note` of a birth and a death, `age_note` of a marriage) — or none."""
     from verso.ru.dsl.records.deaths import death, death_records
@@ -132,7 +133,7 @@ def _noted_pair(**notes: str):
                  groom_age=60, bride_age=15, **age)))
     deaths = death_records("ЦГА", "47", "9", "755", "Маниловка", "Церковь", 1900, *page("3",
         death(1, Gender.MALE, 3, 20, Month.JANUARY, deceased=person("Петръ", "Ивановъ"), age=40, **lag)))
-    return [births, marriages, deaths]
+    return births, marriages, deaths
 
 
 def test_a_field_the_columns_have_no_place_for_moves_no_cell():
@@ -140,8 +141,9 @@ def test_a_field_the_columns_have_no_place_for_moves_no_cell():
     no column of a familio CSV: a record that carries them gives the very rows it gives without them."""
     plain = collect(_noted_pair(), reviewed_only=False)
     noted_sets = _noted_pair(lag_note="крещён по болезни поздно", age_note="так в подлиннике")
-    assert [r.lag_note for s in (noted_sets[0], noted_sets[2]) for r in s.records] == ["крещён по болезни поздно"] * 2
-    assert noted_sets[1].records[0].age_note == "так в подлиннике"
+    births, marriages, deaths = noted_sets
+    assert [births.records[0].lag_note, deaths.records[0].lag_note] == ["крещён по болезни поздно"] * 2
+    assert marriages.records[0].age_note == "так в подлиннике"
     noted = collect(noted_sets, reviewed_only=False)
     assert noted.records_by_type == plain.records_by_type
     assert (noted.taken, noted.left_out) == (plain.taken, plain.left_out) == (3, 0)
