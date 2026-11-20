@@ -3,7 +3,7 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## 0.1.45 — unreleased
+## 0.1.45 — 2026-11-20
 
 A corpus's output does not move — its Terraform, CSVs, records export and the counts of `facts_findings.tsv` are the
 same bytes. What moves is the TEXT of six reports of `verso facts --check` (`name-days`, `wedding-calendar`,
