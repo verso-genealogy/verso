@@ -3,6 +3,16 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased
+
+### Added
+
+- verso-core: a `late` rule of the interface's schema may name the fields that stand it down — `stand_down` (an
+  event late past its days) and `stand_down_before` (one before the first); the build refuses a path the kind lacks.
+  verso-ru names them for the christening and the burial: `lag_note` and `source_date_error`, the fields the signals
+  of `baptism-lag`, `burial-lag` and `date-order` name (`STAND_DOWN`). The review page says no «проверьте» where the
+  record writes one (verso-app's rule `late`).
+
 ## 0.1.46 — 2026-11-20
 
 A corpus's CSVs do not move: `verso export-csv` writes the bytes it wrote. `verso familio-spravochnik` changes
