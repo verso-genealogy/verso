@@ -27,6 +27,8 @@ on purpose — see **Changed**; the workbook it writes is no output a corpus com
   `known_from(places)`, `location_rows(places, curated=, known=)`, `blank_places`: every place a row names
   gets a line; its type, region, district, volost and Familio link are filled where the places dictionary
   says them unambiguously, and left blank where it does not.
+- verso-ru: `familio_spravochnik.about_of(data, village, from_year, to_year, years_label)` — the `about` values of a
+  mapping (`read_about` is it over a JSON file), for a host that keeps them elsewhere.
 - `verso familio-spravochnik --with-unreviewed`. New catalog keys `cli.familio_spravochnik.left_out`,
   `only_unreviewed`, `blank_places`, `not_imported`, `help_with_unreviewed`, `help_no_regenerate`.
 

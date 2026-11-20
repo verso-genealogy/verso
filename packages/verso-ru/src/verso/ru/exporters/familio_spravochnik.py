@@ -368,11 +368,10 @@ class AboutInfo:
 def read_about(
     path: Path, village: str, from_year: int, to_year: int, years_label: str = ""
 ) -> AboutInfo | None:
-    """Read a per-village ``about.json``, substituting village/year placeholders.
+    """Read a per-village ``about.json``, substituting village/year placeholders (:func:`about_of`).
 
     Returns ``None`` if the file is absent (the template's ``about`` sheet is then
-    left untouched). ``{years}`` expands to ``years_label`` (a contiguous range like
-    ``1832-1840`` or an explicit list like ``1799, 1805``).
+    left untouched).
     """
     import json
 
@@ -380,7 +379,16 @@ def read_about(
         return None
     with path.open(encoding="utf-8") as f:
         data: dict[str, object] = json.load(f)
+    return about_of(data, village, from_year, to_year, years_label)
 
+
+def about_of(
+    data: Mapping[str, object], village: str, from_year: int, to_year: int, years_label: str = ""
+) -> AboutInfo:
+    """The ``about`` values a mapping holds — ``about.json``'s keys, from wherever a host keeps them — with the
+    village/year placeholders substituted: ``{village}``, ``{from_year}``, ``{to_year}``, and ``{years}``, which
+    expands to ``years_label`` (a contiguous range like ``1832-1840`` or an explicit list like ``1799, 1805``).
+    A key the mapping lacks is empty; ``otchestvo_type`` is ``современный`` by default, ``is_update`` false."""
     label = years_label or f"{from_year}-{to_year}"
 
     def sub(value: str) -> str:

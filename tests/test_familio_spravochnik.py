@@ -270,6 +270,21 @@ class TestReadAbout(unittest.TestCase):
     def test_missing_file_returns_none(self):
         self.assertIsNone(read_about(Path("/no/such/about.json"), "X", 1, 2))
 
+    def test_about_of_a_mapping_is_what_the_file_gives(self):
+        """`about_of` reads the values from a mapping — a host that keeps them elsewhere than a JSON file
+        (a project's TOML) gets the same `AboutInfo`, the same placeholders, the same defaults."""
+        import json
+
+        from verso.ru.exporters.familio_spravochnik import about_of
+
+        with tempfile.TemporaryDirectory() as d:
+            path = self._about_json(d)
+            data = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(about_of(data, "Горюхино", 1799, 1805, "1799, 1805"),
+                             read_about(path, "Горюхино", 1799, 1805, "1799, 1805"))
+        bare = about_of({}, "Горюхино", 1832, 1840)
+        self.assertEqual((bare.otchestvo_type, bare.is_update, bare.spravochnik_name), ("современный", False, ""))
+
     def test_about_sheet_годы_cell_uses_years_label(self):
         import openpyxl
 
