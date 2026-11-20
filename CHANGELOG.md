@@ -3,7 +3,7 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## 0.1.46 — unreleased
+## 0.1.46 — 2026-11-20
 
 A corpus's CSVs do not move: `verso export-csv` writes the bytes it wrote. `verso familio-spravochnik` changes
 on purpose — see **Changed**; the workbook it writes is no output a corpus commits.
