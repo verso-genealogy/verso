@@ -113,10 +113,12 @@ Before outputting the final DSL file, verify:
       `comment=` says what is unread. Never leave out a person the record names because the name is illegible: an
       omitted person never reaches the tree and nobody sees the comment (measured on a reading benchmark).
       Contested readings name both options in `comment=`
-- [ ] **Nothing that is written is left blank**: a patronymic or a surname that stands on the page and does
-      not read is `"?"` in its own argument, not an argument left out — a blank says the scribe wrote
-      nothing. On the benchmark two fifths of a strong model's silent errors were fields and people it left
-      out without a word, patronymics and surnames first
+- [ ] **Every person and every word of the record is there**: count the record's people against the scan —
+      the sureties of a wedding, both godparents, every line of a household — and look for a patronymic
+      beside each name. On the benchmark two fifths of a strong model's silent errors were people and
+      patronymics it did not see at all; asking it for «?» instead of a blank changed nothing (measured),
+      because these are not words it failed to read. What does stand on the page and does not read is
+      `"?"` in its own argument, not an argument left out — a blank says the scribe wrote nothing
 - [ ] **Every surname is one the village's records hold, or carries «?»**: look up each surname you wrote
       without «?» (`verso find-person <village> <surname>`). One the village's records do not hold is a
       misreading more often than not: on the benchmark 53–81 % of such surnames were wrong, and they were

@@ -15,8 +15,9 @@ where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is n
 ### Changed
 
 - The plugin `verso-reading`: what a reading benchmark's error analysis found, in the agents' prompts and two
-  skills. `scan-reader` and `dsl-writer` ask for «?» where a word is written and does not read, never a blank
-  field or a person left out; name where the errors sit (sureties', fathers' and godparents' surnames, the end
+  skills. `scan-reader` and `dsl-writer` count a record's people against the scan (a strong reader's blanks are
+  people and patronymics it did not see, and asking for «?» does not bring them back — measured); name where
+  the errors sit (sureties', fathers' and godparents' surnames, the end
   of a long household) and the given names taken for one another; `dsl-writer` checks every unflagged surname
   against the village's records (`verso find-person`) and flags one they do not hold instead of replacing it.
   `metric-books` and `census` say what a list of the village's people of the nearest years is worth to a
