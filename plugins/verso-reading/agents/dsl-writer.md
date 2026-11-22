@@ -113,6 +113,24 @@ Before outputting the final DSL file, verify:
       `comment=` says what is unread. Never leave out a person the record names because the name is illegible: an
       omitted person never reaches the tree and nobody sees the comment (measured on a reading benchmark).
       Contested readings name both options in `comment=`
+- [ ] **Nothing that is written is left blank**: a patronymic or a surname that stands on the page and does
+      not read is `"?"` in its own argument, not an argument left out — a blank says the scribe wrote
+      nothing. On the benchmark two fifths of a strong model's silent errors were fields and people it left
+      out without a word, patronymics and surnames first
+- [ ] **Every surname is one the village's records hold, or carries «?»**: look up each surname you wrote
+      without «?» (`verso find-person <village> <surname>`). One the village's records do not hold is a
+      misreading more often than not: on the benchmark 53–81 % of such surnames were wrong, and they were
+      83–95 % of the silently misread surnames — a misread surname is almost never another family of the
+      parish, it is a surname the parish does not have. Re-crop it at 4–5×; unless the scan shows it
+      plainly, write it with «?». Do NOT put a parish surname of the same shape in its place: the benchmark
+      also saw readers write a frequent surname over the ink. The look-up says nothing for given names and
+      patronymics (8–27 % wrong among those it marks)
+- [ ] **The second look went where the errors are**: sureties', fathers' and godparents' surnames (37–56 %
+      wrong on the benchmark, a child's name 4 %) and the last third of a long household (half again as
+      bad as its start). Names taken for one another, each in several records: Марья / Марѳа, Настасья /
+      Наталья, Ѳлоръ / Егоръ (an initial Ѳ read as Е or as С), Пимонъ / Тимонъ, Аникей / Алексей,
+      Степанъ / Семенъ, Михаилъ / Максимъ, Анисья / Анна / Аксинья — having read one of a pair, look for
+      the other
 - [ ] **A name settled from context carries «?»**: where a given name, patronymic or surname came from
       the context — the names lexicon, a lint finding, the neighbouring years, the parish's families —
       and not plainly from the scan, write the word whole with «?» after it (`"Агрипина?"`); likewise when

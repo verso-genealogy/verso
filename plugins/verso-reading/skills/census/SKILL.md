@@ -293,8 +293,13 @@ as leads, never as data. When two readings conflict, the age arithmetic usually 
 without a third opinion; when it cannot, crop that one word at 8× and look.
 
 Give each agent a fingerprint (names *and* ages), the page range, the full-resolution path for
-their own crops, and an explicit instruction to flag uncertainty rather than smooth it. Model,
-effort and how much to give one agent were measured on a reading benchmark: Opus at effort high,
+their own crops, and an explicit instruction to flag uncertainty rather than smooth it — and to
+write «?» for what is written and does not read, never a blank: fields and people left out without
+a word were two fifths of one strong model's silent errors, and the last third of a long двор read
+half again as badly as its start. Model,
+effort and how much to give one agent were measured on a reading benchmark: Opus at effort high
+(a newer top model better still where you have it — Fable 5.2 at high, 4.0 silent errors per 100
+names against 7.3),
 about ten records' worth per agent (each pays its context before its first page; a much bigger
 range flags less and leaves more silent errors), parallel reads, and the lean
 `verso-reading:scan-reader` for a sweep that only reports — for a long sweep, one brief per agent,
