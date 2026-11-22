@@ -175,6 +175,12 @@ def test_a_rule_naming_an_unknown_path_is_refused():
         hints = _hints()
         hints["kinds"]["note"]["rules"] = [rule]
         assert _refused(hints, "unknown_path") == {"kind": "note", "path": path}, rule
+    # A late rule's stand-down fields are the kind's too.
+    for key in ("stand_down", "stand_down_before"):
+        hints = _hints()
+        hints["kinds"]["note"]["events"] = [{"label": "ui.note.page", "day": "number", "month": "page"}] * 2
+        hints["kinds"]["note"]["rules"] = [{"rule": "late", "after": 0, "event": 1, "days": 3, key: "nowhere"}]
+        assert _refused(hints, "unknown_path") == {"kind": "note", "path": "nowhere"}, key
 
 
 def test_the_message_says_what_is_wrong():

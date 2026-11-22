@@ -369,6 +369,11 @@ class _Build:
                 at = rule.get(key)
                 if not isinstance(at, int) or isinstance(at, bool) or not 0 <= at < len(events):
                     raise unknown(at)
+            # The field the source's own word for it is written in («так в подлиннике»): the page says no warning
+            # where the record writes it — `stand_down` for a late event, `stand_down_before` for one before the first.
+            for key in ("stand_down", "stand_down_before"):
+                if key in rule:
+                    known(rule[key])
         else:   # a group's: ref_choices, shown_when, renumber
             group = next((g for g in groups if g["name"] == rule.get("group")), None)
             if group is None:

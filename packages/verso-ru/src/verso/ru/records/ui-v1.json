@@ -234,7 +234,9 @@
      "rule": "late",
      "after": 0,
      "event": 1,
-     "days": 12
+     "days": 12,
+     "stand_down": "lag_note",
+     "stand_down_before": "source_date_error"
     },
     {
      "rule": "ref_choices",
@@ -921,7 +923,9 @@
      "rule": "late",
      "after": 0,
      "event": 1,
-     "days": 4
+     "days": 4,
+     "stand_down": "lag_note",
+     "stand_down_before": "source_date_error"
     }
    ]
   },

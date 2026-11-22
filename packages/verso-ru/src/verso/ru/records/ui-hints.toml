@@ -611,18 +611,24 @@ from = "death.month"
 to = "burial.month"
 
 # A christening twelve days or more after the birth, a burial four or more after the death: the
-# baptism-lag and burial-lag checks' thresholds (`verso.ru.facts.checks.lags`).
+# baptism-lag and burial-lag checks' thresholds (`verso.ru.facts.checks.lags`). The page says no
+# warning where the record writes the field that stands the check down (`verso.ru.facts.signals`
+# STAND_DOWN): `lag_note` for a late one, `source_date_error` for one before the birth or the death.
 [[kinds.birth.rules]]
 rule = "late"
 after = 0
 event = 1
 days = 12
+stand_down = "lag_note"
+stand_down_before = "source_date_error"
 
 [[kinds.death.rules]]
 rule = "late"
 after = 0
 event = 1
 days = 4
+stand_down = "lag_note"
+stand_down_before = "source_date_error"
 
 # Whose relative one is: the people the record holds, as the source words it (`ref.choices`).
 [[kinds.birth.rules]]

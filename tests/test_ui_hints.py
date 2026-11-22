@@ -10,6 +10,7 @@ from verso.core.records.fields import PERSON, ListOf, role_of
 from verso.core.records.ui import build_ui, load_ui, main
 from verso.ru.linters.checks.relationship_ref import is_allowed
 from verso.ru.records.vocabulary import VOCABULARY as V
+from verso.ru.facts.signals import DATE_ORDER_STOOD_DOWN, STAND_DOWN
 
 
 def _schema() -> dict[str, Any]:
@@ -133,6 +134,11 @@ def test_the_page_s_tables_are_in_the_hints():
     assert label("marriage", "age_note") == "возраст при венчании — верно"
     late = {k: [r["days"] for r in v["rules"] if r["rule"] == "late"] for k, v in schema["kinds"].items()}
     assert (late["birth"], late["death"], late["marriage"]) == ([12], [4], [])
+    # The field that stands each late rule down is the one the signal of its check names (STAND_DOWN).
+    for kind, check in (("birth", "baptism-lag"), ("death", "burial-lag")):
+        (rule,) = [r for r in schema["kinds"][kind]["rules"] if r["rule"] == "late"]
+        assert (rule["stand_down"], rule["stand_down_before"]) == (STAND_DOWN[check], STAND_DOWN["date-order"])
+    assert DATE_ORDER_STOOD_DOWN == {"baptism_before_birth", "burial_before_death"}
     follows = [r for r in schema["kinds"]["birth"]["rules"] if r["rule"] == "follows"]
     assert follows == [{"rule": "follows", "from": "birth.month", "to": "baptism.month",
                         "advance": {"day_from": "birth.day", "day_to": "baptism.day"}}]
