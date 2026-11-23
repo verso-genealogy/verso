@@ -213,8 +213,8 @@ def format_report(groups: list[Pair], min_count: int, index: LooseIndex | None,
                   labels: tuple[str, str, str] = ("parent", "godparent", "gp"),
                   unit: str = "births",
                   compare: Callable[[list[str]], str | None] | None = None) -> str:
-    """The recurring-pair report — the format `check-godparent-cooccurrence`
-    has printed since before the facts layer, kept so a triage note written
+    """The recurring-pair report — the format the godparent co-occurrence check
+    printed before the facts layer took it over, kept so a triage note written
     against it still reads."""
     left_label, right_label, slot_label = labels
     lines = [f"Recurring {right_label}↔{left_label} pairs "
@@ -290,12 +290,12 @@ def state_compare(village_dir: Path) -> Callable[[list[str]], str | None]:
 
 
 def identity_census(village_dir: Path) -> tuple[str, int]:
-    """`facts-check check=identity` — see `identity_report`."""
+    """`verso facts --check identity` — see `identity_report`."""
     return identity_report(*consolidated_facts(village_dir))
 
 
 def identity_report(facts: AssertionSet, gen: Any, slots: Any) -> tuple[str, int]:
-    """`facts-check check=identity`, drawn from `identity_reach`."""
+    """`verso facts --check identity`, drawn from `identity_reach`."""
     r = identity_reach(facts, gen, slots)
     minted = r.total - sum(r.refused.values())
     lines = [
@@ -316,7 +316,7 @@ def identity_report(facts: AssertionSet, gen: Any, slots: Any) -> tuple[str, int
 
 
 def date_order(village_dir: Path) -> tuple[str, int]:
-    """`facts-check check=date-order` — see `date_order_findings`."""
+    """`verso facts --check date-order` — see `date_order_findings`."""
     facts, gen, slots = consolidated_facts(village_dir)
     identity = consolidated_identity(gen, slots.object_of)
     return date_order_report(*date_order_findings(facts, identity), gen)
@@ -505,7 +505,7 @@ def format_birth_claims(found: list[BirthFinding],
 
 
 def birth_claims(village_dir: Path, *, min_gap_years: float = 0.0) -> tuple[str, int]:
-    """`facts-check check=birth-claims`: one translation, the bridge, the rule.
+    """`verso facts --check birth-claims`: one translation, the bridge, the rule.
 
     NOT a port of `age-conflicts`, and it replaces nothing. That check asks
     about the tree Geni shows — a canonical's ONE birth, picked by the order of
@@ -643,7 +643,7 @@ def format_death_claims(found: list[DeathFinding],
 
 
 def death_claims_report(village_dir: Path) -> tuple[str, int]:
-    """`facts-check check=death-claims`: one translation, the bridge, the check."""
+    """`verso facts --check death-claims`: one translation, the bridge, the check."""
     from verso.ru.consolidation.profile_reading import display_name
 
     facts, gen, slots = consolidated_facts(village_dir)
@@ -729,7 +729,7 @@ def signal_report(check: str, result: NameDays | WeddingCalendar | Lags | Weddin
 
 
 def wedding_calendar_report(village_dir: Path) -> tuple[str, int]:
-    """`facts-check check=wedding-calendar`: the same loader as the snapshot,
+    """`verso facts --check wedding-calendar`: the same loader as the snapshot,
     whose strict count it must match."""
     facts, _gen, _slots = consolidated_facts(village_dir)
     result = wedding_calendar_findings(facts.believed())
@@ -737,7 +737,7 @@ def wedding_calendar_report(village_dir: Path) -> tuple[str, int]:
 
 
 def lags_report(village_dir: Path, kind: str) -> tuple[str, int]:
-    """`facts-check check=baptism-lag|burial-lag`: the snapshot's loader."""
+    """`verso facts --check baptism-lag|burial-lag`: the snapshot's loader."""
     facts, _gen, _slots = consolidated_facts(village_dir)
     believed = facts.believed()
     lags = baptism_lags(believed) if kind == "baptism" else burial_lags(believed)
@@ -780,7 +780,7 @@ def format_children_span(found: list[SpanFinding], name_of: Callable[[str], str]
 
 
 def parenthood_report(village_dir: Path, check: str) -> tuple[str, int]:
-    """`facts-check check=posthumous-birth|children-span`: one translation, the
+    """`verso facts --check posthumous-birth|children-span`: one translation, the
     bridge, the check."""
     from verso.ru.consolidation.profile_reading import display_name
 
@@ -801,14 +801,14 @@ def parenthood_report(village_dir: Path, check: str) -> tuple[str, int]:
 
 
 def wedding_ages_report(village_dir: Path) -> tuple[str, int]:
-    """`facts-check check=wedding-ages`: the snapshot's loader."""
+    """`verso facts --check wedding-ages`: the snapshot's loader."""
     facts, _gen, _slots = consolidated_facts(village_dir)
     ages = wedding_age_findings(facts.believed())
     return signal_report("wedding-ages", ages), (1 if ages.findings else 0)
 
 
 def name_days_report(village_dir: Path) -> tuple[str, int]:
-    """`facts-check check=name-days`: the births alone — no translation."""
+    """`verso facts --check name-days`: the births alone — no translation."""
     from verso.ru.church_calendar.svyatcy import load_svyatcy
 
     result = name_day_findings(load(village_dir, "birth").believed(), load_svyatcy())
@@ -816,7 +816,7 @@ def name_days_report(village_dir: Path) -> tuple[str, int]:
 
 
 def father_claims_report(village_dir: Path) -> tuple[str, int]:
-    """`facts-check check=father-claims`: one translation, the bridge, the check."""
+    """`verso facts --check father-claims`: one translation, the bridge, the check."""
     from verso.ru.consolidation.profile_reading import display_name
 
     facts, gen, slots = consolidated_facts(village_dir)

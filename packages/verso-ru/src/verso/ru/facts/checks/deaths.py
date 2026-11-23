@@ -1,4 +1,4 @@
-"""One person, two deaths that cannot be one — `facts-check check=death-claims`.
+"""One person, two deaths that cannot be one — `verso facts --check death-claims`.
 
 The third over-merge channel, beside `birth-claims` and `father-claims`. A
 person dies once and is buried once, so two records of one canonical that date

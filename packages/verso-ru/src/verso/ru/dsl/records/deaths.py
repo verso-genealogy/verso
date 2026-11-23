@@ -59,7 +59,7 @@ class Death:
         # «погребёнъ 8, умеръ 9 — так в подлиннике». The burial is the claim
         # withdrawn (as `source_date_error` withdraws the CHRISTENING on a
         # birth, not the birth), so every other assertion of the record stays
-        # believed. `date-conflicts` honours it and stops reporting. Never
+        # believed. `verso date-order` honours it and stops reporting. Never
         # emitted to terraform. Do NOT use it to silence a conflict caused by
         # a wrong merge — that is a real error about two people, not a slip.
         self.source_date_error = source_date_error
@@ -67,12 +67,12 @@ class Death:
         # transcription is faithful, and the SCRIBE's figure is wrong — «6 мѣс»
         # for a girl who lived a year and two weeks. `verso.ru.facts` withdraws the
         # age, the translator derives no birth from it (nor the parent's bound
-        # that rested on it), and `death-age-check` / `sibling-spacing` stop
+        # that rested on it), and `verso death-age` / `sibling-spacing` stop
         # reporting (cf. source_date_error for dates, source_kin_error for
         # kin). The document still prints the age as written.
         self.source_age_error = source_age_error
         # Free text: the age is RIGHT, and the burial is of a namesake — a
-        # second child given the name of one who died, whom `death-age-check`
+        # second child given the name of one who died, whom `verso death-age`
         # pairs with the first child's christening by name and parents. Only
         # that check reads it (as `AgedYears.namesake`, in
         # `verso.ru.facts.checks.stated_age.stated_age_findings`); the age stays believed and
@@ -80,8 +80,8 @@ class Death:
         # (Until 2026-09-25 this case was written as `source_age_error`.)
         self.namesake = namesake
         # The author's note that the burial is RIGHTLY this long after the
-        # death — both dates re-read on the scan. Stands `facts-check
-        # check=burial-lag` down for this record and nothing else; never
+        # death — both dates re-read on the scan. Stands `verso facts
+        # --check burial-lag` down for this record and nothing else; never
         # emitted to terraform. Not a retraction (cf. `source_date_error`):
         # both dates stay believed. An empty string is no note.
         self.lag_note = lag_note or None

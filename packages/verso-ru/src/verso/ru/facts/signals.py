@@ -1,6 +1,6 @@
 """The checks one record answers alone, and how a finding of theirs is said.
 
-`facts-check` asks a village; a record on its card is one entry, read before
+`verso facts --check` asks a village; a record on its card is one entry, read before
 anyone has reviewed it and with no consolidation to say who its people are. Six
 of the checks need nothing more than that entry — a wedding on a day the Church
 did not marry, a name no saint near the birth supports, a christening or a
@@ -12,7 +12,7 @@ whether it is reviewed or not (a card is where it gets reviewed).
 A finding is said ONCE. `signal_of` turns what a check found into a `Signal` —
 a message of the catalog with plain params, why it is worth a second look, the
 lines that help the re-reading, how sure, and the field of the record that
-stands it down — and both the card and the report of `facts-check` say it from
+stands it down — and both the card and the report of `verso facts --check` say it from
 there (`verso.ru.cli.facts.format_signals`). A signal is a prompt to look at
 the scan again; it refuses nothing.
 

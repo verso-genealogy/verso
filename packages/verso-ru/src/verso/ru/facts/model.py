@@ -368,7 +368,7 @@ class NameClaim(Assertion):
     #: it is kept near the birth or the christening (`birth(calendar_note=)`).
     #: Not a retraction — the name stays believed; only the check asking that
     #: question reads it (`verso.ru.facts.checks.name_days`), as only
-    #: `death-age-check` reads `AgedYears.namesake`. Outside the payload, so no
+    #: `verso death-age` reads `AgedYears.namesake`. Outside the payload, so no
     #: report or dump changes by carrying it.
     calendar_note: str | None = None
 

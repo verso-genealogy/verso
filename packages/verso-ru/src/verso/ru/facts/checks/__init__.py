@@ -10,7 +10,7 @@ report prints is the CLI's or the consolidation module's.
 
     dates        records of one person dated out of order   (`date-order`)
     births       two birth claims one life cannot hold       (`birth-claims`)
-    stated_age   a burial's age against the birth            (`death-age-check`)
+    stated_age   a burial's age against the birth            (`verso death-age`)
     lives        households, baptisms, deaths, signs of life  (`union-dups`)
     estates      two сословия held by one canonical          (`estate-conflicts`)
     reach        how far the appearance→canonical bridge reaches (`identity`)

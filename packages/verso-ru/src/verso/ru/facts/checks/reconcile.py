@@ -2,7 +2,7 @@
 
 The sixth discovery channel (`verso reconcile`). A name list and an external
 card each mint a deliberate duplicate of somebody the metric books and rolls
-already hold (AGENTS.md); until 2026-09-28 finding that somebody was done by
+already hold, for the corpus's consolidation to join; until 2026-09-28 finding that somebody was done by
 hand, by a rule written down in a per-village note — the same
 given name by its base form, the same father by the patronymic, the surname
 within a scribe's variant, and the birth year where the source gives one. This

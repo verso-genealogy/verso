@@ -4,7 +4,7 @@
 The sixth discovery channel. A name list (1917 voter lists) and an external
 card (судимость, ПМВ, ВОВ) each mint a deliberate duplicate of somebody the
 metric books and rolls already hold — to be reconciled in the consolidation
-pass (AGENTS.md). This proposes the reconciliation: for every person made only
+pass. This proposes the reconciliation: for every person made only
 of lists and cards, the canonicals whose records name them alike, with the
 guards that retire a namesake. The rule is `verso.ru.facts.checks.reconcile`.
 

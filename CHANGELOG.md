@@ -35,6 +35,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   both, compared byte for byte. [Records JSON](docs/records-json.md) says that its days are the book's (Julian until
   1918) and that `verso death-age`, `verso sibling-spacing` and `verso stale-claims` load the DSL themselves and do
   not read the export under `VERSO_RECORDS`.
+- The docstrings and comments of the checks name the library's commands (`verso facts --check name-days`,
+  `verso death-age`, `verso candidates --sweep`) where they named a corpus's Makefile targets (`facts-check
+  check=…`, `death-age-check`, `consolidation-sweep`). The reports' own first words are unchanged: no output moves.
 
 ### Changed
 

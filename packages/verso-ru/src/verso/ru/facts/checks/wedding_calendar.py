@@ -1,4 +1,4 @@
-"""A wedding dated on a day the Church did not marry — `facts-check check=wedding-calendar`.
+"""A wedding dated on a day the Church did not marry — `verso facts --check wedding-calendar`.
 
 The books record what the priest did, and he did not marry in a fast, in
 Bright Week or in Святки. A wedding dated there is almost always a misread

@@ -1,4 +1,4 @@
-"""How far the appearance→canonical bridge reaches — `facts-check check=identity`.
+"""How far the appearance→canonical bridge reaches — `verso facts --check identity`.
 
 The bridge composes two statements the corpus already makes, so there is
 nothing for it to disagree with; what is worth measuring is its REACH, and the

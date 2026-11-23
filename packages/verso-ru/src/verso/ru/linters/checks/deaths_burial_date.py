@@ -32,7 +32,7 @@ on the block. A month this check cannot read as a `Month.X` literal (or a
 burial with no day means its whole month, so it precedes the death only when
 the month's LAST day does; a zero day is the corpus's spelling of an empty
 column (Заманиловка 1840 смерть 12, `b_day=0`), not day nought. Asking it the
-same way as `facts-check` is the point: a check that disagrees with the one it
+same way as `verso facts --check` is the point: a check that disagrees with the one it
 runs ahead of gets ignored.
 
 **The year boundary is flagged, not forgiven.** A `death()` has ONE `year` for
@@ -41,7 +41,7 @@ A man who died 31 December and was buried 2 January is therefore unstatable:
 `b_month=Month.JANUARY` dates the burial to January of the SAME year, eleven
 months before the death, and that is what the CSV, the facts layer and every
 consumer downstream would read. Silence here would only move the finding to
-`facts-check`. The honest spelling is to leave the date that falls outside the
+`verso facts --check`. The honest spelling is to leave the date that falls outside the
 record's year undated and state it in `comment=`; a `b_year=` kwarg is the
 real fix, worth building when the first such record is read (the corpus holds
 none — no death record anywhere carries `b_month=Month.JANUARY`). For the same

@@ -9,7 +9,7 @@ see:
 - **The census half.** A revision or census household builds its union from its
   own per-record stubs, so the census «Алексій Сидоровъ × Аксинья Петрова» and
   the metric-book «Алексій Сидоровъ × Ксенія Петрова» are two husbands AND two
-  wives. `consolidation-sweep` rates a pair HIGH only on a SHARED spouse — and
+  wives. `verso candidates --sweep` rates a pair HIGH only on a SHARED spouse — and
   the halves share none; `union-dups` looks for two children inside one union —
   and the children sit in two. Before the first apply of Глуповы Горы
   (2026-09-24) 63 of ~75 members of the 1897 census stood beside their metric

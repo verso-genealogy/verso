@@ -149,7 +149,7 @@ class Linter:
 # the scan: which of two contradictory readings is wrong, or whether the
 # kinship itself is mis-modelled (a «приведенная дочь» wants STEP_FATHER).
 # deaths_burial_date (DBD001/DBD002) is hard from birth, like VSR001: the eight
-# burials-before-death `facts-check check=date-order` found were fixed (six) or
+# burials-before-death `verso facts --check date-order` found were fixed (six) or
 # declared `source_date_error=` (two), so it gates at zero and
 # asks the same question while the record is being typed instead of after
 # generation.

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Flag two same-named people sitting inside ONE union — probably one person.
 
-A third discovery channel, structural rather than name-based. `make
-consolidation-sweep` and the exact name+patronymic+surname matcher both start
+A third discovery channel, structural rather than name-based. `verso candidates
+--sweep` and the exact name+patronymic+surname matcher both start
 from "this name appears twice in the village", which in a village of eight Ivan
 Ivanoviches is a weak prior. This one starts from the union: it already asserts
 that both children have the SAME two parents, so a shared given name is strong

@@ -1,4 +1,4 @@
-"""A burial's stated age against the birth of the same child — `death-age-check`.
+"""A burial's stated age against the birth of the same child — `verso death-age`.
 
 The predicates the comparison is handed and the slack it allows. The comparison
 itself is `verso.ru.facts.rules.stated_age`, which names none of them; the report

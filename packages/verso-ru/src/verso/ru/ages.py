@@ -8,7 +8,7 @@ tabular slots (Лет, Месяцев, Недель, Дней) and is deliberate
 the prose renderer below — CSV columns never carry prose.
 
 `age_bounds` reads a stated age as the DAY INTERVAL it asserts — the arithmetic
-every cross-record check shares (`death-age-check`, `sibling-spacing`,
+every cross-record check shares (`verso death-age`, `sibling-spacing`,
 `birth-claims`, the sweep's infant matcher), built on `split_age` so a change
 to age syntax cannot make a check and the exported columns disagree.
 
