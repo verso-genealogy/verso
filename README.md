@@ -127,7 +127,7 @@ public name to be removed or renamed lives one minor version beside its successo
 
 ## Documentation
 
-- Guides: [the workspace](docs/workspace.md) · [the DSL](docs/dsl.md) · [plugins](docs/plugins.md) · [the interface's language](docs/i18n.md)
+- Guides: [the workspace](docs/workspace.md) · [the DSL](docs/dsl.md) · [the rules of a record](docs/writing-records.md) · [plugins](docs/plugins.md) · [the interface's language](docs/i18n.md)
   · [records JSON](docs/records-json.md) · [the review ratchet](docs/review-ratchet.md)
   · [compatibility](docs/compatibility.md)
 - Reference, written from the code: [commands](docs/reference/commands.md) ·

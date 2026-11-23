@@ -125,7 +125,7 @@ births = birth_records(
 
 ## Документация
 
-- Руководства: [рабочее пространство](docs/workspace.ru.md) · [DSL](docs/dsl.ru.md) · [плагины](docs/plugins.ru.md) · [язык интерфейса](docs/i18n.ru.md)
+- Руководства: [рабочее пространство](docs/workspace.ru.md) · [DSL](docs/dsl.ru.md) · [правила записи](docs/writing-records.ru.md) · [плагины](docs/plugins.ru.md) · [язык интерфейса](docs/i18n.ru.md)
   · [JSON записей](docs/records-json.ru.md) · [храповик вычитки](docs/review-ratchet.ru.md)
   · [совместимость](docs/compatibility.ru.md)
 - Справочник, собранный из кода (на английском): [команды](docs/reference/commands.md) ·

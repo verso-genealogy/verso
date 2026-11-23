@@ -12,6 +12,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   verso-ru names them for the christening and the burial: `lag_note` and `source_date_error`, the fields the signals
   of `baptism-lag`, `burial-lag` and `date-order` name (`STAND_DOWN`). The review page says no «проверьте» where the
   record writes one (verso-app's rule `late`).
+- Docs: [the rules of a record](docs/writing-records.md) — what goes into each field (names as written, the
+  patronymic in the book's form or `None`, kinship only as the entry states it), where a doubt goes, ages and dates
+  (Julian until 1918), what declares or notes a value the source contradicts, and when a file is done (`dsllint`
+  reads the text and imports nothing; `verso export-csv` builds every file). Its examples are tested.
+
+### Changed
+
+- The reference: a command's or a linter's summary ends at a full stop, not at a colon — fifteen rows of
+  `commands.md` and `linters.md` said only «The святцы:», «Fix:» and the like. No output moves.
 
 ## 0.1.46 — 2026-11-20
 
