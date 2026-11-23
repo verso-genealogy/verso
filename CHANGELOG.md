@@ -66,6 +66,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - The reference: a command's or a linter's summary ends at a full stop, not at a colon — fifteen rows of
   `commands.md` and `linters.md` said only «The святцы:», «Fix:» and the like. No output moves.
 
+### Fixed
+
+- Records JSON: a wrapper's value equal to its field's default is written under `written.context` when the record
+  set holds another value of the field, which the set's factory would give the record otherwise. A name-list entry
+  under `page(…, reviewed=True)` in a `name_list_records(…, reviewed=False)` left no trace of the page's flag (`true`
+  is the default of `reviewed`), and `replay_file`, `replay_record` and the linters on JSON rebuilt it held; RVR001 on
+  JSON could then call the flag of an entry beside it under `page(None, reviewed=True)` redundant, which the check
+  on the source does not. `encode_record` takes the set (`record_set=`) to write a record as the export does.
+  **A corpus's records JSON moves** for those entries alone: each gains `"reviewed": true` in its `written` and
+  `"reviewed"` in its `written.context`. Its `review` stays `reviewed`; the schema, the Terraform, the CSVs, the facts
+  reports and the review ratchet's prints (read from the source) do not move. A divorce's `reviewed` takes the same
+  rule once it has one.
+
 ## 0.1.46 — 2026-11-20
 
 A corpus's CSVs do not move: `verso export-csv` writes the bytes it wrote. `verso familio-spravochnik` changes
