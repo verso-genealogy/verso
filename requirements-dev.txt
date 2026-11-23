@@ -1,7 +1,7 @@
 # The library's dev tools, pinned exactly: what "green" means for the library. The same pins as
 # a corpus's [dev]; Dependabot
 # raises each in a PR of its own.
-ruff==0.17.5
+ruff==0.17.6
 pyright==1.1.414
 pytest==9.2.0
 pytest-cov==7.1.0
