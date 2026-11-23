@@ -68,6 +68,11 @@ def test_a_hinted_command_and_its_flags_exist():
     import subprocess
     import sys
 
+    import pytest
+
+    # The texts-alone lane of CI runs this file without the library installed: there is no `verso` to ask.
+    pytest.importorskip("verso.core.cli", reason="the library is not installed")
+
     hinted: dict[str, set[str]] = {}
     for path in _files():
         if path.relative_to(ROOT).parts[:1] != ("packages",) or "src" not in path.relative_to(ROOT).parts:
