@@ -28,10 +28,11 @@ HEAD = "<!-- Written by tools/reference.py from the code — do not edit; `make 
 
 def _docline(source: str) -> str:
     """The first sentence of a module's docstring (its first paragraph, on one line), read without
-    importing it."""
+    importing it. A sentence ends at a full stop: a colon introduces what follows it («The святцы: import
+    the table, …»), and a summary cut there says nothing."""
     doc = (ast.get_docstring(ast.parse(source)) or "").strip()
     paragraph = " ".join(line.strip() for line in doc.split("\n\n")[0].splitlines())
-    end = re.search(r"(?<=[.:])\s", paragraph)
+    end = re.search(r"(?<=\.)\s", paragraph)
     return (paragraph[:end.start()] if end else paragraph).replace("|", "\\|")
 
 
