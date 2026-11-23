@@ -103,6 +103,9 @@ births = birth_records(
 проекта. Скиллы работают и в других агентах, через skills.sh. См. [плагин](plugins/verso-reading/README.md)
 (на английском).
 
+Какая модель как читает такие сканы и сколько это стоит, измерено в
+[статье](https://verso-genealogy.github.io/articles/models/) на [сайте статей](https://verso-genealogy.github.io/articles/).
+
 ## Что публично
 
 Корпусу, который пишет не автор библиотеки, она обещает то, на что такой корпус опирается:
