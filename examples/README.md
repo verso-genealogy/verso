@@ -9,6 +9,7 @@ the days and the shelfmarks are made up.
 
 ```
 toy/
+  AGENTS.md                     # the project map the reading skills look for: the rules, the checks
   verso.toml                    # the workspace: the village, the names lexicon (schema 6), the corpus's data
   names/                        # the workspace's names layer over the base verso-ru ships: names.tsv,
                                 #   forms.tsv, patronymics.tsv — empty here, the base knows every

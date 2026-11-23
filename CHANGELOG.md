@@ -29,6 +29,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   field that answers each, says that `dsllint` imports nothing — `verso export-csv` is the build — and that the checks
   read reviewed records only. `metric-books` gains the books of the civil registry and the two series of numbers of
   part 1; `dsl-writer` writes by the library's rules of a record when the project has none, and checks the build.
+- The toy example carries a sample of a project's map, `examples/toy/AGENTS.md`: what a corpus tells the reading
+  skills — its rules, statuses and places, the checks after a year. The plugin's README points a new project at it.
+- Docs: [compatibility](docs/compatibility.md) says how a corpus judges a new version — every output written with
+  both, compared byte for byte. [Records JSON](docs/records-json.md) says that its days are the book's (Julian until
+  1918) and that `verso death-age`, `verso sibling-spacing` and `verso stale-claims` load the DSL themselves and do
+  not read the export under `VERSO_RECORDS`.
 
 ### Changed
 

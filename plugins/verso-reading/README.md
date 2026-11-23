@@ -26,6 +26,11 @@ the clergy), where the frames of each дело come from and where the record of
 composition is kept, and the tools it has for its archives. The skills and agents read those from
 there.
 
+A project starting out has none of that yet. The toy example of the verso repository carries a sample of the
+project's AGENTS.md (`examples/toy/AGENTS.md`, an invented village): its rules, its statuses and places, the
+checks to ask after a year. A project with no extraction rules of its own writes by the library's rules of a
+record — the guide of that name in the verso repository — and `dsl-writer` falls back on them, saying so.
+
 The skills read a directory of a дело's frames, best named by folio (`<кадр>_<лист>[об]`), with
 the library's `verso scans` and the other `verso …` commands. They need the library with Pillow:
 
