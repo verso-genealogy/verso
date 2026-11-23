@@ -16,6 +16,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   patronymic in the book's form or `None`, kinship only as the entry states it), where a doubt goes, ages and dates
   (Julian until 1918), what declares or notes a value the source contradicts, and when a file is done (`dsllint`
   reads the text and imports nothing; `verso export-csv` builds every file). Its examples are tested.
+- Docs: [the checks](docs/checks.md) — every check over the records: the six one record answers alone, with what
+  each asks and the field that answers it; those that compare records before consolidation (`death-age`,
+  `sibling-spacing`, `stale-claims`, `father-claims` inside one record) and after it; what they do not read (a file
+  that does not import, a record that is `reviewed=False`), their exit codes, the names their reports print, and
+  a corpus's CI. The reference gains [checks](docs/reference/checks.md), written from the code: the checks of
+  `verso facts --check`, which one record answers and what stands each down, and every threshold a check holds
+  with its comment (`#:`). Comments only in the code: no output moves.
 
 ### Changed
 

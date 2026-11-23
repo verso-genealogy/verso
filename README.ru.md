@@ -76,8 +76,8 @@ births = birth_records(
 - `verso export-csv --village V` — CSV на каждый набор записей, рядом с его файлом;
 - `verso generate-tf --village V` — профили, союзы и документы Geni в виде Terraform;
 - `verso export-records --village V` — JSON записей ([JSON записей](docs/records-json.ru.md));
-- `verso facts`, `verso date-order`, `verso reconcile`, … — проверки по записям
-  ([все команды](docs/reference/commands.md)).
+- `verso facts`, `verso death-age`, `verso sibling-spacing`, … — проверки по записям
+  ([проверки](docs/checks.ru.md), [все команды](docs/reference/commands.md)).
 
 ## Чтение сканов: плагин для Claude Code
 
@@ -125,12 +125,12 @@ births = birth_records(
 
 ## Документация
 
-- Руководства: [рабочее пространство](docs/workspace.ru.md) · [DSL](docs/dsl.ru.md) · [правила записи](docs/writing-records.ru.md) · [плагины](docs/plugins.ru.md) · [язык интерфейса](docs/i18n.ru.md)
+- Руководства: [рабочее пространство](docs/workspace.ru.md) · [DSL](docs/dsl.ru.md) · [правила записи](docs/writing-records.ru.md) · [проверки](docs/checks.ru.md) · [плагины](docs/plugins.ru.md) · [язык интерфейса](docs/i18n.ru.md)
   · [JSON записей](docs/records-json.ru.md) · [храповик вычитки](docs/review-ratchet.ru.md)
   · [совместимость](docs/compatibility.ru.md)
 - Справочник, собранный из кода (на английском): [команды](docs/reference/commands.md) ·
   [ключи рабочего пространства](docs/reference/workspace-keys.md) · [линтеры](docs/reference/linters.md) ·
-  [API DSL](docs/reference/dsl-api.md)
+  [API DSL](docs/reference/dsl-api.md) · [проверки](docs/reference/checks.md)
 - [Как участвовать](CONTRIBUTING.ru.md) · [Безопасность](SECURITY.ru.md) · [Изменения](CHANGELOG.md)
 
 ## Лицензия

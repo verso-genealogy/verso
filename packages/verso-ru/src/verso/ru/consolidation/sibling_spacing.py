@@ -37,14 +37,14 @@ from verso.ru.consolidation.death_age import (
     BirthFact, PersonKey, as_date, collect_births, load_village_records, parents_named, person_key)
 from verso.ru.messages import t
 
-# Shortest interval between two live births to one mother that the records can
-# mean literally. Nine months is the biological floor; the corpus is full of
-# couples at eleven and twelve, so anything under this is a reading error or a
-# pair of twins rather than a tight sequence.
+#: Shortest interval between two live births to one mother that the records can
+#: mean literally. Nine months is the biological floor; the corpus is full of
+#: couples at eleven and twelve, so anything under this is a reading error or a
+#: pair of twins rather than a tight sequence.
 DEFAULT_MIN_GAP_DAYS = 270
 
-# Two children entered on the same day (or a day apart) are twins — the books
-# record them as consecutive numbers, and the corpus holds several pairs.
+#: Two children entered on the same day (or a day apart) are twins — the books
+#: record them as consecutive numbers, and the corpus holds several pairs.
 TWIN_DAYS = 2
 
 

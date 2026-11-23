@@ -421,7 +421,7 @@ The rules are not asserted equal to the checks; two oracles compare them, both o
 
 ## The signals of one record
 
-Six checks of the facts layer need one record and nothing else: a wedding on a day the Church did not marry
+Six checks of the facts layer ([the checks](checks.md); their thresholds, [the reference](reference/checks.md)) need one record and nothing else: a wedding on a day the Church did not marry
 (`wedding-calendar`), a newborn's name no saint near the birth supports (`name-days`), a christening or a burial long
 after (`baptism-lag`, `burial-lag`), an age at the wedding the law cannot hold (`wedding-ages`), two dates the entry
 itself orders wrongly (`date-order`, its class «inside one entry»). A store that holds one record per row asks them

@@ -138,7 +138,7 @@ A file is handed over when:
 1. `verso dsllint FILE…` reports no finding of level error. It reads the file's text: it does not import it.
 2. `verso export-csv --village V --year Y` exits 0. It builds every file of the year, so a file that does
    not import — a constant its statuses module lacks, a misspelt import — fails here.
-3. The checks a new year answers have been asked, and each finding read again on the scan.
+3. The checks a new year answers have been asked ([the checks](checks.md)), and each finding read again on the scan.
 
 Two things make a check say «OK — 0 findings» about records it never read:
 

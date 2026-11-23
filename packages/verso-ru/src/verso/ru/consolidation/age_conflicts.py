@@ -47,12 +47,15 @@ from verso.ru.consolidation.profile_reading import (
 from verso.core.targets.geni.profile import GeniProfile
 from verso.ru.messages import t
 
+#: A mother older than this at a child's birth is flagged as implausibly old (`--mother-max`).
 MOTHER_MAX_DEFAULT = 50
+#: A father older than this at a child's birth is flagged as implausibly old (`--father-max`).
 FATHER_MAX_DEFAULT = 70
-# A parent younger than this at a child's birth is flagged as implausibly young
-# (Geni's «Ребёнок родился в слишком раннем возрасте»). 12 is the biological
-# floor; Geni's own line is 15 — raise with --mother-min/--father-min to match.
+#: A mother younger than this at a child's birth is flagged as implausibly young
+#: (Geni's «Ребёнок родился в слишком раннем возрасте»). 12 is the biological
+#: floor; Geni's own line is 15 — raise with --mother-min/--father-min to match.
 MOTHER_MIN_DEFAULT = 12
+#: A father younger than this at a child's birth is flagged as implausibly young (`--father-min`).
 FATHER_MIN_DEFAULT = 12
 
 

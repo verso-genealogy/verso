@@ -57,6 +57,8 @@ from verso.ru.messages import t
 # «4» meaning four months read as four years is off by exactly this factor, and
 # saying so in the report turns a number into a diagnosis.
 MONTHS_PER_YEAR = 12
+#: How near the ratio of the time lived to the stated age must come to twelve (or to a twelfth), as a share of
+#: it, for a finding to be called an age read in the wrong unit.
 UNIT_RATIO_TOLERANCE = 0.25
 
 # The kinships under which a burial's relative can be the deceased's PARENT —

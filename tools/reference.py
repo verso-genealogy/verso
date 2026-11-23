@@ -1,8 +1,9 @@
 """The library's reference, written from the code: docs/reference/.
 
-Four pages, each what one part of the code declares, so the reference cannot drift from it:
+Five pages, each what one part of the code declares, so the reference cannot drift from it:
 the commands of `verso` (the core's and each installed plugin's), the keys of `verso.toml`,
-`village.toml` and the corpus's files, the DSL linters and their codes, the DSL's facade v1.
+`village.toml` and the corpus's files, the DSL linters and their codes, the DSL's facade v1, the checks
+over the records and their thresholds.
 `tests/test_reference.py` and CI (`make reference check=1`) fail when a page is stale.
 
     python -m tools.reference           # make reference: write the pages
@@ -154,8 +155,78 @@ def render_dsl_api() -> str:
     return "\n".join(lines) + "\n"
 
 
+RU = ROOT / "packages" / "verso-ru" / "src" / "verso" / "ru"
+#: The modules whose `#:`-documented numbers are the checks' thresholds: the facts layer's checks, and the
+#: commands that compare records outside it.
+THRESHOLDS = sorted((RU / "facts" / "checks").glob("*.py")) + [
+    RU / "consolidation" / name for name in ("age_conflicts.py", "death_age.py", "sibling_spacing.py")]
+
+
+def _number(node: ast.expr) -> bool:
+    """A number, or a tuple of them (nested): what a threshold is written as."""
+    if isinstance(node, ast.Constant):
+        return isinstance(node.value, (int, float)) and not isinstance(node.value, bool)
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+        return _number(node.operand)
+    return isinstance(node, ast.Tuple) and bool(node.elts) and all(_number(e) for e in node.elts)
+
+
+def _thresholds(path: Path) -> list[tuple[str, str, str]]:
+    """A module's public numbers with a `#:` comment above them: (name, value as written, the comment's first
+    sentence)."""
+    source = path.read_text(encoding="utf-8")
+    lines = source.splitlines()
+    out: list[tuple[str, str, str]] = []
+    for node in ast.parse(source).body:
+        target, value = ((node.targets[0], node.value) if isinstance(node, ast.Assign) and len(node.targets) == 1
+                         else (node.target, node.value) if isinstance(node, ast.AnnAssign) else (None, None))
+        if not (isinstance(target, ast.Name) and target.id.isupper() and not target.id.startswith("_")
+                and value is not None and _number(value)):
+            continue
+        comment: list[str] = []
+        n = node.lineno - 2
+        while n >= 0 and lines[n].lstrip().startswith("#:"):
+            comment.insert(0, lines[n].lstrip()[2:].strip())
+            n -= 1
+        if comment:
+            out.append((target.id, ast.unparse(value), _docline(f'"""{" ".join(comment)}"""')))
+    return out
+
+
+def render_checks() -> str:
+    """The checks over the records: what `verso facts --check` asks, which of them one record answers alone and
+    the field that answers each, and the thresholds the checks hold — each a number of the code."""
+    from verso.ru.facts.signals import CHECKS, STAND_DOWN
+
+    facts = (RU / "cli" / "facts.py").read_text(encoding="utf-8")
+    choices = next(
+        tuple(e.value for e in kw.value.elts if isinstance(e, ast.Constant))
+        for node in ast.walk(ast.parse(facts)) if isinstance(node, ast.Call)
+        and getattr(node.func, "attr", "") == "add_argument" and node.args
+        and isinstance(node.args[0], ast.Constant) and node.args[0].value == "--check"
+        for kw in node.keywords if kw.arg == "choices" and isinstance(kw.value, ast.Tuple))
+    lines = [HEAD + "# Checks\n",
+             "`verso facts --village V --check CHECK` asks one check of a village's reviewed records and exits 1 "
+             "on a finding (`identity`, on a broken invariant); a finding a record's note stands down is counted "
+             "apart and is none. A check one record answers alone is also asked of one record by "
+             "`verso.ru.pipeline.signals.signals_on_json` (see records JSON); the field named stands a finding "
+             "down. The guide is [the checks](../checks.md).\n",
+             "\n## `verso facts --check`\n", "| Check | One record | Stood down by |", "|---|---|---|"]
+    for name in choices:
+        alone = name in CHECKS
+        said = "inside one entry" if name == "date-order" else "yes"  # its class between records needs the people folded
+        lines.append(f"| `{name}` | {said if alone else '—'} | {f'`{STAND_DOWN[name]}=`' if alone else '—'} |")
+    lines += ["\n## Thresholds\n", "Each a number a check holds, with what its comment in the code says of it.\n",
+              "| Module | Name | Value | What it is |", "|---|---|---|---|"]
+    for path in THRESHOLDS:
+        module = path.relative_to(ROOT / "packages" / "verso-ru" / "src").with_suffix("").as_posix().replace("/", ".")
+        for name, value, said in _thresholds(path):
+            lines.append(f"| `{module}` | `{name}` | `{value}` | {said} |")
+    return "\n".join(lines) + "\n"
+
+
 PAGES = {"commands.md": render_commands, "workspace-keys.md": render_workspace_keys,
-         "linters.md": render_linters, "dsl-api.md": render_dsl_api}
+         "linters.md": render_linters, "dsl-api.md": render_dsl_api, "checks.md": render_checks}
 
 
 def write(out: Path = OUT) -> list[Path]:

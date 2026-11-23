@@ -65,3 +65,21 @@ def test_example_uses_the_names_base():
     assert not list(toy.glob("*.csv"))
     assert (toy / "names" / "names.tsv").is_file()
     assert "names.csv" not in (EXAMPLES / "README.md").read_text(encoding="utf-8")
+
+
+def test_the_checks_guide_shows_what_the_example_answers(tmp_path: Path):
+    """docs/checks.md (and its translation) quotes the toy example's `name-days` report: it is the report."""
+    import re
+
+    copy = tmp_path / "toy"
+    shutil.copytree(EXAMPLES / "toy", copy)
+    env = {k: v for k, v in os.environ.items() if k != "VERSO_WORKSPACE"} | {"VERSO_LANG": "en"}
+    done = subprocess.run([sys.executable, "-m", "verso.core.cli", "--workspace", str(copy), "facts",
+                           "--village", "Степанчиково", "--check", "name-days"],
+                          cwd=copy, capture_output=True, text=True, env=env, check=False)
+    assert done.returncode == 1, done.stdout + done.stderr   # a finding
+    for guide in ("checks.md", "checks.ru.md"):
+        text = (PROJECT / "docs" / guide).read_text(encoding="utf-8")
+        block = re.search(r"```text\n\$ verso facts --village Степанчиково --check name-days\n(.*?)```", text, re.DOTALL)
+        assert block is not None, guide
+        assert block.group(1).strip() == done.stdout.strip(), guide
