@@ -104,6 +104,10 @@ Its agents are `verso-reading:dsl-writer` (a scan straight to the DSL) and `vers
 regional notes and frames are. The skills work in other agents too, through skills.sh. See
 [the plugin](plugins/verso-reading/README.md).
 
+Which model reads such scans how well, and at what price, is measured in
+[an article](https://verso-genealogy.github.io/articles/en/models/) on
+[the articles site](https://verso-genealogy.github.io/articles/en/).
+
 ## What is public
 
 The library promises, to a corpus that is not its author's, what a corpus is written against:
