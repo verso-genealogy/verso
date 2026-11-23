@@ -307,12 +307,12 @@ show it, and let the person who knows the hand read it.
 ## Books of the civil registry (ЗАГС, from 1918)
 
 A ЗАГС book is a book per kind of record — births, marriages, deaths — not three parts of one, and
-usually a register ruled across both pages: a number, the day, the child's or the couple's names,
-the parents with patronymics and often ages, the residence, who reported it; no godparents. So
-`headers` finds no part titles and the `--part` presets cut the wrong columns: cut with
-`crops --x0/--x1`, or `strips` for one column. In the DSL the record set is `civil=True`, and its
-second date is the day of REGISTRATION (a birth's `k_day`, a death's `b_day`), never a christening
-or a burial. Patronymics are written whole there («Иванович», «Ивановна»), and many books already
+its columns are the registry's form, not the church book's: they differ between years and offices, and
+a birth has no godparents. The `--part` presets are cut for the church book's columns, so look at one
+leaf whole before trusting them: when they cut across the names, cut with `crops --x0/--x1`, or
+`strips` for one column; `headers` may find no part titles to look for. In the DSL the record set is
+`civil=True`, and its second date is the day of REGISTRATION (a birth's `k_day`, a death's `b_day`),
+never a christening or a burial. Patronymics are written whole there («Иванович», «Ивановна»), and many books already
 follow the new orthography of 1918 — keep what is written, in either spelling.
 
 ## After the reading
@@ -329,15 +329,20 @@ follow the new orthography of 1918 — keep what is written, in either spelling.
    not import fails here; every check after would skip it with a warning and say «OK — 0 findings».
 4. The checks — each finding a reason to look at the scan again, never a correction:
 
-   | It finds | Ask | If the scan confirms the value |
+   | It finds | Ask | When the scan says the record is right |
    |---|---|---|
    | a name no saint near the birth supports | `verso facts --village <village> --check name-days` | `calendar_note=` |
    | a wedding in a fast or on a day the Church did not marry | `… --check wedding-calendar` | `calendar_note=` |
    | a christening or a burial long after | `… --check baptism-lag`, `… --check burial-lag` | `lag_note=` |
    | an age under the marriage minimum of its date | `… --check wedding-ages` | `age_note=` |
-   | a burial age the birth record disproves — often the unit | `verso death-age --village <village>` | `namesake=`, or `source_age_error=` |
+   | a burial age the birth record disproves — often the unit | `verso death-age --village <village>` | `namesake=` (the age is right and is another child's) |
    | two children of one couple too close: a birth year derived from a burial age | `verso sibling-spacing --village <village>` | — |
    | a comment's «самая ранняя запись» an earlier record now overturns | `verso stale-claims --village <village>` | edit the comment |
+
+   When the scan shows the BOOK is wrong — the priest wrote a date or an age that cannot be — the record
+   declares it instead: `source_date_error=` (a christening before the birth, a burial before the
+   death) or `source_age_error=` (an age); these withdraw the value. When the reading was wrong, fix the
+   reading.
 
    They read reviewed records only — all but `verso stale-claims`, which reads drafts too — so a year
    still `reviewed=False` answers them once it is read back against the scan. Then the project's own

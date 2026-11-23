@@ -59,15 +59,18 @@ A record keeps what the source says. Where the source is wrong, the record decla
 right and only looks wrong, the record notes it. Free text; never published; read by the checks it
 answers.
 
-| Field | When | What it does |
-|---|---|---|
-| `source_date_error=` | a christening dated before the birth, a burial before the death | withdraws that date |
-| `source_age_error=` | a stated age the source got wrong | withdraws the age |
-| `source_kin_error=` | the entry's kinship contradicts itself | stands down the father check on it |
-| `namesake=` | a burial whose age is right but belongs to another child of that name | stands down `death-age` |
-| `calendar_note=` | a name out of the calendar, a wedding in a fast — so in the book | notes it; the value stays believed |
-| `lag_note=` | a christening or a burial long after — so in the book | notes it |
-| `age_note=` | the ages at a wedding — so in the book | notes it |
+| Field | Of | When | What it does |
+|---|---|---|---|
+| `source_date_error=` | `birth()`, `death()` | a christening dated before the birth, a burial before the death | withdraws that date |
+| `source_age_error=` | `death()`, `member()` | a stated age the source got wrong | withdraws the age |
+| `previous_age_error=` | `member()` | the previous revision's age the roll carried over wrong | withdraws that figure alone |
+| `source_kin_error=` | `marriage()` | the entry's kinship contradicts itself | stands down the father check on it |
+| `namesake=` | `death()` | a burial whose age is right but belongs to another child of that name | stands down `death-age` |
+| `calendar_note=` | `birth()`, `christening()`, `marriage()` | a name out of the calendar, a wedding in a fast — so in the book | notes it; the value stays believed |
+| `lag_note=` | `birth()`, `death()` | a christening or a burial long after — so in the book | notes it |
+| `age_note=` | `marriage()` | the ages at a wedding — so in the book | notes it |
+
+A field on a call that does not take it fails the file's build (`verso export-csv`).
 
 ## Not yet read against the scan: `reviewed=False`
 

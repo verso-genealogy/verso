@@ -28,3 +28,8 @@ loads and hands in — a check still reads no file.
 
 `tests/test_facts_layering.py` holds the budget.
 """
+
+#: Every check `verso facts --check` asks, in the order its help lists them.
+FACTS_CHECKS: tuple[str, ...] = (
+    "identity", "date-order", "birth-claims", "father-claims", "death-claims", "name-days", "wedding-calendar",
+    "baptism-lag", "burial-lag", "posthumous-birth", "children-span", "wedding-ages")

@@ -36,3 +36,17 @@ def test_an_example_lints_with_no_error_and_builds(n: int, tmp_path: Path):
 def test_the_two_examples_are_the_translations_examples():
     russian = GUIDE.with_name("writing-records.ru.md").read_text(encoding="utf-8")
     assert _BLOCK.findall(russian) == _examples()
+
+
+def test_the_field_table_names_the_calls_that_take_each_field():
+    """«What the source contradicts» says on which call each field goes: a field on the wrong call does not build."""
+    import json
+
+    api = json.loads((ROOT / "packages" / "verso-ru" / "src" / "verso" / "ru" / "dsl" / "api-v1.json").read_text(encoding="utf-8"))
+    takes = {name: {p[0] for p in entry["params"]} for name, entry in api["modules"]["verso.ru.dsl"].items()
+             if entry["kind"] == "function"}
+    rows = re.findall(r"^\| `(\w+)=` \| ([^|]+) \|", GUIDE.read_text(encoding="utf-8"), re.MULTILINE)
+    assert len(rows) >= 8
+    for field, calls in rows:
+        named = set(re.findall(r"`(\w+)\(\)`", calls))
+        assert named == {call for call, params in takes.items() if field in params}, field

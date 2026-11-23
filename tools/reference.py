@@ -32,9 +32,13 @@ def _docline(source: str) -> str:
     importing it. A sentence ends at a full stop: a colon introduces what follows it («The святцы: import
     the table, …»), and a summary cut there says nothing."""
     doc = (ast.get_docstring(ast.parse(source)) or "").strip()
-    paragraph = " ".join(line.strip() for line in doc.split("\n\n")[0].splitlines())
-    end = re.search(r"(?<=\.)\s", paragraph)
-    return (paragraph[:end.start()] if end else paragraph).replace("|", "\\|")
+    return _first_sentence(" ".join(line.strip() for line in doc.split("\n\n")[0].splitlines()))
+
+
+def _first_sentence(text: str) -> str:
+    """A text's first sentence — up to a full stop followed by a space — escaped for a table cell."""
+    end = re.search(r"(?<=\.)\s", text)
+    return (text[:end.start()] if end else text).replace("|", "\\|")
 
 
 def _module_source(module: str) -> str:
@@ -172,8 +176,8 @@ def _number(node: ast.expr) -> bool:
 
 
 def _thresholds(path: Path) -> list[tuple[str, str, str]]:
-    """A module's public numbers with a `#:` comment above them: (name, value as written, the comment's first
-    sentence)."""
+    """A module's public numbers with a `#:` comment right above them: (name, its value — as Python prints it, so
+    `0.20` is `0.2` —, the comment's first sentence). A comment that speaks of two constants gives each its own."""
     source = path.read_text(encoding="utf-8")
     lines = source.splitlines()
     out: list[tuple[str, str, str]] = []
@@ -189,22 +193,16 @@ def _thresholds(path: Path) -> list[tuple[str, str, str]]:
             comment.insert(0, lines[n].lstrip()[2:].strip())
             n -= 1
         if comment:
-            out.append((target.id, ast.unparse(value), _docline(f'"""{" ".join(comment)}"""')))
+            out.append((target.id, ast.unparse(value), _first_sentence(" ".join(comment))))
     return out
 
 
 def render_checks() -> str:
     """The checks over the records: what `verso facts --check` asks, which of them one record answers alone and
     the field that answers each, and the thresholds the checks hold — each a number of the code."""
-    from verso.ru.facts.signals import CHECKS, STAND_DOWN
+    from verso.ru.facts.checks import FACTS_CHECKS
+    from verso.ru.facts.signals import CHECKS, IN_PART, STAND_DOWN
 
-    facts = (RU / "cli" / "facts.py").read_text(encoding="utf-8")
-    choices = next(
-        tuple(e.value for e in kw.value.elts if isinstance(e, ast.Constant))
-        for node in ast.walk(ast.parse(facts)) if isinstance(node, ast.Call)
-        and getattr(node.func, "attr", "") == "add_argument" and node.args
-        and isinstance(node.args[0], ast.Constant) and node.args[0].value == "--check"
-        for kw in node.keywords if kw.arg == "choices" and isinstance(kw.value, ast.Tuple))
     lines = [HEAD + "# Checks\n",
              "`verso facts --village V --check CHECK` asks one check of a village's reviewed records and exits 1 "
              "on a finding (`identity`, on a broken invariant); a finding a record's note stands down is counted "
@@ -212,11 +210,11 @@ def render_checks() -> str:
              "`verso.ru.pipeline.signals.signals_on_json` (see records JSON); the field named stands a finding "
              "down. The guide is [the checks](../checks.md).\n",
              "\n## `verso facts --check`\n", "| Check | One record | Stood down by |", "|---|---|---|"]
-    for name in choices:
+    for name in FACTS_CHECKS:
         alone = name in CHECKS
-        said = "inside one entry" if name == "date-order" else "yes"  # its class between records needs the people folded
+        said = IN_PART.get(name, "yes")
         lines.append(f"| `{name}` | {said if alone else '—'} | {f'`{STAND_DOWN[name]}=`' if alone else '—'} |")
-    lines += ["\n## Thresholds\n", "Each a number a check holds, with what its comment in the code says of it.\n",
+    lines += ["\n## Thresholds\n", "Each a number a check holds, as Python prints it, with the first sentence of its comment in the code.\n",
               "| Module | Name | Value | What it is |", "|---|---|---|---|"]
     for path in THRESHOLDS:
         module = path.relative_to(ROOT / "packages" / "verso-ru" / "src").with_suffix("").as_posix().replace("/", ".")

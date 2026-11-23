@@ -34,6 +34,7 @@ from verso.ru.facts.extract.name_lists import facts_from_name_lists
 from verso.core.records.ids import RecordIds
 from verso.ru.facts.identity import (
     canonical_fold, conclusions, display_name, matching_fold, name_identity)
+from verso.ru.facts.checks import FACTS_CHECKS
 from verso.ru.facts.checks.births import BirthFinding, birth_claims_of, birth_span
 from verso.ru.facts.checks.dates import OrderFindings, WithinFinding, date_order_findings
 from verso.ru.facts.checks.deaths import DeathFinding, death_claims
@@ -1007,10 +1008,7 @@ def main(argv: list[str] | None = None) -> int:
                     help="everything the records say about one canonical, "
                          "record by record, with each claim's basis")
     ap.add_argument("--check",
-                    choices=("identity", "date-order", "birth-claims", "father-claims",
-                             "death-claims", "name-days", "wedding-calendar",
-                             "baptism-lag", "burial-lag", "posthumous-birth",
-                             "children-span", "wedding-ages"),
+                    choices=FACTS_CHECKS,
                     help="a cross-record rule, which reads more than one kind")
     ap.add_argument("--min-gap", type=float, default=0.0, metavar="YEARS",
                     help="birth-claims: only people whose widest gap is at least this")

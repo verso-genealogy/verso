@@ -45,6 +45,8 @@ STAND_DOWN: dict[str, str] = {
     "wedding-calendar": "calendar_note", "name-days": "calendar_note",
     "baptism-lag": "lag_note", "burial-lag": "lag_note",
     "wedding-ages": "age_note", "date-order": "source_date_error"}
+#: A check one record answers only in part, and the part it asks: the rest needs the people folded.
+IN_PART: dict[str, str] = {"date-order": "inside one entry"}
 #: The orderings `source_date_error=` answers: it withdraws a christening or a burial, and nothing else.
 DATE_ORDER_STOOD_DOWN = frozenset({"baptism_before_birth", "burial_before_death"})
 #: The bans that move with Pascha: a reader checks them against the year's.
