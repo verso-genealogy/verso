@@ -105,6 +105,12 @@ reader reads old files.
   of a record at some place, is not the export's, no note goes on a record — each goes on the file as
   `manual` and `Exported.unbound` names the file and why. Notes are invisible to replay and to the
   graph; the encoder never writes them, and editing a comment makes the export stale like any DSL change.
+- **`reviewed` on a divorce** (0.1.47). `divorce(…, reviewed=)` and `divorce_records(…, reviewed=)` write the
+  flag as the other kinds do: the call's own in `written`, a `page()`'s or the book's in `written` under
+  `written.context`, and a held divorce's `review` is `held`. Its default `True` is written nowhere, so a divorce book
+  that never names the flag exports byte for byte as before, and an old export reads as reviewed. As for a name
+  list's entry, a `page(…, reviewed=True)` inside `divorce_records(…, reviewed=False)` leaves no trace: `decode_file`
+  reads its records as reviewed, `replay_file` as held.
 
 ## Compatibility and reading an old export
 

@@ -349,7 +349,9 @@ fields = [
   { path = "comment", label = "ui.field.comment", widget = "wide" },
   { path = "year", label = "ui.field.year" },
 ]
-hidden = []
+hidden = [
+  "reviewed",
+]
 slots = [
   { role = "husband", label = "ui.slot.husband", gender = "male" },
   { role = "wife", label = "ui.slot.wife", gender = "female" },
@@ -582,7 +584,9 @@ fields = [
   { path = "church", label = "ui.field.church" },
   { path = "year", label = "ui.field.year" },
 ]
-hidden = []
+hidden = [
+  "reviewed",
+]
 
 [books.external_sources]
 label = "ui.set.external_sources"

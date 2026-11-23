@@ -118,6 +118,19 @@ def test_tables_reviewed_only_leaves_the_unreviewed_out(sets):
     assert len(proofread.rows) == len(births.records) - len(unreviewed)
 
 
+def test_tables_reviewed_only_leaves_an_unreviewed_divorce_out(sets):
+    from verso.ru.dsl.records.divorces import divorce, divorce_records
+    from verso.ru.domain import page, person
+    book = sets["divorces"]
+    every = tables([book])[0]
+    held = divorce_records(book.archive, book.fund, book.inventory, book.case, book.village, book.church,
+                           book.year, *page("2", divorce(2, 5, husband=person("Петръ"), wife=person("Анна")),
+                                            reviewed=False))
+    assert tables([book], reviewed_only=True)[0].text_rows() == every.text_rows(), "nothing held: every row"
+    assert len(tables([held])[0].rows) == 1, "the CSV of a year writes every record"
+    assert tables([held], reviewed_only=True)[0].rows == []
+
+
 def test_merge_concatenates_same_name():
     one = CsvTable("a.csv", ["x"], [[1], [2]])
     two = CsvTable("a.csv", ["x"], [[3]])

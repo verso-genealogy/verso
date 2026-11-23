@@ -1299,6 +1299,11 @@
      "path": "year",
      "type": "integer",
      "label": "ui.field.year"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
     }
    ],
    "slots": [
@@ -2569,6 +2574,11 @@
      "path": "year",
      "type": "integer",
      "label": "ui.field.year"
+    },
+    {
+     "path": "reviewed",
+     "type": "boolean",
+     "hidden": true
     }
    ],
    "fills": [],

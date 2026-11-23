@@ -164,6 +164,20 @@ class VitalRecords(unittest.TestCase):
                 self.assertEqual(1, len(found), found)
                 self.assertIn(f"{records} defaults to reviewed=True", found[0])
 
+    def test_a_divorce_and_its_record_set(self):
+        found = messages("""
+            divorces = divorce_records(
+                "ГАПО", "1605", "59", "59", "Заманиловка", "", 1923,
+                divorce(1, 3, reviewed=True),
+                *page("2", divorce(2, 5, reviewed=False), reviewed=False),
+                divorce(3, 7, reviewed=False),
+            )
+        """)
+        self.assertEqual(2, len(found), found)
+        self.assertTrue(any("divorce()" in m and "divorce_records defaults to reviewed=True" in m
+                            for m in found), found)
+        self.assertTrue(any("divorce()" in m and 'page("2")' in m for m in found), found)
+
 
 class NotOurs(unittest.TestCase):
     def test_an_own_hold_under_a_default_file_is_load_bearing(self):

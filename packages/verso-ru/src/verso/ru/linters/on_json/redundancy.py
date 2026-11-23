@@ -416,7 +416,8 @@ def vsr001(view: FileView) -> Iterator[Finding]:
 # --- RVR001: a record's reviewed= that restates the record set's -----------------------------------------------
 
 _SET_CALL = {"births": "birth_records", "marriages": "marriage_records", "deaths": "death_records",
-             "census": "census_records", "name_list": "name_list_records"}     # the set's kind, the call that wrote it
+             "census": "census_records", "name_list": "name_list_records",
+             "divorces": "divorce_records"}     # the set's kind, the call that wrote it
 
 
 def rvr001(view: FileView) -> Iterator[Finding]:
