@@ -51,9 +51,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   **No output moves.** A divorce file that does not name the flag gives the same bytes as on 0.1.46 — its familio
   CSV, its records JSON, the Terraform (a divorce writes none), the facts, dsllint; a held divorce moves its records
   JSON alone (its `review`, its `reviewed`), its CSV row stays. A corpus that writes `reviewed=` on a divorce needs
-  this version: an older one refuses the keyword. As for a name list's entry, a `page(…, reviewed=True)` inside
-  `divorce_records(…, reviewed=False)` leaves no trace in the records JSON, so `replay_file` rebuilds its records
-  held.
+  this version: an older one refuses the keyword, and a reader validating against an older `records-v1.json`
+  refuses a divorce that writes `reviewed`. The records JSON writes the flag as a name list's entry's (default
+  `True`, written nowhere), not a birth's (always written) — that is what keeps an unflagged book's bytes. It costs
+  the entry's one case: a `page(…, reviewed=True)` inside `divorce_records(…, reviewed=False)` leaves no trace, so
+  `replay_file` rebuilds its records held (`decode_file` reads them right). The encoder's fix belongs to both kinds
+  and moves a name list's bytes, so it is a change of its own.
 
 ### Changed
 
