@@ -5,8 +5,9 @@ description: >
   дело is whole, find where части 1/2/3 begin, and cut the pages into the crops that are
   actually legible. Use when sweeping a year for a surname, continuing a year-by-year pass
   through a дело, re-checking one record against its scan, or when a reading disagrees with
-  what the corpus already holds. For revision and confession lists use the `census` skill
-  instead; for producing a reviewable .txt, the `transcription` skill.
+  what the corpus already holds — and for the checks to ask once a year is written. For revision
+  and confession lists use the `census` skill instead; for producing a reviewable .txt, the
+  `transcription` skill.
 compatibility: >
   Needs Python 3.14+ and the verso library on PATH — pip install 'verso-core[scans]>=0.1.43'
   'verso-ru>=0.1.43' (verso-core[heic] for a phone's own format) — and an agent that can open
@@ -17,6 +18,12 @@ A year of a metric book is ~36 листов = ~72 pages. Reading them whole cost
 what it needs to and gets surnames wrong at an archive's ~950 px per leaf. The four setup steps
 below are mechanical and are handled by `verso scans`; everything after them is reading, and no
 tool helps with that.
+
+**What this costs.** This text — about 23 thousand characters — is read once, when the skill is used;
+otherwise only its description stays in context. The two tiers below are two SCALES of crop — a part
+crop to find a record, a 4–5× cut of each name that enters the DSL — not two passes of reading, and
+subagents are optional: a year can be read in the session itself. A subagent pays its own context
+before its first page, so give one about ten records, not one record or fifty.
 
 The skills this one points at are named bare (`census`, `transcription`); in the Claude Code
 plugin they are `verso-reading:census`, `verso-reading:transcription`.
@@ -187,7 +194,7 @@ the column HEADER before the numbers: ч. 1 runs **two series side by side** («
 year, and the DSL's `(number, Gender)` pair is what disambiguates them. Taking the female
 series for the male one is how a correct attribution got reported as an error.
 
-**Reading is two-tier, and the second tier is not optional.** The part crop is enough to
+**Reading is two-tier, and the second tier is not optional** — two scales of crop, not two readers. The part crop is enough to
 LOCATE a record and not always enough to READ a name: on a 1.8× full-width sweep of 1887
 «дочь **Платонида**» read as «дочь Пелагія», and the phantom contradiction with a birth three
 weeks earlier cost more than the crops did. So: sweep to find, then **re-crop at 4–5× every
@@ -277,6 +284,9 @@ show it, and let the person who knows the hand read it.
 
 ## Reading rules that are not about images
 
+- **Part 1 runs two series of numbers**, boys and girls («Мужескаго пола | Женскаго пола»), so
+  «№ 15» is in a year twice; the DSL's pair `(number, Gender)` says which. Read the column header
+  before the numbers.
 - **Read the year on the surnames the project's notes for the village name, AND on bare
   patronymics.** A род with street surnames is often written with no surname at all
   («Евлампій Агѣевъ безъ фамиліи»), and a surname written once in the plural covers every
@@ -294,16 +304,45 @@ show it, and let the person who knows the hand read it.
 - **Verify every reading that changes a conclusion** by re-cropping at 4–16× before writing
   it. A single letter decided between two surnames for two years of records.
 
+## Books of the civil registry (ЗАГС, from 1918)
+
+A ЗАГС book is a book per kind of record — births, marriages, deaths — not three parts of one, and
+usually a register ruled across both pages: a number, the day, the child's or the couple's names,
+the parents with patronymics and often ages, the residence, who reported it; no godparents. So
+`headers` finds no part titles and the `--part` presets cut the wrong columns: cut with
+`crops --x0/--x1`, or `strips` for one column. In the DSL the record set is `civil=True`, and its
+second date is the day of REGISTRATION (a birth's `k_day`, a death's `b_day`), never a christening
+or a burial. Patronymics are written whole there («Иванович», «Ивановна»), and many books already
+follow the new orthography of 1918 — keep what is written, in either spelling.
+
 ## After the reading
 
 1. Write the DSL under `<village>/YYYY/` by the project's extraction rules (the AGENTS.md проекта
-   names them per record kind).
-2. `verso dsllint <village>/YYYY/*.py` — every DSL check in one run, and the file loads.
-3. The project's own post-reading checks and generators (the AGENTS.md проекта lists them). Of the
-   library's, `verso death-age` and `verso sibling-spacing` (validates every birth year you derived
-   from a burial age) are the ones a newly read year most often trips; reading backwards, a new year
-   almost always falsifies some primacy claim of the years already written.
-4. Record the year's composition (part boundaries, inserted leaves, frame range) where the
+   names them per record kind). A project with none writes by the library's own rules of a record:
+   names as written; a patronymic the entry does not write is `None`, not one recovered from another
+   record; what another record tells you (a father's patronymic, a maiden name) goes into that
+   person's `comment=`, not into `father=`/`mother=`; a doubt goes into `comment=`, with «?» in the
+   name; everything read from a scan is `reviewed=False`.
+2. `verso dsllint <village>/YYYY/*.py` — no finding of level error. It reads the text and imports
+   nothing: a file it passes may still not load.
+3. `verso export-csv --village <village> --year YYYY` exits 0 — it builds every file. A file that does
+   not import fails here; every check after would skip it with a warning and say «OK — 0 findings».
+4. The checks — each finding a reason to look at the scan again, never a correction:
+
+   | It finds | Ask | If the scan confirms the value |
+   |---|---|---|
+   | a name no saint near the birth supports | `verso facts --village <village> --check name-days` | `calendar_note=` |
+   | a wedding in a fast or on a day the Church did not marry | `… --check wedding-calendar` | `calendar_note=` |
+   | a christening or a burial long after | `… --check baptism-lag`, `… --check burial-lag` | `lag_note=` |
+   | an age under the marriage minimum of its date | `… --check wedding-ages` | `age_note=` |
+   | a burial age the birth record disproves — often the unit | `verso death-age --village <village>` | `namesake=`, or `source_age_error=` |
+   | two children of one couple too close: a birth year derived from a burial age | `verso sibling-spacing --village <village>` | — |
+   | a comment's «самая ранняя запись» an earlier record now overturns | `verso stale-claims --village <village>` | edit the comment |
+
+   They read reviewed records only — all but `verso stale-claims`, which reads drafts too — so a year
+   still `reviewed=False` answers them once it is read back against the scan. Then the project's own
+   post-reading checks and generators (the AGENTS.md проекта lists them).
+5. Record the year's composition (part boundaries, inserted leaves, frame range) where the
    project keeps the record of the дело — the next year's `check --first/--last` depends on it.
 
 ## Limits

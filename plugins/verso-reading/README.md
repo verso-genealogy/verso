@@ -33,6 +33,21 @@ the library's `verso scans` and the other `verso …` commands. They need the li
 pip install 'verso-core[scans]>=0.1.43' 'verso-ru>=0.1.43'
 ```
 
+## What it costs
+
+- **Always in context**: the descriptions of the five skills and two agents — about 4 thousand characters
+  together. Nothing else of the plugin is read until a skill is used.
+- **A skill, when used**: its text, once — `metric-books` and `census` about 22–23 thousand characters each (each
+  says its own size), the others 8–11 thousand. `dsl-writer`'s prompt is about 12 thousand, and it reads the
+  project's rules itself; `scan-reader`'s is under one.
+- **The two tiers of reading are two scales of crop**, not two passes of readers: a part crop finds a record, a
+  4–5× cut reads each name that enters the DSL. Subagents are optional — a year can be read in the session itself.
+  A subagent pays its own context before its first page: give one about ten records, not one or fifty.
+- **Which model reads these hands how well, and at what price per record**, is measured in
+  [an article](https://verso-genealogy.github.io/articles/en/models/).
+
+A token is a few characters, fewer for Cyrillic: count with the model's tokenizer before budgeting by these.
+
 ## Installing
 
 The repository is a Claude Code marketplace named `verso` (`.claude-plugin/marketplace.json` at

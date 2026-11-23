@@ -20,6 +20,10 @@ DSL — this skill covers finding and verifying, those rules cover the encoding.
 list read the project's confession-list rules as well, and see "Confession lists" below: they are
 searched differently, because there is no previous-revision age column to fingerprint with.
 
+**What this costs.** This text — about 22 thousand characters — is read once, when the skill is
+used. The sweeps below read strips and fingerprints, not whole pages; subagents are optional, and one pays
+its own context before its first page.
+
 Альбомы, архивы и региональные правила — в AGENTS.md проекта: the extraction rules by record kind,
 where each дело's frames and its record (its leaves, its links) are kept.
 
@@ -342,6 +346,13 @@ Two rules specific to scan work:
 
 Record contested readings in `comment=` rather than picking silently — «имя при повторном
 чтении разобрано как Матвей», «цифра возраста в скане не читается».
+
+Then `verso dsllint <file>` — no finding of level error (it reads the text and imports nothing) — and
+`verso export-csv --village <village> --year YYYY`, which must exit 0: it builds the file, and a file that
+does not import is skipped by every check after it with a warning and an «OK». The roll's own linters
+(CAI, CPL) are in `dsllint`. A roll's ages are checked against the metric books by
+`verso facts --village <village> --check birth-claims` — once the corpus has joined each person's records,
+and on reviewed households only.
 
 ## Releasing a roll: fold it before any plan
 

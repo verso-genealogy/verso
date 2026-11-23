@@ -16,6 +16,7 @@ metric books and census records from the 18th-19th centuries.
 > extraction passes, an artefact reviewable without re-running vision, or source text shared
 > between people. For a targeted lookup in a revision list, use the `census` skill instead
 > (`verso-reading:census` in the Claude Code plugin). The reading technique below applies either way.
+> Nothing checks a `.txt`: the linters and the checks over the records begin with the DSL.
 
 ## IMPORTANT: Transcribe Directly (your own vision, no external API)
 

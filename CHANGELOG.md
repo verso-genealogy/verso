@@ -23,6 +23,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   a corpus's CI. The reference gains [checks](docs/reference/checks.md), written from the code: the checks of
   `verso facts --check`, which one record answers and what stands each down, and every threshold a check holds
   with its comment (`#:`). Comments only in the code: no output moves.
+- verso-reading: the skills say what they cost in context (the plugin's README, «What it costs»; `metric-books` and
+  `census` their own size, which a test holds to the text) and that the two tiers of reading are two scales of crop,
+  not two passes of readers. «After the reading» of `metric-books` lists the checks a written year answers and the
+  field that answers each, says that `dsllint` imports nothing — `verso export-csv` is the build — and that the checks
+  read reviewed records only. `metric-books` gains the books of the civil registry and the two series of numbers of
+  part 1; `dsl-writer` writes by the library's rules of a record when the project has none, and checks the build.
 
 ### Changed
 

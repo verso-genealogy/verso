@@ -102,7 +102,7 @@ cards — and write what they say into the DSL.
 Its agents are `verso-reading:dsl-writer` (a scan straight to the DSL) and `verso-reading:scan-reader`
 (reading that writes no DSL). The plugin names no corpus: the project's AGENTS.md says where its rules,
 regional notes and frames are. The skills work in other agents too, through skills.sh. See
-[the plugin](plugins/verso-reading/README.md).
+[the plugin](plugins/verso-reading/README.md) — and [what it costs in context](plugins/verso-reading/README.md#what-it-costs).
 
 Which model reads such scans how well, and at what price, is measured in
 [an article](https://verso-genealogy.github.io/articles/en/models/) on

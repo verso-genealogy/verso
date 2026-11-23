@@ -319,3 +319,15 @@ def test_the_install_floor_is_what_the_skills_need_and_no_later_than_this_tree()
              for rel, package, floor in floors
              if not _MINIMUM_FLOOR <= _version(floor) <= _version(_stamped("verso-" + package))]
     assert wrong == [], "\n".join(wrong)
+
+
+def test_a_skill_says_its_own_size_truly():
+    """«What this costs» names a skill's size; it is the size of the text a harness reads, give or take 1500."""
+    said = 0
+    for path in sorted(PLUGIN.glob(f"skills/*/{SKILL_FILE}")):
+        text = path.read_text(encoding="utf-8")
+        if m := re.search(r"This text — about (\d+) thousand characters", text):
+            said += 1
+            body = text.split("\n---\n", 1)[1]
+            assert abs(int(m.group(1)) * 1000 - len(body)) <= 1500, (path.relative_to(ROOT), len(body))
+    assert said >= 2

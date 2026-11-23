@@ -101,7 +101,7 @@ births = birth_records(
 Агенты плагина — `verso-reading:dsl-writer` (скан сразу в DSL) и `verso-reading:scan-reader` (чтение без
 записи в DSL). Корпуса плагин не знает: где правила, региональные заметки и кадры, говорит AGENTS.md
 проекта. Скиллы работают и в других агентах, через skills.sh. См. [плагин](plugins/verso-reading/README.md)
-(на английском).
+(на английском) — и [чего он стоит в контексте](plugins/verso-reading/README.md#what-it-costs).
 
 Какая модель как читает такие сканы и сколько это стоит, измерено в
 [статье](https://verso-genealogy.github.io/articles/models/) на [сайте статей](https://verso-genealogy.github.io/articles/).
