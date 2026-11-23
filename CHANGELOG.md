@@ -12,6 +12,37 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   verso-ru names them for the christening and the burial: `lag_note` and `source_date_error`, the fields the signals
   of `baptism-lag`, `burial-lag` and `date-order` name (`STAND_DOWN`). The review page says no «проверьте» where the
   record writes one (verso-app's rule `late`).
+- Docs: [the rules of a record](docs/writing-records.md) — what goes into each field (names as written, the
+  patronymic in the book's form or `None`, kinship only as the entry states it), where a doubt goes, ages and dates
+  (Julian until 1918), what declares or notes a value the source contradicts, and when a file is done (`dsllint`
+  reads the text and imports nothing; `verso export-csv` builds every file). Its examples are tested.
+- Docs: [the checks](docs/checks.md) — every check over the records: the six one record answers alone, with what
+  each asks and the field that answers it; those that compare records before consolidation (`death-age`,
+  `sibling-spacing`, `stale-claims`, `father-claims` inside one record) and after it; what they do not read (a file
+  that does not import, a record that is `reviewed=False`), their exit codes, the names their reports print, and
+  a corpus's CI. The reference gains [checks](docs/reference/checks.md), written from the code: the checks of
+  `verso facts --check`, which one record answers and what stands each down, and every threshold a check holds
+  with its comment (`#:`). Comments only in the code: no output moves.
+- verso-reading: the skills say what they cost in context (the plugin's README, «What it costs»; `metric-books` and
+  `census` their own size, which a test holds to the text) and that the two tiers of reading are two scales of crop,
+  not two passes of readers. «After the reading» of `metric-books` lists the checks a written year answers and the
+  field that answers each, says that `dsllint` imports nothing — `verso export-csv` is the build — and that the checks
+  read reviewed records only. `metric-books` gains the books of the civil registry and the two series of numbers of
+  part 1; `dsl-writer` writes by the library's rules of a record when the project has none, and checks the build.
+- The toy example carries a sample of a project's map, `examples/toy/AGENTS.md`: what a corpus tells the reading
+  skills — its rules, statuses and places, the checks after a year. The plugin's README points a new project at it.
+- Docs: [compatibility](docs/compatibility.md) says how a corpus judges a new version — every output written with
+  both, compared byte for byte. [Records JSON](docs/records-json.md) says that its days are the book's (Julian until
+  1918) and that `verso death-age`, `verso sibling-spacing` and `verso stale-claims` load the DSL themselves and do
+  not read the export under `VERSO_RECORDS`.
+- The docstrings and comments of the checks name the library's commands (`verso facts --check name-days`,
+  `verso death-age`, `verso candidates --sweep`) where they named a corpus's Makefile targets (`facts-check
+  check=…`, `death-age-check`, `consolidation-sweep`). The reports' own first words are unchanged: no output moves.
+
+### Changed
+
+- The reference: a command's or a linter's summary ends at a full stop, not at a colon — fifteen rows of
+  `commands.md` and `linters.md` said only «The святцы:», «Fix:» and the like. No output moves.
 
 ## 0.1.46 — 2026-11-20
 

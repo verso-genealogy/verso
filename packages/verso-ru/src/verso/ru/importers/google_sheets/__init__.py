@@ -1,4 +1,4 @@
-"""Google Sheets importer package (split from google_sheets_importer.py)."""
+"""Import a birth, marriage or death sheet of Google Sheets as a DSL year file (formats `familio-extended` and `familio-standard`)."""
 from verso.ru.importers.google_sheets.__main__ import main
 from verso.ru.importers.google_sheets.births import _format_birth_row, generate_births
 from verso.ru.importers.google_sheets.cells import _PREREFORM_REPLACEMENTS, _get, _get_orig, _int_or_none, _parse_age, _parse_age_v2, _q, _safe_record_num, _split_fio

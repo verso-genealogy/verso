@@ -26,12 +26,32 @@ the clergy), where the frames of each дело come from and where the record of
 composition is kept, and the tools it has for its archives. The skills and agents read those from
 there.
 
+A project starting out has none of that yet. The toy example of the verso repository carries a sample of the
+project's AGENTS.md (`examples/toy/AGENTS.md`, an invented village): its rules, its statuses and places, the
+checks to ask after a year. A project with no extraction rules of its own writes by the library's rules of a
+record — the guide of that name in the verso repository — and `dsl-writer` falls back on them, saying so.
+
 The skills read a directory of a дело's frames, best named by folio (`<кадр>_<лист>[об]`), with
 the library's `verso scans` and the other `verso …` commands. They need the library with Pillow:
 
 ```bash
 pip install 'verso-core[scans]>=0.1.43' 'verso-ru>=0.1.43'
 ```
+
+## What it costs
+
+- **Always in context**: the descriptions of the five skills and two agents — about 4 thousand characters
+  together. Nothing else of the plugin is read until a skill is used.
+- **A skill, when used**: its text, once — `metric-books` and `census` about 22–23 thousand characters each (each
+  says its own size), the others 8–11 thousand. `dsl-writer`'s prompt is about 12 thousand, and it reads the
+  project's rules itself; `scan-reader`'s is under one.
+- **The two tiers of reading are two scales of crop**, not two passes of readers: a part crop finds a record, a
+  4–5× cut reads each name that enters the DSL. Subagents are optional — a year can be read in the session itself.
+  A subagent pays its own context before its first page: give one about ten records, not one or fifty.
+- **Which model reads these hands how well, and at what price per record**, is measured in
+  [an article](https://verso-genealogy.github.io/articles/en/models/).
+
+A token is a few characters, fewer for Cyrillic: count with the model's tokenizer before budgeting by these.
 
 ## Installing
 

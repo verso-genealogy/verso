@@ -566,7 +566,7 @@ class TerraformGenerator:
         """
         # A source's own date inconsistency belongs to whichever record
         # carried it, so it must survive consolidation — otherwise folding the
-        # record into a canonical makes `date-conflicts` start reporting an
+        # record into a canonical makes `verso date-order` start reporting an
         # already-acknowledged scribal slip again.
         if not existing.source_date_error and incoming.source_date_error:
             existing.source_date_error = incoming.source_date_error

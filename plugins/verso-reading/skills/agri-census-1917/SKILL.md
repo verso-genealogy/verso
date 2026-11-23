@@ -133,7 +133,8 @@ census = census_records(
 - **PAF001 is expected here.** A 1917 card mixes «Кузьмичъ» and «Кузьминъ»; keep what is
   written. The linter exempts Soviet-era record sets only from 1918.
 
-Then `verso dsllint <file>`, the CSV (`verso export-csv --village <village> --year 1917`), and the
+Then `verso dsllint <file>` (it reads the text and imports nothing), the CSV (`verso export-csv --village <village> --year 1917`,
+which must exit 0: a file that does not import fails there and nowhere else), and the
 project's staleness check of its generated files (the AGENTS.md проекта names it).
 
 ## 5. What to do with the result

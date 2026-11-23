@@ -161,6 +161,10 @@ crop at 4–5×. Add a row only when the scan plainly shows that form. Otherwise
 «?» after it and leave the lexicon alone: a row added to clear a finding on a misreading hides the
 misreading. A reading agent once read «Ѳалѣевъ» for a plainer patronymic and added «Фалеев» to the lexicon.
 
+A name the lexicon knows can still be the wrong reading of the ink. Which of two look-alike names fits the
+day is the святцы's question, not the lexicon's: `verso svyatcy near 1850-04-16 --gender F --like Мария`
+while reading, and `verso facts --village <village> --check name-days` over a reviewed year.
+
 | Finding | Fix |
 |---|---|
 | `Unknown first name 'X'`, a real name | a names row in the writable layer (a variant: its base) |

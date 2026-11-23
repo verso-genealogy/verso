@@ -63,7 +63,7 @@ class Birth:
         self.reviewed = reviewed
         # The author's note that the child's name is RIGHT although no saint
         # of it is kept near the birth or the christening — re-read on the
-        # scan and given out of season. Stands `facts-check check=name-days`
+        # scan and given out of season. Stands `verso facts --check name-days`
         # down for this record and nothing else; never emitted to terraform.
         # Not a retraction: the name and both dates stay believed.
         self.calendar_note = calendar_note or None
@@ -76,8 +76,8 @@ class Birth:
         # people, not about one scribe's slip.
         self.source_date_error = source_date_error
         # The author's note that the christening is RIGHTLY this long after the
-        # birth — both dates re-read on the scan. Stands `facts-check
-        # check=baptism-lag` down for this record and nothing else; never
+        # birth — both dates re-read on the scan. Stands `verso facts
+        # --check baptism-lag` down for this record and nothing else; never
         # emitted to terraform. Not a retraction (cf. `source_date_error`):
         # both dates stay believed. An empty string is no note.
         self.lag_note = lag_note or None

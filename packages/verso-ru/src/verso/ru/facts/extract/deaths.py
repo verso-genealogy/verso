@@ -103,7 +103,7 @@ def _facts_from_death(rec: Any, village: str, source_file: str, entry: int,
     # свекор, зять, мачеха and the rest land on `KinOf` (see `KINSHIP_EDGE`),
     # and so do the twelve entries that leave `relationship=` unset: emitting
     # nothing there lost two real findings in Заманиловка, and the check that
-    # reproduces `death-age-check` is what surfaced the mistake.
+    # reproduces `verso death-age` is what surfaced the mistake.
     for i, rel in enumerate(getattr(rec, "relatives", None) or []):
         locator = f"relative{i + 1}"
         ref = e.claim(rel.person, locator,

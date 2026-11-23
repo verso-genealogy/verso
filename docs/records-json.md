@@ -16,7 +16,8 @@ One JSON per DSL file: documents (record sets) → page runs → records → per
 (`child`, `godparent2`, `member4`, …). Every node has `written` — the arguments its DSL call
 passed, evaluated (a constant is its text) — and `derived`, every attribute the built object holds
 besides: a surname inherited, the book's default status, the section's month. Enum values are
-English codes (`male`, `daughter_in_law`).
+English codes (`male`, `daughter_in_law`). A day and a month are the book's, by the calendar it used — the
+Julian until February 1918 — never converted; the checks read them so.
 
 Field names are neutral (schema v1): a field keeps its DSL attribute's name unless the vocabulary
 names its JSON key otherwise (`json_names`). Three rules make those names:
@@ -170,7 +171,9 @@ of the corpus reads the export unchanged. A stale export stops the program — a
 added or removed since; a JSON missing, broken or from another export; another schema; or a changed
 input of the derived values (the names tables, the review list, the corpus's statuses — `statuses.toml`, or
 `statuses.py` with the library's code). Set it per
-command, never `export` it; Terraform generation refuses it outright and is built from the DSL only.
+command, never `export` it; Terraform generation refuses it outright and is built from the DSL only. Three checks
+load the DSL files themselves and do not read the export: `verso death-age`, `verso sibling-spacing` and
+`verso stale-claims`.
 
 ### The index (`index.json`)
 
@@ -421,7 +424,7 @@ The rules are not asserted equal to the checks; two oracles compare them, both o
 
 ## The signals of one record
 
-Six checks of the facts layer need one record and nothing else: a wedding on a day the Church did not marry
+Six checks of the facts layer ([the checks](checks.md); their thresholds, [the reference](reference/checks.md)) need one record and nothing else: a wedding on a day the Church did not marry
 (`wedding-calendar`), a newborn's name no saint near the birth supports (`name-days`), a christening or a burial long
 after (`baptism-lag`, `burial-lag`), an age at the wedding the law cannot hold (`wedding-ages`), two dates the entry
 itself orders wrongly (`date-order`, its class «inside one entry»). A store that holds one record per row asks them

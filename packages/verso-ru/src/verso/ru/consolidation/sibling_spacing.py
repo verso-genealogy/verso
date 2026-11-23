@@ -37,14 +37,14 @@ from verso.ru.consolidation.death_age import (
     BirthFact, PersonKey, as_date, collect_births, load_village_records, parents_named, person_key)
 from verso.ru.messages import t
 
-# Shortest interval between two live births to one mother that the records can
-# mean literally. Nine months is the biological floor; the corpus is full of
-# couples at eleven and twelve, so anything under this is a reading error or a
-# pair of twins rather than a tight sequence.
+#: Shortest interval between two live births to one mother that the records can
+#: mean literally. Nine months is the biological floor; the corpus is full of
+#: couples at eleven and twelve, so anything under this is a reading error or a
+#: pair of twins rather than a tight sequence.
 DEFAULT_MIN_GAP_DAYS = 270
 
-# Two children entered on the same day (or a day apart) are twins — the books
-# record them as consecutive numbers, and the corpus holds several pairs.
+#: Two children entered on the same day (or a day apart) are twins — the books
+#: record them as consecutive numbers, and the corpus holds several pairs.
 TWIN_DAYS = 2
 
 
@@ -119,7 +119,7 @@ def derived_siblings(death_record_sets) -> list[tuple[tuple[PersonKey, ...], Sib
     out: list[tuple[tuple[PersonKey, ...], Sibling]] = []
     for records, source in death_record_sets:
         for rec in records.records:
-            # Same contract as death-age-check: a declared source_age_error
+            # Same contract as verso death-age: a declared source_age_error
             # says the age has been re-read on the scan and the disagreement
             # argued out, so the birth this check would derive from it is not
             # the corpus's claim about a sibling.

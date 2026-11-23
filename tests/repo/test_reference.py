@@ -24,3 +24,28 @@ def test_every_command_and_linter_code_is_in_the_reference():
              if isinstance(node, ast.Constant) and isinstance(node.value, str)
              and re.fullmatch(r"[A-Z]{3}\d{3}", node.value)}
     assert codes and sorted(c for c in codes if c not in linters) == []
+
+
+def test_a_summary_is_a_sentence_not_a_lead_in():
+    """A summary cut at a colon («The святцы:», «Fix:») says nothing about the command."""
+    rows = [line for page in ("commands.md", "linters.md")
+            for line in (reference.OUT / page).read_text(encoding="utf-8").splitlines() if line.startswith("| `")]
+    assert rows and [row for row in rows if row.rstrip(" |").endswith(":")] == []
+
+
+def test_a_summary_ends_at_a_full_stop_not_at_a_colon():
+    source = '"""The tool: what it does. More."""'
+    assert reference._docline(source) == "The tool: what it does."  # pyright: ignore[reportPrivateUsage]
+
+
+def test_a_threshold_comment_is_cut_as_text_not_parsed(tmp_path):
+    """A `#:` comment may hold a quote, a backslash or three quotes: it is cut to its first sentence as it stands."""
+    module = tmp_path / "m.py"
+    module.write_text('#: Matches r"\\d+ мес" and """ too. More.\nLIMIT = 3\n', encoding="utf-8")
+    assert reference._thresholds(module) == [("LIMIT", "3", 'Matches r"\\d+ мес" and """ too.')]  # pyright: ignore[reportPrivateUsage]
+
+
+def test_the_checks_page_lists_what_the_cli_asks():
+    from verso.ru.facts.checks import FACTS_CHECKS
+    page = (reference.OUT / "checks.md").read_text(encoding="utf-8")
+    assert all(f"| `{name}` |" in page for name in FACTS_CHECKS)

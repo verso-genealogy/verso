@@ -61,7 +61,7 @@ class Marriage:
         self.reviewed = reviewed
         # The author's note that the wedding date is RIGHT although the Church
         # did not marry on that day — re-read on the scan (a dispensation, a
-        # parish's own custom). Stands `facts-check check=wedding-calendar`
+        # parish's own custom). Stands `verso facts --check wedding-calendar`
         # down for this record and nothing else; never emitted to terraform.
         # Not a retraction: the date stays believed.
         self.calendar_note = calendar_note or None
@@ -72,7 +72,7 @@ class Marriage:
         self.source_kin_error = source_kin_error
         # The author's note that the ages at the wedding are RIGHT although
         # one is under the age of marriage or the two are far apart — re-read
-        # on the scan. Stands `facts-check check=wedding-ages` down for this
+        # on the scan. Stands `verso facts --check wedding-ages` down for this
         # record and nothing else; never emitted to terraform. Not a
         # retraction: both ages stay believed. An empty string is no note.
         self.age_note = age_note or None

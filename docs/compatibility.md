@@ -70,3 +70,12 @@ Some outputs are identities on another system, and verso keeps them byte-stable 
   the same way;
 - a record's id (`r1`) names it in the records JSON, the facts layer and links;
 - a document's text on Geni is replaced when it changes, so a change of rendering is a release note.
+
+## Judging a new version on a corpus
+
+A corpus judges a release by what it writes. Install the pinned version and the new one in two environments,
+write every output of the corpus with each into its own directory — `verso generate-tf`, `verso export-csv`,
+`verso export-records`, `verso facts-snapshot`, and the checks' reports — and compare the two byte for byte. A
+byte that moves is either named in the new version's CHANGELOG entry, which says what moves and why, or a
+regression to report. An address above that moves is a regression whatever the entry says: a res_name that
+changes makes Terraform destroy a profile and create another.

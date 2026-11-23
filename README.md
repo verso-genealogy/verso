@@ -77,8 +77,8 @@ book's defaults) is derived; what it says is kept verbatim. Then:
 - `verso export-csv --village V` — a CSV per record set, beside its file;
 - `verso generate-tf --village V` — Geni profiles, unions and documents as Terraform;
 - `verso export-records --village V` — the records JSON ([records JSON](docs/records-json.md));
-- `verso facts`, `verso date-order`, `verso reconcile`, … — checks over the records
-  ([all commands](docs/reference/commands.md)).
+- `verso facts`, `verso death-age`, `verso sibling-spacing`, … — checks over the records
+  ([the checks](docs/checks.md), [all commands](docs/reference/commands.md)).
 
 ## Reading the scans: a Claude Code plugin
 
@@ -102,7 +102,7 @@ cards — and write what they say into the DSL.
 Its agents are `verso-reading:dsl-writer` (a scan straight to the DSL) and `verso-reading:scan-reader`
 (reading that writes no DSL). The plugin names no corpus: the project's AGENTS.md says where its rules,
 regional notes and frames are. The skills work in other agents too, through skills.sh. See
-[the plugin](plugins/verso-reading/README.md).
+[the plugin](plugins/verso-reading/README.md) — and [what it costs in context](plugins/verso-reading/README.md#what-it-costs).
 
 Which model reads such scans how well, and at what price, is measured in
 [an article](https://verso-genealogy.github.io/articles/en/models/) on
@@ -127,12 +127,12 @@ public name to be removed or renamed lives one minor version beside its successo
 
 ## Documentation
 
-- Guides: [the workspace](docs/workspace.md) · [the DSL](docs/dsl.md) · [plugins](docs/plugins.md) · [the interface's language](docs/i18n.md)
+- Guides: [the workspace](docs/workspace.md) · [the DSL](docs/dsl.md) · [the rules of a record](docs/writing-records.md) · [the checks](docs/checks.md) · [plugins](docs/plugins.md) · [the interface's language](docs/i18n.md)
   · [records JSON](docs/records-json.md) · [the review ratchet](docs/review-ratchet.md)
   · [compatibility](docs/compatibility.md)
 - Reference, written from the code: [commands](docs/reference/commands.md) ·
   [workspace keys](docs/reference/workspace-keys.md) · [linters](docs/reference/linters.md) ·
-  [DSL API](docs/reference/dsl-api.md)
+  [DSL API](docs/reference/dsl-api.md) · [checks](docs/reference/checks.md)
 - [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Changes](CHANGELOG.md)
 
 ## Licence

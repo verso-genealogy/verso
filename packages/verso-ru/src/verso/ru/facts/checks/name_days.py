@@ -1,4 +1,4 @@
-"""A newborn's name no saint near the birth supports — `facts-check check=name-days`.
+"""A newborn's name no saint near the birth supports — `verso facts --check name-days`.
 
 A child was named for a saint the Church kept around the birth or the
 christening, so a birth record's name and its dates are two readings that

@@ -61,7 +61,7 @@ CLAIM_PATTERNS: tuple[tuple[str, str], ...] = (
 
 # A comment that already carries a dated retraction has been dealt with — the
 # reader is being told the claim is dead, which is the outcome this check wants.
-# Same contract as `source_date_error` for `date-conflicts`: declare it and the
+# Same contract as `source_date_error` for `verso date-order`: declare it and the
 # check stands down.
 RETRACTED = re.compile(
     r"(?:снят\w*|исправлен\w*|отменён\w*|отменен\w*|больше не (?:держит|самая)|"  # i18n: content — the retraction the notes write

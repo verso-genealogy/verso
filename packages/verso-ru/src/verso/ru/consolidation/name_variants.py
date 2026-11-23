@@ -40,7 +40,7 @@ surnames.
 
 Deliberately NOT reported: a loose record whose canonical has no surname at all.
 That is the larger half of the class and it has no cheap structural signal —
-the revision gives no surname to compare, and `check-godparent-cooccurrence`
+the revision gives no surname to compare, and the recurring-pair report of `verso facts`
 only fires on a RECURRING godparent↔parent pair, which a godmother who serves
 many families never forms. Those still need a person named by hand.
 

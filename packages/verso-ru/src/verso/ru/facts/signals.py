@@ -1,6 +1,6 @@
 """The checks one record answers alone, and how a finding of theirs is said.
 
-`facts-check` asks a village; a record on its card is one entry, read before
+`verso facts --check` asks a village; a record on its card is one entry, read before
 anyone has reviewed it and with no consolidation to say who its people are. Six
 of the checks need nothing more than that entry — a wedding on a day the Church
 did not marry, a name no saint near the birth supports, a christening or a
@@ -12,7 +12,7 @@ whether it is reviewed or not (a card is where it gets reviewed).
 A finding is said ONCE. `signal_of` turns what a check found into a `Signal` —
 a message of the catalog with plain params, why it is worth a second look, the
 lines that help the re-reading, how sure, and the field of the record that
-stands it down — and both the card and the report of `facts-check` say it from
+stands it down — and both the card and the report of `verso facts --check` say it from
 there (`verso.ru.cli.facts.format_signals`). A signal is a prompt to look at
 the scan again; it refuses nothing.
 
@@ -45,6 +45,8 @@ STAND_DOWN: dict[str, str] = {
     "wedding-calendar": "calendar_note", "name-days": "calendar_note",
     "baptism-lag": "lag_note", "burial-lag": "lag_note",
     "wedding-ages": "age_note", "date-order": "source_date_error"}
+#: A check one record answers only in part, and the part it asks: the rest needs the people folded.
+IN_PART: dict[str, str] = {"date-order": "inside one entry"}
 #: The orderings `source_date_error=` answers: it withdraws a christening or a burial, and nothing else.
 DATE_ORDER_STOOD_DOWN = frozenset({"baptism_before_birth", "burial_before_death"})
 #: The bans that move with Pascha: a reader checks them against the year's.

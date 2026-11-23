@@ -1,9 +1,9 @@
-"""Records of one person dated out of order — `facts-check check=date-order`.
+"""Records of one person dated out of order — `verso facts --check date-order`.
 
 The SOURCE half of `verso date-order`: that check reads the tree Geni shows
 (one birth per canonical, after the fold and the config's overrides); this one
 reads every claim each record makes, so two records of one canonical that
-disagree are visible. The orderings are a table — the four `date-conflicts`
+disagree are visible. The orderings are a table — the four `verso date-order`
 asks, five from Gramps Verify around the wedding and the christening, and a
 roll counting someone a record has buried; the comparison is
 `FactDate.definitely_before` with a circa year read at its measured slack;
@@ -24,7 +24,7 @@ from verso.ru.messages import t
 
 
 #: The orderings, as (left, right, kind, event word, reference word): the
-#: four `date-conflicts` asks about, then five Gramps Verify asks around the
+#: four `verso date-order` asks about, then five Gramps Verify asks around the
 #: wedding and the christening, then a roll that counts the dead alive. Named HERE and nowhere else: the rule takes its
 #: two predicates as type parameters, so an ordering costs a line in this table.
 def orderings() -> list[tuple[Any, Any, str, str, str]]:

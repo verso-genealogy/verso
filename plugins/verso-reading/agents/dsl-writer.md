@@ -66,8 +66,20 @@ rule files in the AGENTS.md проекта and Read them yourself, before you re
   work there and already carries the rules that apply to every record of the village — read the hub for the rest.
 - Review existing DSL files for the same village/year if available, to match style
 
-If the AGENTS.md проекта names no extraction rules or no regional rules for the village, say so and ask: do not
-extract without them.
+If the AGENTS.md проекта names no extraction rules, write by the library's own rules of a record (below, and the
+self-validation checklist) and say so in the summary. If it names no regional rules for the village, say so and
+ask before writing statuses or residences you would have to guess.
+
+The library's rules of a record, for a project that has none of its own:
+
+- names as written, pre-reform orthography, nominative; the patronymic in the book's form («Петровъ»), and `None`
+  where the entry writes none — never one recovered from another record;
+- kinship only as the entry states it: what another record tells you (a father's patronymic, a maiden name)
+  goes into that person's `comment=`, not into `father=`/`mother=` or a name field;
+- an age is an integer of years or a string of units (`"2 мес"`, `"1 г 6 мес"`, `"3 нед"`, `"4 дн"`);
+- dates as the book writes them, Julian until 1918; a christening in the next year needs `k_year=`;
+- part 1 runs two series of numbers, boys and girls: `(number, Gender)` says which «№ 4»;
+- a book of the civil registry is `civil=True`, its second date the day of registration.
 
 ### Step 2: Parse Records
 
@@ -86,8 +98,11 @@ arguments, read a neighbouring year's file or the library's DSL guide.
 Before outputting the final DSL file, verify:
 
 - [ ] **Linting passed**: `verso dsllint <output_file>` from the project root — every DSL check in one run
-  (names against the lexicon, single-line `person()` calls, roles, ages …), and the file loads. Fix a finding that
-  points at a misreading by re-reading the crop; leave one the source really calls for
+  (names against the lexicon, single-line `person()` calls, roles, ages …), no finding of level error. Fix a finding
+  that points at a misreading by re-reading the crop; leave one the source really calls for
+- [ ] **The file builds**: `verso export-csv --village <village> --year <year>` exits 0. `dsllint` reads the text and
+  imports nothing, so a missing constant or a misspelt import passes it — and every check after it then skips the
+  file with a warning and reports «OK»
 - [ ] **Names verified**: Use the `verso-reading:names` skill to look up any unfamiliar first names or patronymics
   before writing them — do not guess spellings
 - [ ] **Pre-reform orthography preserved**: every `person()` name field matches the source's spelling (ѣ/і/ѳ/ъ
@@ -106,7 +121,9 @@ Before outputting the final DSL file, verify:
       the project's names layer to clear a finding on your own reading: re-read the crop at 4–5×, and unless the
       scan plainly shows that form, write it with «?». A row added for a misreading hides the misreading. Measured: asked so, the DSL route left
       3.9 silent errors per 100 names against 7.3 without it (a reading benchmark)
-- [ ] **`reviewed=False`** on a census file read from scans and not yet read back against the source by a person
+- [ ] **`reviewed=False`** on every record read from a scan and not yet read back against the source by a person
+- [ ] **Nothing from another record in a name field**: an unwritten patronymic is `None`; a father's or a mother's
+  name known from another entry is in that person's `comment=`
 - [ ] Record count matches the source
 - [ ] All record numbers are present and sequential
 - [ ] Dates are in the correct format

@@ -1,4 +1,4 @@
-"""Two birth claims one life cannot hold — `facts-check check=birth-claims`.
+"""Two birth claims one life cannot hold — `verso facts --check birth-claims`.
 
 The first channel that looks for a fold that went TOO FAR: every record a
 canonical was folded from still says when the person was born (`BornOn`, and
@@ -80,7 +80,7 @@ def birth_span(claim: Any) -> BirthSpan | None:
     """A claim about a birth as the interval of days it can mean.
 
     A dated birth is its own interval. A stated age is the interval it asserts
-    (`age_bounds` — the parser `death-age-check` uses, so the two cannot read
+    (`age_bounds` — the parser `verso death-age` uses, so the two cannot read
     one age two ways) subtracted from the interval of the day it was stated on.
     None when either end cannot be placed: an age the parser declines, or a
     date open at one end.

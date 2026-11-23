@@ -4,7 +4,7 @@
 `member(source_age_error=)`, `member(previous_age_error=)` and
 `death(source_age_error=)` withdraw an age the record states — the facts layer
 stops believing it and, since 2026-09-25, the translator derives no birth from
-it. `death(namesake=)` says the age is right and stands `death-age-check` down.
+it. `death(namesake=)` says the age is right and stands `verso death-age` down.
 Each of them is a statement ABOUT an age, so on a line that states no such age
 it says nothing, and is almost certainly a slip of the pen: the wrong line, the
 wrong kwarg, or a figure the transcriber left out.

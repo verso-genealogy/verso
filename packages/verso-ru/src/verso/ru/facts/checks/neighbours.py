@@ -49,11 +49,11 @@ CHILD = "child"
 #: What a canonical is to its kin, read from the other side.
 INVERSE = {SPOUSE: SPOUSE, PARENT: CHILD, CHILD: PARENT}
 
-#: The ages two entries of one household may state and still be spouses, and
-#: the least a parent is older than a child. Wide on purpose — a widower's
-#: second wife, a clerk's rounded age: the check is there to stop a grandmother
-#: read as a young man's wife, not to judge a marriage.
+#: The most years apart the ages of two entries of one household may be and still be spouses.
+#: Wide on purpose — a widower's second wife, a clerk's rounded age: the check is there to
+#: stop a grandmother read as a young man's wife, not to judge a marriage.
 SPOUSE_MAX_GAP = 20
+#: The least years a parent among the entries of one household is older than a child.
 PARENT_MIN_GAP = 14
 
 #: kin[a][b] — what b is to a, for every pair of canonicals a record relates.

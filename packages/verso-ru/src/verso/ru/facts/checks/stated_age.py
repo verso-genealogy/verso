@@ -1,4 +1,4 @@
-"""A burial's stated age against the birth of the same child — `death-age-check`.
+"""A burial's stated age against the birth of the same child — `verso death-age`.
 
 The predicates the comparison is handed and the slack it allows. The comparison
 itself is `verso.ru.facts.rules.stated_age`, which names none of them; the report
@@ -12,16 +12,16 @@ from verso.ru.facts.model import (
     AgedYears, AssertionSet, BornOn, KinOf, ParentOf, Relational)
 from verso.ru.facts.rules.stated_age import Disagreement, disagreements
 
-# A finding has to survive BOTH an absolute floor and a fraction of the stated
-# age. The floor is three months, and it is set by the sources rather than by
-# taste: «полгода» and «6 мес» are what a Горюхино clerk writes for ANY infant
-# under a year — the corpus holds dozens of them at 280–300 days — so anything
-# tighter reports the parish's own idiom as an error.
+#: A burial's age may miss the birth by this many days and be no finding: the floor is three months, set by the
+#: sources rather than by taste — «полгода» and «6 мес» are what a Горюхино clerk writes for ANY infant under a
+#: year, and the corpus holds dozens of them at 280–300 days, so anything tighter reports the parish's own idiom
+#: as an error.
 DEFAULT_TOLERANCE_DAYS = 90.0
+#: … nor by this share of the stated age: a finding has to survive both.
 DEFAULT_TOLERANCE_FRACTION = 0.20
 
-# Beyond this ratio between elapsed time and the stated age, the two records
-# describe two people rather than one badly-read number.
+#: Beyond this ratio between elapsed time and the stated age, the two records
+#: describe two people rather than one badly-read number.
 NAMESAKE_RATIO = 12.0
 
 

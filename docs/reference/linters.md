@@ -18,7 +18,7 @@ The baseline ratchet (`dsllint --baseline FILE`) keeps a row per advisory findin
 | `census_redundancy` | CRD001, CRD002, CRD003, CRD004, CRD005, CRD006 | CRD001 — AST linter that flags redundant surname / patronymic arguments on a census `member()`'s `person()` when `CensusHousehold.__init__` would auto-derive the identical value from the household head / husband / father. |
 | `census_status_redundancy` | CSR001 | CSR001 — AST linter that flags a redundant explicit ``status=`` on a census ``member()``'s ``person()`` when the enclosing ``census_records(..., defaults=RecordDefaults(...))`` would apply the identical status by default. |
 | `civil_register` | ZGS001, ZGS002, ZGS003, ZGS004, ZGS005 | AST-based linter (ZGS001–ZGS005) for a book of the civil registry — `civil=True`. |
-| `deaths_burial_date` | DBD001, DBD002 | AST-based linter for the two dates of a `death()` record: |
+| `deaths_burial_date` | DBD001, DBD002 | AST-based linter for the two dates of a `death()` record: death and burial. |
 | `deaths_relatives` | DRL001 | AST-based linter guarding the ONE-relative limit of `death()` records. |
 | `deaths_residence` | DRA001, DRA002 | AST-based linter that checks residence alignment between the deceased and the relative(s) named in a `death()` record. |
 | `dsl_imports` | IMP001 | IMP001 — a DSL file imports the DSL's facade and nothing else (DSL v1). |
@@ -29,7 +29,7 @@ The baseline ratchet (`dsllint --baseline FILE`) keeps a row per advisory findin
 | `lexicon` | LEX001, LEX002, LEX003, LEX004, LEX005, LEX006, LEX007, LEX008, LEX009, LEX010 | The names layers' own check, not a DSL one — a layer's three TSV files read in the sum of the layers under it. |
 | `marital_status` | MST001 | AST-based linter (MST001) for the `marital_status=` (семейное положение) field on census members and WWI/WWII external-source records. |
 | `marriage_residence` | MRA001 | AST-based linter (MRA001) for residence alignment inside a marriage record. |
-| `name_gender_agreement` | NGA001, NGA002 | AST-based advisory linter (NGA001, NGA002): |
+| `name_gender_agreement` | NGA001, NGA002 | AST-based advisory linter (NGA001, NGA002): a person's surname or patronymic in the other gender's form. |
 | `name_lists` | NLC001 | AST linter for name-list DSL records (`name_list_records()` / `listed_person()` from verso.ru.dsl). |
 | `names` | NAM001, NAM002, NAM003, NAM004, NAM005 | Lint script to check first names and patronymics in person() calls. |
 | `newborn_status` | — | Which written parent status a newborn's сословие rests on. |
@@ -38,12 +38,12 @@ The baseline ratchet (`dsllint --baseline FILE`) keeps a row per advisory findin
 | `patronymic_form` | PAF001 | AST-based advisory linter (PAF001) for the *form* of a patronymic vs. |
 | `relationship_ref` | REL001, REL002 | AST-based linter to validate `relationship_ref` strings on `relative()` calls inside DSL records (birth/marriage/death) against a fixed allowlist. |
 | `relative_attachment` | RLA001, RLA002, RLA003 | RLA001–RLA003 — AST linter for how a ``relative()`` attaches to its subject inside a birth / marriage / death record. |
-| `residence_title` | RTV001, RTV002 | AST-based linter: |
+| `residence_title` | RTV001, RTV002 | AST-based linter: a person's status against the village they live in. |
 | `retractions` | RET001, RET002, RET003 | AST-based linter (RET001–RET003) for an age retraction that retracts nothing. |
 | `reviewed_redundancy` | RVR001 | RVR001 — a ``reviewed=`` that restates the value it would already inherit. |
 | `shared_ast` | — | One parse and one walk of a DSL file, shared by every check that reads it. |
 | `single_line_calls` | SLC001, SLC002, SLC003, SLC004, SLC005 | Lint script to check that person() calls are on a single line, and that known status string constants are used instead of inline literals. |
-| `status_orthography` | SOR001 | AST-based linter (SOR001): |
+| `status_orthography` | SOR001 | AST-based linter (SOR001): a classification field in pre-reform orthography. |
 | `status_redundancy` | VSR001 | VSR001 — AST linter that flags a redundant explicit ``status=`` on a person in a VITAL record (birth / marriage / death) when the enclosing ``*_records(..., defaults=RecordDefaults(...))`` would apply the identical status by default — written in the call, or bound by name at the top of the file (``defaults=DEFAULTS``, as every Глуповы Горы book does). |
 | `status_words` | — | What a `status=` says, and how a finding names the person it is about. |
 | `translit` | — | The layers' linter over a layer's transliteration rules (`translit.tsv`, `verso.ru.naming.translit_layers`). |

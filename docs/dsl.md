@@ -23,6 +23,9 @@ no `__main__`: `verso export-csv` writes its CSVs. The full surface, with every 
 
 ## Writing a record
 
+What goes into each field, where a doubt goes, ages and dates, and when a file is done:
+[the rules of a record](writing-records.md). In short:
+
 - **Names are written as the scribe wrote them** — pre-reform orthography, the patronymic in the
   book's form («Петровъ»). The modern form and the derivations are the library's.
 - **What a record implies is derived**: a newborn's patronymic and surname from the father, a
