@@ -8,11 +8,17 @@ name: CI
 # names — the steps skip, not the jobs — since the ruleset requires them by name. A tag runs nothing
 # here: it names a «Release» commit main has just run (publish.yml takes the tag), and the «Open X.Y.Z.dev0»
 # commit after it says `[skip ci]` (AGENTS.md).
+# The merge queue (the ruleset of main) runs it on each group too (`merge_group`): the group's head is main with
+# the queued PRs squashed on top, and the jobs the ruleset requires report on it before main moves. A group's
+# ref is its own (gh-readonly-queue/main/…), so its run has a concurrency group of its own and is never cancelled
+# here; the queue itself drops a group it no longer wants.
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  merge_group:
+    types: [ checks_requested ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -33,17 +39,26 @@ jobs:
           fetch-depth: 2
 
       # A PR's checkout is its merge commit: HEAD^1 is main as it is now, so the diff is what the PR changes.
+      # A merge group's head may hold several squashed PRs over its base: the diff is base_sha..HEAD, the base
+      # fetched by its sha (the checkout's two commits hold it only for a group of one).
       # Prose is the Markdown no test reads with the library installed: the root's, docs/*.md (not docs/reference,
       # written from the code, nor docs/scans*.md, which tests/ru/scans/test_surface.py reads) and the IDE
       # plugins' READMEs. Anything else is code — the plugin's skills, the reading prompts, packages/, examples/
       # included — and so is an empty diff. A test that starts reading a prose file takes it out of the pattern.
       - name: Code, or prose alone
         id: diff
+        env:
+          GROUP_BASE: ${{ github.event.merge_group.base_sha }}
         run: |
           set -euo pipefail
           code=true
-          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then
-            changed=$(git diff --name-only HEAD^1 HEAD)
+          if [ "$GITHUB_EVENT_NAME" = pull_request ] || [ "$GITHUB_EVENT_NAME" = merge_group ]; then
+            if [ "$GITHUB_EVENT_NAME" = merge_group ]; then
+              git fetch --quiet --depth=1 origin "$GROUP_BASE"
+              changed=$(git diff --name-only "$GROUP_BASE" HEAD)
+            else
+              changed=$(git diff --name-only HEAD^1 HEAD)
+            fi
             others=$(grep -vE '^([^/]+\.md|docs/[^/]+\.md|ide/[^/]+/README\.md)$' <<<"$changed" || true)
             scans=$(grep -E '^docs/scans(\.ru)?\.md$' <<<"$changed" || true)
             if [ -n "$changed" ] && [ -z "$others" ] && [ -z "$scans" ]; then code=false; fi
@@ -101,7 +116,7 @@ jobs:
       - name: UI text
         if: env.CODE == 'true'
         env:
-          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
         run: |
           set -euo pipefail
           if [ -n "${BASE:-}" ] && [ "$BASE" != "0000000000000000000000000000000000000000" ] \

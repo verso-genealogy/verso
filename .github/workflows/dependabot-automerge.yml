@@ -19,8 +19,12 @@ name: Dependabot auto-merge
 # The price is latency (a green PR waits up to a day) and ~1 billed minute a run,
 # once a day (the project's rule: the minutes go to the long runs).
 #
-# A merge made with GITHUB_TOKEN does not trigger the push-side workflows on
-# main — deliberate here, since the same commits were just tested on the PR.
+# With the merge queue on (the ruleset of main), a PR reaches main through the
+# queue alone: the job enqueues it, the queue runs CI on the group and merges it,
+# and that merge runs the push-side workflows on main like any other. Before the
+# queue is on (or if enqueueing is refused) it merges by REST as before; a merge
+# made with GITHUB_TOKEN does not trigger the push-side workflows on main —
+# deliberate, since the same commits were just tested on the PR.
 
 on:
   schedule:
@@ -102,6 +106,21 @@ jobs:
               echo "#$pr: not green — failing or cancelled: $bad"
               continue
             fi
+            # The queue first, by the head the checks were read off (expectedHeadOid:
+            # a force-push in between makes GitHub refuse). A repository with no
+            # queue refuses the mutation, and the REST merge below takes it.
+            node=$(gh api "repos/$REPO/pulls/$pr" --jq '.node_id')
+            # GraphQL variables, not shell ones: the single quotes are meant.
+            # shellcheck disable=SC2016
+            if out=$(gh api graphql \
+                  -f query='mutation($id: ID!, $sha: GitObjectID!) {
+                    enqueuePullRequest(input: {pullRequestId: $id, expectedHeadOid: $sha}) {
+                      mergeQueueEntry { position } } }' \
+                  -f id="$node" -f sha="$sha" 2>&1); then
+              echo "#$pr: all $total check(s) green on $sha; in the merge queue at $(jq -r '.data.enqueuePullRequest.mergeQueueEntry.position' <<<"$out")."
+              continue
+            fi
+            echo "#$pr: not enqueued ($out)"
             # REST, with the sha the checks were read off: a Dependabot
             # force-push landing between the sweep and the merge makes GitHub
             # refuse (409) rather than ship a head nobody tested. A refusal of
