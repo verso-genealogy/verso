@@ -19,7 +19,7 @@ what it needs to and gets surnames wrong at an archive's ~950 px per leaf. The f
 below are mechanical and are handled by `verso scans`; everything after them is reading, and no
 tool helps with that.
 
-**What this costs.** This text — about 25 thousand characters — is read once, when the skill is used;
+**What this costs.** This text — about 26 thousand characters — is read once, when the skill is used;
 otherwise only its description stays in context. The two tiers below are two SCALES of crop — a part
 crop to find a record, a 4–5× cut of each name that enters the DSL — not two passes of reading, and
 subagents are optional: a year can be read in the session itself. A subagent pays its own context
@@ -204,8 +204,11 @@ name that will enter the DSL** — not only the ones that change a conclusion.
 ten records per agent, the lean `verso-reading:scan-reader` for a sweep that only reports, and
 `verso-reading:dsl-writer` straight from the scan for the DSL. A newer top model reads better
 still where you have it: Fable 5.2 at high left 4.0 silent errors per 100 names against 7.3 for
-Opus at high, with as many flags (measured through the API; in Claude Code pass `model: "fable"` on
-the Agent call, which overrides the agents' own `opus`). Outside the Claude Code plugin
+Opus at high (two runs each, 3.3 fewer [−4.9; −2.0]), with as many flags (22.5 % against 24.7 %),
+at 1.75× the price. That was measured through the API, a record per request under the benchmark's
+own prompt — not as a subagent and not on the DSL route; for Opus the two were found equal, for
+Fable nobody has checked. In Claude Code pass `model: "fable"` on the Agent call, which overrides
+the agents' own `opus`. Outside the Claude Code plugin
 there are no such agents: give your harness's own subagent the same brief — the crops listed,
 read-only, «?» for what does not read — or read the crops yourself. For a long sweep, run
 the readers from outside the repository, so that each starts with no project context (the
@@ -215,21 +218,26 @@ AGENTS.md проекта says whether the project has a launcher for that).
 years, never the year being read (`verso.ru.reading.people`, from verso-ru 0.1.44, builds such a
 list from a records export; the AGENTS.md проекта says whether the project has a command for it).
 A bare list of the parish's surnames is worth far less (see the `transcription` skill: silent errors
-unchanged); the people — names, patronymics, households, years — are what helped. Measured: errors in
-all fell by a quarter to a half, and nearly all of the gain was where the source is bad and in
-surnames — on screen photographs one reader's silent errors fell from 9.4 to 1.0 per 100 names, on
-good scans from 2.5 to 2.3. Call it a reading aid in the brief and ask for «?» where the page does
+unchanged); the people — names, patronymics, households, years — are what helped. Measured, two runs
+each: Opus at high's errors in all fell by a quarter (21.4 to 15.7 per 100 names) and its flags with
+them, its silent errors only within noise; a reader of another vendor's fell by half (10.7 to 5.7), its
+silent ones from 3.6 to 2.1. Nearly all of the gain was where the source is bad and in surnames — on
+screen photographs that reader's silent errors fell from 9.4 to 1.0 per 100 names, on the rest of the
+set from 2.5 to 2.3. Call it a reading aid in the brief and ask for «?» where the page does
 not show the name: given a list, a reader also writes a frequent parish surname over the ink.
 
-**Where the errors are, and what agreement is worth.** Sureties', fathers' and godparents'
-surnames read wrong in 37–56 % of the cases, a child's name in 4 %; one bad source held 15 % of
+**Where the errors are, and what agreement is worth.** Counting every error, flagged or not, over
+twelve strong runs of six models: a surety's surname was wrong in 56 % of the cases, a father's in
+47 %, a godparent's in 37 %, a child's name in 4 %; one bad source held 15 % of
 the benchmark's fields and 46 % of its errors, and no measure of the crop (pixels, sharpness,
 contrast) told a hard record from an easy one inside a source. A misread surname is almost never
 another family of the parish — nine in ten are surnames the parish does not have, so an unflagged
 surname the village's records do not hold is the first thing to re-crop. Two readers of one model
 agreeing is not a check: half of the misreadings they share are the same wrong word. A reader of
 another vendor shares far fewer — as a second reader it took one model's silent errors from 3.5
-to 0.9 per 100 names where that model's own second run took them to 2.8.
+to 0.9 per 100 names where that model's own second run took them to 2.8 (computed on answers
+already collected: no tool runs such a second reader yet). These figures come from an analysis of
+the benchmark's errors; none of the advice drawn from them was itself measured as an instruction.
 
 **When the ink fits two names, ask the святцы.** A child was named for a saint kept near
 the birth or the christening (in one corpus 78 % of the births have one within ±7 days of the

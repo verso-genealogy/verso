@@ -115,10 +115,11 @@ Before outputting the final DSL file, verify:
       Contested readings name both options in `comment=`
 - [ ] **Every person and every word of the record is there**: count the record's people against the scan —
       the sureties of a wedding, both godparents, every line of a household — and look for a patronymic
-      beside each name. On the benchmark two fifths of a strong model's silent errors were people and
+      beside each name. On the benchmark two fifths of Opus at high's silent errors were people and
       patronymics it did not see at all; asking it for «?» instead of a blank changed nothing for those
       (measured), because these are not words it failed to read — unlike the «?» on a word settled from
-      context, below, which did lower the errors. What does stand on the page and does not read is
+      context, below, which did lower the errors. The count itself is not measured yet. What does stand
+      on the page and does not read is
       `"?"` in its own argument, not an argument left out — a blank says the scribe wrote nothing
 - [ ] **Every surname is one the village's records hold, or carries «?»**: look up each surname you wrote
       without «?» — `verso all-persons <village>` builds `village.db` (or brings it up to date), then
@@ -131,9 +132,11 @@ Before outputting the final DSL file, verify:
       parish, it is a surname the parish does not have. Re-crop it at 4–5×; unless the scan shows it
       plainly, write it with «?». Do NOT put a parish surname of the same shape in its place: the benchmark
       also saw readers write a frequent surname over the ink. The look-up says little for given names and
-      patronymics: of those the records do not hold, only 8–27 % were wrong
+      patronymics: of those the records do not hold, only 8–27 % were wrong. The figures are the
+      benchmark's error analysis; the look-up itself was not measured as an instruction
 - [ ] **The second look went where the errors are**: sureties', fathers' and godparents' surnames (37–56 %
-      wrong on the benchmark, a child's name 4 %) and the last third of a long household (half again as
+      wrong, flagged or not, over twelve strong runs on the benchmark; a child's name 4 %) and the last
+      third of a long household (half again as
       bad as its start). Names taken for one another, each in several records: Марья / Марѳа, Настасья /
       Наталья, Ѳлоръ / Егоръ (an initial Ѳ read as Е or as С), Пимонъ / Тимонъ, Аникей / Алексей,
       Степанъ / Семенъ, Михаилъ / Максимъ, Анисья / Анна / Аксинья — having read one of a pair, look for

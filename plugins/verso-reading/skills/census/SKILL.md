@@ -295,11 +295,12 @@ without a third opinion; when it cannot, crop that one word at 8× and look.
 Give each agent a fingerprint (names *and* ages), the page range, the full-resolution path for
 their own crops, and an explicit instruction to flag uncertainty rather than smooth it — and to
 count the people of each двор against the page: people and patronymics a reader did not see at all
-were two fifths of one strong model's silent errors (asking for «?» instead of a blank did not bring
+were two fifths of Opus at high's silent errors (asking for «?» instead of a blank did not bring
 them back, measured), and the last third of a long двор read half again as badly as its start. Model,
 effort and how much to give one agent were measured on a reading benchmark: Opus at effort high
 (a newer top model better still where you have it — Fable 5.2 at high, 4.0 silent errors per 100
-names against 7.3; in Claude Code `model: "fable"` on the Agent call),
+names against 7.3, two runs each, through the API and not as a subagent; in Claude Code
+`model: "fable"` on the Agent call),
 about ten records' worth per agent (each pays its context before its first page; a much bigger
 range flags less and leaves more silent errors), parallel reads, and the lean
 `verso-reading:scan-reader` for a sweep that only reports — for a long sweep, one brief per agent,
