@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verso-core"
-version = "0.1.47"
+version = "0.1.48.dev0"
 description = "verso's core: workspace, plugin registry, records JSON, review ratchet, Geni models, scan tools and the verso command."
 requires-python = ">=3.14"
 license = "Apache-2.0"
