@@ -4,6 +4,10 @@ from typing import Any
 
 import pytest
 
+from verso.core.records.encode import encode_namespace
+from verso.core.records.ids import Ids
+from verso.ru.domain import page, person
+from verso.ru.dsl.records.name_lists import listed_person, name_list_records
 from verso.ru.site import model
 
 
@@ -74,3 +78,25 @@ def test_a_mention_is_keyed_by_surname_else_by_patronymic(site: model.Site) -> N
     assert [(m.role, m.surname, m.patronymic) for m in first] == [
         ("child", "Сидоров", ""), ("father", "Сидоров", "Иванов"), ("mother", "Сидорова", "Петрова"),
         ("godparent", "Сидоров", "Петров"), ("relative", "Сидоров", "Петров")]
+
+
+def test_a_leaf_released_in_a_held_list_is_read_and_the_rest_is_not() -> None:
+    """The export says it of the built record (`review`); no key of `written` alone does — an entry under
+    `page(…, reviewed=True)` writes the flag, its neighbour off the page inherits the set's."""
+    names = name_list_records(
+        "ЦГА", "7", "3", "41", "Примерово", 1917,
+        *page("5", listed_person(1, person("Иванъ")), listed_person(2, person("Петръ"), reviewed=False), reviewed=True),
+        listed_person(3, person("Сидоръ")), document_type="Список", reviewed=False)
+    node = encode_namespace({"names": names}, village="Примерово", file="1917/names.py", sha256="", ids=Ids())
+    site = model.load([node], village="Примерово")
+    assert [(e.anchor, e.unreviewed) for e in site.books[0].entries] == [("1", False), ("2", True), ("3", True)]
+    assert site.unreviewed == 2
+
+
+def test_a_record_that_does_not_say_whether_it_was_read_is_no_export(file_node: dict[str, Any]) -> None:
+    doc = file_node["documents"][1]
+    run = doc["pages"][0]
+    silent = {key: value for key, value in run["records"][0].items() if key != "review"}
+    stored = {**file_node, "documents": [{**doc, "pages": [{**run, "records": [silent]}]}]}
+    with pytest.raises(model.NotAnExport, match="r1:Маниловка/47-9-755/1900/marriage/1"):
+        model.load([stored], village="Маниловка")

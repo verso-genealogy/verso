@@ -22,6 +22,7 @@ Node = Mapping[str, Any]
 # The kinds of a record's id, in the order a year lists its books.
 KINDS = ("birth", "marriage", "death", "divorce", "household", "listed")
 UNREVIEWED = ("held", "on_geni")
+REVIEWS = ("reviewed", *UNREVIEWED)        # what the export says of a record (verso.core.records.encode.review)
 _NAME = ("given", "patronymic", "surname")
 
 
@@ -37,6 +38,12 @@ def fold(text: str) -> str:
 
 class DuplicatePath(ValueError):
     """Two books whose ids make one path."""
+
+
+class NotAnExport(ValueError):
+    """A record node that does not say whether it was read against its scan (`review`): the export writes it
+    of the built record, and no key of `written` says it instead — a leaf released inside a held set, a set's
+    own flag, the list of what reached a tree unread are all in it."""
 
 
 @dataclass(frozen=True)
@@ -185,9 +192,11 @@ def load(files: Iterable[Node], *, village: str) -> Site:
                 for node in run["records"]:
                     book_id = urls.book_of(node["id"])
                     leaf = node.get("written", {}).get("page") or run.get("page")
+                    if node.get("review") not in REVIEWS:
+                        raise NotAnExport(str(t("site.not_an_export", record=node["id"], file=file["file"])))
                     entries.setdefault(book_id, []).append(Entry(
                         node["id"], urls.anchor(node["id"]), None if leaf is None else str(leaf), node,
-                        node.get("review", "reviewed"), book_id, doc, str(file["file"])))
+                        node["review"], book_id, doc, str(file["file"])))
                     if not any(doc is known for known in docs.setdefault(book_id, [])):
                         docs[book_id].append(doc)
     books: list[Book] = []

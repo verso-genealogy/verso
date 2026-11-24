@@ -22,7 +22,7 @@ from typing import Any
 from verso.core.pipeline.records import INDEX, ExportError, export_village
 from verso.ru.messages import t
 from verso.ru.site import BuildError, build
-from verso.ru.site.model import DuplicatePath
+from verso.ru.site.model import DuplicatePath, NotAnExport
 from verso.ru.site.prose import ProseError
 
 
@@ -63,7 +63,7 @@ def main(argv: list[str] | None = None) -> int:
                       workspace=current().root, repo_url=args.repo_url, site_url=args.site_url,
                       revision=args.revision, summary=args.summary, license_name=args.license_name,
                       license_url=args.license_url)
-    except (ExportError, BuildError, DuplicatePath, ProseError, FileNotFoundError) as exc:
+    except (ExportError, BuildError, DuplicatePath, NotAnExport, ProseError, FileNotFoundError) as exc:
         print(exc, file=sys.stderr)
         return 2
     print(t("cli.site.done", pages=built.pages, megabytes=f"{built.bytes / 1e6:.1f}",

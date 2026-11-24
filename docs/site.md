@@ -31,7 +31,9 @@ vocabulary gains reaches the page by itself.
   father, an estate carried from a parent are set in another face. A value the book's defaults
   give every entry — the parish as the place, «крестьянин» — is said once, at the head of the book.
 - **An unread record is shown and marked.** A record that is `reviewed=False` carries a mark, and
-  its book and the front page count them ([the review ratchet](review-ratchet.md)).
+  its book and the front page count them ([the review ratchet](review-ratchet.md)). The mark is the
+  export's verdict of the built record (`review`), never the presence of a key: a leaf released
+  inside a held set is read, its neighbours are not. A node that carries no verdict is refused.
 - **A book of the civil registry says so**: its second date is a registration.
 - **Not drawn**: the `#` comments of the DSL (`note`), a path to a scan (`scan_file`), the labels
   of a target, and nothing of Terraform or of a tree — the site reads records, not what was made

@@ -1879,6 +1879,7 @@ no_slug = "«{text}»: no letter or digit to make an address of"
 
 [site]
 duplicate_path = "two books make one address {path}: {first} and {second}"
+not_an_export = "{file}: the record {record} does not say whether it was proofread (review) — the site is built of an export (verso export-records)"
 yes = "yes"
 unreviewed = "not proofread"
 unreviewed_count = { one = "{count} not proofread", other = "{count} not proofread" }
