@@ -61,12 +61,12 @@ answers.
 
 | Field | Of | When | What it does |
 |---|---|---|---|
-| `source_date_error=` | `birth()`, `death()` | a christening dated before the birth, a burial before the death | withdraws that date |
+| `source_date_error=` | `birth()`, `death()`, `divorce()` | a christening dated before the birth, a burial before the death, a divorce before the marriage its own act names | withdraws that date (of a divorce: the marriage's) |
 | `source_age_error=` | `death()`, `member()` | a stated age the source got wrong | withdraws the age |
 | `previous_age_error=` | `member()` | the previous revision's age the roll carried over wrong | withdraws that figure alone |
 | `source_kin_error=` | `marriage()` | the entry's kinship contradicts itself | stands down the father check on it |
 | `namesake=` | `death()` | a burial whose age is right but belongs to another child of that name | stands down `death-age` |
-| `calendar_note=` | `birth()`, `christening()`, `marriage()` | a name out of the calendar, a wedding in a fast — so in the book | notes it; the value stays believed |
+| `calendar_note=` | `birth()`, `christening()`, `marriage()`, `divorce()` | a name out of the calendar, a wedding in a fast (of a divorce: the wedding its act names) — so in the book | notes it; the value stays believed |
 | `lag_note=` | `birth()`, `death()` | a christening or a burial long after — so in the book | notes it |
 | `age_note=` | `marriage()` | the ages at a wedding — so in the book | notes it |
 

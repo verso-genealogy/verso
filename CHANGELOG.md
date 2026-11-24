@@ -7,6 +7,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Added
 
+- verso-ru: **an act of divorce is read by the facts layer.** `verso facts` reads the divorce record sets of a
+  village — from the DSL and from the records JSON, in the one walk that reads the rest — and a divorce alone
+  (`signals_of`, `signals_on_json`); `verso facts --kind divorce` dumps, explains (`--why`) and counts the bases of
+  its assertions. A divorce asserts that the two were spouses (`SpouseOf`), the day the marriage
+  was dissolved (the new `DivorcedOn`, of each of them), each one's age that day and, where `marriage_date=` is
+  written as a date («14 марта 1926», «март 1926», «1926», «14.03.1926», the months also in the old spelling), the
+  wedding the act names
+  (`MarriedOn`, cited by the divorce); a text in another form asserts nothing. Two checks read it: `date-order`
+  gains «a divorce before the marriage its own act names», asked inside one entry only and said once of it, and
+  `wedding-calendar` asks the church wedding an act names (1917 and before). The translator still mints no profile
+  for a divorce's people: the checks that compare records do not see them, `--check identity` counts them on a
+  line of their own («вид без профилей») and the snapshot's `identity-refused-beyond-clergy` leaves them out; a
+  finding of theirs inside one entry is in the village's `date-order` report and in `date-order-within`.
+  The people index (`verso.ru.persons.people.sightings_of`) reads no divorce, as before.
+  **A corpus that holds divorces moves**: its `identity` and `wedding-calendar` reports, its `date-order` report and
+  `facts_findings.tsv` (`date-order-within`, `wedding-calendar-strict`) where an act contradicts itself or names a
+  church wedding on a strict ban; the dump of each other kind does not move (`--kind divorce --dump` is new). A day
+  or a month the DSL holds as words is not recorded, as an empty column is: a divorce never stops a village's reading.
+  An older release, or a reader validating against an older `records-v1.json`, refuses a divorce that writes
+  `source_date_error` or `calendar_note` ([records JSON](docs/records-json.md), «Compatibility»).
+- DSL v1: `divorce(source_date_error=)` withdraws the date of the marriage an act of divorce names (the divorce's
+  own day stays), `divorce(calendar_note=)` notes that the wedding's day is right although the Church did not marry
+  on it. Both are fields of the records JSON and of the interface's schema (marked `checks`).
+- verso-core: `discover_records(untranslated=)` hands out the record sets the translator does not read, from the
+  same walk; `translate_village(untranslated=)` passes them on. What is yielded and fed is unchanged.
 - verso-core: a `late` rule of the interface's schema may name the fields that stand it down — `stand_down` (an
   event late past its days) and `stand_down_before` (one before the first); the build refuses a path the kind lacks.
   verso-ru names them for the christening and the burial: `lag_note` and `source_date_error`, the fields the signals
@@ -44,12 +69,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   refused a divorce until now), the book — so an unproofread divorce can be held. `Divorce.reviewed` and
   `DivorceRecords.reviewed`; the records JSON writes the flag as it writes a name list's entry's, not a birth's
   (`reviewed` on the `divorce` and `divorces` nodes of `records-v1.json`, default `True`, written nowhere when it is
-  the default; a `False` where a birth's stands), and a held divorce's `review` is `held`. A divorce reaches no Geni document and no fact, so the review ratchet lists
+  the default; a `False` where a birth's stands), and a held divorce's `review` is `held`. A divorce reaches no Geni document, so the review ratchet lists
   none; `tables(…, reviewed_only=True)` leaves a held one out, and RVR001 reads `divorce` and `divorce_records`. The
   interface's schema hides the flag on the divorce and its book, as on the other kinds.
 
   **No output moves.** A divorce file that does not name the flag gives the same bytes as on 0.1.46 — its familio
-  CSV, its records JSON, the Terraform (a divorce writes none), the facts, dsllint; a held divorce moves its records
+  CSV, its records JSON, the Terraform (a divorce writes none), dsllint; a held divorce moves its records
   JSON alone (its `review`, its `reviewed`), its CSV row stays. A corpus that writes `reviewed=` on a divorce needs
   this version: an older one refuses the keyword, and an older decoder, or a reader validating against an older
   `records-v1.json`, refuses a divorce that writes `reviewed` (the vocabulary's version stays 1) — so the library

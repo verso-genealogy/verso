@@ -8,7 +8,8 @@ say what «cannot both be true» means for one kind of claim: a circa year read
 30 %. No I/O and no translation: identity arrives as a parameter, and what a
 report prints is the CLI's or the consolidation module's.
 
-    dates        records of one person dated out of order   (`date-order`)
+    dates        records of one person dated out of order; inside one entry, a divorce before the
+                 marriage its own act names                 (`date-order`)
     births       two birth claims one life cannot hold       (`birth-claims`)
     stated_age   a burial's age against the birth            (`verso death-age`)
     lives        households, baptisms, deaths, signs of life  (`union-dups`)

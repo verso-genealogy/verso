@@ -2462,6 +2462,18 @@
       "null"
      ]
     },
+    "source_date_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "calendar_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
     "context": {
      "type": "array",
      "items": {
@@ -2610,6 +2622,18 @@
     "year": {
      "type": [
       "integer",
+      "null"
+     ]
+    },
+    "source_date_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "calendar_note": {
+     "type": [
+      "string",
       "null"
      ]
     }

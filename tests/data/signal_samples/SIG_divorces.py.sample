@@ -1,0 +1,25 @@
+# Invented: the checks an act of divorce answers alone (verso.ru.facts.signals) — the marriage it names dated after
+# the divorce itself (date-order), the church wedding it names on a day the Church did not marry (wedding-calendar) —
+# and beside each the quiet case its note makes: source_date_error, calendar_note. No record writes a year — the
+# book's dates them; one is held (reviewed=False).
+from verso.ru.dsl import Month, divorce, divorce_records, person
+
+divorces = divorce_records(
+    "ГА Глуповской области", "10", "4", "4071", "Маниловка", "", 1925,
+    # date-order inside the entry, and its retraction
+    divorce(1, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="12 сентября 1925"),
+    divorce(2, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="12 сентября 1925",
+            source_date_error="такъ въ актѣ"),
+    # wedding-calendar: the Nativity fast (strict), a Saturday (loose), and stood down
+    divorce(3, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="1 декабря 1913"),
+    divorce(4, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="9 ноября 1913"),
+    divorce(5, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="1 декабря 1913",
+            calendar_note="такъ въ актѣ"),
+    # quiet: a marriage of the registry's years on such a day, an open day, no marriage named
+    divorce(6, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="1 декабря 1924"),
+    divorce(7, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="9 января 1913"),
+    divorce(8, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина")),
+    # held, and read on its card all the same
+    divorce(9, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="12 сентября 1925",
+            reviewed=False),
+)

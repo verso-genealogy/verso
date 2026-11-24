@@ -17,7 +17,7 @@ from typing import Any
 
 from verso.ru.facts.identity import Identity, self_identity
 from verso.ru.facts.model import (
-    AssertionSet, BaptizedOn, BornOn, Bound, BuriedOn, Dated, DiedOn, FactDate, MarriedOn, SurvivedUntil)
+    AssertionSet, BaptizedOn, BornOn, Bound, BuriedOn, Dated, DiedOn, DivorcedOn, FactDate, MarriedOn, SurvivedUntil)
 from verso.ru.facts.projection import canonical_name
 from verso.ru.facts.rules.disagreement import contradictions, held
 from verso.ru.messages import t
@@ -45,6 +45,18 @@ def orderings() -> list[tuple[Any, Any, str, str, str]]:
         # metric death — the shape of a father and a son of one name folded.
         (DiedOn, SurvivedUntil, "death_before_alive", str(t("facts.event.death")), str(t("facts.event.counted_alive"))),
         (BuriedOn, SurvivedUntil, "burial_before_alive", str(t("facts.event.burial")), str(t("facts.event.counted_alive"))),
+    ]
+
+
+#: The orderings that hold inside ONE entry and nowhere else, in the shape of
+#: `orderings()`. An act of divorce names the marriage it ends, and dating that
+#: marriage after the divorce is the act contradicting itself; between two
+#: records it is the order of a life — a man divorced marries again — so the
+#: class «two entries disagree» never asks it.
+def within_orderings() -> list[tuple[Any, Any, str, str, str]]:
+    return [
+        (DivorcedOn, MarriedOn, "divorce_before_marriage",
+         str(t("facts.event.divorce")), str(t("facts.event.named_marriage"))),
     ]
 
 
@@ -101,6 +113,7 @@ HINTS = {
     "burial_before_baptism": t("facts.date_order.hint.burial_before_baptism"),
     "death_before_alive": t("facts.date_order.hint.death_before_alive"),
     "burial_before_alive": t("facts.date_order.hint.burial_before_alive"),
+    "divorce_before_marriage": t("facts.date_order.hint.divorce_before_marriage"),
 }
 
 
@@ -163,6 +176,12 @@ def date_order_findings(facts: AssertionSet,
                       else across)
             bucket.setdefault(canonical_name(c.who) or "", []).append(
                 (kind, event, reference, c.left, c.right))
+    for left, right, kind, event, reference in within_orderings():
+        for c in contradictions(believed, left=left, right=right,
+                                identity=identity, incompatible=order):
+            if c.left.cite.record_id == c.right.cite.record_id:
+                within.setdefault(canonical_name(c.who) or "", []).append(
+                    (kind, event, reference, c.left, c.right))
     return within, across
 
 
@@ -194,11 +213,39 @@ def within_entry(facts: AssertionSet) -> list[WithinFinding]:
     identity = self_identity()
     dated_death = held(believed, kind=DiedOn, identity=identity)
     found: list[WithinFinding] = []
-    for left, right, kind, _event, _reference in orderings():
+    for left, right, kind, _event, _reference in (*orderings(), *within_orderings()):
         for c in contradictions(believed, left=left, right=right,
                                 identity=identity, incompatible=_before):
             if kind in _BURIAL_DEFERS_TO_DEATH and c.who in dated_death:
                 continue
             found.append(WithinFinding(kind=kind, left=c.left, right=c.right))
     found.sort(key=lambda f: (f.left.sort_key, f.right.sort_key, f.kind))
-    return found
+    # An ordering of `within_orderings()` is a couple's: both of them carry the
+    # two dates, and the entry is said once — by the first of them it names —
+    # as a wedding is asked once of the calendar.
+    of_a_couple = {kind for _left, _right, kind, _event, _reference in within_orderings()}
+    said: set[tuple[str, tuple[str, str, int, str, int]]] = set()
+    once: list[WithinFinding] = []
+    for f in found:
+        if f.kind in of_a_couple:
+            if (f.kind, f.left.cite.record_id) in said:
+                continue
+            said.add((f.kind, f.left.cite.record_id))
+        once.append(f)
+    return once
+
+
+def unplaced_within(facts: AssertionSet, identity: Identity) -> list[WithinFinding]:
+    """`within_entry` for the appearances `identity` places on nobody.
+
+    A village is read through its consolidation, and a rule drops an
+    appearance the bridge refuses — the people of a record the tree does not
+    publish (an act of divorce) are all such. What their entry says of itself
+    needs no one to say who they are, so it is asked of them alone, and the
+    report of the village holds it beside the class «inside one entry».
+    """
+    unplaced = []
+    for record in facts.believed().records():
+        key_of = identity(record)
+        unplaced += [a for a in record.assertions if key_of(a.subject) is None]
+    return within_entry(AssertionSet(unplaced))

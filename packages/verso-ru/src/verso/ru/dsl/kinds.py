@@ -44,7 +44,7 @@ SOURCE_PATTERNS: tuple[str, ...] = (
 
 
 # The kinds, in the order the translator read them (0.1.0's RECORD_TYPES), then the divorce,
-# which reaches only its CSV and the records JSON.
+# which the translator does not read: it reaches its CSV, the records JSON and the facts layer.
 KINDS: tuple[RecordKind, ...] = (
     RecordKind("birth", BirthRecords, (Birth, Christening), "records"),
     RecordKind("marriage", MarriageRecords, (Marriage,), "records"),

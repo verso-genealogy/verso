@@ -7,7 +7,8 @@ holding more appearances than its fold explains, no appearance minted twice.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from collections.abc import Collection
+from dataclasses import dataclass, field
 from typing import Any
 
 from verso.ru.facts.extract.common import CLERGY_SLOTS
@@ -24,17 +25,27 @@ class IdentityReach:
     repeated_number: int
     surplus: int
     minted_twice: int
+    #: The refusals of a kind of record no profile is minted for at all (an act
+    #: of divorce), by that kind: among `refused`, and known — as the причт is.
+    unpublished: dict[str, int] = field(default_factory=dict[str, int])
 
     @property
     def refused_beyond_clergy(self) -> int:
-        """Refusals the причт does not explain — each one a bridge defect or a
-        new class of appearance nobody mints a profile for."""
-        return sum(n for (_kind, slot), n in self.refused.items()
-                   if slot not in CLERGY_SLOTS)
+        """Refusals neither the причт nor a kind the tree does not publish
+        explains — each one a bridge defect or a new class of appearance nobody
+        mints a profile for."""
+        return sum(n for (kind, slot), n in self.refused.items()
+                   if slot not in CLERGY_SLOTS and kind not in self.unpublished)
 
 
-def identity_reach(facts: AssertionSet, gen: Any, slots: Any) -> IdentityReach:
+def identity_reach(facts: AssertionSet, gen: Any, slots: Any, *,
+                   unpublished: Collection[str] = ()) -> IdentityReach:
     """How far the appearance→canonical bridge reaches, and where it refuses.
+
+    `unpublished` names the kinds of record the translator does not read (an
+    act of divorce): their people have no profile by design, so their refusals
+    are counted by kind and are no breach of the floor — the caller says which
+    kinds those are, a check reads no plugin.
 
     The bridge composes two statements the corpus already makes — the res_name
     the translator minted for an appearance, and the canonical that res_name
@@ -90,6 +101,10 @@ def identity_reach(facts: AssertionSet, gen: Any, slots: Any) -> IdentityReach:
             repeated_number += 1
         else:
             surplus += 1
+    known: dict[str, int] = {}
+    for (kind, _slot), n in sorted(refused.items()):
+        if kind in unpublished:
+            known[kind] = known.get(kind, 0) + n
     return IdentityReach(total=total, refused=refused, placed=placed,
                          repeated_number=repeated_number, surplus=surplus,
-                         minted_twice=len(gen.minted_twice()))
+                         minted_twice=len(gen.minted_twice()), unpublished=known)

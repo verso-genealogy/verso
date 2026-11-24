@@ -1270,6 +1270,18 @@
      "label": "ui.field.marriage_date"
     },
     {
+     "path": "source_date_error",
+     "type": "text",
+     "label": "ui.field.source_date_error",
+     "checks": true
+    },
+    {
+     "path": "calendar_note",
+     "type": "text",
+     "label": "ui.field.calendar_note_divorce",
+     "checks": true
+    },
+    {
      "path": "children",
      "type": "text",
      "label": "ui.field.children"

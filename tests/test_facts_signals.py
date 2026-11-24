@@ -17,8 +17,9 @@ from verso.ru.church_calendar.svyatcy import Commemorated, Svyatcy
 from verso.ru.domain import person
 from verso.ru.dsl.records.births import birth, christening
 from verso.ru.dsl.records.deaths import death
+from verso.ru.dsl.records.divorces import divorce
 from verso.ru.dsl.records.marriages import marriage
-from verso.ru.facts.checks.dates import orderings, within_entry
+from verso.ru.facts.checks.dates import orderings, within_entry, within_orderings
 from verso.ru.facts.checks.lags import baptism_lags, burial_lags
 from verso.ru.facts.checks.name_days import name_day_findings
 from verso.ru.facts.checks.wedding_ages import wedding_age_findings
@@ -58,6 +59,11 @@ def _died(d_day: int, b_day: int, d_month: Month, b_month: Month | None = None, 
     return death(1, M, d_day, b_day, d_month, b_month or d_month, year=1850, deceased=person("Иван"), **more)
 
 
+def _divorced(married: str | None = None, **more):
+    return divorce(1, 3, Month.JULY, person("Иван", "Петров"), person("Анна", "Ильина"), marriage_date=married,
+                   year=1925, **more)
+
+
 def _of(check: str, record: object, **more) -> list[Signal]:
     return [s for s in signals_of(record, record_id=RID, svyatcy=_SVYATCY, **more).found if s.check == check]
 
@@ -85,6 +91,30 @@ def test_the_checks_and_the_fields_that_stand_them_down():
     assert STAND_DOWN == {"wedding-calendar": "calendar_note", "name-days": "calendar_note",
                           "baptism-lag": "lag_note", "burial-lag": "lag_note",
                           "wedding-ages": "age_note", "date-order": "source_date_error"}
+
+
+def test_a_divorce_before_the_marriage_its_act_names_is_said_once():
+    [s] = signals_of(_divorced("12 сентября 1925"), record_id=RID).found
+    assert (s.check, s.variant, s.confidence, s.locator, s.stand_down) == (
+        "date-order", "divorce_before_marriage", "HIGH", "husband", "source_date_error")
+    assert s.said.params == {"left": "03.07.1925", "right": "12.09.1925"}
+    assert i18n.render(s.said, "ru") == "Развод 03.07.1925 раньше брака 12.09.1925, который называет акт."
+    assert signals_of(_divorced("12 сентября 1925", source_date_error="так в акте"), record_id=RID).found == ()
+    assert signals_of(_divorced("12 сентября 1924"), record_id=RID).found == ()
+
+
+def test_the_church_wedding_a_divorce_names_is_asked_of_the_calendar():
+    [s] = signals_of(_divorced("1 декабря 1915"), record_id=RID).found
+    assert (s.check, s.variant, s.confidence, s.stand_down) == ("wedding-calendar", "strict", "HIGH", "calendar_note")
+    assert s.cite.record_kind == "divorce"
+    assert signals_of(_divorced("1 декабря 1915", calendar_note="так в акте"), record_id=RID).found == ()
+    # a marriage of the registry's years is no church wedding: the calendar is not asked past 1917
+    assert signals_of(_divorced("1 декабря 1924"), record_id=RID).found == ()
+
+
+def test_a_held_divorce_answers_like_a_reviewed_one():
+    held = signals_of(_divorced("12 сентября 1925", reviewed=False), record_id=RID).found
+    assert [s.variant for s in held] == ["divorce_before_marriage"]
 
 
 def test_high_comes_before_low_then_the_order_of_the_checks():
@@ -213,11 +243,12 @@ def test_a_burial_before_the_death_and_its_retraction():
     assert _of("date-order", _died(9, 8, Month.MARCH, source_date_error="так в подлиннике")) == []
 
 
-def test_only_the_two_orderings_a_retraction_answers_name_a_field():
-    """`source_date_error=` withdraws a christening or a burial: no other ordering has a field of its own."""
+def test_only_the_orderings_a_retraction_answers_name_a_field():
+    """`source_date_error=` withdraws a christening, a burial or the marriage an act of divorce names: no other
+    ordering has a field of its own."""
     from verso.ru.facts.signals import DATE_ORDER_STOOD_DOWN
-    assert DATE_ORDER_STOOD_DOWN == {"baptism_before_birth", "burial_before_death"}
-    assert DATE_ORDER_STOOD_DOWN <= {kind for _l, _r, kind, _e, _w in orderings()}
+    assert DATE_ORDER_STOOD_DOWN == {"baptism_before_birth", "burial_before_death", "divorce_before_marriage"}
+    assert DATE_ORDER_STOOD_DOWN <= {kind for _l, _r, kind, _e, _w in (*orderings(), *within_orderings())}
 
 
 # --- what a record alone is, and is not -----------------------------------------------------------------
@@ -343,6 +374,7 @@ def _every_signal() -> list[Signal]:
         _born(15, 16, Month.MAY, name="Екатерина", gender=F), _born(28, 29, Month.AUGUST, name="Симон"),
         _born(3, 20, Month.JANUARY), _born(20, 5, Month.JANUARY, Month.FEBRUARY), _born(18, 11, Month.OCTOBER),
         _died(3, 8, Month.MARCH), _died(3, 1, Month.MARCH, Month.APRIL), _died(9, 8, Month.MARCH),
+        _divorced("12 сентября 1925"), _divorced("1 декабря 1915"),
     ]
     return [s for r in records for s in signals_of(r, record_id=RID, svyatcy=_SVYATCY).found]
 
@@ -354,7 +386,8 @@ def test_every_signal_has_its_text_in_both_catalogs():
         "facts.signal.name_days.lookalike", "facts.signal.baptism_lag.late", "facts.signal.baptism_lag.month_carried",
         "facts.signal.burial_lag.late", "facts.signal.burial_lag.very_late", "facts.signal.wedding_ages.under_age_groom",
         "facts.signal.wedding_ages.under_age_bride", "facts.signal.wedding_ages.age_gap",
-        "facts.signal.date_order.baptism_before_birth", "facts.signal.date_order.burial_before_death"}
+        "facts.signal.date_order.baptism_before_birth", "facts.signal.date_order.burial_before_death",
+        "facts.signal.date_order.divorce_before_marriage"}
     for lang in ("ru", "en"):
         catalog = i18n.catalog("verso.ru", lang)
         for message in said:
@@ -362,7 +395,7 @@ def test_every_signal_has_its_text_in_both_catalogs():
             assert message.package == "verso.ru"
             text = i18n.render(message, lang)
             assert text and "{" not in text, f"{lang}: {message.key} → {text}"
-    for _left, _right, kind, _event, _reference in orderings():       # the orderings no sample here reaches
+    for _left, _right, kind, _event, _reference in (*orderings(), *within_orderings()):   # those no sample here reaches
         for lang in ("ru", "en"):
             assert f"facts.signal.date_order.{kind}" in i18n.catalog("verso.ru", lang)
 
@@ -376,7 +409,7 @@ SIGNAL_KEYS = {
     *(f"baptism_lag.{n}" for n in ("late", "late_why", "month_carried", "month_carried_why")),
     *(f"burial_lag.{n}" for n in ("late", "late_why", "very_late", "very_late_why")),
     *(f"wedding_ages.{n}" for n in ("under_age_groom", "under_age_bride", "under_age_why", "age_gap", "age_gap_why")),
-    *(f"date_order.{kind}" for _l, _r, kind, _e, _w in orderings()),
+    *(f"date_order.{kind}" for _l, _r, kind, _e, _w in (*orderings(), *within_orderings())),
 }
 
 

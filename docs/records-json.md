@@ -122,8 +122,8 @@ A consumer that validates against the **previous** closed `records-v1.json` reje
 `note`, `key`, `vocabulary`, `lang`, `written.context` or `written.wrapper` (the schema is closed on those
 nodes), and
 every external-source card node, since it carries `verb` (the 0.1.15 schema says «'verb' was
-unexpected»), and a divorce or a divorce book that writes `reviewed` (a divorce book that never names the flag writes
-none) — the decoder of an older release refuses it too, with no word of the vocabulary's version, which stays 1: take the schema from the release that writes them (`verso records-schema --write`).
+unexpected»), a divorce or a divorce book that writes `reviewed` (a divorce book that never names the flag writes
+none), and a divorce that writes `source_date_error` or `calendar_note` — the decoder of an older release refuses it too, with no word of the vocabulary's version, which stays 1: take the schema from the release that writes them (`verso records-schema --write`).
 
 An export written before these additions reads as it always did: no `vocabulary`/`lang` means none is
 checked; wrapper values found in `derived` with no `written.context` are read as the wrapper's
@@ -451,7 +451,7 @@ for signal in got.found:              # HIGH before LOW, then in the order of si
     signal.confidence                 # "HIGH" | "LOW" — the finding's own
     signal.said, signal.why           # messages of verso.ru's catalog: a key and plain params
     signal.details                    # more of them: Pascha's date, an open day beside, a look-alike name
-    signal.locator                    # the slot: "child", "groom", "bride", "deceased"; "" — the entry
+    signal.locator                    # the slot: "child", "groom", "bride", "deceased", "husband", "wife"; "" — the entry
     signal.stand_down                 # the key of `written` that answers it, or None
 got.unanswered                        # the checks that could not be asked
 ```
@@ -466,7 +466,8 @@ got.unanswered                        # the checks that could not be asked
   record the factories cannot build, or a workspace with no names table, leaves the checks `unanswered`.
 - **«Так в подлиннике» is a field of the record.** `stand_down` names it: `calendar_note` (`name-days`,
   `wedding-calendar`), `lag_note` (the two lags), `age_note` (`wedding-ages`) — notes, the value stays believed — and
-  `source_date_error` for a christening before the birth or a burial before the death, which withdraws that date. An
+  `source_date_error` for a christening before the birth, a burial before the death or a divorce before the marriage
+  its own act names, which withdraws that date (of a divorce: the marriage's). An
   edit that writes the field is the whole answer; `facts.signal.note_default` is the text a page may offer for it.
   A linter's code may name such a field too: `hosted.readiness()[code].stand_down` (DBD001, DBD002).
 - A message's params are text and whole numbers, so a page renders it from its copy of the catalog as Python does.
@@ -475,5 +476,7 @@ got.unanswered                        # the checks that could not be asked
   package's, the index is read through the lexicon, so a host with a workspace per project gets a table per project.
 - Not thread-safe, as `lint_record` is not: the workspace is a process-global stack.
 
-A household of a roll, a card and a line of a list answer none of these checks; the checks that compare records need
-the people folded first and are not asked of one record.
+An act of divorce answers two of them: `date-order` (its own two dates, said once of the entry, at the first spouse
+it names) and `wedding-calendar` (the church wedding it names, 1917 and before; `calendar_note`). A household of a
+roll, a card and a line of a list answer none of these checks; the checks that compare records need the people
+folded first and are not asked of one record.

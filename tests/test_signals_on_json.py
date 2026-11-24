@@ -25,6 +25,7 @@ from verso.core.records.ids import Ids
 from verso.core.records.replay import Position, replay_file
 from verso.ru.dsl.records.births import BirthRecords
 from verso.ru.dsl.records.deaths import DeathRecords
+from verso.ru.dsl.records.divorces import DivorceRecords
 from verso.ru.dsl.records.marriages import MarriageRecords
 from verso.ru.facts.extract.common import SlotIndex
 from verso.ru.facts.model import AssertionSet
@@ -33,16 +34,18 @@ from verso.ru.pipeline.facts import assertions_of
 from verso.ru.pipeline.signals import signals_on_json, svyatcy_cached
 
 SAMPLE = Path(__file__).resolve().parent / "data" / "signal_samples" / "SIG_six_checks.py.sample"
-METRIC = (BirthRecords, MarriageRecords, DeathRecords)
+DIVORCES = SAMPLE.with_name("SIG_divorces.py.sample")
+METRIC = (BirthRecords, MarriageRecords, DeathRecords, DivorceRecords)
 
 type Key = tuple[str, str, str, str]
 
 
-def _book() -> dict[str, Any]:
-    """The invented book of the six checks, as an export holds it."""
-    module, error = _try_load(SAMPLE.read_text(encoding="utf-8"))
+def _book(sample: Path = SAMPLE) -> dict[str, Any]:
+    """The invented book of the six checks (or another sample's), as an export holds it."""
+    module, error = _try_load(sample.read_text(encoding="utf-8"))
     assert module is not None, error
-    doc = encode_namespace(record_namespace(module), village="Маниловка", file="SIG_six_checks.py", sha256="-", ids=Ids())
+    doc = encode_namespace(record_namespace(module), village="Маниловка", file=sample.name.removesuffix(".sample"),
+                           sha256="-", ids=Ids())
     return json.loads(json.dumps(doc, ensure_ascii=False))
 
 
@@ -108,6 +111,28 @@ def test_the_notes_of_the_invented_book_stand_their_records_down() -> None:
     assert "burial-lag" in said["death", 2] and "burial-lag" not in said["death", 3]
     assert "date-order" in said["death", 4] and "date-order" not in said["death", 5]
     assert said["birth", 10] == said["marriage", 8] == said["death", 6] == set()
+
+
+def test_a_divorce_alone_gives_what_its_book_gives() -> None:
+    """An act of divorce on its card: the two checks it answers, each said once of the entry though both spouses
+    carry the claim."""
+    data = _book(DIVORCES)
+    by_record, asked = alone(data)
+    assert by_record == whole(data)
+    assert asked == 9
+    assert Counter((check, variant, level) for check, variant, _id, level in by_record.elements()) == Counter({
+        ("date-order", "divorce_before_marriage", "HIGH"): 2,          # № 1 and the held № 9
+        ("wedding-calendar", "strict", "HIGH"): 1, ("wedding-calendar", "loose", "LOW"): 1})
+
+
+def test_a_divorce_s_notes_stand_its_signals_down() -> None:
+    data = _book(DIVORCES)
+    said = {item.node["written"]["number"]: [
+        (s.check, s.stand_down) for s in signals_on_json(item.node, header=item.header, page=item.page,
+                                                         position=item.position).found] for item in located(data)}
+    assert said[1] == said[9] == [("date-order", "source_date_error")] and said[2] == []
+    assert said[3] == said[4] == [("wedding-calendar", "calendar_note")] and said[5] == []
+    assert said[6] == said[7] == said[8] == []
 
 
 def test_a_held_record_is_read_and_a_signal_names_its_node() -> None:

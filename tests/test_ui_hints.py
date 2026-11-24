@@ -66,7 +66,7 @@ def test_every_record_field_is_placed():
                     assert f.name in defaults, f"{spec.code}.{f.name}"
                 continue
             assert keys[f.name] in placed.get(spec.code, set()), f"{spec.code}: {keys[f.name]}"
-    assert count == 282
+    assert count == 284
 
 
 def test_every_label_has_both_languages():
@@ -132,13 +132,15 @@ def test_the_page_s_tables_are_in_the_hints():
     assert label("birth", "lag_note") == "позднее крещение — верно"
     assert label("death", "lag_note") == "позднее погребение — верно"
     assert label("marriage", "age_note") == "возраст при венчании — верно"
+    assert label("divorce", "calendar_note") == "брак в запретный день — верно"
+    assert label("divorce", "source_date_error") == "ошибка даты в подлиннике"
     late = {k: [r["days"] for r in v["rules"] if r["rule"] == "late"] for k, v in schema["kinds"].items()}
     assert (late["birth"], late["death"], late["marriage"]) == ([12], [4], [])
     # The field that stands each late rule down is the one the signal of its check names (STAND_DOWN).
     for kind, check in (("birth", "baptism-lag"), ("death", "burial-lag")):
         (rule,) = [r for r in schema["kinds"][kind]["rules"] if r["rule"] == "late"]
         assert (rule["stand_down"], rule["stand_down_before"]) == (STAND_DOWN[check], STAND_DOWN["date-order"])
-    assert DATE_ORDER_STOOD_DOWN == {"baptism_before_birth", "burial_before_death"}
+    assert DATE_ORDER_STOOD_DOWN == {"baptism_before_birth", "burial_before_death", "divorce_before_marriage"}
     follows = [r for r in schema["kinds"]["birth"]["rules"] if r["rule"] == "follows"]
     assert follows == [{"rule": "follows", "from": "birth.month", "to": "baptism.month",
                         "advance": {"day_from": "birth.day", "day_to": "baptism.day"}}]

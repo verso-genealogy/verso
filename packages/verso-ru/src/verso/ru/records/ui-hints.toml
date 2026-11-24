@@ -342,6 +342,8 @@ fields = [
   { path = "husband_age", label = "ui.field.husband_age" },
   { path = "wife_age", label = "ui.field.wife_age" },
   { path = "marriage_date", label = "ui.field.marriage_date" },
+  { path = "source_date_error", label = "ui.field.source_date_error", checks = true },
+  { path = "calendar_note", label = "ui.field.calendar_note_divorce", checks = true },
   { path = "children", label = "ui.field.children" },
   { path = "initiator", label = "ui.field.initiator" },
   { path = "page", label = "ui.field.page" },

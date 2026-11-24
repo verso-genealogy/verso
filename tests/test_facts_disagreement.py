@@ -216,9 +216,16 @@ class TheOrderingsAreATable(unittest.TestCase):
     forgotten."""
 
     def test_every_ordering_brings_its_own_advice(self):
-        from verso.ru.facts.checks.dates import HINTS, orderings
-        kinds = {kind for _l, _r, kind, _e, _f in orderings()}
+        from verso.ru.facts.checks.dates import HINTS, orderings, within_orderings
+        kinds = {kind for _l, _r, kind, _e, _f in (*orderings(), *within_orderings())}
         self.assertEqual(kinds, set(HINTS))
+
+    def test_an_ordering_of_one_entry_is_in_its_own_table(self):
+        """A divorce before the marriage its act names holds inside one entry only: it is never among the
+        orderings two records are asked."""
+        from verso.ru.facts.checks.dates import orderings, within_orderings
+        self.assertEqual(["divorce_before_marriage"], [kind for _l, _r, kind, _e, _f in within_orderings()])
+        self.assertNotIn("divorce_before_marriage", [kind for _l, _r, kind, _e, _f in orderings()])
 
     def test_the_table_holds_the_four_the_oracle_asks_then_gramps_five(self):
         from verso.ru.facts.checks.dates import orderings
