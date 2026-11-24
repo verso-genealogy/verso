@@ -71,7 +71,7 @@ def _defaults(book: Book, ui: Ui) -> str:
     return "; ".join(dict.fromkeys(parts))
 
 
-def book(book_: Book, site: Site, ui: Ui, ctx: Context) -> str:
+def book(book_: Book, ui: Ui, ctx: Context) -> str:
     up = shell.root(book_.path)
     facts = [E(_shelf(book_))]
     if not book_.is_cards:
@@ -301,7 +301,7 @@ def _letters(pages_: Sequence[NamePage]) -> str:
     return f'<nav class="letters">{jump}</nav>{blocks}'
 
 
-def names_index(site: Site, ui: Ui, ctx: Context) -> str:
+def names_index(site: Site, ctx: Context) -> str:
     path = f"{NAMES}/"
     surnames = surname_pages(site)
     others: list[str] = []
@@ -315,7 +315,7 @@ def names_index(site: Site, ui: Ui, ctx: Context) -> str:
     return shell.page(str(t("site.names.surnames")), body, ctx=ctx, path=path)
 
 
-def patronymics_index(site: Site, ui: Ui, ctx: Context) -> str:
+def patronymics_index(site: Site, ctx: Context) -> str:
     path = f"{PATRONYMICS}/"
     body = (f'<p class="crumbs"><a href="../{NAMES}/">{E(str(t("site.nav.names")))}</a></p>'
             f'<h1>{E(str(t("site.names.patronymics")))}</h1><p class="k">{E(str(t("site.names.patronymics_what")))}</p>'
@@ -362,7 +362,7 @@ def search(ctx: Context) -> str:
 
 # ---------------------------------------------------------------- the front page and the missing one
 
-def front(site: Site, ui: Ui, ctx: Context) -> str:
+def front(site: Site, ctx: Context) -> str:
     years = site.years
     span = f"{years[0]}–{years[-1]}" if len(years) > 1 else (str(years[0]) if years else "")
     stats = [str(t("site.front.books", count=len(site.books))), _records(site.records),

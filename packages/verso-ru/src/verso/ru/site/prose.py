@@ -12,7 +12,6 @@ from __future__ import annotations
 import html
 import posixpath
 import re
-from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -156,7 +155,7 @@ def render(page: Page, docs: Path, site: Site, ctx: Context, workspace: Path) ->
     return shell.page(page.title, body, ctx=ctx, path=page.path)
 
 
-def first_paragraph(docs: Path | None, names: Mapping[str, None] | None = None) -> str | None:
+def first_paragraph(docs: Path | None) -> str | None:
     """The opening paragraph of `history.md`, plain: the settlement's summary where none is given."""
     if docs is None or not (docs / "history.md").is_file():
         return None

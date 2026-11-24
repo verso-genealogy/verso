@@ -67,19 +67,19 @@ def _build(site: model.Site, out: Path, ctx: Context, docs: Path | None, workspa
     def page(path: str, text: str) -> None:
         written[path + check.INDEX] = text
 
-    page("", pages.front(site, ui, ctx))
+    page("", pages.front(site, ctx))
     page("books/", pages.books_index(site, ui, ctx))
     page("years/", pages.years_index(site, ui, ctx))
     for year in site.years:
         page(f"years/{year}/", pages.year(year, site, ui, ctx))
     for book in site.books:
-        page(book.path, pages.book(book, site, ui, ctx))
-    page(f"{pages.NAMES}/", pages.names_index(site, ui, ctx))
+        page(book.path, pages.book(book, ui, ctx))
+    page(f"{pages.NAMES}/", pages.names_index(site, ctx))
     for found in pages.surname_pages(site):
         page(f"{pages.NAMES}/{found.key}/", pages.name(found, pages.NAMES, site, ui, ctx))
     patronymics = pages.patronymic_pages(site)
     if patronymics:
-        page(f"{pages.PATRONYMICS}/", pages.patronymics_index(site, ui, ctx))
+        page(f"{pages.PATRONYMICS}/", pages.patronymics_index(site, ctx))
         for found in patronymics:
             page(f"{pages.PATRONYMICS}/{found.key}/", pages.name(found, pages.PATRONYMICS, site, ui, ctx))
     if pages.nameless(site):

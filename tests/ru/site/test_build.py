@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +12,6 @@ from verso.ru import site as site_package
 from verso.ru.site import check, model
 
 URL = "https://example.org/manilovka-records/"
-Change = Callable[[Callable[[dict[str, Any]], None]], model.Site]
 
 
 def _build(file_node: dict[str, Any], out: Path, **settings: Any) -> site_package.Built:
@@ -104,7 +102,7 @@ def test_the_check_names_what_a_reader_would_meet(tmp_path: Path) -> None:
                      ("index.html", "fetched", "//cdn.example.org/x.png")}
 
 
-def test_two_books_of_one_address_stop_the_build(changed: Change, file_node: dict[str, Any], tmp_path: Path) -> None:
+def test_two_books_of_one_address_stop_the_build(file_node: dict[str, Any], tmp_path: Path) -> None:
     doc = file_node["documents"][1]
     twins = []
     for shelf in ("47-9-12а", "47-9-12a"):

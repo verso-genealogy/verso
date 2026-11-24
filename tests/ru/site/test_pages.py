@@ -22,7 +22,7 @@ def _hrefs(markup: str) -> list[str]:
 
 
 def test_a_book_opens_with_what_it_is_and_how_much_of_it_is_read(site: model.Site, ui: Ui, ctx: Context) -> None:
-    page = pages.book(site.book(BIRTHS), site, ui, ctx)
+    page = pages.book(site.book(BIRTHS), ui, ctx)
     text = _text(page)
     assert "<h1>Рождения 1900 — Маниловка</h1>" in page
     assert "ЦГА. Ф. 47. Оп. 9. Д. 755." in text and "приход: Маниловка, Церковь" in text
@@ -42,7 +42,7 @@ def test_a_civil_registers_book_says_so(changed: Change, ui: Ui, ctx: Context) -
     def civil(node: dict[str, Any]) -> None:
         node["documents"][0]["written"] |= {"civil": True, "church": ""}
     site = changed(civil)
-    page = pages.book(site.book(BIRTHS), site, ui, ctx)
+    page = pages.book(site.book(BIRTHS), ui, ctx)
     assert "Рождения (ЗАГС) 1900 — Маниловка" in page and "вторая дата — день регистрации" in page
 
 
@@ -63,16 +63,16 @@ def test_a_year_lists_its_books(site: model.Site, ui: Ui, ctx: Context) -> None:
     assert 'href="../1828/"' in year and 'href="../1913/"' in year
 
 
-def test_the_front_page_counts_what_the_site_holds(site: model.Site, ui: Ui, ctx: Context) -> None:
-    text = _text(pages.front(site, ui, ctx))
+def test_the_front_page_counts_what_the_site_holds(site: model.Site, ctx: Context) -> None:
+    text = _text(pages.front(site, ctx))
     assert "9 книг" in text and "17 записей" in text and "годы 1828–1923" in text
     assert "2 записи ещё не вычитаны" in text
     assert "О селе" not in text                                      # no prose, no section of it
 
 
 def test_a_page_links_within_the_site_by_relative_addresses(site: model.Site, ui: Ui, ctx: Context) -> None:
-    made = [pages.front(site, ui, ctx), pages.books_index(site, ui, ctx), pages.names_index(site, ui, ctx),
-            pages.search(ctx), pages.book(site.book(BIRTHS), site, ui, ctx), pages.year(1900, site, ui, ctx)]
+    made = [pages.front(site, ctx), pages.books_index(site, ui, ctx), pages.names_index(site, ctx),
+            pages.search(ctx), pages.book(site.book(BIRTHS), ui, ctx), pages.year(1900, site, ui, ctx)]
     for page in made:
         assert '<html lang="ru">' in page
         assert not [h for h in _hrefs(page) if h.startswith(("/", "http", "//"))], page[:200]
@@ -90,18 +90,18 @@ def test_a_surname_gathers_its_mentions_and_its_feminine_form(site: model.Site, 
     assert 'href="../../books/manilovka/47-9-755/1900/birth/#m1"' in page
 
 
-def test_who_is_written_without_a_surname_is_found_by_patronymic(site: model.Site, ui: Ui, ctx: Context) -> None:
+def test_who_is_written_without_a_surname_is_found_by_patronymic(site: model.Site, ctx: Context) -> None:
     found = {page.key: page for page in pages.patronymic_pages(site)}
     assert list(found) == ["Иванов", "Петров"]                       # «Иванова» with «Иванов», «Петрова» with «Петров»
     assert "Анна Иванова" in [m.as_written for m in found["Иванов"].mentions]
-    index = pages.patronymics_index(site, ui, ctx)
+    index = pages.patronymics_index(site, ctx)
     assert '<a href="Иванов/">Иванов, Иванова</a>' in index
 
 
 def test_who_is_written_by_a_name_alone_has_a_page_too(site: model.Site, ui: Ui, ctx: Context) -> None:
     alone = pages.nameless(site)
     assert "Анна" in [m.as_written for m in alone] and all(not m.surname and not m.patronymic for m in alone)
-    assert f'href="../{pages.PATRONYMICS}/{pages.NAMELESS}/"' in pages.names_index(site, ui, ctx)
+    assert f'href="../{pages.PATRONYMICS}/{pages.NAMELESS}/"' in pages.names_index(site, ctx)
     assert "Анна" in pages.nameless_page(site, ui, ctx)
 
 
