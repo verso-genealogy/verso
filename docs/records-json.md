@@ -132,14 +132,17 @@ checked; wrapper values found in `derived` with no `written.context` are read as
 later changed; `context=False` rebuilds from `written` alone and is for files whose context is in `written`); a card without `verb` replays when its keys fit one factory, else `ReplayGap`. To get the new
 keys into an old export, export again (`verso export-records`).
 
-**A known limit, until 0.2: a wrapper's field the call wrote as `None`.** A call that writes a field a wrapper
-sets, as `None` in so many words (`birth(…, year=None)` inside `birth_month_year(…)`, `listed_person(…,
-reviewed=None)` inside `page(…, reviewed=True)`), leaves the wrapper to fill it, as if it had not written it. The
-export keeps the call's `None` in `written` and the wrapper's value in `derived` alone: `decode_file` and
-`replay_file` (with `context=True`, the default) read the record right, while `replay_file(…, context=False)`,
-`replay_record` and a store that keeps `written` alone rebuild the field the factory's way: unset, or the set's
-flag. One key cannot hold both values, so the fix is an addition to the format; until then, leave such an argument
-out rather than write it as `None`.
+**A known limit, until 0.2: a wrapper's field the call wrote as `None`.** A call that writes, as `None` in so many
+words, a field a wrapper sets and `written.context` would otherwise carry (`birth(…, year=None)` inside
+`birth_month_year(…)`, `listed_person(…, reviewed=None)` inside `page(…, reviewed=True)`; a record's leaf is not one,
+its page run gives it) leaves the wrapper to fill it, as if it had not written it. The export keeps the call's `None`
+in `written` and the wrapper's value in `derived` alone. `decode_file`, and `replay_file` and `replay_record` with
+`context=True` (the default of `replay_file`), read the record right. A rebuild from `written` alone builds the field
+the factory's way, unset or the set's value (its flag, a census's record day): `replay_file(…, context=False)`,
+`replay_record` with its default `context=False`, a store that keeps `written` alone, and the readers of one record
+that replay it so (`on_json.lint_record`, the signals of one record) even when the node carries `derived`. A `book()`'s
+priest written as `None` comes back with its value but without the call's `null`. One key cannot hold both values, so
+the fix is an addition to the format; until then, leave such an argument out rather than write it as `None`.
 
 ## A book without a DSL source
 
@@ -253,7 +256,8 @@ position_values(node, position=Position(5, 21))     # {"index": 6}, or {"members
 
 `replay_record` builds the record through its set's own factory, so the book's defaults, the clergy's parish and the
 `on_geni` mark apply as in the book, and then sets the counters. The result equals the record `replay_file` makes of the
-same node inside its book, once the position is given.
+same node inside its book, once the position is given (but for a wrapper's field the call wrote as `None`, read with
+`context=False`: see [the known limit](#compatibility-and-reading-an-old-export)).
 
 The counters are the whole of a position. `Position.ordinal` is the record's 0-based place among the records of its set,
 in the order of the export; it gives a list entry's and a card's `index` (`ordinal + 1`). `Position.members_before` is the

@@ -108,9 +108,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   a run's levels as the export shows them, `on_json.review_level(node, built)` — a store's `run_levels` too.
 - Docs: [records JSON](docs/records-json.md#compatibility-and-reading-an-old-export) names a known limit, until
   0.2: a wrapper's field a call writes as `None` in so many words (`year=None` in a section, `reviewed=None` in a
-  `page()`) is filled by the wrapper, and only `derived` holds its value, so a rebuild from `written` alone
-  (`replay_file(…, context=False)`, `replay_record`) leaves it unfilled. No corpus file and no verso-app path writes
-  the shape; no output moves.
+  `page()`; not a record's leaf) is filled by the wrapper, and only `derived` holds its value, so a rebuild from
+  `written` alone leaves it unset or gives it the set's value: `replay_file(…, context=False)`, `replay_record` with its
+  default `context=False`, and `on_json.lint_record` and the signals of one record, which replay so. No corpus file
+  and no verso-app path writes the shape; no output moves.
 
 ### Changed
 
