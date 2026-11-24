@@ -3,6 +3,18 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased
+
+### Changed
+
+- verso-ru, the site (`verso site`), from a reader's word: the years' index named a year's books by their kind
+  alone, so five rolls of one year read «Ревизия, Ревизия, Ревизия, Ревизия, Ревизия». A book of another village
+  than the site's own parish — the one most of its records name, not the village's directory — is named with it
+  («Исповедная роспись — Заманиловка»), and two books a year's row would still name alike by their shelfmarks and
+  parts («Рождения — 47-9-755, стр-9»); a year's page names a book's part too. Every page's footer but the 404's
+  (whose `<base>` would lead elsewhere) gains «↑ Наверх», back to the head (`id="page.top"`, which no heading's
+  GitHub slug can be). No output of a corpus but its site moves.
+
 ## 0.1.48 — 2026-11-24
 
 A corpus's CSVs, Terraform and facts (`facts.jsonl`) do not move. What does: the records JSON's id of every set

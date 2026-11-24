@@ -10,6 +10,7 @@ import html
 import json
 import re
 import unicodedata
+from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -142,13 +143,37 @@ def _natural(text_: str) -> list[Any]:
     return [(0, int(part)) if part.isdigit() else (1, part) for part in re.split(r"(\d+)", text_) if part]
 
 
+def home_parish(site: Site) -> str:
+    """The site's own parish: the one most of its books' records name — not the village's directory, which may
+    be named otherwise (a village of a church's other village), nor a card's village, which is the corpus's."""
+    named: Counter[str] = Counter()
+    for b in site.books:
+        if not b.is_cards:
+            named[b.village] += len(b.entries)
+    return named.most_common(1)[0][0] if named else site.village
+
+
+def _year_labels(books: list[Book], home: set[str], ui: Ui) -> list[str]:
+    """A year's books as its row names them: the kind; the village where it is another than the site's own
+    parish («Исповедная роспись — Заманиловка»); and the shelfmark, with its part, where two books of the year
+    would still read alike («Рождения — 47-9-755, стр-9»)."""
+    said = [[] if b.village in home else [b.village] for b in books]
+    first = [kind_title(b, ui) + "".join(f" — {q}" for q in q_) for b, q_ in zip(books, said, strict=True)]
+    return [kind_title(b, ui) + " — " + ", ".join(
+                [*q_, b.shelfmark, *([b.part] if b.part and b.part not in q_ else [])]) if first.count(label) > 1
+            else label
+            for b, q_, label in zip(books, said, first, strict=True)]
+
+
 def years_index(site: Site, ui: Ui, ctx: Context) -> str:
     path = "years/"
     up = shell.root(path)
+    home = home_parish(site)
     rows: list[str] = []
     for year in site.years:
         found = [b for b in site.books if b.year == year]
-        links = ", ".join(_book_link(b, ui, up, kind_title(b, ui)) for b in found)
+        links = ", ".join(_book_link(b, ui, up, label) for b, label in zip(
+            found, _year_labels(found, {home, site.village}, ui), strict=True))
         total = sum(len(b.entries) for b in found)
         rows.append(f'<tr><td><a href="{year}/">{year}</a></td><td>{links}</td><td class="n">{total}</td></tr>')
     undated = [b for b in site.books if b.year is None]
@@ -174,7 +199,8 @@ def year(year_: int, site: Site, ui: Ui, ctx: Context) -> str:
     if place + 1 < len(years):
         around.append(f'<a href="../{years[place + 1]}/">{years[place + 1]} →</a>')
     items = "".join(
-        f"<li>{_book_link(b, ui, up)} — {E(_shelf(b))} · {E(_records(len(b.entries)))}{_unreviewed(b.unreviewed)}</li>"
+        f"<li>{_book_link(b, ui, up)} — {E(_shelf(b))}{E(', ' + b.part) if b.part else ''} · "
+        f"{E(_records(len(b.entries)))}{_unreviewed(b.unreviewed)}</li>"
         for b in site.books if b.year == year_)
     body = (f'<p class="crumbs"><a href="../">{E(str(t("site.nav.years")))}</a></p><h1>{year_}</h1>'
             f'<ul class="books">{items}</ul><p class="around">{" · ".join(around)}</p>')
@@ -397,4 +423,4 @@ def not_found(ctx: Context) -> str:
     head = f'<base href="{E(ctx.site_url)}">\n' if ctx.site_url else ""
     body = (f'<h1>{E(str(t("site.not_found.title")))}</h1><p>{E(str(t("site.not_found.what")))}</p>'
             f'<p><a href="./">{E(ctx.title)}</a></p>')
-    return shell.page(str(t("site.not_found.title")), body, ctx=ctx, path="", head=head)
+    return shell.page(str(t("site.not_found.title")), body, ctx=ctx, path="", head=head, top=False)

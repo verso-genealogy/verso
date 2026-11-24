@@ -44,8 +44,14 @@ def address(site_url: str, path: str) -> str:
     return site_url + quote(path)
 
 
-def page(title: str, body: str, *, ctx: Context, path: str, head: str = "", scripts: Iterable[str] = ()) -> str:
-    """A whole page: `body` inside the frame, `path` its directory from the root."""
+# The head's id: no heading's, as GitHub's slug drops the dot (a prose page's «Top» is `top`).
+TOP = "page.top"
+
+
+def page(title: str, body: str, *, ctx: Context, path: str, head: str = "", scripts: Iterable[str] = (),
+         top: bool = True) -> str:
+    """A whole page: `body` inside the frame, `path` its directory from the root; `top=False` leaves out the
+    footer's way back to the head (a page with a `<base>`, where «#…» leads to the base)."""
     up = root(path)
     name = E(ctx.title)
     full = name if not title else f"{E(title)} — {name}"
@@ -62,11 +68,11 @@ def page(title: str, body: str, *, ctx: Context, path: str, head: str = "", scri
     return (f'<!doctype html>\n<html lang="{E(ctx.lang)}">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
             f'<title>{full}</title>\n<link rel="stylesheet" href="{up}{CSS}">\n{canonical}{head}</head>\n'
-            f'<body>\n<header class="top"><a class="brand" href="{up or "./"}">{name}</a>'
-            f'<nav aria-label="{E(str(t("site.nav.label")))}">{nav}</nav>{search}</header>\n<main>\n{body}\n</main>\n{_footer(ctx, up)}{tail}\n</body>\n</html>\n')
+            f'<body>\n<header class="top" id="{TOP}"><a class="brand" href="{up or "./"}">{name}</a>'
+            f'<nav aria-label="{E(str(t("site.nav.label")))}">{nav}</nav>{search}</header>\n<main>\n{body}\n</main>\n{_footer(ctx, up, top)}{tail}\n</body>\n</html>\n')
 
 
-def _footer(ctx: Context, up: str) -> str:
+def _footer(ctx: Context, up: str, top: bool) -> str:
     parts = [f'<p class="legend"><span class="w">{E(str(t("site.legend.written_word")))}</span> — '
              f'{E(str(t("site.legend.written")))}; <span class="d">{E(str(t("site.legend.derived_word")))}</span> — '
              f'{E(str(t("site.legend.derived")))}; <span class="badge">{E(str(t("site.unreviewed")))}</span> — '
@@ -81,6 +87,8 @@ def _footer(ctx: Context, up: str) -> str:
     if ctx.revision:
         line.append(E(str(t("site.footer.revision", revision=ctx.revision))))
     line.append(f'<a href="{up}search/">{E(str(t("site.nav.search")))}</a>')
+    if top:                                                          # a long book's foot, back to its head
+        line.append(f'<a href="#{TOP}">{E(str(t("site.footer.top")))}</a>')
     parts.append(f'<p>{" · ".join(line)}</p>')
     return f'<footer class="bottom">{"".join(parts)}</footer>\n'
 
