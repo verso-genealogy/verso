@@ -54,6 +54,10 @@ def test_a_site_that_knows_its_address_lists_its_pages(file_node: dict[str, Any]
     _build(file_node, tmp_path / "with", site_url=URL.rstrip("/"))
     sitemap = (tmp_path / "with" / "sitemap.xml").read_text(encoding="utf-8")
     assert f"<loc>{URL}</loc>" in sitemap and f"<loc>{URL}books/manilovka/47-9-755/1900/birth/</loc>" in sitemap
+    encoded = "names/%D0%A1%D0%B8%D0%B4%D0%BE%D1%80%D0%BE%D0%B2/"        # a page named in Cyrillic, as an address
+    assert f"<loc>{URL}{encoded}</loc>" in sitemap
+    name = (tmp_path / "with" / "names" / "Сидоров" / "index.html").read_text(encoding="utf-8")
+    assert f'<link rel="canonical" href="{URL}{encoded}">' in name
     assert f"Sitemap: {URL}sitemap.xml" in (tmp_path / "with" / "robots.txt").read_text(encoding="utf-8")
     assert f'<base href="{URL}">' in (tmp_path / "with" / "404.html").read_text(encoding="utf-8")
     page = (tmp_path / "with" / "books" / "index.html").read_text(encoding="utf-8")

@@ -149,3 +149,14 @@ def test_every_field_of_the_schema_is_drawn_or_named_as_not_shown(ui: Ui) -> Non
                 assert field.get("label") or field.get("hidden"), (code, group["name"], field["path"])
     for field in ui.schema["persona"]["fields"]:
         assert field.get("label") or field["path"] in records.PERSONA_NOT_SHOWN, field["path"]
+
+
+def test_a_cards_document_is_cited_as_its_catalog_gives_it(changed: Change, ui: Ui) -> None:
+    def archived(node: dict[str, Any]) -> None:
+        cards = node["documents"][6]["pages"][0]["records"]
+        cards[0]["derived"]["citation"] |= {"archive": "ЦГВА", "fund": "58", "inventory": "977", "case": "92"}
+        cards[1]["derived"]["citation"] |= {"archive": "ЦГВА", "fund": "Ф. 970, Канцелярія", "inventory": "Оп. 3"}
+    site = changed(archived)
+    assert "документ: ЦГВА 58-977-92." in _text(_drawn(site, ui, WWI, "chelovek_plen1"))
+    wwii = "r1:Маниловка/card/wwii"
+    assert "документ: ЦГВА, Ф. 970, Канцелярія, Оп. 3." in _text(_drawn(site, ui, wwii, "memorial-chelovek_donesenie2"))

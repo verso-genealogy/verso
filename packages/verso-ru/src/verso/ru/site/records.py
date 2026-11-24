@@ -359,8 +359,11 @@ def _citation(entry: Entry, book: Book) -> str:
         citation = (node.get("derived") or {}).get("citation") or {}
         parts = [E(str(citation.get("catalog", "")))]
         if all(citation.get(key) for key in ("archive", "fund")):
-            ref = [str(citation[key]) for key in ("archive", "fund", "inventory", "case") if citation.get(key)]
-            parts.append(E(str(t("site.cite.card_archive", ref="-".join(ref)))))
+            ref = [str(citation[key]) for key in ("fund", "inventory", "case") if citation.get(key)]
+            # «ЦГА 12-345678-9» where the catalog gives numbers; its own words where it gives words.
+            numbers = all(" " not in part for part in ref)
+            shelf = f'{citation["archive"]} {"-".join(ref)}' if numbers else ", ".join([str(citation["archive"]), *ref])
+            parts.append(E(str(t("site.cite.card_archive", ref=shelf))))
         parts += [E(str(citation[key])) for key in ("archive_location", "original_text", "bibliography")
                   if citation.get(key)]
         if (url := citation.get("source_url")) and str(url).startswith(("https://", "http://")):

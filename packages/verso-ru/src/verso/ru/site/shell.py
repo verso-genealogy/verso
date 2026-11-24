@@ -9,6 +9,7 @@ from __future__ import annotations
 import html
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from urllib.parse import quote
 
 from verso.ru.messages import t
 
@@ -37,12 +38,18 @@ def root(path: str) -> str:
     return "../" * path.count("/")
 
 
+def address(site_url: str, path: str) -> str:
+    """A page's whole address: its path percent-encoded, as a sitemap and a canonical link spell it (a page of
+    names is named in Cyrillic)."""
+    return site_url + quote(path)
+
+
 def page(title: str, body: str, *, ctx: Context, path: str, head: str = "", scripts: Iterable[str] = ()) -> str:
     """A whole page: `body` inside the frame, `path` its directory from the root."""
     up = root(path)
     name = E(ctx.title)
     full = name if not title else f"{E(title)} — {name}"
-    canonical = f'<link rel="canonical" href="{E(ctx.site_url + path)}">' if ctx.site_url else ""
+    canonical = f'<link rel="canonical" href="{E(address(ctx.site_url, path))}">' if ctx.site_url else ""
     about = f'<a href="{up}{E(ctx.prose[0][0])}">{E(str(t("site.nav.about")))}</a>' if ctx.prose else ""
     nav = (f'<a href="{up}years/">{E(str(t("site.nav.years")))}</a>'
            f'<a href="{up}books/">{E(str(t("site.nav.books")))}</a>'
@@ -86,6 +93,6 @@ def robots(ctx: Context) -> str:
 def sitemap(ctx: Context, paths: Iterable[str]) -> str:
     """Every page's address, in the order given; asked only of a site that knows its own."""
     assert ctx.site_url is not None
-    urls = "".join(f"<url><loc>{E(ctx.site_url + path)}</loc></url>\n" for path in paths)
+    urls = "".join(f"<url><loc>{E(address(ctx.site_url, path))}</loc></url>\n" for path in paths)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
