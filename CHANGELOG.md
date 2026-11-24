@@ -11,10 +11,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   village — from the DSL and from the records JSON, in the one walk that reads the rest — and a divorce alone
   (`signals_of`, `signals_on_json`); `verso facts --kind divorce` dumps, explains (`--why`) and counts the bases of
   its assertions. A divorce asserts that the two were spouses (`SpouseOf`), the day the marriage
-  was dissolved (the new `DivorcedOn`, of each of them), each one's age that day and, where `marriage_date=` is
-  written as a date («14 марта 1926», «март 1926», «1926», «14.03.1926», the months also in the old spelling), the
-  wedding the act names
-  (`MarriedOn`, cited by the divorce; `marriage_date=` is an `EventDate`, see below). Two checks read it: `date-order`
+  was dissolved (the new `DivorcedOn`, of each of them), each one's age that day and, where `marriage_date=` is an
+  `EventDate` (see below), the wedding the act names (`MarriedOn`, cited by the divorce); a text there asserts
+  nothing. Two checks read it: `date-order`
   gains «a divorce before the marriage its own act names», asked inside one entry only and said once of it, and
   `wedding-calendar` asks the church wedding an act names (1917 and before). The translator still mints no profile
   for a divorce's people: the checks that compare records do not see them, `--check identity` counts them on a
