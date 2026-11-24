@@ -7,6 +7,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Changed
 
+- The guide to writing records (and its translation) and the toy example: their invented surname is now
+  «Обноскин» in every form — a corpus turned out to hold the old one. No output of a corpus moves.
 - The plugin `verso-reading`: what a reading benchmark's error analysis found, in the agents' prompts and two
   skills. `scan-reader` and `dsl-writer` count a record's people against the scan (a strong reader's blanks are
   people and patronymics it did not see, and asking for «?» does not bring them back — measured through the API); name where
