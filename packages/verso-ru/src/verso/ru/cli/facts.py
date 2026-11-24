@@ -89,13 +89,16 @@ def _iter_records(village_dir: Path, wanted: type[Any],
 
     The per-record year falls back to the book year, exactly as the DSL's own
     consumers do — a record that omits it is dated by its container. `ids`
-    counts every record's id in the same walk (`discover_records`).
+    counts every record's id in the same walk (`discover_records`). A kind the
+    translator does not read (a divorce) is taken from that walk too.
     """
     from verso.core.pipeline.load import discover_records
 
     skipped: list[tuple[Path, Exception]] = []
     out: list[tuple[Any, str]] = []
-    for dsl_path, _name, found in discover_records(str(village_dir), skipped=skipped, ids=ids):
+    beside: list[tuple[Path, str, object]] = []
+    fed = list(discover_records(str(village_dir), skipped=skipped, ids=ids, untranslated=beside))
+    for dsl_path, _name, found in (*fed, *beside):
         if not isinstance(found, wanted):
             continue
         records = cast(Any, found)
@@ -144,6 +147,11 @@ def load(village_dir: Path, kind: str = "birth") -> AssertionSet:
     if kind == "death":
         return AssertionSet(facts_from_deaths(
             _iter_records(village_dir, DeathRecords, ids), village=village, ids=ids))
+    if kind == "divorce":
+        from verso.ru.dsl.records.divorces import DivorceRecords
+        from verso.ru.facts.extract.divorces import facts_from_divorces
+        return AssertionSet(facts_from_divorces(
+            _iter_records(village_dir, DivorceRecords, ids), village=village, ids=ids))
     if kind == "census":
         return AssertionSet(facts_from_census(
             _iter_books(village_dir, CensusRecords, ids), village=village, ids=ids))
@@ -1020,7 +1028,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--village", required=True)
     ap.add_argument("--kind", choices=("birth", "marriage", "death", "census",
-                                       "list", "external"),
+                                       "list", "external", "divorce"),
                     default="birth")
     ap.add_argument("--join", choices=sorted(JOINS), default=None,
                     help="which two predicates to join (default: the kind's own)")
@@ -1117,7 +1125,8 @@ def main(argv: list[str] | None = None) -> int:
                          "death": "parent×parent",
                          "census": "parent×parent",
                          "list": "parent×parent",
-                         "external": "parent×parent"}[args.kind]
+                         "external": "parent×parent",
+                         "divorce": "parent×parent"}[args.kind]
     fold = matching_fold if args.matching_base else canonical_fold
     groups = run(facts, min_count=args.min_count, fold=fold,
                  kin_guard=args.kin_guard, join=join)
@@ -1132,7 +1141,7 @@ def main(argv: list[str] | None = None) -> int:
     slot_label = "gp" if right_label == "godparent" else right_label[0]
     unit = {"birth": "births", "marriage": "weddings", "death": "burials",
             "census": "households", "list": "lists",
-            "external": "cards"}[args.kind]
+            "external": "cards", "divorce": "divorces"}[args.kind]
     print(format_report(groups, args.min_count, index,
                         labels=(left_label, right_label, slot_label), unit=unit,
                         compare=state_compare(village_dir) if args.state else None))

@@ -248,3 +248,21 @@ def test_the_snapshot_holds_the_bridge_to_no_refusal_beyond_the_known(village: P
     strict = identity_reach(*consolidated_facts(village)).refused_beyond_clergy
     rows = dict(line.split("\t", 1) for line in findings_snapshot(village).splitlines() if "\t" in line)
     assert rows["identity-refused-beyond-clergy"] == f"{strict - 6}\t-"
+
+
+def test_the_cli_reads_a_divorce_as_a_kind_of_its_own(village: Path, capsys: pytest.CaptureFixture[str]):
+    """`verso facts --kind divorce` with `--why`, `--basis-census` and `--dump`: one kind's assertions, read
+    without a translation — from the record sets the translator is not fed."""
+    from verso.ru.cli import facts as cli
+
+    loaded = cli.load(village, "divorce")
+    assert {a.cite.record_kind for a in loaded} == {"divorce"} and len({a.subject for a in loaded}) == 6
+    assert {a.subject.id for a in loaded} == {a.subject.id for a in _divorces(_facts(village))}
+
+    assert cli.main(["--village", str(village), "--kind", "divorce", "--why", "1901:7"]) == 0
+    assert "DivorcedOn" in capsys.readouterr().out
+    assert cli.main(["--village", str(village), "--kind", "divorce", "--basis-census"]) == 0
+    assert capsys.readouterr().out.strip()
+    assert cli.main(["--village", str(village), "--kind", "divorce", "--dump"]) == 0
+    assert sum('"DivorcedOn"' in line for line in (village / "facts.jsonl").read_text(encoding="utf-8").splitlines()) == 6
+    assert cli.main(["--village", str(village), "--kind", "divorce"]) == 0        # no pair to report, and no crash

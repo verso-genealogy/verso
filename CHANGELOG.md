@@ -9,7 +9,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 - verso-ru: **an act of divorce is read by the facts layer.** `verso facts` reads the divorce record sets of a
   village — from the DSL and from the records JSON, in the one walk that reads the rest — and a divorce alone
-  (`signals_of`, `signals_on_json`). A divorce asserts that the two were spouses (`SpouseOf`), the day the marriage
+  (`signals_of`, `signals_on_json`); `verso facts --kind divorce` dumps, explains (`--why`) and counts the bases of
+  its assertions. A divorce asserts that the two were spouses (`SpouseOf`), the day the marriage
   was dissolved (the new `DivorcedOn`, of each of them), each one's age that day and, where `marriage_date=` is
   written as a date («24 февраля 1927», «февраль 1927», «1927», «24.02.1927»), the wedding the act names
   (`MarriedOn`, cited by the divorce); a text in another form asserts nothing. Two checks read it: `date-order`
