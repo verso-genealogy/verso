@@ -112,9 +112,8 @@ reader reads old files.
   vocabulary's default is `True` and is written nowhere, so a divorce book that never names the flag exports byte for
   byte as before, and an old export reads as reviewed. A `False` stands where a birth's does — the call's own in
   `written`, a `page()`'s or the book's in `written` under `written.context` — and a held divorce's `review` is
-  `held`. The default costs one case, the entry's too: a `page(…, reviewed=True)` inside `divorce_records(…,
-  reviewed=False)` leaves no trace, so `decode_file` reads its records as reviewed and `replay_file` rebuilds them
-  held.
+  `held`. A `page(…, reviewed=True)` inside `divorce_records(…, reviewed=False)` is written as the entry's is: the
+  default, which is not the book's, under `written.context`.
 
 ## Compatibility and reading an old export
 
