@@ -14,7 +14,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   was dissolved (the new `DivorcedOn`, of each of them), each one's age that day and, where `marriage_date=` is
   written as a date («14 марта 1926», «март 1926», «1926», «14.03.1926», the months also in the old spelling), the
   wedding the act names
-  (`MarriedOn`, cited by the divorce); a text in another form asserts nothing. Two checks read it: `date-order`
+  (`MarriedOn`, cited by the divorce; `marriage_date=` is an `EventDate`, see below). Two checks read it: `date-order`
   gains «a divorce before the marriage its own act names», asked inside one entry only and said once of it, and
   `wedding-calendar` asks the church wedding an act names (1917 and before). The translator still mints no profile
   for a divorce's people: the checks that compare records do not see them, `--check identity` counts them on a
@@ -27,6 +27,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   or a month the DSL holds as words is not recorded, as an empty column is: a divorce never stops a village's reading.
   An older release, or a reader validating against an older `records-v1.json`, refuses a divorce that writes
   `source_date_error` or `calendar_note` ([records JSON](docs/records-json.md), «Compatibility»).
+- verso-ru: **the marriage an act of divorce names is an `EventDate`** — `divorce(marriage_date=EventDate(1927,
+  Month.FEBRUARY, 24))`, the library's one structure of a date (a point, a month, a year, `circa`, a range), as an
+  external card's dates are; the facts layer reads it as it reads a card's. The familio CSV («Дата заключения брака»)
+  and `village.db` write it as the corpus wrote the text — «24 февраля 1927», «февраль 1927», «1927»
+  (`verso.ru.domain.event_date.written_date`, `date_text`) — so a file moved to the structure writes the same CSV.
+  `read_written_date` reads a text in those forms back. The interface's schema hides the field, as a card's dates.
+- verso-ru: **DVC001** (advisory): a divorce's `marriage_date=` written as text, with its `EventDate` offered as the
+  quick fix where the text is a date in a known form; answered on records JSON too.
+- verso-core: a field of the vocabulary may hold **one of several types** — `OneOf`, written `a|b`
+  (`marriage_date:EventDate|str`): encoded by the first type that takes the value, decoded by the first that reads
+  it, `anyOf` in `records-v1.json`. An export of before (a text) reads as it was written.
+- verso-ru: the facts reports say «без номера» for an entry its book left unnumbered, where they printed «№none»;
+  `verso facts --kind divorce` without `--dump`, `--why` or `--basis-census` is refused, saying why (an act of
+  divorce names no godparents, witnesses or parents to pair).
 - DSL v1: `divorce(source_date_error=)` withdraws the date of the marriage an act of divorce names (the divorce's
   own day stays), `divorce(calendar_note=)` notes that the wedding's day is right although the Church did not marry
   on it. Both are fields of the records JSON and of the interface's schema (marked `checks`).
@@ -98,6 +112,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Deprecated
 
+- verso-ru: `divorce(marriage_date=)` written as **text**. It is taken, kept and exported as written, and warns
+  (`DeprecationWarning`, at the line that wrote it; shown where Python shows one — a test run, `-W default`); no
+  reader parses it, so the facts layer does not see the wedding it names. DVC001 says so and offers the
+  `EventDate`. Refused from 0.2. A corpus that wrote the text moves its records to `EventDate` on a commit of its
+  own: its CSV does not move, its records JSON and its facts do.
 - verso-core: `encode_record` without `record_set=`. Left out, it is `None` and warns (`DeprecationWarning`, at the
   caller's line; `warnings.deprecated` on its overload, so a type checker that reports deprecations names the call), so
   a caller written before the keyword — verso-app's rebuild of a record — keeps working and keeps the gap in the node it

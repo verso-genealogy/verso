@@ -50,6 +50,9 @@ its AGENTS.md; an agent that finds none there writes by these. The calls and the
   Julian.
 - **A christening the next month**: when its day is smaller than the birth's, `birth()` takes it as the
   next month; a christening in the next year needs `k_year=`.
+- **A date the act names is an `EventDate`**: `divorce(marriage_date=EventDate(1927, Month.FEBRUARY, 24))` —
+  `EventDate(1927, Month.FEBRUARY)` for a month, `EventDate(1927)` for a year, `circa=True`, a range by `year_end=`.
+  A text there is DSL v1's and deprecated: kept as written, read by no check (DVC001 offers the `EventDate`).
 - **Part 1 of a metric book runs two series of numbers**, boys and girls («Мужескаго пола | Женскаго
   пола»), so «№ 4» is in a year twice: the pair `(number, Gender)` says which.
 
