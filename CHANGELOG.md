@@ -7,6 +7,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Added
 
+- verso-ru: **an act of divorce is read by the facts layer.** `verso facts` reads the divorce record sets of a
+  village — from the DSL and from the records JSON, in the one walk that reads the rest — and a divorce alone
+  (`signals_of`, `signals_on_json`). A divorce asserts that the two were spouses (`SpouseOf`), the day the marriage
+  was dissolved (the new `DivorcedOn`, of each of them), each one's age that day and, where `marriage_date=` is
+  written as a date («24 февраля 1927», «февраль 1927», «1927», «24.02.1927»), the wedding the act names
+  (`MarriedOn`, cited by the divorce); a text in another form asserts nothing. Two checks read it: `date-order`
+  gains «a divorce before the marriage its own act names», asked inside one entry only and said once of it, and
+  `wedding-calendar` asks the church wedding an act names (1917 and before). The translator still mints no profile
+  for a divorce's people: the checks that compare records do not see them, `--check identity` counts them on a
+  line of their own («вид без профилей») and the snapshot's `identity-refused-beyond-clergy` leaves them out; a
+  finding of theirs inside one entry is in the village's `date-order` report and in `date-order-within`.
+  **A corpus that holds divorces moves**: its `facts.jsonl`, its `identity` and `wedding-calendar` reports.
+- DSL v1: `divorce(source_date_error=)` withdraws the date of the marriage an act of divorce names (the divorce's
+  own day stays), `divorce(calendar_note=)` notes that the wedding's day is right although the Church did not marry
+  on it. Both are fields of the records JSON and of the interface's schema (marked `checks`).
+- verso-core: `discover_records(untranslated=)` hands out the record sets the translator does not read, from the
+  same walk; `translate_village(untranslated=)` passes them on. What is yielded and fed is unchanged.
 - verso-core: a `late` rule of the interface's schema may name the fields that stand it down — `stand_down` (an
   event late past its days) and `stand_down_before` (one before the first); the build refuses a path the kind lacks.
   verso-ru names them for the christening and the burial: `lag_note` and `source_date_error`, the fields the signals

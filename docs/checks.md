@@ -32,7 +32,17 @@ consolidated. `verso facts --village V --check CHECK` asks one of them of the vi
 | `baptism-lag` | a christening more than 11 days after the birth; HIGH when its day is smaller than the birth's, so its month was taken as the next one and one of the two days is probably misread | `lag_note=` |
 | `burial-lag` | a burial more than 3 days after the death; HIGH past 9 | `lag_note=` |
 | `wedding-ages` | an age at the wedding more than half a year under the minimum of its date (15 and 13 from the decree of 17 December 1774, 18 and 16 from that of 19 July 1830; nothing before); spouses more than 20 years apart (LOW) | `age_note=` |
-| `date-order` | of one entry: a christening before the birth, a burial before the death | `source_date_error=` |
+| `date-order` | of one entry: a christening before the birth, a burial before the death, a divorce before the marriage its own act names | `source_date_error=` |
+
+**An act of divorce** is read too (`divorce()`): it asserts that the two were spouses, the day the marriage was
+dissolved, each one's age that day and — where the act names it — the day they had married. That last is a later
+document's claim about a wedding, read from `marriage_date=` only in the forms a date is written in («24 февраля
+1927», «февраль 1927», «1927», «24.02.1927»); a text in any other form asserts nothing. Two of the six checks
+read it: `date-order` — the marriage the act names dated after the divorce itself, said once of the entry and
+answered by `divorce(source_date_error=)`, which withdraws the marriage's date and keeps the divorce's — and
+`wedding-calendar`, for a church wedding of 1917 or before, answered by `divorce(calendar_note=)`. The translator
+mints no profile for a divorce's people, so the checks that compare records do not see them, and `--check
+identity` counts them on a line of their own.
 
 The lags, the ages and the parents' checks below come from Gramps' Verify tool (BaptTooLate, BuryTooLate,
 EarlyMarriage, LargeAgeGapFamily, DeadParent, LargeChildrenSpan), with thresholds measured on a corpus of
