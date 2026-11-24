@@ -3,7 +3,11 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased
+## 0.1.49 — 2026-11-24
+
+Only a site built by `verso site` moves; a corpus's CSVs, Terraform, records JSON, facts and reports do not. The
+site takes a new look and four fonts of its own (`assets/fonts/`, SIL OFL 1.1), and its years' index tells a year's
+books apart (see **Changed**).
 
 ### Changed
 
