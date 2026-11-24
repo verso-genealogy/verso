@@ -322,8 +322,9 @@ set names a parish the corpus's places know: `lint_record` and `lint_header` tak
 RVR001 is the one code whose finding on a record reads other records: a record's own `reviewed=` is redundant only
 if its page run holds an unflagged record built with the set's level, so it reads the review levels of the record's page
 run. A store passes them as `run_levels` (the `reviewed` the run's other unflagged records show,
-`on_json.review_level(node, built)` of each — a kind whose default `True` is written nowhere, a divorce or a name
-list's entry, shows it though a set's `False` filled the replayed record; an empty collection when the run holds none), and `lint_record` refuses RVR001 asked without it (`Unsupported`,
+`on_json.review_level(node, built)` of each — a kind whose default `True` is written only where the set holds
+another, a divorce or a name list's entry, shows it, also in a node written without its set where a set's `False`
+filled the replayed record; an empty collection when the run holds none), and `lint_record` refuses RVR001 asked without it (`Unsupported`,
 `on_json.needs_run_levels`) rather than answer from a run it cannot see. So "a record is the unit" holds for linting
 except here: when one record's review level changes (its `reviewed=` written or removed, a `page()` flag), re-lint the
 records of its page run for RVR001 only — the findings of every other code stay with the record.

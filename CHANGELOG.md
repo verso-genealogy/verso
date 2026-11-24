@@ -111,11 +111,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   under `page(…, reviewed=True)` in a `name_list_records(…, reviewed=False)`, and a divorce under it in a
   `divorce_records(…, reviewed=False)`, left no trace of the page's flag (`true` is the default of `reviewed`):
   `decode_file` read it right, but `replay_file`, `replay_record` and so the linters on JSON and a store's views
-  rebuilt it held. `on_json.review_level` worked around it for RVR001 (the kind's default where `written` says
-  nothing) and is unchanged: on a node the export writes it now agrees with the replayed record, on one written without
+  rebuilt it held. `on_json.review_level` worked around it for RVR001 (for a divorce and a name list's entry, the
+  kind's default `True` where `written` says nothing) and is unchanged: on a node the export writes it now agrees with the replayed record, on one written without
   its set (`record_set=None`, an export of before) it still answers the default where the replay answers the set's.
   The fields a set gives its records are the vocabulary's (`Vocabulary.inherited`, verso-ru's `INHERITED`: the flag of
-  every kind whose set gives one — not a card, whose book has none), never inferred from a field's name. `encode_record` takes the set (`record_set=`): `record_set=None`
+  every kind whose set gives one — not a card, whose set gives none), never inferred from a field's name. `encode_record` takes the set (`record_set=`): `record_set=None`
   says there is none, and the node then leaves the flag out as before (see **Deprecated**).
   An export written before keeps the gap until `verso export-records` writes it again: the bump alone fixes nothing
   a store already holds.
