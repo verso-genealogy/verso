@@ -412,6 +412,18 @@ class MarriedOn(Dated):
 
 
 @dataclass(frozen=True, kw_only=True)
+class DivorcedOn(Dated):
+    """«разведён(а)» — the day the record dates the end of a marriage by: the
+    court's decree where the act names one, the day of the act otherwise.
+
+    Stated of each of the two, as `MarriedOn` is; the couple is the `SpouseOf`
+    of the same entry, which has no term of its own — an act of divorce says
+    these two WERE spouses, and this is the day they ceased to be. A rule that
+    needs how long a marriage lasted takes the pair's `MarriedOn` and this.
+    """
+
+
+@dataclass(frozen=True, kw_only=True)
 class DiedOn(Dated):
     pass
 
