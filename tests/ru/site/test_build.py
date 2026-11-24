@@ -53,6 +53,18 @@ def test_the_site_draws_with_its_own_fonts_and_names_their_licences(file_node: d
     assert "@import" not in css
 
 
+def test_the_package_ships_every_asset_the_build_copies() -> None:
+    """The build copies `ASSETS` out of the installed package: a wheel holds only what `package-data` names, and a
+    test run from the source would not see a font a glob left out."""
+    import fnmatch
+    import tomllib
+    data = tomllib.loads((Path(__file__).parents[3] / "packages" / "verso-ru" / "pyproject.toml").read_text(
+        encoding="utf-8"))["tool"]["setuptools"]["package-data"]["verso.ru.site"]
+    for name in site_package.ASSETS:
+        assert any(fnmatch.fnmatch(f"assets/{name}", glob) and glob.count("/") == f"assets/{name}".count("/")
+                   for glob in data), name
+
+
 def test_the_same_records_make_the_same_bytes(file_node: dict[str, Any], tmp_path: Path) -> None:
     _build(file_node, tmp_path / "one", site_url=URL, revision="abc1234")
     _build(file_node, tmp_path / "two", site_url=URL, revision="abc1234")
