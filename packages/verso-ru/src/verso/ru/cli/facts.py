@@ -36,7 +36,7 @@ from verso.ru.facts.identity import (
     canonical_fold, conclusions, display_name, matching_fold, name_identity)
 from verso.ru.facts.checks import FACTS_CHECKS
 from verso.ru.facts.checks.births import BirthFinding, birth_claims_of, birth_span
-from verso.ru.facts.checks.dates import OrderFindings, WithinFinding, date_order_findings
+from verso.ru.facts.checks.dates import OrderFindings, WithinFinding, date_order_findings, unplaced_within
 from verso.ru.facts.checks.deaths import DeathFinding, death_claims
 from verso.ru.facts.checks.fathers import FatherClaim, FatherFinding, father_findings
 from verso.ru.facts.checks.lags import BAPTISM_DAYS, BURIAL_DAYS, Lags, baptism_lags, burial_lags
@@ -320,11 +320,36 @@ def date_order(village_dir: Path) -> tuple[str, int]:
     """`verso facts --check date-order` — see `date_order_findings`."""
     facts, gen, slots = consolidated_facts(village_dir)
     identity = consolidated_identity(gen, slots.object_of)
-    return date_order_report(*date_order_findings(facts, identity), gen)
+    return date_order_report(*date_order_findings(facts, identity), gen,
+                             alone=entries_alone(facts, unplaced_within(facts, identity)))
+
+
+#: An entry whose people the bridge places on nobody, with what it says of itself out of order: how the
+#: report names it (its people, its file and number), then its findings.
+type EntryAlone = tuple[str, list[WithinFinding]]
+
+
+def entries_alone(facts: AssertionSet, found: list[WithinFinding]) -> list[EntryAlone]:
+    """`unplaced_within`'s findings entry by entry, each named by the people it is about — as the record
+    writes them, for no canonical names them."""
+    grouped: dict[tuple[str, str, int, str, int], list[WithinFinding]] = {}
+    for f in found:
+        grouped.setdefault(f.left.cite.record_id, []).append(f)
+    # Everyone the entry names, not only whoever a finding was said of: a couple's finding is said once.
+    named: dict[tuple[str, str, int, str, int], dict[Persona, NameClaim]] = {}
+    for claim in facts.of(NameClaim):
+        if claim.given and claim.cite.record_id in grouped:
+            named.setdefault(claim.cite.record_id, {}).setdefault(claim.subject, claim)
+    out: list[EntryAlone] = []
+    for record_id, group in grouped.items():
+        cite = group[0].left.cite
+        who = ", ".join(display_name(claim) for claim in named.get(record_id, {}).values()) or "?"
+        out.append((f"{who} ({cite.source_file} №{cite.record_num})", group))
+    return out
 
 
 def date_order_report(within: OrderFindings, across: OrderFindings,
-                      gen: Any) -> tuple[str, int]:
+                      gen: Any, *, alone: Sequence[EntryAlone] = ()) -> tuple[str, int]:
     from verso.ru.consolidation.profile_reading import display_name
 
     profiles = gen.canonical_profiles()
@@ -333,17 +358,29 @@ def date_order_report(within: OrderFindings, across: OrderFindings,
         profile = profiles.get(res_name)
         return display_name(profile) if profile is not None else res_name
 
-    if not within and not across:
+    if not within and not across and not alone:
         return ("date-order: OK — 0 findings "
                 "(no record dates an event before an earlier life event).", 0)
-    lines = [str(t("cli.facts.date_order.head", within=len(within), across=len(across)))]
-    if within:
+    lines = [str(t("cli.facts.date_order.head", within=len(within) + len(alone), across=len(across)))]
+    if within or alone:
         lines += ["", str(t("cli.facts.date_order.within"))]
         for res_name in sorted(within):
             lines.append(f"  {name_of(res_name)} ({res_name}):")
             for kind, _event, _reference, a, b in within[res_name]:
                 signal = signal_of(WithinFinding(kind=kind, left=a, right=b))
                 lines.append(f"      {signal.said}  [{kind}]  {a.cite.source_file} №{a.cite.record_num}")
+                lines.append(f"      → {signal.why}")
+        # The entries of people no canonical holds (a record the tree does not publish): the same class,
+        # each finding said once though both of a couple carry it.
+        for who, findings in alone:
+            lines.append(f"  {who}:")
+            said: set[tuple[str, str]] = set()
+            for f in findings:
+                signal = signal_of(f)
+                if (f.kind, str(signal.said)) in said:
+                    continue
+                said.add((f.kind, str(signal.said)))
+                lines.append(f"      {signal.said}  [{f.kind}]  {f.left.cite.source_file} №{f.left.cite.record_num}")
                 lines.append(f"      → {signal.why}")
     if across:
         lines += ["", str(t("cli.facts.date_order.across"))]

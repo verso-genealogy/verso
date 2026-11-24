@@ -13,10 +13,12 @@ from calendar import Month
 from verso.ru.domain import person
 from verso.ru.dsl.records.births import birth
 from verso.ru.dsl.records.deaths import death
-from verso.ru.facts.checks.dates import date_order_findings, within_entry
+from verso.ru.dsl.records.divorces import divorce
+from verso.ru.facts.checks.dates import date_order_findings, unplaced_within, within_entry
 from verso.ru.facts.extract.births import facts_from_births
 from verso.ru.facts.extract.deaths import facts_from_deaths
-from verso.ru.facts.identity import self_identity
+from verso.ru.facts.extract.divorces import facts_from_divorces
+from verso.ru.facts.identity import name_identity, self_identity
 from verso.ru.facts.model import AssertionSet
 from verso.ru.gender import Gender
 
@@ -75,6 +77,68 @@ class WithinEntry(unittest.TestCase):
         self.assertEqual({}, across)
         self.assertEqual(sorted(kind for rows in within.values() for kind, *_ in rows),
                          sorted(f.kind for f in within_entry(facts)))
+
+
+def _divorced(number: int, day: int | None, month: Month | None, year: int, married: str | None, **more):
+    return divorce(number, day, month, husband=person("Иван", "Петров"), wife=person(more.pop("wife", "Анна"), "Ильина"),
+                   marriage_date=married, year=year, **more)
+
+
+def _divorces(*records) -> AssertionSet:
+    return AssertionSet(facts_from_divorces([(r, "divorces_1925.py") for r in records], village="Маниловка"))
+
+
+def _nobody(_record):
+    return lambda _persona: None
+
+
+class DivorceBeforeItsMarriage(unittest.TestCase):
+    """An act of divorce names the marriage it ends: dated after the divorce itself, the act contradicts itself."""
+
+    def test_a_divorce_before_the_marriage_its_act_names(self):
+        """Both spouses carry the two dates, and the entry is said once — as a wedding is asked once."""
+        [f] = within_entry(_divorces(_divorced(1, 3, Month.JULY, 1925, "12 сентября 1925")))
+        self.assertEqual(("divorce_before_marriage", "husband"), (f.kind, f.left.cite.locator))
+        self.assertEqual((3, 12), (f.left.date.day, f.right.date.day))
+
+    def test_an_act_naming_one_spouse_says_it_of_that_one(self):
+        [f] = within_entry(_divorces(divorce(1, 3, Month.JULY, wife=person("Анна", "Ильина"),
+                                             marriage_date="12 сентября 1925", year=1925)))
+        self.assertEqual("wife", f.left.cite.locator)
+
+    def test_a_marriage_before_the_divorce_is_no_finding(self):
+        self.assertEqual([], within_entry(_divorces(_divorced(1, 3, Month.JULY, 1925, "12 сентября 1924"))))
+
+    def test_a_year_alone_orders_nothing_inside_itself(self):
+        self.assertEqual([], within_entry(_divorces(_divorced(1, None, None, 1925, "31 января 1925"))))
+        self.assertEqual([], within_entry(_divorces(_divorced(1, 3, Month.JULY, 1925, "1925"))))
+
+    def test_source_date_error_withdraws_it(self):
+        facts = _divorces(_divorced(1, 3, Month.JULY, 1925, "12 сентября 1925", source_date_error="так в акте"))
+        self.assertEqual([], within_entry(facts))
+
+    def test_a_second_marriage_after_a_first_divorce_is_never_a_finding(self):
+        """One man, two acts: divorced in 1925, married again in 1926 — the order of a life, and no contradiction.
+        The ordering is asked inside one entry only."""
+        facts = _divorces(_divorced(1, 3, Month.JULY, 1925, "24 февраля 1920"),
+                          _divorced(2, 5, Month.MAY, 1930, "12 сентября 1926", wife="Ольга"))
+        within, across = date_order_findings(facts, name_identity())
+        self.assertEqual(({}, {}), (within, across))
+
+    def test_it_is_in_the_within_class_of_the_village_s_reading_where_the_people_are_placed(self):
+        facts = _divorces(_divorced(1, 3, Month.JULY, 1925, "12 сентября 1925"))
+        within, across = date_order_findings(facts, self_identity())
+        self.assertEqual({}, across)
+        self.assertEqual(["divorce_before_marriage"] * 2, [kind for rows in within.values() for kind, *_ in rows])
+
+    def test_people_no_identity_places_are_asked_alone(self):
+        """A divorce's people have no profile: the bridge refuses them, and what their entry says of itself is
+        asked all the same."""
+        facts = _divorces(_divorced(1, 3, Month.JULY, 1925, "12 сентября 1925"),
+                          _divorced(2, 5, Month.JULY, 1925, "12 сентября 1924", wife="Ольга"))
+        self.assertEqual(({}, {}), date_order_findings(facts, _nobody))
+        self.assertEqual(["divorce_before_marriage"], [f.kind for f in unplaced_within(facts, _nobody)])
+        self.assertEqual([], unplaced_within(facts, self_identity()))
 
 
 if __name__ == "__main__":

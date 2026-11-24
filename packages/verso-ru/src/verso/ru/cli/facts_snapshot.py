@@ -27,7 +27,7 @@ from verso.ru.consolidation.name_variants import loose_keys, name_variants_chann
 from verso.ru.consolidation.reconcile import household_ordered_lists
 from verso.ru.consolidation.union_duplicates import find_union_duplicates
 from verso.ru.facts.checks.births import birth_claims_of
-from verso.ru.facts.checks.dates import date_order_findings
+from verso.ru.facts.checks.dates import date_order_findings, unplaced_within
 from verso.ru.facts.checks.deaths import death_claims
 from verso.ru.facts.checks.fathers import father_findings
 from verso.ru.facts.checks.lags import baptism_lags, burial_lags
@@ -76,6 +76,8 @@ def findings_snapshot(village_dir: Path) -> str:
     identity = consolidated_identity(gen, slots.object_of)
     reach = identity_reach(facts, gen, slots)
     within, across = date_order_findings(facts, identity)
+    # … and the entries of people the bridge places on nobody (a divorce's), asked alone: one a count.
+    alone = {f.left.cite.record_id for f in unplaced_within(facts, identity)}
     births = birth_claims_of(believed, identity)
     households = households_of_canonicals(believed, identity)
     lives = lives_of_canonicals(believed, identity)
@@ -112,7 +114,7 @@ def findings_snapshot(village_dir: Path) -> str:
         ("burial-lag", len(late_burials), sum(f.confidence == "HIGH" for f in late_burials)),
         ("children-span", len(spans), sum(f.confidence == "HIGH" for f in spans)),
         ("date-order-across", len(across), None),
-        ("date-order-within", len(within), None),
+        ("date-order-within", len(within) + len(alone), None),
         ("death-age", len(deaths), sum(f.confidence == "HIGH" for f in deaths)),
         ("death-claims", len(two_deaths), sum(f.confidence == "HIGH" for f in two_deaths)),
         ("estate-conflicts", len(estates), None),

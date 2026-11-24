@@ -47,8 +47,9 @@ STAND_DOWN: dict[str, str] = {
     "wedding-ages": "age_note", "date-order": "source_date_error"}
 #: A check one record answers only in part, and the part it asks: the rest needs the people folded.
 IN_PART: dict[str, str] = {"date-order": "inside one entry"}
-#: The orderings `source_date_error=` answers: it withdraws a christening or a burial, and nothing else.
-DATE_ORDER_STOOD_DOWN = frozenset({"baptism_before_birth", "burial_before_death"})
+#: The orderings `source_date_error=` answers: it withdraws a christening, a burial or the marriage an act of
+#: divorce names, and nothing else.
+DATE_ORDER_STOOD_DOWN = frozenset({"baptism_before_birth", "burial_before_death", "divorce_before_marriage"})
 #: The bans that move with Pascha: a reader checks them against the year's.
 _MOVABLE_BANS = frozenset({"cheesefare_week", "great_lent", "bright_week", "apostles_fast", "meatfare_sunday"})
 
@@ -226,8 +227,10 @@ def signals_of(record: object, *, record_id: str, village: str = "", book_year: 
                checks: Collection[str] = CHECKS, svyatcy: Svyatcy | None = None) -> Signals:
     """The signals of one record: `checks` asked of what it alone asserts.
 
-    `record` is a built DSL record — a birth, a wedding, a death; anything else
-    (a household, a card, a line of a list) answers none of these checks.
+    `record` is a built DSL record — a birth, a wedding, a death, a divorce;
+    anything else (a household, a card, a line of a list) answers none of
+    these checks. A divorce answers two: its own two dates (`date-order`) and
+    the church wedding its act names (`wedding-calendar`).
     `record_id` names it in every signal; `book_year` dates a record that
     writes no year of its own. `svyatcy` is the table `name-days` reads (the
     package's, when none is given). A check that could not be asked — the

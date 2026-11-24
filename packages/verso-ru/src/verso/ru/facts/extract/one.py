@@ -11,20 +11,23 @@ from collections.abc import Callable, Iterator
 
 from verso.ru.dsl.records.births import Birth
 from verso.ru.dsl.records.deaths import Death
+from verso.ru.dsl.records.divorces import Divorce
 from verso.ru.dsl.records.marriages import Marriage
 from verso.ru.facts.extract.births import facts_from_births
 from verso.ru.facts.extract.deaths import facts_from_deaths
+from verso.ru.facts.extract.divorces import facts_from_divorces
 from verso.ru.facts.extract.marriages import facts_from_marriages
 from verso.ru.facts.model import Assertion
 
 type Extract = Callable[..., Iterator[Assertion]]
 
-#: A metric record's class → what reads its assertions.
+#: The class of a record read one by one — a metric record, an act of divorce — → what reads its assertions.
 _EXTRACTORS: tuple[tuple[type, Extract], ...] = (
-    (Birth, facts_from_births), (Marriage, facts_from_marriages), (Death, facts_from_deaths))
+    (Birth, facts_from_births), (Marriage, facts_from_marriages), (Death, facts_from_deaths),
+    (Divorce, facts_from_divorces))
 
 
 def extractor_of(record: object) -> Extract | None:
-    """The extractor of a metric record — a birth, a wedding, a death — or None: a household, a card and a line of
-    a list are read with their book around them, never alone."""
+    """The extractor of a record read alone — a birth, a wedding, a death, a divorce — or None: a household, a card
+    and a line of a list are read with their book around them, never alone."""
     return next((extract for cls, extract in _EXTRACTORS if isinstance(record, cls)), None)

@@ -1604,6 +1604,8 @@ death = "death"
 burial = "burial"
 marriage = "wedding"
 counted_alive = "counted alive"
+divorce = "divorce"
+named_marriage = "the marriage the act names"
 
 [facts.date_order.hint]
 baptism_before_birth = "a christening before the birth — usually no k_year= on a December birth, or a day/year swapped in the source"
@@ -1617,6 +1619,7 @@ death_before_baptism = "a death before the christening — a day or a month swap
 burial_before_baptism = "a burial before the christening — a day or a month swapped, or two infant namesakes folded"
 death_before_alive = "died before a roll counted him alive — two people folded into one (a father and a son of one name), or the death's year swapped"
 burial_before_alive = "buried before a roll counted him alive — two people folded into one, or a year swapped"
+divorce_before_marriage = "a divorce before the marriage its own act names — a year or a month swapped in one of the two dates"
 
 [facts.signal]
 note_default = "так в подлиннике"
@@ -1668,6 +1671,7 @@ death_before_baptism = "The death {left} is before the christening {right}."
 burial_before_baptism = "The burial {left} is before the christening {right}."
 death_before_alive = "The death {left} is before the day counted alive ({right})."
 burial_before_alive = "The burial {left} is before the day counted alive ({right})."
+divorce_before_marriage = "The divorce {left} is before the marriage {right} the act names."
 
 [facts.reconcile]
 born = "b. {date} [{cite}]"

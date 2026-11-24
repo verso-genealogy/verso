@@ -8,9 +8,12 @@ only in the forms a date is written in, and anything else asserts nothing.
 from __future__ import annotations
 
 from calendar import Month
+from pathlib import Path
 from typing import Any
 
 import pytest
+
+import village_fixture
 
 from verso.ru.domain import person
 from verso.ru.dsl.records.divorces import divorce
@@ -117,3 +120,43 @@ def test_an_unreviewed_divorce_asserts_nothing_and_is_read_as_a_draft() -> None:
 def test_two_divorces_of_one_file_are_two_entries() -> None:
     facts = _facts(_divorce(1), _divorce(2))
     assert len({a.subject for a in facts}) == 4 and len(facts.records()) == 2
+
+
+# --- a village's reading ---------------------------------------------------------------------------------------
+
+DIVORCES = '''\
+from calendar import Month
+
+from verso.ru.dsl import divorce, divorce_records, person
+
+manilovka_divorces_1901 = divorce_records(
+    "ГАРО", "9", "1", "4", "Маниловка", "", 1901,
+    divorce(7, 3, Month.JULY, husband=person("Иванъ", "Петровъ", "Справкинъ"), wife=person("Анна", "Иванова"),
+            marriage_date="12 сентября 1901"),
+    divorce(8, 5, Month.JULY, husband=person("Павелъ", "Ильинъ"), wife=person("Ольга", "Петрова"),
+            marriage_date="24 февраля 1895"))
+'''
+
+
+@pytest.fixture
+def village(tmp_path: Path) -> Path:
+    manilovka = village_fixture.root(tmp_path) / "Маниловка"
+    (manilovka / "1901").mkdir()
+    (manilovka / "1901" / "manilovka_divorces_1901.py").write_text(DIVORCES, encoding="utf-8")
+    return manilovka
+
+
+def test_the_village_s_date_order_report_says_a_divorce_before_its_marriage(village: Path) -> None:
+    from verso.ru.cli.facts import date_order
+    report, code = date_order(village)
+    assert code == 1
+    assert "date-order: 1 внутри записи, 0 между записями" in report
+    assert report.count("Развод 03.07.1901 раньше брака 12.09.1901, который называет акт.") == 1
+    assert "  Справкин Иоанн Петрович, Анна Ивановна (manilovka_divorces_1901.py №7):" in report.splitlines()
+    assert "№8" not in report
+
+
+def test_the_snapshot_counts_it_inside_one_entry(village: Path) -> None:
+    from verso.ru.cli.facts_snapshot import findings_snapshot
+    rows = dict(line.split("\t", 1) for line in findings_snapshot(village).splitlines() if "\t" in line)
+    assert rows["date-order-within"] == "1\t-" and rows["date-order-across"] == "0\t-"
