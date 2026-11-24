@@ -31,7 +31,8 @@ changes a record's review state, and a missed one is safe, so the walk ABSTAINS 
 run with no page only when at least one UNFLAGGED record of it shows the set's value, and none shows another: a
 `page(None, reviewed=…)` over unflagged records would show its flag, so it cannot lie over them. An unflagged record
 shows the flag its export holds — a wrapper's in `written`, else its kind's default (a divorce's, a name list's
-entry's `True` is written nowhere) — never its replayed object's: a set's `False` would fill that object and hide a
+entry's `True`, written only where the set holds another) — never its replayed object's: in a node written without its
+set (`encode_record(…, record_set=None)`, an export of before) a set's `False` would fill that object and hide a
 `page(None, reviewed=True)` over it. A run whose records
 all wrote their own flags tells nothing and is not answered. What stays is a `page(None, …)` whose records all
 wrote flags, beside page-less records that wrote none (one run, one set's value shown): it is a call outside the
@@ -427,8 +428,8 @@ _SET_CALL = {"births": "birth_records", "marriages": "marriage_records", "deaths
 def review_level(node: Mapping[str, Any], built: Any) -> Any:
     """The `reviewed` a record node that wrote no flag of its own shows, `built` the record replayed from it: a
     wrapper's in `written` (`written.context`), else its kind's default when the kind has one — a divorce's, a name
-    list's entry's `True` is written nowhere, so the replayed record, filled by its set, may not hold it — else the
-    replayed record's. RVR001 reads a run's levels so, and a store gives `lint_record` its `run_levels` so."""
+    list's entry's `True`, which the export writes only where the set holds another, so in a node written without its
+    set the replayed record, filled by the set, may not hold it — else the replayed record's. RVR001 reads a run's levels so, and a store gives `lint_record` its `run_levels` so."""
     if "reviewed" in node["written"]:
         return node["written"]["reviewed"]
     voc = vocabulary()

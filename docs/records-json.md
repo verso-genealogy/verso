@@ -207,8 +207,10 @@ read as stale (fixed in verso-app 0.5.2).
 
 ## A single record
 
-`verso.core.records.encode.encode_record(record, record_id)` writes one record as the export writes it
-under its record set — the export writes each record through it. The review page's view of a record
+`verso.core.records.encode.encode_record(record, record_id, record_set=…)` writes one record as the export
+writes it under its record set, given that set; `record_set=None` says there is none, and then a page's flag equal
+to its field's default but not the set's is left out (a view's node, not one to store). Left out, the keyword is
+`None` and warns (`DeprecationWarning`); it is required from 0.2. The review page's view of a record
 (`verso.ru.dsl.view.record_view`) is that record and three things the JSON does not say: `consts`, the
 paths the source writes as a constant of a catalog (`{"mother/status": "PEASANT_WIFE"}`); `opaque`, the
 paths it writes as an expression (`relatives=ROWS`, `age=2 + 3`), which no edit reaches; and
@@ -321,8 +323,9 @@ set names a parish the corpus's places know: `lint_record` and `lint_header` tak
 RVR001 is the one code whose finding on a record reads other records: a record's own `reviewed=` is redundant only
 if its page run holds an unflagged record built with the set's level, so it reads the review levels of the record's page
 run. A store passes them as `run_levels` (the `reviewed` the run's other unflagged records show,
-`on_json.review_level(node, built)` of each — a kind whose default `True` is written nowhere, a divorce or a name
-list's entry, shows it though a set's `False` filled the replayed record; an empty collection when the run holds none), and `lint_record` refuses RVR001 asked without it (`Unsupported`,
+`on_json.review_level(node, built)` of each — a kind whose default `True` is written only where the set holds
+another, a divorce or a name list's entry, shows it, also in a node written without its set where a set's `False`
+filled the replayed record; an empty collection when the run holds none), and `lint_record` refuses RVR001 asked without it (`Unsupported`,
 `on_json.needs_run_levels`) rather than answer from a run it cannot see. So "a record is the unit" holds for linting
 except here: when one record's review level changes (its `reviewed=` written or removed, a `page()` flag), re-lint the
 records of its page run for RVR001 only — the findings of every other code stay with the record.
