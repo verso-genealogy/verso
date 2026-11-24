@@ -139,8 +139,8 @@ def sightings_of(namespace: Mapping[str, Any], *, village: str, year: int, file:
     offered while it is being read. Its personas are named by their records-JSON
     ids, a repeated number counted within this file (`RecordIds`). `file` — the
     file as the index keys a record (its path from the corpus's root)."""
-    from verso.core.pipeline.load import record_types
     from verso.core.ratchet import runtime_records
+    from verso.ru.dsl.kinds import KINDS
     from verso.ru.facts.extract.common import SlotIndex
     from verso.ru.facts.model import AssertionSet
     from verso.ru.pipeline.facts import assertions_of
@@ -148,7 +148,9 @@ def sightings_of(namespace: Mapping[str, Any], *, village: str, year: int, file:
 
     # The record sets the translator reads, and no other: an act of divorce is read by the facts layer, and
     # its people — who have no card and no profile, and whose ages are of unknown basis — are not offered.
-    offered = record_types(translated=True)
+    # Named by the DSL's own kinds, not by the loader's `record_types`: verso-app asks the index while it
+    # serves a request, where no loader of the DSL is imported.
+    offered = tuple(kind.set_type for kind in KINDS if kind.translated)
     books = list({id(v): (Path(file).name, v) for v in namespace.values() if isinstance(v, offered)}.values())
     slots = SlotIndex()
     ids = RecordIds()
