@@ -2415,9 +2415,23 @@
      ]
     },
     "marriage_date": {
-     "type": [
-      "string",
-      "null"
+     "anyOf": [
+      {
+       "anyOf": [
+        {
+         "type": "null"
+        },
+        {
+         "$ref": "#/$defs/event_date"
+        }
+       ]
+      },
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
      ]
     },
     "children": {
@@ -2590,9 +2604,23 @@
      ]
     },
     "marriage_date": {
-     "type": [
-      "string",
-      "null"
+     "anyOf": [
+      {
+       "anyOf": [
+        {
+         "type": "null"
+        },
+        {
+         "$ref": "#/$defs/event_date"
+        }
+       ]
+      },
+      {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
      ]
     },
     "children": {

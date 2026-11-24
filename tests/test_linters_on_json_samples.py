@@ -53,7 +53,9 @@ SAMPLE_DIRS = (DATA / "linter_samples", DATA / "on_json_samples")
 Key = tuple[str, str, str, str | None]
 
 # A ratchet: how many samples load today. Raise it when samples are added, never lower it.
-LOADED = 153
+LOADED = 154
+# DVC001's sample writes a divorce's marriage as text on purpose: the warning DSL v1 gives for it is expected here.
+pytestmark = pytest.mark.filterwarnings(r"ignore:divorce\(marriage_date=:DeprecationWarning")
 
 
 @dataclass(frozen=True)
@@ -410,12 +412,13 @@ def test_samples_agree_in_another_dictionary(code: str, dictionaries: dict[str, 
 # 17 comparisons more without Лука, Фома, Анфиса (seven samples of Фомин/Фомич), 23 more without Иван, Петр, Анна
 # and 28 more with Иван, Анна turned over (Иванов, Иванова; one sample `census_parent_link` used to crash on, the
 # CPL012 guard now answers it and the walk refuses it like its neighbours), 43 more with Фома, Анфиса turned over and
-# Семен lost (Фомин, Фомич, Семенов).
+# Семен lost (Фомин, Фомич, Семенов). DVC001's sample adds one comparison each to the three that lose or turn over
+# Иван or Анна (2026-11-24): its replay needs the names.
 SKIPPED: dict[str, tuple[int, int]] = {
     "without Лука, Фома, Анфиса": (0, 209),
-    "without Иван, Петр, Анна": (0, 434),
-    "Иван, Анна turned over": (0, 353),
-    "Мария, Петр, Лука turned over": (0, 322),
+    "without Иван, Петр, Анна": (0, 435),
+    "Иван, Анна turned over": (0, 354),
+    "Мария, Петр, Лука turned over": (0, 323),
     "Фома, Анфиса turned over, Семен lost": (0, 161),
 }
 

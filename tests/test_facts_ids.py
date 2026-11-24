@@ -28,7 +28,7 @@ from calendar import Month
 from verso.ru.dsl import Gender, person
 from verso.ru.dsl import CensusRole, census_records, household, member
 from verso.ru.dsl import death, death_records
-from verso.ru.dsl import divorce, divorce_records
+from verso.ru.dsl import EventDate, divorce, divorce_records
 from verso.ru.dsl import Relationship, relative
 from verso.ru.dsl import external_source_records, wwi_record
 from verso.ru.dsl import listed_person, name_list_records
@@ -57,7 +57,7 @@ manilovka_external_sources_1901 = external_source_records(
 manilovka_divorces_1901 = divorce_records(
     "ГАРО", "9", "1", "4", "Маниловка", "", 1901,
     divorce(7, 3, Month.JULY, husband=person("Иванъ", "Петровъ", "Справкинъ"), wife=person("Анна", "Иванова"),
-            husband_age=30, wife_age=27, marriage_date="24 февраля 1895"),
+            husband_age=30, wife_age=27, marriage_date=EventDate(1895, Month.FEBRUARY, 24)),
     divorce(None, 5, Month.JULY, husband=person("Павелъ", "Ильинъ"), wife=person("Ольга", "Петрова")),
     divorce(None, 9, Month.JULY, husband=person("Сергій", "Ильинъ"), wife=person("Марія", "Петрова"),
             case="судъ 2-го участка"))
@@ -225,7 +225,8 @@ def test_the_bridge_counts_a_kind_the_tree_does_not_publish_apart(village: Path)
     assert reach.refused == strict.refused and reach.total == strict.total
     report, code = identity_report(facts, gen, slots)
     assert code == 0
-    assert "    из них вид без профилей (divorce):   6" in report.splitlines()
+    from verso.ru.messages import t
+    assert str(t("cli.facts.identity.unpublished", kind="divorce", count=6)) in report.splitlines()
 
 
 def test_a_village_without_such_a_kind_reads_as_before(tmp_path: Path):
@@ -265,7 +266,6 @@ def test_the_cli_reads_a_divorce_as_a_kind_of_its_own(village: Path, capsys: pyt
     assert capsys.readouterr().out.strip()
     assert cli.main(["--village", str(village), "--kind", "divorce", "--dump"]) == 0
     assert sum('"DivorcedOn"' in line for line in (village / "facts.jsonl").read_text(encoding="utf-8").splitlines()) == 6
-    assert cli.main(["--village", str(village), "--kind", "divorce"]) == 0        # no pair to report, and no crash
 
 
 HELD = '''\

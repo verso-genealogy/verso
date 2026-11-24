@@ -123,7 +123,8 @@ A consumer that validates against the **previous** closed `records-v1.json` reje
 nodes), and
 every external-source card node, since it carries `verb` (the 0.1.15 schema says «'verb' was
 unexpected»), a divorce or a divorce book that writes `reviewed` (a divorce book that never names the flag writes
-none), and a divorce that writes `source_date_error` or `calendar_note` — the decoder of an older release refuses it too, with no word of the vocabulary's version, which stays 1: take the schema from the release that writes them (`verso records-schema --write`).
+none), a divorce that writes `source_date_error` or `calendar_note`, and a divorce whose `marriage_date` is an
+`EventDate` (an object where the field held text) — the decoder of an older release refuses it too, with no word of the vocabulary's version, which stays 1: take the schema from the release that writes them (`verso records-schema --write`).
 
 An export written before these additions reads as it always did: no `vocabulary`/`lang` means none is
 checked; wrapper values found in `derived` with no `written.context` are read as the wrapper's

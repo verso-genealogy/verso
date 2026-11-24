@@ -21,6 +21,7 @@ The baseline ratchet (`dsllint --baseline FILE`) keeps a row per advisory findin
 | `deaths_burial_date` | DBD001, DBD002 | AST-based linter for the two dates of a `death()` record: death and burial. |
 | `deaths_relatives` | DRL001 | AST-based linter guarding the ONE-relative limit of `death()` records. |
 | `deaths_residence` | DRA001, DRA002 | AST-based linter that checks residence alignment between the deceased and the relative(s) named in a `death()` record. |
+| `divorces` | DVC001 | AST-based linter (DVC001) for an act of divorce that names its marriage as text. |
 | `dsl_imports` | IMP001 | IMP001 — a DSL file imports the DSL's facade and nothing else (DSL v1). |
 | `external_sources` | ESC001, ESC002, ESC003, ESC004 | AST-based linter for external-source DSL records (`criminal_record()` / `wwi_record()` / `wwii_record()` from verso.ru.dsl). |
 | `file_bindings` | — | What a DSL file binds at its top level, for the checks that follow a name. |

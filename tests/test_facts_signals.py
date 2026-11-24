@@ -17,6 +17,8 @@ from verso.ru.church_calendar.svyatcy import Commemorated, Svyatcy
 from verso.ru.domain import person
 from verso.ru.dsl.records.births import birth, christening
 from verso.ru.dsl.records.deaths import death
+from verso.ru.domain import EventDate
+from verso.ru.domain.event_date import read_written_date
 from verso.ru.dsl.records.divorces import divorce
 from verso.ru.dsl.records.marriages import marriage
 from verso.ru.facts.checks.dates import orderings, within_entry, within_orderings
@@ -60,7 +62,7 @@ def _died(d_day: int, b_day: int, d_month: Month, b_month: Month | None = None, 
 
 
 def _divorced(married: str | None = None, **more):
-    return divorce(1, 3, Month.JULY, person("Иван", "Петров"), person("Анна", "Ильина"), marriage_date=married,
+    return divorce(1, 3, Month.JULY, person("Иван", "Петров"), person("Анна", "Ильина"), marriage_date=read_written_date(married),
                    year=1925, **more)
 
 
@@ -110,6 +112,18 @@ def test_the_church_wedding_a_divorce_names_is_asked_of_the_calendar():
     assert signals_of(_divorced("1 декабря 1915", calendar_note="так в акте"), record_id=RID).found == ()
     # a marriage of the registry's years is no church wedding: the calendar is not asked past 1917
     assert signals_of(_divorced("1 декабря 1924"), record_id=RID).found == ()
+
+
+@pytest.mark.parametrize("named", [
+    EventDate(1913, Month.MARCH, 10, circa=True), EventDate(1913, Month.MARCH, 10, date_range="before"),
+    EventDate(1913, Month.MARCH, 10, date_range="after"), EventDate(1913, Month.MARCH, 10, year_end=1914)])
+def test_a_named_wedding_that_is_no_single_day_is_not_asked_of_the_calendar(named: EventDate):
+    """«около 10 марта 1913», «до …», «после …», a range: no day the Church married or did not — the calendar is asked
+    of a single day only. 10 March 1913 is in Great Lent."""
+    assert _of("wedding-calendar", divorce(1, 3, Month.JULY, person("Иван", "Петров"), person("Анна", "Ильина"),
+                                           marriage_date=named, year=1925)) == []
+    assert _of("wedding-calendar", divorce(1, 3, Month.JULY, person("Иван", "Петров"), person("Анна", "Ильина"),
+                                           marriage_date=EventDate(1913, Month.MARCH, 10), year=1925))
 
 
 def test_a_held_divorce_answers_like_a_reviewed_one():

@@ -4,7 +4,9 @@ import copy
 from calendar import Month
 from typing import TYPE_CHECKING
 
-from verso.ru.domain import Person, Gender, RecordDefaults
+import warnings
+
+from verso.ru.domain import EventDate, Person, Gender, RecordDefaults
 from verso.ru.dsl.records.reviewed import resolve_reviewed
 from verso.ru.naming import get_gender_from_name
 from verso.core.written import captures_written, shadow
@@ -23,7 +25,7 @@ class Divorce:
             wife: Person | None = None,
             husband_age: int | None = None,
             wife_age: int | None = None,
-            marriage_date: str | None = None,
+            marriage_date: EventDate | str | None = None,
             children: str | None = None,
             initiator: str | None = None,
             page: str | None = None,
@@ -103,7 +105,7 @@ def divorce(
         wife: Person | None = None,
         husband_age: int | None = None,
         wife_age: int | None = None,
-        marriage_date: str | None = None,
+        marriage_date: EventDate | str | None = None,
         children: str | None = None,
         initiator: str | None = None,
         page: str | None = None,
@@ -114,6 +116,12 @@ def divorce(
         source_date_error: str | None = None,
         calendar_note: str | None = None,
 ) -> Divorce:
+    if isinstance(marriage_date, str) and marriage_date.strip():
+        # DSL v1 wrote the marriage as the act's text; the library reads a date as an `EventDate` only. The text is
+        # kept and exported as written, no reader parses it, and it goes in 0.2. `stacklevel` reaches past
+        # `captures_written` to the line of the DSL file.
+        from verso.ru.messages import t
+        warnings.warn(str(t("dsl.divorce.marriage_date_text", text=marriage_date)), DeprecationWarning, stacklevel=3)
     return Divorce(
         record_num,
         d_day,

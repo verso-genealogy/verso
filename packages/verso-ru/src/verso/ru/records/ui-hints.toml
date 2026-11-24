@@ -341,7 +341,6 @@ fields = [
   { path = "divorce.month", label = "ui.field.divorce_month" },
   { path = "husband_age", label = "ui.field.husband_age" },
   { path = "wife_age", label = "ui.field.wife_age" },
-  { path = "marriage_date", label = "ui.field.marriage_date" },
   { path = "source_date_error", label = "ui.field.source_date_error", checks = true },
   { path = "calendar_note", label = "ui.field.calendar_note_divorce", checks = true },
   { path = "children", label = "ui.field.children" },
@@ -353,6 +352,7 @@ fields = [
 ]
 hidden = [
   "reviewed",
+  "marriage_date",
 ]
 slots = [
   { role = "husband", label = "ui.slot.husband", gender = "male" },

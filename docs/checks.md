@@ -36,8 +36,9 @@ consolidated. `verso facts --village V --check CHECK` asks one of them of the vi
 
 **An act of divorce** is read too (`divorce()`): it asserts that the two were spouses, the day the marriage was
 dissolved, each one's age that day and — where the act names it — the day they had married. That last is a later
-document's claim about a wedding, read from `marriage_date=` only in the forms a date is written in («14 марта
-1926», «март 1926», «1926», «14.03.1926»); a text in any other form asserts nothing. Two of the six checks
+document's claim about a wedding, read from `marriage_date=EventDate(1926, Month.MARCH, 14)` — a point, a month, a
+year, «около», a range, as an external card's dates are; a text there (DSL v1's, deprecated: DVC001) asserts
+nothing, and no date is guessed from it. Two of the six checks
 read it: `date-order` — the marriage the act names dated after the divorce itself, said once of the entry and
 answered by `divorce(source_date_error=)`, which withdraws the marriage's date and keeps the divorce's — and
 `wedding-calendar`, for a church wedding of 1917 or before, answered by `divorce(calendar_note=)`. The translator

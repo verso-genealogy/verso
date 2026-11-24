@@ -9,6 +9,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
+from verso.ru.domain.event_date import date_text
 from verso.ru.dsl.records.births import BirthRecords
 from verso.ru.dsl.records.census import CensusRecords
 from verso.ru.dsl.records.deaths import DeathRecords
@@ -331,7 +332,7 @@ def insert_divorces(conn: sqlite3.Connection, records: DivorceRecords, source_fi
                 dv.d_month.value if dv.d_month else None,
                 dv.husband_age,
                 dv.wife_age,
-                dv.marriage_date,
+                date_text(dv.marriage_date),
                 dv.children,
                 dv.initiator,
                 dv.page,

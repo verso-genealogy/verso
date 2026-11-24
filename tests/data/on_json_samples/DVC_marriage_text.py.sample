@@ -1,0 +1,12 @@
+# Invented: acts of divorce naming their marriage as text (DVC001: a date in a known form, offered as an EventDate;
+# a text in no known form), and the quiet case — an EventDate.
+from verso.ru.dsl import EventDate, Month, divorce, divorce_records, person
+
+divorces = divorce_records(
+    "ГА Глуповской области", "10", "4", "4071", "Маниловка", "", 1925,
+    divorce(1, 3, Month.JULY, husband=person("Иванъ", "Петровъ"), wife=person("Анна", "Ильина"),
+            marriage_date="12 сентября 1920"),
+    divorce(2, 5, Month.JULY, husband=person("Павелъ", "Ильинъ"), wife=person("Ольга", "Петрова"),
+            marriage_date="в сентябре 1920 г."),
+    divorce(3, 7, Month.JULY, husband=person("Сергій", "Ильинъ"), wife=person("Марія", "Петрова"),
+            marriage_date=EventDate(1920, Month.SEPTEMBER, 12)))

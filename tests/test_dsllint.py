@@ -83,7 +83,7 @@ p = person(
                 "status_redundancy", "status_orthography", "relative_attachment",
                 "reviewed_redundancy", "retractions",
                 "witness_side", "witness_side_advisory", "civil_register",
-                "civil_register_advisory", "dsl_imports",
+                "civil_register_advisory", "dsl_imports", "divorces",
             })
         finally:
             p.unlink()
@@ -117,7 +117,7 @@ class TestCliJsonOutput(unittest.TestCase):
             )
             data = json.loads(result.stdout)
             self.assertIsInstance(data, list)
-            self.assertEqual(len(data), 35)
+            self.assertEqual(len(data), 36)
         finally:
             p.unlink()
 

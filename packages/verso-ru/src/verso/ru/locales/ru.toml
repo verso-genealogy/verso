@@ -967,6 +967,10 @@ christening = "christening() в книге ЗАГС (civil=True): акт не з
 [ZGS002]
 precedes = "регистрация {registration} раньше рождения {birth} в книге ЗАГС — неверно прочитан день или месяц?"
 
+[DVC001]
+text = "развод: marriage_date={text!r} — дата текстом; пишите {date} (EventDate и Month — из verso.ru.dsl): текст не читает ни одна проверка, а с 0.2 он не принимается"
+unread = "развод: marriage_date={text!r} — дата текстом, и не в той форме, что библиотека читает как дату; впишите EventDate(год, Month.МЕСЯЦ, день) по акту"
+
 [ZGS003]
 unflagged = "книга {year} г. без церкви — не книга ли ЗАГС? Тогда civil=True: иначе регистрации читаются как крещения и погребения"
 
@@ -1031,6 +1035,8 @@ done = "{files}, {records} → {target}"
 skipped = "пропущено файлов: {count} (см. {where})"
 
 [cli.facts]
+unnumbered = "без номера"
+kind_answers_no_pairs = "--kind {kind}: акт этого вида не называет ни восприемников, ни поручителей, ни родителей — отчёту пар нечего свести; спросите --dump, --why или --basis-census"
 dumped = { one = "{count} утверждение → {path}", few = "{count} утверждения → {path}", many = "{count} утверждений → {path}", other = "{count} утверждения → {path}" }
 leaf = ", л. {page}"
 calendar_noted = "; снято заметкой calendar_note — {noted}"
@@ -1537,8 +1543,6 @@ death = "смерть"
 burial = "погребение"
 marriage = "венчание"
 counted_alive = "учтён живым"
-divorce = "развод"
-named_marriage = "брак, названный актом"
 
 [facts.date_order.hint]
 baptism_before_birth = "крещение раньше рождения — обычно не задан k_year= на декабрьском рождении, либо перепутан день/год в источнике"
@@ -1640,6 +1644,9 @@ father = "отец {name}"
 spouse = "супруг(а)"
 parent = "родитель"
 child = "ребёнок"
+
+[dsl.divorce]
+marriage_date_text = "divorce(marriage_date={text!r}) — дата текстом устарела: пишите EventDate(год, Month.МЕСЯЦ, день); текст сохраняется как есть, но его не читает ни одна проверка, а с 0.2 он не принимается"
 
 [dsl.upgrade]
 not_in_catalog = "{name}: этого имени нет в каталоге {catalog}"

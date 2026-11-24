@@ -10,7 +10,7 @@ from verso.ru.exporters.csv_familio import BirthRecordsCsvFamilioExporter, Death
 from verso.ru.dsl.records.deaths import Death, DeathRecords
 from verso.ru.dsl.records.divorces import Divorce, DivorceRecords
 from verso.ru.gender import Gender
-from verso.ru.domain import Person
+from verso.ru.domain import EventDate, Person
 from verso.ru.relationship import Relationship, Relative
 
 
@@ -1780,7 +1780,7 @@ class TestDivorceRecordsCsvFamilioExporter(unittest.TestCase):
                        last_name="Федулова", residence="Заманиловка", gender=Gender.FEMALE)
         d = Divorce(record_num=12, d_day=26, d_month=Month.MAY,
                     husband=husband, wife=wife, husband_age=22, wife_age=24,
-                    marriage_date="13 февраля 1930",
+                    marriage_date=EventDate(1929, Month.APRIL, 21),
                     children="дочь Анна (2) при матери",
                     initiator="жена",
                     comment="Первый брак мужа")
@@ -1814,7 +1814,7 @@ class TestDivorceRecordsCsvFamilioExporter(unittest.TestCase):
         self.assertEqual(row[20], "Евдокия")                 # Жена: Имя
         self.assertEqual(row[21], "Андреевна")               # Жена: Отчество
         self.assertEqual(row[22], "24")                      # Жена: Лет
-        self.assertEqual(row[23], "13 февраля 1930")         # Дата брака
+        self.assertEqual(row[23], "21 апреля 1929")          # Дата брака
         self.assertEqual(row[24], "дочь Анна (2) при матери")  # Дети
         self.assertEqual(row[25], "жена")                    # Инициатор
         self.assertEqual(row[26], "Первый брак мужа")        # Комментарий

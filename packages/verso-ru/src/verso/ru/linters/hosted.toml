@@ -619,6 +619,12 @@ scope = "record"
 needs = ["book"]
 note = "a civil registration before the birth (the section's month, the book's year)"
 
+[DVC001]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a divorce's marriage_date written as text (deprecated: the library reads a date as an EventDate)"
+
 [ZGS003]
 class = "context"
 severity = "warn"

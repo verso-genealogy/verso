@@ -25,7 +25,7 @@ from typing import Any
 from verso.core.records import SCHEMA_ID
 from verso.core.records.notes import ANCHORS, NOTE
 from verso.core.records.fields import (
-    CONTEXT_KEY, PERSON, WRAPPER_KEY, ClassSpec, ListOf, TypeSpec, Vocabulary, code, enum_code, factory_params,
+    CONTEXT_KEY, PERSON, WRAPPER_KEY, ClassSpec, ListOf, OneOf, TypeSpec, Vocabulary, code, enum_code, factory_params,
     param_spec, vocabulary, written_key)
 from verso.core.messages import t
 
@@ -50,6 +50,8 @@ def _is_entity(spec: TypeSpec) -> bool:
 
 def type_schema(spec: TypeSpec) -> dict[str, Any]:
     """What a field of `spec` may hold in the JSON."""
+    if isinstance(spec, OneOf):
+        return {"anyOf": [type_schema(one) for one in spec.types]}
     if isinstance(spec, str):
         if spec in _SCALAR:
             return {"type": [*_SCALAR[spec], "null"]}

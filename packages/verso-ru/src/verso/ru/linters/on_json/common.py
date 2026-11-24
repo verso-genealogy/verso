@@ -1,5 +1,6 @@
 """The rules every kind of record shares (class `written`): a name's letters, a relative's reference, an
-age, a marital status, a status's orthography, how a relative attaches, an age retraction.
+age, a marital status, a status's orthography, how a relative attaches, an age retraction — and a divorce's
+marriage written as text (DVC001).
 
 Each rule reads what a node wrote (`FileView.written`: the arguments of its call, by parameter) and
 answers as its check answers the source, with the check's own tables and message builders. What the
@@ -29,6 +30,7 @@ from verso.ru.gender import Gender
 from verso.ru.linters.checks import relationship_ref
 from verso.ru.linters.checks.ages import is_valid_age_string, said_age001, said_unknown
 from verso.ru.linters.checks.census_age import PREV_AGE_COMMENT_RE
+from verso.ru.linters.checks.divorces import said as said_dvc001
 from verso.ru.linters.checks.marital_status import KNOWN_MARITAL
 from verso.ru.linters.checks.names import CYRILLIC_NAME_RE
 from verso.ru.linters.checks.relative_attachment import GODPARENT_REF, WITNESS_REF, Subject
@@ -308,7 +310,21 @@ def ret003(view: FileView) -> Iterator[Finding]:
     return only("RET003", _retractions(view))
 
 
+# --- DVC001: a divorce's marriage as text --------------------------------------------------------------
+
+def dvc001(view: FileView) -> Iterator[Finding]:
+    """A divorce whose `marriage_date` is text (`divorces._collect`): the same words, its replacement where the
+    text reads as a date. A replay's record holds what the DSL wrote, a text kept as text."""
+    for _, record in view.records():
+        if record["kind"] != "divorce":
+            continue
+        value = view.written("divorce", record).get("marriage_date")
+        if isinstance(value, str):
+            yield finding_of(said_dvc001(value)["message"], record["id"])
+
+
 RULES: dict[str, Rule] = {
     "NAM005": nam005, "REL001": rel001, "REL002": rel002, "AGE001": age001, "AGE002": age002,
     "MST001": mst001, "SOR001": sor001, "RLA001": rla001, "RET001": ret001, "RET002": ret002, "RET003": ret003,
+    "DVC001": dvc001,
 }

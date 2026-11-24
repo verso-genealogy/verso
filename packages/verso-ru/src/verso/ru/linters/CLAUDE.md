@@ -40,8 +40,8 @@ text, carrying `code`, `variant`, `params`, `token`.
 
 A check takes its tree from `checks/shared_ast.py`, never from `ast` itself: `shared_ast.parse(src)` for
 `ast.parse`, `shared_ast.walk(node)` for `ast.walk`, `shared_ast.Visitor` for `ast.NodeVisitor` (whose `visit` it
-does not override). The thirty-five registered checks then parse a file once and walk each node once between them,
-where each parsed it and walked it again on its own — 35 parses a file, 24 million steps of `ast.walk` on one
+does not override). The thirty-six registered checks then parse a file once and walk each node once between them,
+where each parsed it and walked it again on its own — 36 parses a file, 24 million steps of `ast.walk` on one
 village's files. The tree is every check's: **no check changes a node**, or the next check reads the change.
 
 ## `ages` — AGE001
@@ -750,3 +750,13 @@ kwarg, a figure never transcribed):
 - **RET003**: both retractions on one roll line — the whole-line one already covers it.
 
 Hard from birth (0 findings on the whole corpus).
+
+## `divorces` — DVC001
+
+A divorce's `marriage_date=` written as text. The library reads a date as an `EventDate`; DSL v1 still takes the
+text (a `DeprecationWarning`, refused from 0.2), keeps it and exports it, and no reader parses it — so the facts
+layer does not see the wedding the act names. Advisory: a corpus that wrote the text moves on a commit of its own.
+Where the text is a date in a form `read_written_date` knows, the finding carries a `replace_kwarg` quick fix to
+`EventDate(1927, Month.FEBRUARY, 24)`; the IDE adds no import, so the message says where `EventDate` and `Month`
+come from. A text in its place (the eighth positional) is said without a fix. On records JSON (`on_json.common`)
+a divorce whose written `marriage_date` is a string answers the same words.
