@@ -124,13 +124,16 @@ def test_the_search_index_leads_each_mention_to_its_record(site: model.Site, ui:
     assert books[1] == "books/manilovka/47-9-755/1900/birth/"
     father = next(row for row in data["rows"] if row[1] == "Петръ Ивановъ Сидоровъ" and row[5] == "Отец")
     assert father == ["петр иванович сидоров петр иванов сидоров", "Петръ Ивановъ Сидоровъ",
-                      "Петр Иванович Сидоров", 1, "m1", "Отец"]
+                      "Петр Иванович Сидоров", 1, "m1", "Отец", 0]
+    unread = {row[4]: row[6] for row in data["rows"] if row[3] == 1 and row[5] == "Младенец"}
+    assert unread == {"m1": 0, "f2": 1, "f3": 1, "m4": 0, "m4а": 0}        # a held and a listed record alike
 
 
 def test_the_search_page_works_without_its_script(ctx: Context) -> None:
     page = pages.search(ctx)
     assert "<noscript>" in page and 'href="../names/"' in page
     assert 'data-found="Найдено: {count}."' in page and 'src="../assets/search.js"' in page
+    assert 'data-unread="не вычитано"' in page
 
 
 def test_a_mention_of_a_marriage_names_the_kinship(site: model.Site, ui: Ui) -> None:
@@ -150,3 +153,50 @@ def test_the_books_of_one_file_and_year_stand_as_a_year_lists_them(changed: Chan
     page = pages.books_index(changed(same_year), ui, ctx)
     kinds = re.findall(r'<a href="\.\./books/manilovka/47-9-755/1900/(\w+)/">', page)
     assert kinds == ["birth", "marriage", "death"]                   # not by the kinds' names
+
+
+def _own_case(node: dict[str, Any]) -> None:
+    """One birth that states a case of its own, as `page(case=…)` writes it: its id and its `written`."""
+    record = node["documents"][0]["pages"][0]["records"][0]
+    record["id"] = record["id"].replace("47-9-755", "47-9-999")
+    record["written"]["case"] = "999"
+    for persona in record["persons"]:
+        persona["id"] = persona["id"].replace("47-9-755", "47-9-999")
+
+
+def test_a_record_of_its_own_shelfmark_heads_its_book_with_it(changed: Change, ui: Ui, ctx: Context) -> None:
+    site = changed(_own_case)
+    own = site.book("r1:Маниловка/47-9-999/1900/birth")
+    assert own.shelf == {"archive": "ЦГА", "fund": "47", "inventory": "9", "case": "999"}
+    page = pages.book(own, ui, ctx)
+    assert "ЦГА. Ф. 47. Оп. 9. Д. 999." in _text(page) and "Д. 755" not in page
+    index = pages.books_index(site, ui, ctx)
+    row = next(r for r in re.findall(r"<tr>(.*?)</tr>", index) if "47-9-999" in r)
+    assert row.startswith("<td>999</td>")
+
+
+def test_the_funds_of_an_archive_stand_by_their_numbers(changed: Change, ui: Ui, ctx: Context) -> None:
+    def one_archive(node: dict[str, Any]) -> None:
+        node["documents"][5]["written"]["archive"] = "ЦГА"           # the list of fund 1978 beside fund 47
+    page = pages.books_index(changed(one_archive), ui, ctx)
+    assert re.findall(r"<h3>(ф\. \d+)", page)[-2:] == ["ф. 47", "ф. 1978"]
+
+
+def test_a_name_nobody_could_read_indexes_nobody(changed: Change) -> None:
+    def unread_names(node: dict[str, Any]) -> None:
+        groom = node["documents"][1]["pages"][0]["records"][0]["persons"][0]
+        groom["written"]["patronymic"] = {"original": "?"}
+        groom["derived"]["patronymic"] = {}
+        groom["written"]["surname"] = {"original": "?"}
+    site = changed(unread_names)
+    groom = next(m for m in site.mentions if m.role == "groom")
+    assert (groom.surname, groom.patronymic) == ("", "")
+    assert groom in pages.nameless(site)
+    assert pages.NAMELESS not in {page.key for page in pages.patronymic_pages(site)}
+    assert pages.NAMELESS not in {page.key for page in pages.surname_pages(site)}
+
+
+def test_a_records_heading_stands_right_under_its_books(site: model.Site, ui: Ui, ctx: Context) -> None:
+    page = pages.book(site.book(BIRTHS), ui, ctx)
+    assert page.count("<h1>") == 1 and page.count("<h2>") == 5 and "<h3>" not in page
+    assert '<nav aria-label="Разделы сайта">' in page

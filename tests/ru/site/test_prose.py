@@ -119,3 +119,47 @@ def test_a_heading_is_slugged_by_its_words_and_a_repeat_is_numbered(workspace: P
 def test_the_names_the_site_keeps_are_said_once() -> None:
     from verso.ru import site as site_package
     assert site_package.RESERVED == {"assets", "books", "cards", "years", "names", "patronymics", "search", "about"}
+
+
+def test_a_page_named_as_the_sites_own_in_another_case_is_refused(workspace: Path) -> None:
+    """Where a file system tells no case apart, `Books/` is `books/` and the page would replace the index."""
+    (workspace / "Маниловка" / "docs" / "Books.md").write_text("# Книги\n", encoding="utf-8")
+    with pytest.raises(prose.ProseError, match=r"Books\.md"):
+        prose.listed(workspace / "Маниловка" / "docs")
+
+
+@pytest.mark.parametrize("name", ["a#b.md", "50%.md", "что это?.md", "два слова.md"])
+def test_a_page_is_named_as_an_address_spells_it(workspace: Path, name: str) -> None:
+    (workspace / "Маниловка" / "docs" / name).write_text("# Страница\n", encoding="utf-8")
+    with pytest.raises(prose.ProseError, match="называется"):
+        prose.listed(workspace / "Маниловка" / "docs")
+
+
+def test_a_page_that_is_a_link_to_another_file_is_refused(workspace: Path, tmp_path: Path) -> None:
+    outside = tmp_path / "private.md"
+    outside.write_text("# Не для сайта\n", encoding="utf-8")
+    (workspace / "Маниловка" / "docs" / "leak.md").symlink_to(outside)
+    with pytest.raises(prose.ProseError, match=r"leak\.md"):
+        prose.listed(workspace / "Маниловка" / "docs")
+
+
+def test_a_link_to_the_workspace_itself_and_a_line_of_a_file(workspace: Path, site: model.Site) -> None:
+    (workspace / "Маниловка" / "docs" / "places.md").write_text(
+        "# Места\n\n[репозиторий](../../), [строка](../village.toml#L3)\n", encoding="utf-8")
+    page = _render(workspace, site, "places.md", Context("Село Маниловка", "ru", repo_url=REPO + "/"))
+    by_text = {text: href for href, text in re.findall(r'<a href="([^"]*)">([^<]*)</a>', page)}
+    assert by_text["репозиторий"] == REPO
+    assert by_text["строка"].endswith("/village.toml#L3")
+
+
+def test_a_link_no_file_system_takes_is_a_dead_link(workspace: Path, site: model.Site) -> None:
+    (workspace / "Маниловка" / "docs" / "places.md").write_text("# Места\n\n[туда](a%00b.md)\n", encoding="utf-8")
+    with pytest.raises(prose.ProseError, match="в никуда"):
+        _render(workspace, site, "places.md", Context("Село Маниловка", "ru", repo_url=REPO))
+
+
+def test_a_number_taken_by_a_heading_is_not_given_twice(workspace: Path, site: model.Site) -> None:
+    (workspace / "Маниловка" / "docs" / "places.md").write_text(
+        "# Места\n\n## B\n\n## B\n\n### b-1\n\n## ?!\n", encoding="utf-8")
+    page = _render(workspace, site, "places.md", Context("Село Маниловка", "ru"))
+    assert re.findall(r"<h[23]( id=\"[^\"]*\")?>", page) == [' id="b"', ' id="b-1"', ' id="b-1-1"', ""]

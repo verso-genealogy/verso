@@ -4,8 +4,8 @@
 
 `verso site` writes a village's records as a static site: every book as the document it was read
 from, record by record, with an index of the names and a search. Plain files — HTML, one
-stylesheet, one script for the search — that any host of static pages serves and a browser opens
-from disk (`verso.ru.site`).
+stylesheet, one script for the search — that any host of static pages serves, at any path
+(`verso.ru.site`).
 
 ```sh
 verso site --village V --out _site
@@ -62,21 +62,25 @@ names is named by the name itself. So an address moves when the id does — a co
 or shelfmark — and never with a rebuild: the same records make the same bytes. Two books whose ids
 make one path are refused, naming both.
 
-Every link is relative, so the site opens the same from a project's path on a host, from a domain
-of its own and from a directory. `--site-url` adds what needs the address: `sitemap.xml`, the
+Every link is relative, so the site is served the same from a project's path on a host and from a
+domain of its own; to read a built site on your own machine, serve its directory
+(`python -m http.server --directory _site`) — opened as files, a browser lists a directory where
+a page links to one and lets the search fetch nothing. `--site-url` adds what needs the address: `sitemap.xml`, the
 canonical links, and the links of `404.html`. Nothing is fetched from another host: no font, no
 script, no counter.
 
 ## Finding a person
 
 Without JavaScript: the index of surnames, a page for each with every mention of it in the order
-of the years; a feminine form stands with its masculine one where the corpus has both. Those the
-source writes with no surname are found by the patronymic in the book's form, and those written by
-a name alone have a page of their own.
+of the years; a feminine form stands with its masculine one where the corpus has both. A surname
+the library derived counts as one — a child stands under the father's. Those left with no surname
+are found by the patronymic in the book's form, those with a name alone have a page of their own,
+and a name written «?» is no name to find anyone by.
 
 With it: the search reads `search/index.json` once and looks for every word of the query in the
 modern and the written forms, folded — lower case, the letters the 1918 reform dropped as their
-modern ones, no hard sign at a word's end — so «Феодор» finds «Ѳеодоръ».
+modern ones, no hard sign at a word's end — so «Феодор» finds «Ѳеодоръ». A result of an unread
+record carries the same mark as the record.
 
 ## The settlement's prose
 
@@ -84,15 +88,16 @@ modern ones, no hard sign at a word's end — so «Феодор» finds «Ѳео
 file a page under its own name, in the order the contents links them. A link to another page of
 the prose leads to that page; a link to a DSL file leads to its book on the site; any other link
 into the workspace leads to the repository (`--repo-url`), and is refused where none is named. A
-link out of the workspace, a link to nothing and an image are refused; raw HTML in the text is
-shown as text. The front page's paragraph about the settlement is `--summary`, else the first
+link out of the workspace, a link to nothing and an image are refused, and so is a page that is a
+link to another file (a symlink); raw HTML in the text is shown as text. The front page's paragraph about the settlement is `--summary`, else the first
 paragraph of `history.md`.
 
 A heading's id is GitHub's — its text in lower case, everything but letters, digits, `_`, `-` and spaces
 dropped, each space a hyphen, a heading met again numbered (`-1`) — so a link to a section
 (`places.md#храмы`) reads the same in the repository and on the site; a link to a section the page
-lacks fails a `--strict` build. A page may not take a name the site keeps for itself: `assets`,
-`books`, `cards`, `years`, `names`, `patronymics`, `search`, `about` (`verso.ru.site.RESERVED`).
+lacks fails a `--strict` build. A page is named by letters, digits, `_` and `-`, and may not take
+a name the site keeps for itself, in any case of its letters: `assets`, `books`, `cards`, `years`,
+`names`, `patronymics`, `search`, `about` (`verso.ru.site.RESERVED`).
 
 Markdown is read by markdown-it-py (CommonMark and tables), the extra `verso-ru[site]`; a village
 without prose needs none.

@@ -75,7 +75,7 @@ def book(book_: Book, ui: Ui, ctx: Context) -> str:
     up = shell.root(book_.path)
     facts = [E(_shelf(book_))]
     if not book_.is_cards:
-        church = book_.written.get("church")
+        church = book_.church
         facts.append(E(str(t("site.book.parish", village=book_.village)) + (f", {church}" if church else "")))
         if defaults := _defaults(book_, ui):
             facts.append(E(str(t("site.book.defaults"))) + " " + defaults)
@@ -110,26 +110,26 @@ def books_index(site: Site, ui: Ui, ctx: Context) -> str:
     up = shell.root(path)
     groups: dict[tuple[str, str], list[Book]] = {}
     for book_ in site.books:
-        written = book_.written
+        shelf = book_.shelf
         if book_.is_cards:
             key = (str(t("site.book.cards_source")), "")
-        elif any(str(written.get(part) or "?") == "?" for part in ("archive", "fund", "inventory", "case")):
-            key = (str(written.get("archive") or "?").replace("?", "") or str(t("site.cite.unknown")),
-                   str(t("site.cite.unknown")))
+        elif any(part in ("", "?") for part in shelf.values()):
+            key = (shelf["archive"].replace("?", "") or str(t("site.cite.unknown")), str(t("site.cite.unknown")))
         else:
-            key = (str(written["archive"]), str(t("site.book.fund", fund=written["fund"], inventory=written["inventory"])))
+            key = (shelf["archive"], str(t("site.book.fund", fund=shelf["fund"], inventory=shelf["inventory"])))
         groups.setdefault(key, []).append(book_)
     out = [f'<h1>{E(str(t("site.nav.books")))}</h1>']
     archive = None
-    for (name, fund), found in sorted(groups.items(), key=lambda kv: (kv[1][0].is_cards, kv[0])):
+    # Archive by archive, a fund's number as a number («ф. 47» before «ф. 1978»), the cards last.
+    for (name, fund), found in sorted(groups.items(), key=lambda kv: (kv[1][0].is_cards, kv[0][0], _natural(kv[0][1]))):
         if name != archive:
             out.append(f"<h2>{E(name)}</h2>")
             archive = name
         rows = "".join(
-            f"<tr><td>{E(str(book_.written.get('case') or '')) if not book_.is_cards else ''}</td>"
+            f"<tr><td>{E(book_.shelf['case']) if not book_.is_cards else ''}</td>"
             f"<td>{book_.year if book_.year is not None else ''}</td><td>{_book_link(book_, ui, up, kind_title(book_, ui))}</td>"
             f"<td>{E(book_.village)}</td><td class=\"n\">{len(book_.entries)}{_unreviewed(book_.unreviewed)}</td></tr>"
-            for book_ in sorted(found, key=lambda b: (_natural(str(b.written.get("case") or "")), b.year or 0,
+            for book_ in sorted(found, key=lambda b: (_natural(b.shelf["case"]), b.year or 0,
                                                       site.books.index(b))))
         head = "".join(f"<th>{E(str(label))}</th>" for label in (
             t("site.col.case"), t("site.col.year"), t("site.col.kind"), t("site.col.parish"), t("site.col.records")))
@@ -195,7 +195,8 @@ def _key(text_: str) -> str:
 
 
 def _directory(title: str) -> str:
-    return re.sub(r"[^\w-]+", "-", title).strip("-") or NAMELESS
+    """A name as its page's directory: letters, digits and hyphens, no longer than a file system takes."""
+    return re.sub(r"[^\w-]+", "-", title).strip("-")[:80] or NAMELESS
 
 
 def _fold_feminine(keys: Iterable[str]) -> dict[str, str]:
@@ -249,7 +250,7 @@ def nameless(site: Site) -> tuple[Mention, ...]:
 
 def role_label(mention: Mention, ui: Ui) -> str:
     """Who the persona is in its record: the slot's name, a relative's kinship, a member's place."""
-    kind = ui.kind(mention.entry.node["kind"])
+    kind = ui.kind(str(mention.entry.node.get("kind")))
     link = mention.persona.get("link") or {}
     if (relation := records.value(link, "relationship")) is not None:
         ref = records.value(link, "relationship_ref")
@@ -335,11 +336,12 @@ def nameless_page(site: Site, ui: Ui, ctx: Context) -> str:
 
 def search_index(site: Site, ui: Ui) -> str:
     """`search/index.json`: the books and, for each mention, what a query is compared with (the modern
-    and the written forms folded), what is shown, and where it leads."""
+    and the written forms folded), what is shown, where it leads, and 1 where its record is unread."""
     place = {book_.id: n for n, book_ in enumerate(site.books)}
     rows = [[model.fold(f"{m.modern} {m.as_written}"), m.as_written,
              m.modern if model.fold(m.modern) != model.fold(m.as_written) else "",
-             place[m.entry.book_id], m.entry.anchor, role_label(m, ui)] for m in site.mentions]
+             place[m.entry.book_id], m.entry.anchor, role_label(m, ui), int(m.entry.unreviewed)]
+            for m in site.mentions]
     data = {"books": [[b.path, book_title(b, ui)] for b in site.books], "rows": rows}
     return json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n"
 
@@ -357,7 +359,7 @@ def search(ctx: Context) -> str:
             f'data-none="{E(str(t("site.search.none")))}" data-error="{E(str(t("site.search.error")))}" '
             f'data-found="{E(str(t("site.search.found", count="{count}")))}" '
             f'data-more="{E(str(t("site.search.more", limit="{limit}")))}" '
-            f'data-limit="{SEARCH_LIMIT}"></p><ol id="results" class="results"></ol>')
+            f'data-unread="{E(str(t("site.unreviewed")))}" data-limit="{SEARCH_LIMIT}"></p><ol id="results" class="results"></ol>')
     return shell.page(str(t("site.nav.search")), body, ctx=ctx, path=path, scripts=(shell.SEARCH_JS,))
 
 

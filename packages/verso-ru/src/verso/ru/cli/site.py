@@ -21,9 +21,7 @@ from typing import Any
 
 from verso.core.pipeline.records import INDEX, ExportError, export_village
 from verso.ru.messages import t
-from verso.ru.site import BuildError, build
-from verso.ru.site.model import DuplicatePath, NotAnExport
-from verso.ru.site.prose import ProseError
+from verso.ru.site import SiteError, build
 
 
 def _read(root: Path) -> tuple[list[dict[str, Any]], dict[str, str]]:
@@ -51,6 +49,9 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     village = Path(args.village)
     docs = Path(args.docs) if args.docs else village / "docs"
+    if args.docs and not docs.is_dir():
+        print(t("cli.site.no_docs", docs=docs), file=sys.stderr)
+        return 2
     try:
         if args.records:
             files, skipped = _read(Path(args.records) / village.name)
@@ -63,7 +64,7 @@ def main(argv: list[str] | None = None) -> int:
                       workspace=current().root, repo_url=args.repo_url, site_url=args.site_url,
                       revision=args.revision, summary=args.summary, license_name=args.license_name,
                       license_url=args.license_url)
-    except (ExportError, BuildError, DuplicatePath, NotAnExport, ProseError, FileNotFoundError) as exc:
+    except (ExportError, SiteError, FileNotFoundError) as exc:
         print(exc, file=sys.stderr)
         return 2
     print(t("cli.site.done", pages=built.pages, megabytes=f"{built.bytes / 1e6:.1f}",

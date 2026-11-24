@@ -1,8 +1,8 @@
 """The frame every page stands in: the head, the menu, the search field, the footer — and the two
 files a crawler reads.
 
-Every link is relative to the page, so the site opens the same from a project's path on a host, from
-a domain of its own and from a directory on disk. Nothing is fetched from another host.
+Every link is relative to the page, so the site is served the same from a project's path on a host and
+from a domain of its own. Nothing is fetched from another host.
 """
 from __future__ import annotations
 
@@ -63,7 +63,7 @@ def page(title: str, body: str, *, ctx: Context, path: str, head: str = "", scri
             '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
             f'<title>{full}</title>\n<link rel="stylesheet" href="{up}{CSS}">\n{canonical}{head}</head>\n'
             f'<body>\n<header class="top"><a class="brand" href="{up or "./"}">{name}</a>'
-            f'<nav>{nav}</nav>{search}</header>\n<main>\n{body}\n</main>\n{_footer(ctx, up)}{tail}\n</body>\n</html>\n')
+            f'<nav aria-label="{E(str(t("site.nav.label")))}">{nav}</nav>{search}</header>\n<main>\n{body}\n</main>\n{_footer(ctx, up)}{tail}\n</body>\n</html>\n')
 
 
 def _footer(ctx: Context, up: str) -> str:

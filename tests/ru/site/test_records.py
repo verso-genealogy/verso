@@ -160,3 +160,17 @@ def test_a_cards_document_is_cited_as_its_catalog_gives_it(changed: Change, ui: 
     assert "документ: ЦГВА 58-977-92." in _text(_drawn(site, ui, WWI, "chelovek_plen1"))
     wwii = "r1:Маниловка/card/wwii"
     assert "документ: ЦГВА, Ф. 970, Канцелярія, Оп. 3." in _text(_drawn(site, ui, wwii, "memorial-chelovek_donesenie2"))
+
+
+def test_a_zero_the_source_wrote_is_a_value() -> None:
+    assert records.value({"written": {"age": 0}}, "age") == (0, "w")
+    assert records.value({"written": {"age": "", "flag": False, "list": []}, "derived": {"age": 3}}, "age") == (3, "d")
+    assert records.value({"written": {"flag": False, "list": []}}, "flag") is None
+
+
+def test_a_kind_the_vocabulary_does_not_know_is_refused(changed: Change, ui: Ui) -> None:
+    def strange(node: dict[str, Any]) -> None:
+        node["documents"][1]["pages"][0]["records"][0]["kind"] = "betrothal"
+    site = changed(strange)
+    with pytest.raises(model.NotAnExport, match="betrothal"):
+        _drawn(site, ui, MARRIAGES, "1")

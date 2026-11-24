@@ -38,7 +38,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   an index of the names that needs no JavaScript and a search that reads its own index; the settlement's prose
   (`<village>/docs/*.md`, the new extra `verso-ru[site]`: markdown-it-py) as pages. A record's address is its id
   (rule `r1`): the page of its book and its token as the anchor, the same at every build. Every link is relative
-  and nothing is fetched from another host, so the site serves from GitHub Pages, a domain or a directory. A new
+  and nothing is fetched from another host, so the site serves from GitHub Pages or a domain of its own. A new
   product: no output a corpus compares moves.
 - verso-core: a `late` rule of the interface's schema may name the fields that stand it down — `stand_down` (an
   event late past its days) and `stand_down_before` (one before the first); the build refuses a path the kind lacks.

@@ -52,9 +52,9 @@ main { max-width: 58rem; margin: 0 auto; padding: 1rem 1rem 3rem; }
 .rec:target { background: var(--target); border-color: var(--accent); }
 .rec.held { border-left: 4px solid var(--badge-ink); }
 .rec > header { display: flex; flex-wrap: wrap; gap: .3rem .9rem; align-items: baseline; }
-.rec h3 { margin: 0; font-size: 1.1rem; }
-.rec h3 a { color: var(--ink); text-decoration: none; }
-.rec h3 a:hover { text-decoration: underline; }
+.rec h2 { margin: 0; font-size: 1.1rem; }
+.rec h2 a { color: var(--ink); text-decoration: none; }
+.rec h2 a:hover { text-decoration: underline; }
 .rec .label { font-weight: 400; }
 .sex, .leaf { color: var(--muted); font: .88rem var(--sans); font-weight: 400; }
 .badge { display: inline-block; padding: 0 .45rem; border-radius: 999px; background: var(--badge-bg);

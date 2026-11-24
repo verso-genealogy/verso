@@ -100,3 +100,23 @@ def test_a_record_that_does_not_say_whether_it_was_read_is_no_export(file_node: 
     stored = {**file_node, "documents": [{**doc, "pages": [{**run, "records": [silent]}]}]}
     with pytest.raises(model.NotAnExport, match="r1:Маниловка/47-9-755/1900/marriage/1"):
         model.load([stored], village="Маниловка")
+
+
+def test_a_persona_without_a_role_is_no_export(file_node: dict[str, Any]) -> None:
+    doc = file_node["documents"][1]
+    run = doc["pages"][0]
+    record = run["records"][0]
+    nobody = {key: value for key, value in record["persons"][0].items() if key != "role"}
+    stored = {**file_node, "documents": [{**doc, "pages": [{**run, "records": [{**record, "persons": [nobody]}]}]}]}
+    with pytest.raises(model.NotAnExport):
+        model.load([stored], village="Маниловка")
+
+
+def test_a_village_no_address_can_be_made_of_is_refused(file_node: dict[str, Any]) -> None:
+    from verso.ru.site.errors import SiteError
+    doc = file_node["documents"][1]
+    run = doc["pages"][0]
+    record = {**run["records"][0], "id": "r1:?/47-9-755/1900/marriage/1"}
+    stored = {**file_node, "documents": [{**doc, "pages": [{**run, "records": [record]}]}]}
+    with pytest.raises(SiteError, match="адрес не из чего"):
+        model.load([stored], village="Маниловка")

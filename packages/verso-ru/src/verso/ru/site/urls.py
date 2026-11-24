@@ -19,6 +19,7 @@ from urllib.parse import quote
 from verso.core import plugins
 from verso.core.records import ids
 from verso.ru.messages import t
+from verso.ru.site.errors import SiteError
 
 BOOKS = "books"
 CARDS = "cards"
@@ -26,19 +27,23 @@ CARD = "card"            # a card's "shelfmark" in its id (verso.ru.records.cite
 UNKNOWN = "unknown"      # a shelfmark of question marks alone
 
 
+class BadAddress(SiteError):
+    """A village or a kind of which no address can be made."""
+
+
 def slug(text: str) -> str:
     """`text` as one Latin segment of a path; refuses a text no letter or digit of which survives."""
     latin = plugins.transliterator()(text).lower().replace("'", "")
     out = re.sub(r"[^a-z0-9]+", "-", latin).strip("-")
     if not out:
-        raise ValueError(str(t("site.urls.no_slug", text=text)))
+        raise BadAddress(str(t("site.urls.no_slug", text=text)))
     return out
 
 
 def _shelf(text: str) -> str:
     try:
         return slug(text)
-    except ValueError:
+    except BadAddress:
         return UNKNOWN
 
 

@@ -16,6 +16,7 @@ from typing import Any
 from verso.core.records import ids
 from verso.ru.messages import t
 from verso.ru.site import urls
+from verso.ru.site.errors import SiteError
 
 Node = Mapping[str, Any]
 
@@ -36,11 +37,11 @@ def fold(text: str) -> str:
     return _HARD_SIGN.sub("", unicodedata.normalize("NFC", text).lower().translate(_OLD_LETTERS))
 
 
-class DuplicatePath(ValueError):
+class DuplicatePath(SiteError):
     """Two books whose ids make one path."""
 
 
-class NotAnExport(ValueError):
+class NotAnExport(SiteError):
     """A record node that does not say whether it was read against its scan (`review`): the export writes it
     of the built record, and no key of `written` says it instead — a leaf released inside a held set, a set's
     own flag, the list of what reached a tree unread are all in it."""
@@ -81,6 +82,19 @@ class Book:
     @property
     def written(self) -> Node:
         return self.docs[0]["written"]
+
+    @property
+    def shelf(self) -> dict[str, str]:
+        """The shelfmark the book is cited by, part by part: its records' own where they state one — the book is
+        the one its records are cited from, not the record set they were written in — else the set's."""
+        own = self.entries[0].node.get("written", {}) if self.entries else {}
+        return {key: str(own.get(key) or self.written.get(key) or "")
+                for key in ("archive", "fund", "inventory", "case")}
+
+    @property
+    def church(self) -> str:
+        own = self.entries[0].node.get("written", {}) if self.entries else {}
+        return str(own.get("church") or self.written.get("church") or "")
 
     @property
     def set_kind(self) -> str:
@@ -168,7 +182,11 @@ def _text(parts: Iterable[tuple[str, str]]) -> str:
 
 def _mention(entry: Entry, persona: Node) -> Mention:
     def first(*asks: tuple[str, str]) -> str:
-        return next((found[0] for part, form_ in asks if (found := form(persona, part, form_))), "")
+        # «?» — a name the reader could not make out — is no name to index a person by.
+        return next((found[0] for part, form_ in asks if (found := form(persona, part, form_))
+                     and any(char.isalnum() for char in found[0])), "")
+    if not persona.get("role"):
+        raise NotAnExport(str(t("site.not_an_export", record=entry.id, file=entry.file)))
     return Mention(entry, persona, persona["role"], _text(name_parts(persona)), _text(modern_parts(persona)),
                    given=first(("given", "modern"), ("given", "original")),
                    patronymic=first(("patronymic", "old"), ("patronymic", "original")),

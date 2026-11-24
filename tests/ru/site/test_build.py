@@ -116,3 +116,16 @@ def test_two_books_of_one_address_stop_the_build(file_node: dict[str, Any], tmp_
     with pytest.raises(model.DuplicatePath):
         _build({**file_node, "documents": twins}, tmp_path / "site")
     assert not (tmp_path / "site").exists()
+
+
+@pytest.mark.parametrize("flag", ["repo_url", "site_url", "license_url"])
+def test_an_address_is_an_address(file_node: dict[str, Any], tmp_path: Path, flag: str) -> None:
+    with pytest.raises(site_package.BuildError, match="javascript"):
+        _build(file_node, tmp_path / "site", **{flag: "javascript:alert(1)"})
+    assert not (tmp_path / "site").exists()
+
+
+def test_every_refusal_is_one_family() -> None:
+    from verso.ru.site import prose, urls
+    for refusal in (site_package.BuildError, model.DuplicatePath, model.NotAnExport, prose.ProseError, urls.BadAddress):
+        assert issubclass(refusal, site_package.SiteError)

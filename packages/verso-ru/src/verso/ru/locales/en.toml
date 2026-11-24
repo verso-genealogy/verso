@@ -1878,6 +1878,7 @@ help_out = "where to write the ruler sheet (default: rows_<leaf>_<part>.jpg in t
 no_slug = "«{text}»: no letter or digit to make an address of"
 
 [site]
+unknown_kind = "a record of the kind «{kind}», which the records' vocabulary does not know — not an export of this library's version"
 duplicate_path = "two books make one address {path}: {first} and {second}"
 not_an_export = "{file}: the record {record} does not say whether it was proofread (review) — the site is built of an export (verso export-records)"
 yes = "yes"
@@ -1936,6 +1937,7 @@ card_archive = "the document: {ref}"
 source = "the card in its catalog"
 
 [site.nav]
+label = "The site's sections"
 years = "Years"
 books = "Books"
 names = "Names"
@@ -2007,6 +2009,8 @@ title = "No such page"
 what = "The address may have changed with a corrected number or shelfmark of a record. Find the record through the index of names or the list of books."
 
 [site.prose]
+symlink = "{file}: a link to another file — a page is a file of the prose itself"
+name = "{file}: a page is named by letters, digits, «_» and «-» alone"
 missing_extra = "the village has prose (docs/*.md) and no Markdown reader: install verso-ru[site]"
 link_outside = "{link}: the link leads out of the workspace"
 link_dead = "{link}: the link leads to nothing"
@@ -2015,9 +2019,12 @@ reserved = "{file}: the site keeps this name for itself — rename the page"
 image = "{file}: an image — the site shows none"
 
 [site.build]
+two_pages = "two pages make one address: {first} and {second}"
+bad_url = "{url}: an address begins with https:// or http://"
 out_not_empty = "{out}: not empty — a site is built into a new or an empty directory"
 
 [cli.site]
+no_docs = "{docs}: no such directory of prose"
 description = "A village's records as a static site"
 help_village = "the village's directory"
 help_out = "where to write the site: a new or an empty directory"

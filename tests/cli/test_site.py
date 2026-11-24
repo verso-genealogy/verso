@@ -69,3 +69,9 @@ def test_the_settlements_details_reach_the_pages(tmp_path: Path) -> None:
     assert '<p class="summary">Село на реке.</p>' in front and "собрано из abc1234" in front
     assert '<a href="https://example.org/license" rel="license noopener">CC BY 4.0</a>' in front
     assert (out / "sitemap.xml").is_file()
+
+
+def test_a_directory_of_prose_that_is_not_there_is_refused(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    assert main(["--village", str(_village(tmp_path)), "--out", str(tmp_path / "site"),
+                 "--docs", str(tmp_path / "no-such-docs")]) == 2
+    assert "no-such-docs" in capsys.readouterr().err and not (tmp_path / "site").exists()

@@ -1,6 +1,6 @@
 """A village's records as a static site (`verso site`): the books as the documents they are read
-from, record by record, an index of the names and a search — plain files, opened from any host
-or from disk.
+from, record by record, an index of the names and a search — plain files any host of static pages
+serves, at any path.
 
 `build` draws records v1 (`verso.core.records`), by the interface's schema (`ui-v1`); it knows no
 DSL. The guide: `docs/site.md`.
@@ -18,14 +18,15 @@ from verso.core import i18n
 from verso.core.records import ui as ui_schema
 from verso.ru.messages import t
 from verso.ru.site import check, model, pages, prose, shell
+from verso.ru.site.errors import SiteError
 from verso.ru.site.records import Ui
 from verso.ru.site.shell import RESERVED, Context
 
 ASSETS = ("site.css", "search.js")
-__all__ = ["RESERVED", "BuildError", "Built", "build"]
+__all__ = ["RESERVED", "BuildError", "Built", "SiteError", "build"]
 
 
-class BuildError(ValueError):
+class BuildError(SiteError):
     """A site that cannot be built where it was asked."""
 
 
@@ -49,6 +50,9 @@ def build(files: Iterable[Mapping[str, Any]], *, out: Path, village: str, title:
     out = Path(out)
     if out.exists() and (not out.is_dir() or any(out.iterdir())):
         raise BuildError(str(t("site.build.out_not_empty", out=out)))
+    for address in (repo_url, site_url, license_url):
+        if address and not address.startswith(("https://", "http://")):
+            raise BuildError(str(t("site.build.bad_url", url=address)))
     if site_url and not site_url.endswith("/"):
         site_url += "/"
     with i18n.use(lang) if lang else nullcontext():
@@ -64,8 +68,14 @@ def _build(site: model.Site, out: Path, ctx: Context, docs: Path | None, workspa
     ctx = Context(**{**ctx.__dict__, "prose": tuple((page.path, page.title) for page in prose_pages),
                      "summary": ctx.summary or (prose.first_paragraph(docs) if prose_pages else None)})
     written: dict[str, str] = {}
+    taken: dict[str, str] = {}
 
     def page(path: str, text: str) -> None:
+        """One page, at a path no other page has — nor would have where a file system tells no case apart."""
+        key = path.casefold()
+        if key in taken:
+            raise BuildError(str(t("site.build.two_pages", first=taken[key] or "/", second=path or "/")))
+        taken[key] = path
         written[path + check.INDEX] = text
 
     page("", pages.front(site, ctx))

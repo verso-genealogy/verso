@@ -60,7 +60,11 @@ class Ui:
         return "" if not key else str(Message(self.package, key, {}))
 
     def kind(self, code: str) -> Mapping[str, Any]:
-        return self.schema["kinds"][code]
+        """The schema of a kind of record; a kind the vocabulary does not know is no record of it."""
+        try:
+            return self.schema["kinds"][code]
+        except KeyError:
+            raise model.NotAnExport(str(t("site.unknown_kind", kind=code))) from None
 
     def enum(self, name: str, code: object, form: str = "") -> str:
         for member in self.schema["enums"].get(name, ()):
@@ -77,8 +81,9 @@ def value(node: Node, path: str, sides: Sequence[str] = ("written", "derived")) 
             found = found.get(key) if isinstance(found, Mapping) else None
         if isinstance(found, Mapping) and "text" in found:
             found = found["text"]
-        if found not in (None, "", [], {}, False):
-            return found, side[0]
+        if found is None or found is False or (isinstance(found, (str, list, tuple, Mapping)) and not found):
+            continue                         # nothing written — but 0 is a number the source wrote
+        return found, side[0]
     return None
 
 
@@ -345,8 +350,8 @@ def _site_label(path: str) -> Message:
 def shelfmark(node: Node, book: Book) -> str:
     """«ГАРО. Ф. 627. Оп. 255. Д. 13.» — the record's own shelfmark where it states one, else the book's;
     «шифр не установлен» where a part of it is unknown."""
-    parts = {key: str((value(node, key, ("written",)) or (book.written.get(key), "w"))[0] or "")
-             for key in ("archive", "fund", "inventory", "case")}
+    of_book = book.shelf
+    parts = {key: str((value(node, key, ("written",)) or (of_book[key], "w"))[0] or "") for key in of_book}
     if any(part in ("", "?") for part in parts.values()):
         known = parts["archive"] if parts["archive"] not in ("", "?") else ""
         return (known + ". " if known else "") + str(t("site.cite.unknown"))
@@ -395,13 +400,13 @@ def _head(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui) -> str:
     leaf = (f'<span class="leaf">{E(str(t("site.leaf", leaf=entry.leaf)))}</span>'
             if entry.leaf and entry.leaf != "?" else "")
     badge = f'<span class="badge">{E(str(t("site.unreviewed")))}</span>' if entry.unreviewed else ""
-    return (f'<header><h3><a href="#{urls.fragment(entry.anchor)}">{E(title)}</a>{sex}{label}</h3>'
+    return (f'<header><h2><a href="#{urls.fragment(entry.anchor)}">{E(title)}</a>{sex}{label}</h2>'
             f'{leaf}{badge}</header>')
 
 
 def render(entry: Entry, book: Book, ui: Ui) -> str:
     """The record as an `<article>` whose id is its anchor."""
-    kind = ui.kind(entry.node["kind"])
+    kind = ui.kind(str(entry.node.get("kind")))
     events, used = _events(entry, book, kind, ui)
     people, beside = _people(entry, book, kind, ui)
     classes = "rec" + (" held" if entry.unreviewed else "")

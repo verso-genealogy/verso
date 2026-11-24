@@ -9,7 +9,6 @@ Markdown is read by markdown-it-py — the extra `verso-ru[site]`, imported only
 """
 from __future__ import annotations
 
-import html
 import posixpath
 import re
 from dataclasses import dataclass
@@ -19,6 +18,7 @@ from urllib.parse import quote, unquote, urlsplit
 
 from verso.ru.messages import t
 from verso.ru.site import shell
+from verso.ru.site.errors import SiteError
 from verso.ru.site.model import Site
 from verso.ru.site.shell import Context
 
@@ -27,7 +27,7 @@ ABOUT = "about/"
 BRANCH = "main"
 
 
-class ProseError(ValueError):
+class ProseError(SiteError):
     """Prose the site cannot show: a link that leads nowhere it may, a page named as a directory of
     the site, Markdown with no reader installed."""
 
@@ -51,9 +51,19 @@ def _linked(text: str) -> list[str]:
     return [unquote(urlsplit(target).path) for target in re.findall(r"\]\(([^)\s]+)", text)]
 
 
+_STEM = re.compile(r"[\w-]+")
+
+
 def order(docs: Path) -> list[Path]:
-    """The pages of `docs`: the contents first, then as the contents links them, then by name."""
+    """The pages of `docs`: the contents first, then as the contents links them, then by name. A file that is
+    a link to another, and a name that is not letters, digits, `_` and `-`, are refused: a page is a file of
+    the prose itself, named as an address spells it."""
     files = {path.name: path for path in sorted(docs.glob("*.md"))}
+    for name, path in files.items():
+        if path.is_symlink():
+            raise ProseError(str(t("site.prose.symlink", file=name)))
+        if not _STEM.fullmatch(path.stem):
+            raise ProseError(str(t("site.prose.name", file=name)))
     out: list[Path] = []
     if CONTENTS in files:
         out.append(files[CONTENTS])
@@ -76,15 +86,22 @@ def _plain(inline: Any) -> str:
 
 
 def _number(tokens: list[Any]) -> None:
-    """An id on every heading, GitHub's: the slug of its text, a repeat numbered from 1."""
+    """An id on every heading, GitHub's: the slug of its text, a repeat numbered from 1 — and numbered on, where
+    that number is a heading's own slug already («B», «B», «b-1» are `b`, `b-1`, `b-1-1`). A heading with no
+    letter or digit gets none."""
     seen: dict[str, int] = {}
     for place, token in enumerate(tokens):
         if token.type != "heading_open":
             continue
         slug = heading_slug(_plain(tokens[place + 1]))
-        met = seen.get(slug, 0)
-        seen[slug] = met + 1
-        token.attrSet("id", slug if not met else f"{slug}-{met}")
+        if not slug:
+            continue
+        unique = slug
+        while unique in seen:
+            seen[slug] += 1
+            unique = f"{slug}-{seen[slug]}"
+        seen[unique] = 0
+        token.attrSet("id", unique)
 
 
 def _title(tokens: list[Any], fallback: str) -> str:
@@ -120,22 +137,28 @@ class _Links:
         parts = urlsplit(href)
         if parts.scheme or href.startswith(("//", "#")):
             return href
-        target = (source.parent / unquote(parts.path)).resolve()
+        where = f"{source.name}: {href}"
+        try:
+            target = (source.parent / unquote(parts.path)).resolve()
+        except (ValueError, OSError):            # a path no file system takes (a NUL in it)
+            raise ProseError(str(t("site.prose.link_dead", link=where))) from None
         fragment = f"#{quote(unquote(parts.fragment))}" if parts.fragment else ""
         if target in self.pages:
             return up + self.pages[target] + fragment
         if target in self.books:
             return up + self.books[target]
-        where = f"{source.name}: {href}"
         if not target.is_relative_to(self.workspace):
             raise ProseError(str(t("site.prose.link_outside", link=where)))
         if not target.exists():
             raise ProseError(str(t("site.prose.link_dead", link=where)))
         if not self.ctx.repo_url:
             raise ProseError(str(t("site.prose.link_needs_repo", link=where)))
-        rel = quote(posixpath.join(*target.relative_to(self.workspace).parts))
+        repo = self.ctx.repo_url.rstrip("/")
+        parts_ = target.relative_to(self.workspace).parts
+        if not parts_:                           # the workspace itself: the repository's front page
+            return repo + fragment
         kind = "tree" if target.is_dir() else "blob"
-        return f"{self.ctx.repo_url.rstrip('/')}/{kind}/{BRANCH}/{rel}"
+        return f"{repo}/{kind}/{BRANCH}/{quote(posixpath.join(*parts_))}{fragment}"
 
 
 def listed(docs: Path | None) -> list[Page]:
@@ -149,7 +172,9 @@ def listed(docs: Path | None) -> list[Page]:
     pages: list[Page] = []
     for source in found:
         path = _path(source)
-        if path.rstrip("/") in shell.RESERVED - {"about"} or (path == ABOUT and source.name != CONTENTS):
+        # By the name a file system that tells no case apart would give the page («Books.md» is `books/`).
+        stem = path.rstrip("/").casefold()
+        if stem in shell.RESERVED - {"about"} or (stem == "about" and source.name != CONTENTS):
             raise ProseError(str(t("site.prose.reserved", file=source.name)))
         tokens = reader.parse(source.read_text(encoding="utf-8"))
         fallback = str(t("site.nav.about")) if source.name == CONTENTS else source.stem
@@ -183,6 +208,6 @@ def first_paragraph(docs: Path | None) -> str | None:
     for place, token in enumerate(tokens):
         if token.type == "paragraph_open":
             inline = tokens[place + 1]
-            return html.unescape("".join(child.content for child in inline.children or ()
-                                         if child.type in ("text", "code_inline", "softbreak")).strip()) or None
+            return "".join(child.content for child in inline.children or ()
+                           if child.type in ("text", "code_inline", "softbreak")).strip() or None
     return None
