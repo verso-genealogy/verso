@@ -1265,11 +1265,6 @@
      "label": "ui.field.wife_age"
     },
     {
-     "path": "marriage_date",
-     "type": "text",
-     "label": "ui.field.marriage_date"
-    },
-    {
      "path": "source_date_error",
      "type": "text",
      "label": "ui.field.source_date_error",
@@ -1315,6 +1310,10 @@
     {
      "path": "reviewed",
      "type": "boolean",
+     "hidden": true
+    },
+    {
+     "path": "marriage_date",
      "hidden": true
     }
    ],

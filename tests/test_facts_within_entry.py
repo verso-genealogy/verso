@@ -13,6 +13,8 @@ from calendar import Month
 from verso.ru.domain import person
 from verso.ru.dsl.records.births import birth
 from verso.ru.dsl.records.deaths import death
+from verso.ru.domain import EventDate
+from verso.ru.domain.event_date import read_written_date
 from verso.ru.dsl.records.divorces import divorce
 from verso.ru.facts.checks.dates import date_order_findings, unplaced_within, within_entry
 from verso.ru.facts.extract.births import facts_from_births
@@ -81,7 +83,7 @@ class WithinEntry(unittest.TestCase):
 
 def _divorced(number: int, day: int | None, month: Month | None, year: int, married: str | None, **more):
     return divorce(number, day, month, husband=person("Иван", "Петров"), wife=person(more.pop("wife", "Анна"), "Ильина"),
-                   marriage_date=married, year=year, **more)
+                   marriage_date=read_written_date(married), year=year, **more)
 
 
 def _divorces(*records) -> AssertionSet:
@@ -108,7 +110,7 @@ class DivorceBeforeItsMarriage(unittest.TestCase):
 
     def test_an_act_naming_one_spouse_says_it_of_that_one(self):
         [f] = within_entry(_divorces(divorce(1, 3, Month.JULY, wife=person("Анна", "Ильина"),
-                                             marriage_date="12 сентября 1925", year=1925)))
+                                             marriage_date=EventDate(1925, Month.SEPTEMBER, 12), year=1925)))
         self.assertEqual("wife", f.left.cite.locator)
 
     def test_a_marriage_before_the_divorce_is_no_finding(self):

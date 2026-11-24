@@ -28,7 +28,7 @@ from calendar import Month
 from verso.ru.dsl import Gender, person
 from verso.ru.dsl import CensusRole, census_records, household, member
 from verso.ru.dsl import death, death_records
-from verso.ru.dsl import divorce, divorce_records
+from verso.ru.dsl import EventDate, divorce, divorce_records
 from verso.ru.dsl import Relationship, relative
 from verso.ru.dsl import external_source_records, wwi_record
 from verso.ru.dsl import listed_person, name_list_records
@@ -57,7 +57,7 @@ manilovka_external_sources_1901 = external_source_records(
 manilovka_divorces_1901 = divorce_records(
     "ГАРО", "9", "1", "4", "Маниловка", "", 1901,
     divorce(7, 3, Month.JULY, husband=person("Иванъ", "Петровъ", "Справкинъ"), wife=person("Анна", "Иванова"),
-            husband_age=30, wife_age=27, marriage_date="24 февраля 1895"),
+            husband_age=30, wife_age=27, marriage_date=EventDate(1895, Month.FEBRUARY, 24)),
     divorce(None, 5, Month.JULY, husband=person("Павелъ", "Ильинъ"), wife=person("Ольга", "Петрова")),
     divorce(None, 9, Month.JULY, husband=person("Сергій", "Ильинъ"), wife=person("Марія", "Петрова"),
             case="судъ 2-го участка"))

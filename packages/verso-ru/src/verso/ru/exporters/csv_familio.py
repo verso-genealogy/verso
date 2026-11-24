@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 from verso.core.ratchet import unreviewed
 from verso.ru.ages import split_age as _split_age
 from verso.ru.domain import Person, Side
+from verso.ru.domain.event_date import date_text
 from verso.ru.exporters.base import CsvTable, RecordsExporter, write_table
 from verso.ru.relationship import Relationship
 
@@ -811,7 +812,7 @@ class DivorceRecordsCsvFamilioExporter(FamilioCsvExporter):
                 r.wife.get_canonical_name() if r.wife else "",
                 r.wife.patr_modern if r.wife else "",
                 r.wife_age if r.wife_age is not None else "",
-                r.marriage_date or "",
+                date_text(r.marriage_date),
                 r.children or "",
                 r.initiator or "",
                 final_comment,

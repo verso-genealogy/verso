@@ -15,11 +15,11 @@ import pytest
 
 import village_fixture
 
-from verso.ru.domain import person
+from verso.ru.domain import EventDate, person
 from verso.ru.dsl.records.divorces import divorce
-from verso.ru.facts.extract.divorces import RECORD_KIND, facts_from_divorces, named_wedding
+from verso.ru.facts.extract.divorces import RECORD_KIND, facts_from_divorces
 from verso.ru.facts.model import (
-    AgedYears, AssertionSet, DivorcedOn, FactDate, MarriedOn, NameClaim, ResidedIn, SpouseOf, Stated)
+    AgedYears, AssertionSet, Bound, DivorcedOn, FactDate, MarriedOn, NameClaim, ResidedIn, SpouseOf, Stated)
 
 
 def _divorce(number: int = 1, day: int | None = 3, month: Month | None = Month.JULY, **more: Any) -> Any:
@@ -34,48 +34,36 @@ def _facts(*records: Any, drafts: bool = False) -> AssertionSet:
                                             drafts=drafts))
 
 
-@pytest.mark.parametrize("text, date", [
-    ("14 марта 1926", FactDate(year=1926, month=3, day=14)),
-    # the old spelling of the months an act of 1918–1919 may still write
-    ("12 іюня 1915", FactDate(year=1915, month=6, day=12)),
-    ("7 іюля 1913", FactDate(year=1913, month=7, day=7)),
-    ("3 апрѣля 1914", FactDate(year=1914, month=4, day=3)),
-    ("3 Апрѣля 1914 г.", FactDate(year=1914, month=4, day=3)),
-    ("9 ноября 1913 г.", FactDate(year=1913, month=11, day=9)),
-    ("9 Ноября 1913 года", FactDate(year=1913, month=11, day=9)),
-    ("09.11.1913", FactDate(year=1913, month=11, day=9)),
-    ("февраль 1927", FactDate(year=1927, month=2)),
-    ("февраля 1927", FactDate(year=1927, month=2)),
-    ("1915", FactDate(year=1915)),
-    ("  1915 г. ", FactDate(year=1915)),
-    # the books' calendar is Julian: 1900 has its 29 February
-    ("29 февраля 1900", FactDate(year=1900, month=2, day=29)),
-    ("29.02.1900", FactDate(year=1900, month=2, day=29)),
+@pytest.mark.parametrize("named, date", [
+    (EventDate(1926, Month.MARCH, 14), FactDate(year=1926, month=3, day=14)),
+    (EventDate(1927, Month.FEBRUARY), FactDate(year=1927, month=2)),
+    (EventDate(1915), FactDate(year=1915)),
+    (EventDate(1915, circa=True), FactDate(year=1915, circa=True)),
+    (EventDate(1914, year_end=1915), FactDate(year=1914, bound=Bound.BETWEEN, end_year=1915)),
+    (EventDate(1915, date_range="before"), FactDate(year=1915, bound=Bound.BEFORE)),
 ])
-def test_the_wedding_an_act_names_is_read_in_the_forms_a_date_is_written_in(text: str, date: FactDate) -> None:
-    assert named_wedding(text) == date
+def test_the_wedding_an_act_names_is_its_event_date(named: EventDate, date: FactDate) -> None:
+    """A point, a month, a year, «около», a range: the interval the date asserts, as an external card's is read."""
+    assert {a.date for a in _facts(_divorce(marriage_date=named)).of(MarriedOn)} == {date}
 
 
-@pytest.mark.parametrize("text", [None, "", "в феврале 1927 г.", "1915?", "24/II-1927", "31 февраля 1927",
-                                  "24 фебруария 1927", "32.01.1927", "24 февраля", "около 1915",
-                                  "29 февраля 1901", "0000", "0 мая 1925", "12 мая 1925 и 3 июня",
-                                  "٣ мая 1925", "１２ мая 1925", "12.13.1925",
-                                  # a day needs its month; the year nought in figures too
-                                  "12 1927", "5 1915 г.", "24.02.0000", "1 января 0000"])
-def test_anything_else_names_no_wedding(text: str | None) -> None:
-    assert named_wedding(text) is None
+def test_a_wedding_written_as_text_asserts_nothing() -> None:
+    """DSL v1's text is kept and exported, and no reader parses it: the layer never guesses a date."""
+    with pytest.warns(DeprecationWarning):
+        record = _divorce(marriage_date="24 февраля 1920")
+    facts = _facts(record)
+    assert facts.of(MarriedOn) == () and len(facts.of(DivorcedOn)) == 2
 
 
 @pytest.mark.parametrize("value", [1926, 1926.0, ["1926"], True])
-def test_a_marriage_date_that_is_no_text_names_no_wedding_and_breaks_nothing(value: Any) -> None:
-    """A figure where the text of the act belongs must not take the village's reading down with it."""
-    assert named_wedding(value) is None
+def test_a_marriage_date_that_is_no_date_names_no_wedding_and_breaks_nothing(value: Any) -> None:
+    """A figure where the date belongs must not take the village's reading down with it."""
     facts = _facts(_divorce(marriage_date=value))
     assert facts.of(MarriedOn) == () and len(facts.of(DivorcedOn)) == 2
 
 
 def test_a_divorce_asserts_the_couple_the_day_and_the_ages() -> None:
-    facts = _facts(_divorce(husband_age=30, wife_age=27, marriage_date="24 февраля 1920"))
+    facts = _facts(_divorce(husband_age=30, wife_age=27, marriage_date=EventDate(1920, Month.FEBRUARY, 24)))
     assert {a.cite.record_kind for a in facts} == {RECORD_KIND} == {"divorce"}
     assert {a.cite.locator for a in facts} == {"husband", "wife"}
     divorced = facts.of(DivorcedOn)
@@ -109,7 +97,7 @@ def test_a_divorce_dated_to_the_year_alone_is_dated_so() -> None:
 def test_an_undated_divorce_asserts_no_day_and_no_age() -> None:
     """No day, no month, no year of its own and none from a book: the act is read — its couple, its wedding — and
     dates nothing, so no age is dated by it either."""
-    facts = _facts(_divorce(day=None, month=None, year=None, husband_age=30, wife_age=27, marriage_date="1920"))
+    facts = _facts(_divorce(day=None, month=None, year=None, husband_age=30, wife_age=27, marriage_date=EventDate(1920)))
     assert facts.of(DivorcedOn) == () and facts.of(AgedYears) == ()
     assert len(facts.of(SpouseOf)) == 2 and len(facts.of(MarriedOn)) == 2
 
@@ -128,34 +116,29 @@ def test_a_divorce_dated_in_words_where_a_figure_belongs_breaks_nothing(day: Any
 
 
 def test_a_divorce_with_one_spouse_asserts_what_it_has() -> None:
-    facts = _facts(_divorce(wife=None, husband_age=30, wife_age=27, marriage_date="1920"))
+    facts = _facts(_divorce(wife=None, husband_age=30, wife_age=27, marriage_date=EventDate(1920)))
     assert facts.of(SpouseOf) == ()
     assert [a.cite.locator for a in facts.of(DivorcedOn)] == ["husband"]
     assert [a.cite.locator for a in facts.of(MarriedOn)] == ["husband"]
     assert [a.cite.locator for a in facts.of(AgedYears)] == ["husband"]
 
 
-def test_a_date_of_marriage_it_cannot_read_asserts_no_wedding() -> None:
-    facts = _facts(_divorce(marriage_date="в феврале 1920 г."))
-    assert facts.of(MarriedOn) == () and len(facts.of(DivorcedOn)) == 2
-
-
 def test_source_date_error_withdraws_the_wedding_and_keeps_the_divorce() -> None:
-    facts = _facts(_divorce(marriage_date="12 сентября 1925", source_date_error="так в акте"))
+    facts = _facts(_divorce(marriage_date=EventDate(1925, Month.SEPTEMBER, 12), source_date_error="так в акте"))
     assert len(facts.of(MarriedOn)) == 2 and facts.believed().of(MarriedOn) == ()
     assert len(facts.believed().of(DivorcedOn)) == 2
 
 
 def test_calendar_note_rides_on_the_wedding() -> None:
-    facts = _facts(_divorce(marriage_date="9 ноября 1913", calendar_note="суббота, так в акте"))
+    facts = _facts(_divorce(marriage_date=EventDate(1913, Month.NOVEMBER, 9), calendar_note="суббота, так в акте"))
     assert {a.calendar_note for a in facts.of(MarriedOn)} == {"суббота, так в акте"}
-    assert {a.calendar_note for a in _facts(_divorce(marriage_date="9 ноября 1913")).of(MarriedOn)} == {None}
+    assert {a.calendar_note for a in _facts(_divorce(marriage_date=EventDate(1913, Month.NOVEMBER, 9))).of(MarriedOn)} == {None}
 
 
 def test_an_unreviewed_divorce_asserts_nothing_and_is_read_as_a_draft() -> None:
-    held = _divorce(husband_age=30, marriage_date="1920", reviewed=False)
+    held = _divorce(husband_age=30, marriage_date=EventDate(1920), reviewed=False)
     assert len(_facts(held)) == 0
-    assert len(_facts(held, drafts=True)) == len(_facts(_divorce(husband_age=30, marriage_date="1920")))
+    assert len(_facts(held, drafts=True)) == len(_facts(_divorce(husband_age=30, marriage_date=EventDate(1920))))
 
 
 def test_two_divorces_of_one_file_are_two_entries() -> None:
@@ -168,14 +151,14 @@ def test_two_divorces_of_one_file_are_two_entries() -> None:
 DIVORCES = '''\
 from calendar import Month
 
-from verso.ru.dsl import divorce, divorce_records, person
+from verso.ru.dsl import EventDate, divorce, divorce_records, person
 
 manilovka_divorces_1901 = divorce_records(
     "ГАРО", "9", "1", "4", "Маниловка", "", 1901,
     divorce(7, 3, Month.JULY, husband=person("Иванъ", "Петровъ", "Справкинъ"), wife=person("Анна", "Иванова"),
-            marriage_date="12 сентября 1901"),
+            marriage_date=EventDate(1901, Month.SEPTEMBER, 12)),
     divorce(8, 5, Month.JULY, husband=person("Павелъ", "Ильинъ"), wife=person("Ольга", "Петрова"),
-            marriage_date="24 февраля 1895"))
+            marriage_date=EventDate(1895, Month.FEBRUARY, 24)))
 '''
 
 

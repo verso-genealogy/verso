@@ -17,6 +17,7 @@ from verso.ru.church_calendar.svyatcy import Commemorated, Svyatcy
 from verso.ru.domain import person
 from verso.ru.dsl.records.births import birth, christening
 from verso.ru.dsl.records.deaths import death
+from verso.ru.domain.event_date import read_written_date
 from verso.ru.dsl.records.divorces import divorce
 from verso.ru.dsl.records.marriages import marriage
 from verso.ru.facts.checks.dates import orderings, within_entry, within_orderings
@@ -60,7 +61,7 @@ def _died(d_day: int, b_day: int, d_month: Month, b_month: Month | None = None, 
 
 
 def _divorced(married: str | None = None, **more):
-    return divorce(1, 3, Month.JULY, person("Иван", "Петров"), person("Анна", "Ильина"), marriage_date=married,
+    return divorce(1, 3, Month.JULY, person("Иван", "Петров"), person("Анна", "Ильина"), marriage_date=read_written_date(married),
                    year=1925, **more)
 
 

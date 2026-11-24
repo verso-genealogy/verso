@@ -3,7 +3,7 @@ import unittest
 from verso.ru.dsl.records.births import Birth, birth_month_year
 from verso.ru.dsl.records.deaths import Death, death_month_year
 from verso.ru.gender import Gender
-from verso.ru.domain import Person, RecordDefaults, Status, person, page, book
+from verso.ru.domain import EventDate, Person, RecordDefaults, Status, person, page, book
 from verso.ru.dsl.records.marriages import Marriage, marriage_month_year
 from verso.ru.relationship import Relative
 
@@ -1001,7 +1001,7 @@ class TestInsertDivorces(unittest.TestCase):
             wife=Person("Анисья", "Лукина", name_modern_orth="Анисья", patr_old="Лукина",
                          last_name="Спорщикова", gender=Gender.FEMALE, residence="Заманиловка"),
             husband_age=23, wife_age=21,
-            marriage_date="17 января 1926", initiator="жена",
+            marriage_date=EventDate(1926, Month.JANUARY, 17), initiator="жена",
         )
         records = DivorceRecords("ГАПО", "1605", "59", "59", "Заманиловка", "", 1927, [d])
         count = insert_divorces(self.conn, records, "1927/zamanilovka_divorces_1927.py")

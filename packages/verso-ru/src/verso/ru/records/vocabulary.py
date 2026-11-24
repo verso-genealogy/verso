@@ -73,7 +73,7 @@ _DEATH = _f(f"""record_num:intstr reviewed:bool source_date_error:str source_age
     cause_of_death:cause age:age page:str archive:str fund:str inventory:str case:str
     church:str book:str comment:str civil:bool=False""")
 _DIVORCE = _f("""record_num:intstr reviewed:bool=True d_day:int d_month:Month husband:person wife:person
-    husband_age:age wife_age:age marriage_date:str children:str initiator:str page:str case:str
+    husband_age:age wife_age:age marriage_date:EventDate|str children:str initiator:str page:str case:str
     comment:str year:int source_date_error:str calendar_note:str""")
 _MEMBER = _f("""number:int person:person role:CensusRole age:age ref_member:int
     marital_status:str occupation:str origin:str comment:str destination:str arrival_year:int

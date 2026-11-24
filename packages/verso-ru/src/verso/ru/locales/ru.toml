@@ -1641,6 +1641,9 @@ spouse = "супруг(а)"
 parent = "родитель"
 child = "ребёнок"
 
+[dsl.divorce]
+marriage_date_text = "divorce(marriage_date={text!r}) — дата текстом устарела: пишите EventDate(год, Month.МЕСЯЦ, день); текст сохраняется как есть, но его не читает ни одна проверка, а с 0.2 он не принимается"
+
 [dsl.upgrade]
 not_in_catalog = "{name}: этого имени нет в каталоге {catalog}"
 not_in_facade = "{name}: этого имени нет в фасаде DSL ({module})"
