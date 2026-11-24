@@ -3,7 +3,11 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased
+## 0.1.49 — 2026-11-24
+
+Only a site built by `verso site` moves; a corpus's CSVs, Terraform, records JSON, facts and reports do not. The
+site takes a new look and four fonts of its own (`assets/fonts/`, SIL OFL 1.1), and its years' index tells a year's
+books apart (see **Changed**).
 
 ### Changed
 
@@ -16,7 +20,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   were; nothing is fetched from another host. No output of a corpus but its site moves.
 - verso-ru, the site (`verso site`), from a reader's word: the years' index named a year's books by their kind
   alone, so five rolls of one year read «Ревизия, Ревизия, Ревизия, Ревизия, Ревизия». A book of another village
-  than the site's own parish — the one most of its records name, not the village's directory — is named with it
+  than the site's own parish — the one most of its records name, and the village of its directory — is named with it
   («Исповедная роспись — Заманиловка»), and two books a year's row would still name alike by their shelfmarks and
   parts («Рождения — 47-9-755, стр-9»); a year's page names a book's part too. Every page's footer but the 404's
   (whose `<base>` would lead elsewhere) gains «↑ Наверх», back to the head (`id="page.top"`, which no heading's
