@@ -2011,7 +2011,7 @@ by_books = "by archive, fund and file"
 by_names = "every mention of a surname"
 by_search = "a name in any spelling"
 reading_title = "How to read a record"
-reading = "A record is shown as the source writes it, in its own spelling. Beside it, in grey italics, stands what the library derived — a modern form of a name, a surname a child takes from the father. A value the whole book shares is said once, at the head of the book."
+reading = "A record is shown as the source writes it, in its own spelling. Beside it, in grey after an arrow, stands what the library derived — a modern form of a name, a surname a child takes from the father. A value the whole book shares is said once, at the head of the book."
 cite_title = "How to cite"
 cite = "Cite the source itself — the archive, fund, inventory, file and leaf under each record — and add the address of the record's page."
 

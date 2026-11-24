@@ -15,6 +15,13 @@ courtesy. Its other rows are the maintainer's own: the spellings the metric book
 with their bases (a name and its base — no record is carried), and the forms written as grammar.
 The sources of each row: verso/ru/naming/data/base/SOURCES.md.
 
+verso-ru's site (verso/ru/site/assets/fonts/) includes subsets of four fonts, each under the SIL Open
+Font License, Version 1.1, its full text beside it: Onest — Copyright 2021 The Onest Project Authors
+(OFL-Onest.txt); Cormorant Garamond — Copyright 2015 the Cormorant Project Authors
+(OFL-CormorantGaramond.txt); JetBrains Mono — Copyright 2020 The JetBrains Mono Project Authors
+(OFL-JetBrainsMono.txt); Noto Sans, its pre-reform letters alone — Copyright 2022 The Noto Project
+Authors (OFL-NotoSans.txt). They are cut from the fonts as github.com/google/fonts publishes them.
+
 verso-app includes icons from Lucide (https://lucide.dev) — Copyright (c) Lucide Icons and
 Contributors, ISC License; the icons derived from Feather, Copyright (c) Cole Bemis, MIT License;
 the full text is in verso/app/static/LICENSE.lucide.

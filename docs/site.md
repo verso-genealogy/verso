@@ -4,8 +4,9 @@
 
 `verso site` writes a village's records as a static site: every book as the document it was read
 from, record by record, with an index of the names and a search. Plain files — HTML, one
-stylesheet, one script for the search — that any host of static pages serves, at any path
-(`verso.ru.site`).
+stylesheet, one script for the search, and four fonts of their own (SIL OFL 1.1, each beside its licence in
+`assets/fonts/`) — that any host of static pages serves, at any path (`verso.ru.site`). Nothing is fetched
+from another host.
 
 ```sh
 verso site --village V --out _site

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import json
 from pathlib import Path
 from typing import Any
@@ -33,6 +34,35 @@ def test_a_built_site_holds_no_dead_end(file_node: dict[str, Any], tmp_path: Pat
             "books/manilovka/47-9-755/1900/birth/index.html", "cards/manilovka/wwi/index.html",
             "names/Сидоров/index.html", "patronymics/Иванов/index.html", "patronymics/-/index.html"} <= made
     assert built.pages == sum(1 for name in made if name.endswith("index.html"))
+
+
+def test_the_site_draws_with_its_own_fonts_and_names_their_licences(file_node: dict[str, Any], tmp_path: Path) -> None:
+    """The fonts are the site's own files (nothing fetched from another host), each beside its licence: every
+    `url(…)` of the stylesheet is a file the build wrote, and none leaves the site."""
+    _build(file_node, tmp_path / "site")
+    css = (tmp_path / "site" / "assets" / "site.css").read_text(encoding="utf-8")
+    named = re.findall(r'url\("?([^")]+)"?\)', css)
+    assert named and all(not re.match(r"[a-z]+:|//", url) for url in named)
+    for url in named:
+        assert (tmp_path / "site" / "assets" / url).is_file(), url
+    fonts = sorted(p.name for p in (tmp_path / "site" / "assets" / "fonts").iterdir())
+    assert [n for n in fonts if n.endswith(".woff2")] == [
+        "cormorant-garamond-italic.woff2", "jetbrains-mono.woff2", "noto-sans-old.woff2", "onest.woff2"]
+    assert [n for n in fonts if n.startswith("OFL-")] == [
+        "OFL-CormorantGaramond.txt", "OFL-JetBrainsMono.txt", "OFL-NotoSans.txt", "OFL-Onest.txt"]
+    assert "@import" not in css
+
+
+def test_the_package_ships_every_asset_the_build_copies() -> None:
+    """The build copies `ASSETS` out of the installed package: a wheel holds only what `package-data` names, and a
+    test run from the source would not see a font a glob left out."""
+    import fnmatch
+    import tomllib
+    data = tomllib.loads((Path(__file__).parents[3] / "packages" / "verso-ru" / "pyproject.toml").read_text(
+        encoding="utf-8"))["tool"]["setuptools"]["package-data"]["verso.ru.site"]
+    for name in site_package.ASSETS:
+        assert any(fnmatch.fnmatch(f"assets/{name}", glob) and glob.count("/") == f"assets/{name}".count("/")
+                   for glob in data), name
 
 
 def test_the_same_records_make_the_same_bytes(file_node: dict[str, Any], tmp_path: Path) -> None:
