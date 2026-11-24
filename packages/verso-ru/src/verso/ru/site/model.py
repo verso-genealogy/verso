@@ -14,7 +14,9 @@ from dataclasses import dataclass
 from typing import Any
 
 from verso.core.records import ids
+from verso.ru.gender import Gender
 from verso.ru.messages import t
+from verso.ru.naming.patronymics import derive_patronymic
 from verso.ru.site import urls
 from verso.ru.site.errors import SiteError
 
@@ -198,6 +200,34 @@ def _order(book: Book) -> tuple[Any, ...]:
     return (book.is_cards, book.year or 0, kind, book.kind, book.village, book.shelfmark, book.part or "")
 
 
+_BIRTHS = frozenset({"birth", "christening"})
+_GENDERS = {"male": Gender.MALE, "female": Gender.FEMALE}
+
+
+def infant_patronymic(node: Node) -> Node:
+    """A record of a birth with its child's patronymic said — the father's, as the library derives it
+    (`derive_patronymic`, what the Geni translator and the CSV give the child) — where the record writes none
+    and the export derived none: marked derived, as the surname the child takes from the father. `node` itself
+    where there is nothing to say (no father, a father's name not read, no sex), else a copy: the export is
+    read, never rewritten."""
+    if node.get("kind") not in _BIRTHS:
+        return node
+    persons = node.get("persons", [])
+    child = next((p for p in persons if p.get("role") == "child"), None)
+    father = next((p for p in persons if p.get("role") == "father"), None)
+    gender = _GENDERS.get(str((node.get("written") or {}).get("gender")))
+    if child is None or father is None or gender is None:
+        return node
+    if any((child.get(side) or {}).get("patronymic") for side in ("written", "derived")):
+        return node
+    given = form(father, "given", "modern")
+    patronymic = derive_patronymic(given[0], gender) if given else ""
+    if not patronymic or "?" in patronymic:
+        return node
+    derived = {**(child.get("derived") or {}), "patronymic": {"modern": patronymic}}
+    return {**node, "persons": [{**p, "derived": derived} if p is child else p for p in persons]}
+
+
 def load(files: Iterable[Node], *, village: str) -> Site:
     """The site of `files` — records-v1 file nodes of one village, in any order."""
     docs: dict[str, list[Node]] = {}
@@ -207,7 +237,7 @@ def load(files: Iterable[Node], *, village: str) -> Site:
             if "alias_of" in doc:
                 continue
             for run in doc.get("pages", []):
-                for node in run["records"]:
+                for node in map(infant_patronymic, run["records"]):
                     book_id = urls.book_of(node["id"])
                     leaf = node.get("written", {}).get("page") or run.get("page")
                     if node.get("review") not in REVIEWS:
