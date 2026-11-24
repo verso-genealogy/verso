@@ -1917,6 +1917,13 @@ casualty_date = "date of the loss"
 feat_date = "date of the deed"
 book = "book in the file"
 baptism_age = "age at the christening"
+church = "church"
+village = "parish"
+birth_day = "day of birth"
+birth_month = "month of birth"
+baptism_year = "year of the christening"
+source_date_error = "a date the source has wrong"
+lag_note = "on the delay"
 other = "other"
 
 [site.cite]

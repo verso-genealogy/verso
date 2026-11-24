@@ -92,7 +92,10 @@ class _Links:
         self.workspace = workspace.resolve()
         self.pages = {path.resolve(): _path(path) for path in docs.glob("*.md")}
         village = self.docs.parent
-        self.books = {(village / file).resolve(): book.path for book in site.books for file in book.files}
+        self.books: dict[Path, str] = {}
+        for book in site.books:              # a file of several books leads to its first
+            for file in book.files:
+                self.books.setdefault((village / file).resolve(), book.path)
 
     def rewrite(self, href: str, source: Path, up: str) -> str:
         parts = urlsplit(href)

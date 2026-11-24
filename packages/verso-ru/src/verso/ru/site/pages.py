@@ -213,24 +213,23 @@ def _fold_feminine(keys: Iterable[str]) -> dict[str, str]:
 
 
 def _name_pages(mentions: Iterable[tuple[str, Mention]]) -> list[NamePage]:
-    by_key: dict[str, list[tuple[str, Mention]]] = {}
-    for name, mention in mentions:
-        by_key.setdefault(_key(name), []).append((name, mention))
+    """The pages of an index of names; each lists its mentions in the site's order — by year, book, record."""
+    by_key: dict[str, list[tuple[int, str, Mention]]] = {}
+    for place, (name, mention) in enumerate(mentions):
+        by_key.setdefault(_key(name), []).append((place, name, mention))
     base = _fold_feminine(by_key)
-    grouped: dict[str, list[tuple[str, Mention]]] = {}
+    grouped: dict[str, list[tuple[int, str, Mention]]] = {}
     for key in sorted(by_key):
-        grouped.setdefault(base[key], []).extend(by_key[key])
-    pages: dict[str, NamePage] = {}
-    for key in sorted(grouped):
-        found = grouped[key]
-        spellings = sorted({_key(name) for name, _ in found}, key=lambda each: (each != key, each))
+        directory = _directory(base[key][:1].upper() + base[key][1:])
+        grouped.setdefault(directory, []).extend(by_key[key])     # two names one directory holds: one page
+    pages: list[NamePage] = []
+    for directory in sorted(grouped, key=_key):
+        found = sorted(grouped[directory], key=lambda each: each[0])
+        first = _key(directory)
+        spellings = sorted({_key(name) for _, name, _ in found}, key=lambda each: (each != first, each))
         title = ", ".join(each[:1].upper() + each[1:] for each in spellings)
-        directory = _directory(key[:1].upper() + key[1:])
-        if directory in pages:        # two names one directory can hold: one page of both
-            title = f"{pages[directory].title}, {title}"
-            found = [*((m.surname, m) for m in pages[directory].mentions), *found]
-        pages[directory] = NamePage(directory, title, tuple(mention for _, mention in found))
-    return list(pages.values())
+        pages.append(NamePage(directory, title, tuple(mention for _, _, mention in found)))
+    return pages
 
 
 def surname_pages(site: Site) -> list[NamePage]:

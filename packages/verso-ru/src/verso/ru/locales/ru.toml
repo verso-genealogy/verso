@@ -1834,6 +1834,13 @@ casualty_date = "дата выбытия"
 feat_date = "дата подвига"
 book = "книга в деле"
 baptism_age = "возраст при крещении"
+church = "церковь"
+village = "приход"
+birth_day = "день рождения"
+birth_month = "месяц рождения"
+baptism_year = "год крещения"
+source_date_error = "ошибка даты в источнике"
+lag_note = "о задержке"
 other = "прочее"
 
 [site.cite]

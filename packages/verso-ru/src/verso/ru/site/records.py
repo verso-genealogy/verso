@@ -326,11 +326,20 @@ def _more(entry: Entry, kind: Mapping[str, Any], ui: Ui, used: set[str]) -> str:
     return f'<dl class="more">{"".join(rows)}</dl>' if rows else ""
 
 
-def _site_label(path: str) -> Message:
+def site_labels() -> dict[str, Message]:
+    """The labels of what the interface's schema names no label for — a field a review page edits
+    elsewhere, which a reader still reads."""
     return {"date": t("site.field.date"), "birth_date": t("site.field.birth_date"),
             "draft_date": t("site.field.draft_date"), "casualty_date": t("site.field.casualty_date"),
             "feat_date": t("site.field.feat_date"), "book": t("site.field.book"),
-            "baptism.age": t("site.field.baptism_age")}.get(path, t("site.field.other"))
+            "baptism.age": t("site.field.baptism_age"), "church": t("site.field.church"),
+            "village": t("site.field.village"), "birth.day": t("site.field.birth_day"),
+            "birth.month": t("site.field.birth_month"), "baptism.year": t("site.field.baptism_year"),
+            "source_date_error": t("site.field.source_date_error"), "lag_note": t("site.field.lag_note")}
+
+
+def _site_label(path: str) -> Message:
+    return site_labels().get(path, t("site.field.other"))
 
 
 def shelfmark(node: Node, book: Book) -> str:
