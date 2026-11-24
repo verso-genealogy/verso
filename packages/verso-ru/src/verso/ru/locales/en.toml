@@ -1341,7 +1341,7 @@ across = "THE RECORDS DISAGREE — an over-fold's signal: records folded into on
 group = "    records {records}: {shown}"
 within = "A RECORD CONTRADICTS ITSELF — check the DSL against the scan:"
 noted = "SO IN THE ORIGINAL — the record says itself that its kin names disagree (source_kin_error):"
-noted_pair = "  {name} ({canonical}): {first} and {second}  [{file} №{number}] — {note}"
+noted_pair = "  {name} ({canonical}): {first} and {second}  [{file} {number}] — {note}"
 
 [cli.facts.span]
 days = { one = "{count} day", other = "{count} days" }

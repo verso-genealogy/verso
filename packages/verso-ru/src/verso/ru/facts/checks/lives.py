@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from verso.ru.facts.checks.dates import as_read
+from verso.ru.facts.labels import record_number
 from verso.ru.facts.projection import canonical_name
 from verso.ru.facts.model import (
     AssertionSet, BaptizedOn, BornOn, BuriedOn, DiedOn, EnumeratedIn, MarriedOn, SurvivedUntil)
@@ -89,7 +90,7 @@ def households_of_canonicals(facts: AssertionSet,
 
 def _cite_label(c: Any) -> str:
     page = str(t("facts.leaf", page=c.page)) if c.page else ""
-    return f"{c.source_file} №{c.record_num}{page}"
+    return f"{c.source_file} {record_number(c)}{page}"
 
 
 def lives_of_canonicals(facts: AssertionSet, identity: Any) -> dict[str, Lives]:

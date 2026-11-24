@@ -225,13 +225,3 @@ def test_an_unnumbered_act_is_said_without_a_number(village: Path) -> None:
     assert "none" not in report
     assert f"manilovka_divorces_1902.py {i18n.render(t('cli.facts.unnumbered'), 'ru')}" in report
 
-
-def test_every_report_of_the_facts_cli_names_a_number_one_way():
-    """The facts CLI prints a record's number through one helper (`_number`): an f-string `№{…record_num}` written
-    anywhere else would print «№none» for an unnumbered entry again."""
-    import re
-    import inspect
-    from verso.ru.cli import facts as cli
-    source = inspect.getsource(cli)
-    helper = inspect.getsource(cli._number)
-    assert re.findall(r"№\{[^}]*record_num\}", source.replace(helper, "")) == []

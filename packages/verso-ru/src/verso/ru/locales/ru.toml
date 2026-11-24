@@ -1273,7 +1273,7 @@ across = "ЗАПИСИ РАСХОДЯТСЯ — сигнал пересвода:
 group = "    записей {records}: {shown}"
 within = "ЗАПИСЬ ПРОТИВОРЕЧИТ САМА СЕБЕ — сверить DSL и скан:"
 noted = "ТАК В ПОДЛИННИКЕ — запись сама говорит, что её имена родни расходятся (source_kin_error):"
-noted_pair = "  {name} ({canonical}): {first} и {second}  [{file} №{number}] — {note}"
+noted_pair = "  {name} ({canonical}): {first} и {second}  [{file} {number}] — {note}"
 
 [cli.facts.span]
 days = "{count} дн."
