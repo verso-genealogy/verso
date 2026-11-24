@@ -10,7 +10,9 @@ wedding it names, and from 0.2 the text is refused.
            (`verso.ru.domain.event_date.read_written_date`: «24 февраля 1927», «февраль 1927», «1927»,
            «24.02.1927»), the finding offers its replacement, `EventDate(1927, Month.FEBRUARY, 24)` — the IDE's
            quick fix; `EventDate` and `Month` are imported from `verso.ru.dsl` by the author. A text the library
-           does not read as a date (written in its place, or in another form) is said with no replacement.
+           does not read as a date (written in its place, or in another form) is said with no replacement. A
+           text bound once to a name at the head of the file (`MARRIED = "…"`, `marriage_date=MARRIED`) is said
+           at the act, with no replacement either. A file that defines or binds its own `divorce` has no act.
 
 Advisory: the corpora that wrote the text move to `EventDate` on their own commit.
 
@@ -26,6 +28,7 @@ from pathlib import Path
 from verso.ru.domain.event_date import EventDate, read_written_date
 from verso.ru.linters.issue import as_dict, issue
 from verso.ru.linters.checks import shared_ast
+from verso.ru.linters.checks.file_bindings import module_bindings, string_constants
 
 #: Where `divorce()` takes `marriage_date` in its place (record_num, d_day, d_month, husband, wife, husband_age,
 #: wife_age, marriage_date).
@@ -55,15 +58,46 @@ def _func_name(node: ast.Call) -> str | None:
     return node.func.id if isinstance(node.func, ast.Name) else None
 
 
+#: Where a DSL file's `divorce` comes from (IMP001).
+FACADE = "verso.ru.dsl"
+
+
+def _binds_divorce(stmt: ast.stmt) -> bool:
+    if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        return stmt.name == "divorce"
+    if isinstance(stmt, ast.ImportFrom):
+        return stmt.module != FACADE and any((a.asname or a.name) == "divorce" for a in stmt.names)
+    if isinstance(stmt, ast.Import):
+        return any((a.asname or a.name) == "divorce" for a in stmt.names)
+    if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+        targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+        return any(isinstance(n, ast.Name) and n.id == "divorce" for t in targets for n in ast.walk(t))
+    return False
+
+
+def _own_divorce(tree: ast.AST) -> bool:
+    """The file defines, binds or imports from elsewhere a `divorce` of its own: its calls are no act (a DSL file
+    imports the facade's, IMP001)."""
+    return isinstance(tree, ast.Module) and any(_binds_divorce(stmt) for stmt in tree.body)
+
+
 def _collect(tree: ast.AST, src: str | None = None) -> list[dict[str, object]]:
     lines = src.splitlines() if src is not None else []
     found: list[dict[str, object]] = []
+    if _own_divorce(tree):
+        return found
+    # `MARRIED = "24 февраля 1927"` once at the head of the file, `marriage_date=MARRIED` in the act.
+    texts = string_constants(module_bindings(tree))
     for node in shared_ast.walk(tree):
         if not isinstance(node, ast.Call) or _func_name(node) != "divorce":
             continue
         keyword = next((kw for kw in node.keywords if kw.arg == "marriage_date"), None)
         value = keyword.value if keyword is not None else (
             node.args[MARRIAGE_DATE_POSITION] if len(node.args) > MARRIAGE_DATE_POSITION else None)
+        if isinstance(value, ast.Name) and texts.get(value.id, "").strip():
+            # Said at the act, with no fix: the name may stand for other acts too, and its line is the author's.
+            found.append({**said(texts[value.id]), "level": "warn", "line": value.lineno})
+            continue
         if not (isinstance(value, ast.Constant) and isinstance(value.value, str)) or not value.value.strip():
             continue
         finding = {**said(value.value), "level": "warn", "line": value.lineno}

@@ -30,6 +30,7 @@ from verso.ru.facts.checks.births import birth_span
 from verso.ru.facts.checks.reconcile import (
     Audit, Backing, Reconciliation, Side, VERDICT_AMBIGUOUS, VERDICT_CANDIDATE, VERDICT_NONE, audit_folded, reconcile)
 from verso.ru.facts.identity import display_name
+from verso.ru.facts.labels import record_number
 from verso.ru.facts.model import AgedYears, BornOn, DiedOn, NameClaim, SurvivedUntil
 from verso.ru.facts.projection import canonical_name, consolidated_identity
 from verso.ru.messages import t
@@ -85,7 +86,7 @@ def _source(side: Side) -> str:
         slot = (f" · {cite.locator}" if cite.record_kind not in ("list", "external")
                 else "")
         parts.append(f"{_kind(cite.record_kind)} "
-                     f"{cite.source_file} №{cite.record_num}{page}{slot}"
+                     f"{cite.source_file} {record_number(cite)}{page}{slot}"
                      + (f" — {'; '.join(said)}" if said else ""))
     return "; ".join(parts)
 

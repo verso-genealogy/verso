@@ -54,16 +54,11 @@ from verso.ru.facts.rules.cooccurrence import Occurrence, Pair, cooccurrences
 from verso.ru.facts.signals import Signal, signal_of
 from verso.ru.pipeline.facts import consolidated_facts, unpublished_kinds
 from verso.core.tools import tool
+from verso.ru.facts.labels import record_number
 from verso.ru.messages import t
 
 if TYPE_CHECKING:
     from verso.core.targets.geni.date import GeniDate
-
-def _number(cite: Citation) -> str:
-    """How a report names a record by its number: «№7», or «без номера» for an entry its book left unnumbered
-    (the extractors' `record_num` is then "none")."""
-    return str(t("cli.facts.unnumbered")) if cite.record_num == "none" else f"№{cite.record_num}"
-
 
 def village_path(arg: str) -> Path:
     """A `--village` argument as a directory: an absolute path as given, a name
@@ -359,7 +354,7 @@ def entries_alone(facts: AssertionSet, found: list[WithinFinding]) -> list[Entry
     for record_id, group in grouped.items():
         cite = group[0].left.cite
         who = ", ".join(display_name(claim) for claim in named.get(record_id, {}).values()) or "?"
-        out.append((f"{who} ({cite.source_file} {_number(cite)})", group))
+        out.append((f"{who} ({cite.source_file} {record_number(cite)})", group))
     return out
 
 
@@ -383,7 +378,7 @@ def date_order_report(within: OrderFindings, across: OrderFindings,
             lines.append(f"  {name_of(res_name)} ({res_name}):")
             for kind, _event, _reference, a, b in within[res_name]:
                 signal = signal_of(WithinFinding(kind=kind, left=a, right=b))
-                lines.append(f"      {signal.said}  [{kind}]  {a.cite.source_file} {_number(a.cite)}")
+                lines.append(f"      {signal.said}  [{kind}]  {a.cite.source_file} {record_number(a.cite)}")
                 lines.append(f"      → {signal.why}")
         # The entries of people no canonical holds (a record the tree does not publish): the same class,
         # each finding said once though both of a couple carry it.
@@ -391,7 +386,7 @@ def date_order_report(within: OrderFindings, across: OrderFindings,
             lines.append(f"  {who}:")
             for f in findings:             # `within_entry` says a couple's finding once
                 signal = signal_of(f)
-                lines.append(f"      {signal.said}  [{f.kind}]  {f.left.cite.source_file} {_number(f.left.cite)}")
+                lines.append(f"      {signal.said}  [{f.kind}]  {f.left.cite.source_file} {record_number(f.left.cite)}")
                 lines.append(f"      → {signal.why}")
     if across:
         lines += ["", str(t("cli.facts.date_order.across"))]
@@ -400,8 +395,8 @@ def date_order_report(within: OrderFindings, across: OrderFindings,
             for _kind, event, reference, a, b in across[res_name]:
                 lines.append(
                     f"      {event} {a.date} [{a.cite.source_file} "
-                    f"{_number(a.cite)}] < {reference} {b.date} "
-                    f"[{b.cite.source_file} {_number(b.cite)}]")
+                    f"{record_number(a.cite)}] < {reference} {b.date} "
+                    f"[{b.cite.source_file} {record_number(b.cite)}]")
     return "\n".join(lines), 1
 
 
@@ -418,7 +413,7 @@ def _birth_claim_line(claim: Any) -> str:
         first, last = span.first_year, span.last_year
         implied = (str(t("cli.facts.birth.implied_year", year=first)) if first == last
                    else str(t("cli.facts.birth.implied_years", first=first, last=last)))
-    return f"{said}{implied}  [{c.source_file} {_number(c)}{page} · {c.locator}]"
+    return f"{said}{implied}  [{c.source_file} {record_number(c)}{page} · {c.locator}]"
 
 
 @dataclass(frozen=True)
@@ -588,7 +583,7 @@ def birth_claims(village_dir: Path, *, min_gap_years: float = 0.0) -> tuple[str,
 
 
 def _father_said(c: FatherClaim) -> str:
-    return (f"{c.said} [{c.cite.source_file} {_number(c.cite)} · {c.cite.locator}"
+    return (f"{c.said} [{c.cite.source_file} {record_number(c.cite)} · {c.cite.locator}"
             f"{str(t('cli.facts.father.derived_dot')) if c.derived else ''}]")
 
 
@@ -628,14 +623,14 @@ def format_father_claims(found: list[FatherFinding],
                                  f"{str(t('cli.facts.father.derived_comma')) if c.derived else ''})"
                                  for c in claims)
                 lines.append(f"  {name_of(f.canonical)} ({f.canonical}): {said}  "
-                             f"[{cite.source_file} {_number(cite)}]")
+                             f"[{cite.source_file} {record_number(cite)}]")
     if noted:
         lines += ["", str(t("cli.facts.father.noted"))]
         for f in noted:
             for a, b, note in dict.fromkeys(f.acknowledged):
                 lines.append(str(t("cli.facts.father.noted_pair", name=name_of(f.canonical), canonical=f.canonical,
                                    first=a.said, second=b.said, file=a.cite.source_file,
-                                   number=a.cite.record_num, note=note)))
+                                   number=record_number(a.cite), note=note)))
     return "\n".join(lines)
 
 
@@ -687,7 +682,7 @@ def format_death_claims(found: list[DeathFinding],
             word = str(t("cli.facts.death_claims.death") if isinstance(c, DiedOn) else t("cli.facts.death_claims.burial"))
             told = str(t("cli.facts.death_claims.told")) if c.date.circa else ""
             lines.append(f"    {word} {c.date}{told} [{c.cite.source_file} "
-                         f"{_number(c.cite)} · {c.cite.locator}]")
+                         f"{record_number(c.cite)} · {c.cite.locator}]")
     return "\n".join(lines)
 
 
@@ -723,7 +718,7 @@ def format_signals(signals: Sequence[Signal], *, head: str) -> str:
     for s in signals:
         page = str(t("cli.facts.leaf", page=s.cite.page)) if s.cite.page else ""
         lines += ["", f"[{s.confidence}] {s.said}", *(f"    {detail}" for detail in s.details),
-                  f"    {s.cite.source_file} {_number(s.cite)}{page}"]
+                  f"    {s.cite.source_file} {record_number(s.cite)}{page}"]
     return "\n".join(lines)
 
 
@@ -794,7 +789,7 @@ def lags_report(village_dir: Path, kind: str) -> tuple[str, int]:
 
 
 def _where(cite: Citation) -> str:
-    return f"{cite.source_file} {_number(cite)}"
+    return f"{cite.source_file} {record_number(cite)}"
 
 
 def format_posthumous(found: list[PosthumousFinding], name_of: Callable[[str], str]) -> str:
@@ -957,7 +952,7 @@ def explain(facts: AssertionSet, spec: str) -> str:
         if str(cite.year) != year or cite.record_num != num:
             continue
         out.append(str(t("cli.facts.explain.record", village=cite.village, file=cite.source_file, year=cite.year,
-                         number=cite.record_num)))
+                         number=record_number(cite, sign=False))))
         render = functools.partial(_render, record)
         out += [why(a, render=render) for a in record.assertions]
         out.append("")
@@ -1001,7 +996,7 @@ def explain_person(facts: AssertionSet, gen: Any, slots: Any, res_name: str) -> 
         page = str(t("cli.facts.leaf", page=c.page)) if c.page else ""
         lines.append("")
         lines.append(f"{c.year} · {c.record_kind} · {c.source_file} "
-                     f"{_number(c)}{page} · {c.locator}")
+                     f"{record_number(c)}{page} · {c.locator}")
         render = functools.partial(_render, record)
         lines += ["    " + line for a in here
                   for line in why(a, render=render).splitlines()]

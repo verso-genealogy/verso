@@ -28,7 +28,8 @@ _STDLIB_OK = True  # stdlib is always allowed; the budgets below list geni.* onl
 
 #: module glob → the `geni.*` prefixes it may import.
 _BUDGET: dict[str, tuple[str, ...]] = {
-    "model.py": ("verso.ru.gender",),
+    # A citation says its own number in a report's words («без номера»): the catalog, a leaf (no file, no record).
+    "model.py": ("verso.ru.gender", "verso.ru.messages"),
     "identity.py": ("verso.ru.facts.model", "verso.ru.naming", "verso.ru.gender"),
     # `projection.py` gained `verso.ru.facts.identity` with `consolidated_identity`:
     # the bridge's PRODUCT is an `Identity`, and the type belongs to the module
@@ -53,7 +54,7 @@ _BUDGET: dict[str, tuple[str, ...]] = {
     # arithmetic, the paschalion, the святцы TYPE — a stdlib-only leaf; the
     # святцы TABLE is loaded by the CLI and handed in, never read here.
     "checks/*.py": ("verso.ru.facts.model", "verso.ru.facts.identity", "verso.ru.facts.rules",
-                    "verso.ru.facts.projection", "verso.ru.facts.checks",
+                    "verso.ru.facts.projection", "verso.ru.facts.checks", "verso.ru.facts.labels",
                     "verso.ru.facts.extract.common", "verso.ru.ages", "verso.ru.domain.estates",
                     "verso.ru.naming", "verso.ru.gender", "verso.ru.church_calendar",
                     # A check's reasons and hints are words a person reads — the catalog's,
@@ -64,6 +65,8 @@ _BUDGET: dict[str, tuple[str, ...]] = {
     # no DSL class), the six checks that need no second record, and the
     # Church's calendar for the days a signal names. `verso.core.workspace`
     # for one name: the error that says a workspace has no names table.
+    # How a report names a record by its number («№7», «без номера»): the citation and the catalog's word.
+    "labels.py": ("verso.ru.facts.model",),
     "signals.py": ("verso.ru.facts.model", "verso.ru.facts.extract", "verso.ru.facts.checks",
                    "verso.ru.church_calendar", "verso.ru.messages", "verso.core.workspace"),
 }

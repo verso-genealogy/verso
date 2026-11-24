@@ -73,6 +73,7 @@ from verso.ru import corpus_data
 from verso.ru.domain.estates import estate_of, family_root
 from verso.ru.facts.checks.estates import estates_in_conflict
 from verso.ru.facts.identity import Identity
+from verso.ru.facts.labels import record_number
 from verso.ru.facts.model import AssertionSet, Derived, Titled
 from verso.ru.facts.projection import canonical_name, consolidated_identity
 from verso.ru.messages import t
@@ -147,7 +148,7 @@ def _estate_row(claim: Titled) -> SourceStatus:
     c = claim.cite
     page = str(t("consolidation.leaf", page=c.page)) if c.page else ""
     ours = str(t("consolidation.estate_conflicts.reconstructed")) if isinstance(claim.basis, Derived) else ""
-    return SourceStatus(source=f"{c.source_file} №{c.record_num}{page}",
+    return SourceStatus(source=f"{c.source_file} {record_number(c)}{page}",
                         role=f"{c.locator}{ours}", status=claim.status,
                         estate=estate_of(claim.status) or "", year=c.year)
 

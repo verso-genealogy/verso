@@ -89,6 +89,7 @@ from dataclasses import dataclass, replace
 
 from verso.ru.facts.checks.births import BIRTH_SLACK_YEARS, birth_gap, birth_span
 from verso.ru.facts.checks.dates import as_read
+from verso.ru.facts.labels import record_number
 from verso.ru.facts.checks.lives import (
     Day, LifeMark, Lives, lives_of_canonicals, outlived, two_baptisms)
 from verso.ru.facts.checks.neighbours import (
@@ -354,7 +355,7 @@ def _named_alike(a: NameKeys, b: NameKeys) -> bool:
 
 def _label(c: Citation) -> str:
     page = str(t("facts.leaf", page=c.page)) if c.page else ""
-    return f"{c.source_file} №{c.record_num}{page}"
+    return f"{c.source_file} {record_number(c)}{page}"
 
 
 def entry_days(facts: AssertionSet) -> EntryDays:
@@ -615,7 +616,7 @@ def _contest(found: list[Reconciliation]) -> list[Reconciliation]:
 
 
 def _entry_label(side: Side) -> str:
-    return ", ".join(sorted(f"№{c.record_num}" for c in side.entries.values()
+    return ", ".join(sorted(record_number(c) for c in side.entries.values()
                             if c.record_kind == "list"))
 
 
