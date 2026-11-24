@@ -122,6 +122,7 @@ COMMANDS: dict[str, str] = {
     "review-ratchet":               "verso.ru.cli.review_ratchet",
     "show-record":                  "verso.ru.cli.show_record",
     "sibling-spacing":              "verso.ru.consolidation.sibling_spacing",
+    "site":                         "verso.ru.cli.site",
     "split-couples":                "verso.ru.consolidation.split_couples",
     "stale":                        "verso.ru.cli.stale",
     "stale-claims":                 "verso.ru.consolidation.stale_claims",

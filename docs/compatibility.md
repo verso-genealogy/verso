@@ -18,6 +18,7 @@ The library promises, to a corpus that is not its author's, what a corpus is wri
 | the linters' codes and the format of `dsllint --json` (each finding's `code`, `params`, `token`) | [reference](reference/linters.md) |
 | the advisory baseline's row (v2: `# baseline v2`, keyed by file, code, params) | [reference](reference/linters.md) |
 | the line of the review ratchet's list | [the review ratchet](review-ratchet.md) |
+| the addresses of a village's site: a book's page and a record's anchor, made of its id | [a village's site](site.md#the-pages-and-their-addresses) |
 | the scan tools: `verso scans` and its subcommands, their flags, outputs and exit codes; the names in `__all__` of `verso.core.scans.*` and `verso.ru.scans.*` — the modules under `cli` too, a subcommand's module public in its `HELP`, `add_arguments` and `run` and in what [the table](scans.md#in-python) adds —; `Plugin.scans` | [the scan tools](scans.md) |
 
 Everything else — the modules under the facade, the domain, the translator — is the library's own

@@ -67,7 +67,7 @@ name = "ru.dsl"
 packages = ["verso.ru.dsl"]
 [[tier]]
 name = "ru.readers"
-packages = ["verso.ru.exporters", "verso.ru.linters", "verso.ru.targets", "verso.ru.records"]
+packages = ["verso.ru.exporters", "verso.ru.linters", "verso.ru.targets", "verso.ru.records", "verso.ru.site"]
 [[tier]]
 name = "ru.analysis"
 packages = ["verso.ru.facts", "verso.ru.importers", "verso.ru.timeline"]

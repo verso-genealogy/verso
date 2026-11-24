@@ -1873,3 +1873,173 @@ help_count = "where the счётъ column lies across the frame (fractions; defa
 help_top = "where the writing begins under the column titles (fraction; default: the album's `top`, else {top})"
 help_bottom = "where the writing ends (fraction; default: the album's `bottom`, else 1)"
 help_out = "where to write the ruler sheet (default: rows_<leaf>_<part>.jpg in the album directory)"
+
+[site.urls]
+no_slug = "«{text}»: no letter or digit to make an address of"
+
+[site]
+unknown_kind = "a record of the kind «{kind}», which the records' vocabulary does not know — not an export of this library's version"
+unknown_value = "the field «{path}» holds an object ({keys}) the site cannot draw — not an export of this library's version"
+duplicate_path = "two books make one address {path}: {first} and {second}"
+not_an_export = "{file}: the record {record} does not say whether it was proofread (review) — the site is built of an export (verso export-records)"
+yes = "yes"
+unreviewed = "not proofread"
+unreviewed_count = { one = "{count} not proofread", other = "{count} not proofread" }
+leaf = "leaf {leaf}"
+permalink = "link to this record"
+member_ref = "No. {number}"
+member_of = "of No. {number}"
+
+[site.date]
+circa = "c. {date}"
+between = "{start} — {end}"
+before = "before {date}"
+after = "after {date}"
+
+[site.event]
+registration = "registered"
+
+[site.col]
+number = "No."
+relation = "who"
+name = "name"
+arrival = "arrived"
+departure = "left"
+birth = "born"
+case = "file"
+year = "year"
+kind = "what"
+parish = "parish"
+records = "records"
+book = "book"
+
+[site.field]
+marriage_date = "date of the marriage"
+date = "date"
+birth_date = "born"
+draft_date = "drafted"
+casualty_date = "date of the loss"
+feat_date = "date of the deed"
+book = "book in the file"
+baptism_age = "age at the christening"
+church = "church"
+village = "parish"
+birth_day = "day of birth"
+birth_month = "month of birth"
+baptism_year = "year of the christening"
+source_date_error = "a date the source has wrong"
+lag_note = "on the delay"
+other = "other"
+
+[site.cite]
+label = "Source"
+shelfmark = "{archive}, f. {fund}, inv. {inventory}, file {case}."
+unknown = "shelfmark not established."
+leaf = "Leaf {leaf}."
+card_archive = "the document: {ref}"
+source = "the card in its catalog"
+
+[site.nav]
+label = "The site's sections"
+years = "Years"
+books = "Books"
+names = "Names"
+about = "About the place"
+search = "Search"
+
+[site.search]
+label = "Search by name"
+placeholder = "a name or a surname"
+go = "Find"
+hint = "A surname, a name, a patronymic or several of them, in the modern or the old spelling: «Феодор» finds «Ѳеодоръ»."
+noscript = "The search needs JavaScript. Without it, find a person in the index of"
+loading = "Reading the index…"
+none = "Nothing found."
+error = "The index did not load."
+found = "Found: {count}."
+more = "The first {limit} are shown — narrow the query."
+
+[site.legend]
+written_word = "as written"
+written = "what the record itself says, in the spelling of the source"
+derived_word = "derived"
+derived = "what the library worked out: a modern form of a name, a surname taken from the father"
+unreviewed = "the reading has not been checked against the scan yet"
+
+[site.footer]
+license = "Data:"
+repo = "the repository"
+revision = "built from {revision}"
+
+[site.book]
+cards = "Cards: {kind}"
+cards_source = "Cards of external catalogs"
+civil = "{title} (civil registry)"
+civil_note = "A book of the civil registry: the second date is the day of registration."
+parish = "parish of {village}"
+defaults = "Unless an entry says otherwise:"
+leaves = "Leaves"
+fund = "f. {fund}, inv. {inventory}"
+
+[site.years]
+undated = "Books with no year"
+
+[site.names]
+surnames = "Surnames"
+patronymics = "By patronymic"
+nameless = "With neither a surname nor a patronymic"
+what = "Every mention of a surname in the records: a mention is one person of one record, not a person's life."
+also = "Those written with no surname:"
+patronymics_what = "Those the source writes with no surname, by the patronymic in the form of the book."
+mentions = { one = "{count} mention", other = "{count} mentions" }
+
+[site.front]
+books = { one = "{count} book", other = "{count} books" }
+mentions = { one = "{count} mention of a person", other = "{count} mentions of people" }
+years = "years {span}"
+unreviewed = { one = "{count} record is not proofread yet", other = "{count} records are not proofread yet" }
+by_years = "the books of each year"
+by_books = "by archive, fund and file"
+by_names = "every mention of a surname"
+by_search = "a name in any spelling"
+reading_title = "How to read a record"
+reading = "A record is shown as the source writes it, in its own spelling. Beside it, in grey italics, stands what the library derived — a modern form of a name, a surname a child takes from the father. A value the whole book shares is said once, at the head of the book."
+cite_title = "How to cite"
+cite = "Cite the source itself — the archive, fund, inventory, file and leaf under each record — and add the address of the record's page."
+
+[site.not_found]
+title = "No such page"
+what = "The address may have changed with a corrected number or shelfmark of a record. Find the record through the index of names or the list of books."
+
+[site.prose]
+symlink = "{file}: a link to another file — a page is a file of the prose itself"
+name = "{file}: a page is named by letters, digits, «_» and «-» alone"
+missing_extra = "the village has prose (docs/*.md) and no Markdown reader: install verso-ru[site]"
+link_outside = "{link}: the link leads out of the workspace"
+link_dead = "{link}: the link leads to nothing"
+link_needs_repo = "{link}: the link leads to a file the site does not show — name the repository (--repo-url)"
+reserved = "{file}: the site keeps this name for itself — rename the page"
+image = "{file}: an image — the site shows none"
+
+[site.build]
+two_pages = "two pages make one address: {first} and {second}"
+bad_url = "{url}: an address begins with https:// or http://"
+out_not_empty = "{out}: not empty — a site is built into a new or an empty directory"
+
+[cli.site]
+no_docs = "{docs}: no such directory of prose"
+description = "A village's records as a static site"
+help_village = "the village's directory"
+help_out = "where to write the site: a new or an empty directory"
+help_records = "read the records from this export (verso export-records --out) instead of building them"
+help_docs = "the settlement's prose, a directory of *.md (default <village>/docs)"
+help_title = "the site's name (default the village's)"
+help_summary = "a paragraph about the settlement for the front page"
+help_repo_url = "the repository the records are kept in"
+help_site_url = "the address the site is served at — for sitemap.xml and canonical links"
+help_revision = "what the site was built from, for the footer"
+help_license = "the licence of the data, by its name"
+help_license_url = "the licence's address"
+help_strict = "exit 1 if some file did not import or a link of the site is dead"
+done = "{pages} pages, {megabytes} MB, {records}, not proofread: {unreviewed} → {out}"
+skipped = "files skipped: {count}"
