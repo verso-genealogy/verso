@@ -4,8 +4,8 @@
 # answers a record outside every page() in a run that holds a record with no flag of its own. Quiet or source-form: a
 # flag that differs, a page() that wrote another flag or the set's own, the findings inside a page() and in a run of
 # explicit flags alone (the export cannot say what a page wrote, nor whether a page(None, …) lies over the run), a
-# label repeated by two page() calls or by two death_month sections. (A page(None, reviewed=True) over a held divorce
-# book is tests/test_linters_on_json_redundancy.py's: its replay is held until the encoder writes that True.)
+# label repeated by two page() calls or by two death_month sections, a page(None, reviewed=True) over a held divorce
+# book (its True is in the export, so the run is not the book's).
 from verso.ru.dsl import (
     CensusRole, Gender, Month, birth, birth_records, census_records, christening, death, death_month, death_records,
     divorce, divorce_records, household, listed_person, marriage, marriage_records, member, name_list_records, page, person)
@@ -53,4 +53,5 @@ divorces = divorce_records(
     "ГА Глуповской области", "10", "4", "4086", "Маниловка", "", 1923,
     divorce(1, 3, reviewed=True), divorce(2, 5), divorce(3, 7, reviewed=False),
     *page("4", divorce(4, 9), divorce(5, 11, reviewed=False), reviewed=False),
+    *page(None, divorce(6, 13), divorce(7, 15, reviewed=False), reviewed=True),
     reviewed=False)

@@ -374,8 +374,6 @@ def test_a_divorce_is_held_by_its_own_flag_its_page_or_its_book() -> None:
     assert first_difference(ns, decode_file(data)) is None
 
 
-@pytest.mark.xfail(strict=True, reason="the vocabulary's default True is written nowhere, so a page's True over a held "
-                                       "book leaves no trace (a name list's entry likewise); the encoder's fix is its own")
 def test_a_pages_true_over_a_held_divorce_book_replays() -> None:
     ns = {"divorces": _divorces(*page("4", _divorce(1), reviewed=True), reviewed=False)}
     data = _encode(ns)

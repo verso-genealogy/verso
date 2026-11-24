@@ -51,8 +51,10 @@ def record_view(record: Record, built: object, record_id: str) -> dict[str, Any]
             consts[path] = code
     # The page reads `written` as what the call alone wrote: a wrapper's value (a section's month, a
     # лист's flag) stands in `derived` for it, as records v1.0 wrote it.
-    return {"record": context_in_derived(encode_record(built, record_id)), "consts": consts, "opaque": opaque,
-            "version": record.sha}
+    # It has no set to hand (`record_set=None`): a page's flag equal to its field's default stays out, as `decode_file`
+    # reads it.
+    return {"record": context_in_derived(encode_record(built, record_id, record_set=None)), "consts": consts,
+            "opaque": opaque, "version": record.sha}
 
 
 def _group_value(node: Mapping[str, Any], key: str) -> Any:
@@ -197,5 +199,5 @@ def node_view(built: object, node: Mapping[str, Any], record_id: str) -> dict[st
     that spell one text the one that sorts last (the rule of the linters on JSON, «Aliases of one constant»),
     which is not always the one an author wrote. There is no expression in JSON, so `opaque` is empty; there is
     no version either, a store keeps its own."""
-    return {"record": context_in_derived(encode_record(built, record_id)), "consts": _node_consts(node),
+    return {"record": context_in_derived(encode_record(built, record_id, record_set=None)), "consts": _node_consts(node),
             "opaque": []}

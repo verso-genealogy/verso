@@ -54,17 +54,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   this version: an older one refuses the keyword, and an older decoder, or a reader validating against an older
   `records-v1.json`, refuses a divorce that writes `reviewed` (the vocabulary's version stays 1) — so the library
   and its readers move before a corpus writes the flag. Writing it as a name list's entry's (default `True`, written
-  nowhere), not a birth's (always written), is what keeps an unflagged book's bytes. It costs the entry's one case: a `page(…, reviewed=True)` inside `divorce_records(…, reviewed=False)` leaves no trace, so
-  `replay_file` rebuilds its records held (`decode_file` reads them right). The encoder's fix belongs to both kinds
-  and moves a name list's bytes, so it is a change of its own. RVR001 on the records JSON reads a run's levels as
-  the export shows them, `on_json.review_level(node, built)` — a store's `run_levels` too — so it no longer calls
-  load-bearing a held record's `reviewed=False` under such a page: a false finding gone for a divorce and for a
-  name list's entry alike.
+  nowhere), not a birth's (always written), is what keeps an unflagged book's bytes; a `page(…, reviewed=True)` inside
+  `divorce_records(…, reviewed=False)` is written as the entry's is (see **Fixed**). RVR001 on the records JSON reads
+  a run's levels as the export shows them, `on_json.review_level(node, built)` — a store's `run_levels` too.
 
 ### Changed
 
 - The reference: a command's or a linter's summary ends at a full stop, not at a colon — fifteen rows of
   `commands.md` and `linters.md` said only «The святцы:», «Fix:» and the like. No output moves.
+
+### Fixed
+
+- Records JSON: a wrapper's value equal to its field's default is written under `written.context` when the record
+  set holds another value of the field, which the set's factory would give the record otherwise. A name-list entry
+  under `page(…, reviewed=True)` in a `name_list_records(…, reviewed=False)`, and a divorce under it in a
+  `divorce_records(…, reviewed=False)`, left no trace of the page's flag (`true` is the default of `reviewed`):
+  `decode_file` read it right, but `replay_file`, `replay_record` and so the linters on JSON and a store's views
+  rebuilt it held. `on_json.review_level` worked around it for RVR001 and now gives what the replayed record holds.
+  The fields a set gives its records are the vocabulary's (`Vocabulary.inherited`, verso-ru's `INHERITED`: the flag of
+  every record kind), never inferred from a field's name. `encode_record` takes the set (`record_set=`, a keyword it
+  now requires: `record_set=None` says there is none, and the node then leaves the flag out as before).
+  An export written before keeps the gap until `verso export-records` writes it again: the bump alone fixes nothing
+  a store already holds.
+  **A corpus's records JSON moves** for those records alone: each gains `"reviewed": true` in its `written` and
+  `"reviewed"` in its `written.context` (the kinds `listed_person` and `divorce`). Its `review` stays `reviewed`; the
+  schema, the Terraform, the CSVs, the facts reports and the review ratchet's prints (read from the source) do not
+  move.
 
 ## 0.1.46 — 2026-11-20
 
