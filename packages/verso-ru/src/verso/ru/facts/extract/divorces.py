@@ -50,8 +50,8 @@ _MONTHS: dict[str, int] = {word: number for number, words in enumerate((
     ("января", "январь"), ("февраля", "февраль"), ("марта", "март"), ("апреля", "апрель"),  # i18n: content — the months a record's text writes
     ("мая", "май"), ("июня", "июнь"), ("июля", "июль"), ("августа", "август"),  # i18n: content — the months a record's text writes
     ("сентября", "сентябрь"), ("октября", "октябрь"), ("ноября", "ноябрь"), ("декабря", "декабрь"),  # i18n: content — the months a record's text writes
-), start=1) for word in words} | {  # i18n: content — the months in the old spelling
-    "генваря": 1, "генварь": 1, "апрѣля": 4, "апрѣль": 4, "іюня": 6, "іюнь": 6, "іюля": 7, "іюль": 7}
+), start=1) for word in words} | {
+    "генваря": 1, "генварь": 1, "апрѣля": 4, "апрѣль": 4, "іюня": 6, "іюнь": 6, "іюля": 7, "іюль": 7}  # i18n: content — the months in the old spelling
 _YEAR_END = r"\s*(?:г\.?|года)?"  # i18n: content — «1915 г.», «1915 года»
 # The figures are the ASCII ones: `\d` would read a digit of any script as a day.
 _IN_WORDS = re.compile(rf"(?:([0-9]{{1,2}})\s+)?(?:([а-яёіѣ]+)\s+)?([0-9]{{4}}){_YEAR_END}")  # i18n: content — a date in words
