@@ -3,7 +3,12 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased
+## 0.1.48 — 2026-11-24
+
+A corpus's CSVs, Terraform and facts (`facts.jsonl`) do not move. What does: the records JSON's id of every set
+of cards, which names its file's year (`r1:<village>/card/1941/cards`, see **Changed**); a report's line of an
+entry its book left unnumbered — the facts reports among them —, «№none» becoming «без номера» (see **Fixed**);
+and a site built by `verso site`, which names a newborn with its father's patronymic.
 
 ### Changed
 
@@ -19,8 +24,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   of some of its years (a tree that leaves the young ones out) gave a set another id than the export of the
   whole village. `Ids.document_id` takes the file (`file=`, as the records JSON writes it); a caller that names
   none counts as before, by the book's text alone. A reviewing application that counts a year's ids from a fresh
-  counter already named a set of cards so within its year; the export now agrees with it. No record's id moves, nor a document of a book that states its year. **A corpus's
-  records JSON moves**: the id of every set of cards.
+  counter already named a set of cards so within its year; the export now agrees with it. No record's id moves,
+  nor a document of a book that states its year. **A corpus's records JSON moves**: the id of every set of cards.
 - The guide to writing records (and its translation) and the toy example: their invented surname is now
   «Обноскин» in every form — a corpus turned out to hold the old one. No output of a corpus moves.
 - The plugin `verso-reading`: what a reading benchmark's error analysis found, in the agents' prompts and two
