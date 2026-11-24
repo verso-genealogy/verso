@@ -25,9 +25,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 - verso-ru: every report names an entry its book left unnumbered «без номера» — the lines of `union-dups` (households,
   baptisms, deaths, signs of life), `reconcile` (`verso reconcile` and the check under it) and `estate-conflicts`,
-  the noted pairs of `father-claims` and the header of `verso facts --why`, which 0.1.47 left printing «№none» (or
-  a bare «none»). One helper says it, `verso.ru.facts.labels.record_number`, and a test holds the library's source
-  and catalogs to it. **A corpus's reports move** where they name an unnumbered entry: «№none» becomes «без номера».
+  the noted pairs of `father-claims` and `verso facts --why` (its header, and every evidence line: `str(Citation)`
+  wrote «рек. none»), which 0.1.47 left printing «№none» (or a bare «none»). A citation says its number itself,
+  `Citation.number` (`verso.ru.facts.labels.record_number`), and a test holds the reports' modules and the catalogs
+  to it. **A corpus's reports move** where they name an unnumbered entry: «№none» becomes «без номера».
   The catalog's `cli.facts.father.noted_pair` writes the number it is handed as it is (`{number}`, with its sign).
 - verso-core: a field of several types (`OneOf`) refused a value naming no cause: the refusal now says why each type
   did not take it (`records.encode.none_of`, `records.decode.none_of`) — an `EventDate` whose month is no month's
@@ -35,8 +36,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   the decoder with a `ValueError`. The decoder names a field's type as the encoder does («EventDate | str»), not by
   its `repr`. The order the vocabulary writes is the order tried, and a test holds it.
 - verso-ru: DVC001 reads a text bound once to a name at the head of the file (`MARRIED = "…"`,
-  `marriage_date=MARRIED`) and says it at the act, with no quick fix; a file that defines or binds its own `divorce`
-  has no act to read.
+  `marriage_date=MARRIED`, by keyword or in its place) and says it at the act, with no quick fix; a file that
+  defines, binds or imports from elsewhere than `verso.ru.dsl` its own `divorce` has no act to read.
 
 ## 0.1.47 — 2026-11-24
 

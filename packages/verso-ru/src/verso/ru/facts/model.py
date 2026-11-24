@@ -26,6 +26,7 @@ from enum import IntEnum, StrEnum
 from typing import TypeVar
 
 from verso.ru.gender import Gender
+from verso.ru.messages import t
 
 # --------------------------------------------------------------------------- #
 # Who, and from where
@@ -219,6 +220,10 @@ class FactDate:
                 self.bound.value if self.bound else "")
 
 
+#: The `record_num` of an entry its book left unnumbered (`verso.ru.facts.extract.common`).
+UNNUMBERED = "none"
+
+
 @dataclass(frozen=True, slots=True)
 class Citation:
     """Where an assertion was read. The only carrier of record-kind vocabulary.
@@ -255,9 +260,16 @@ class Citation:
         return (self.village, self.source_file, self.year or 0, self.entry,
                 self.record_num, self.locator)
 
+    def number(self, *, sign: bool = True) -> str:
+        """How a report names the record by its number: «№7» («7» without the `sign`, where the line says «рек.»
+        before it), or «без номера» for an entry its book left unnumbered (`record_num` "none")."""
+        if self.record_num == UNNUMBERED:
+            return str(t("cli.facts.unnumbered"))
+        return ("№" if sign else "") + self.record_num
+
     def __str__(self) -> str:
         page = f", л. {self.page}" if self.page else ""
-        return (f"{self.year} {self.record_kind} рек. {self.record_num}"
+        return (f"{self.year} {self.record_kind} рек. {self.number(sign=False)}"
                 f"{page}, слот {self.locator}")
 
 

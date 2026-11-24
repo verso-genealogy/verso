@@ -71,14 +71,14 @@ def encode_value(value: object, spec: TypeSpec, path: str = "") -> object:
     if value is None:
         return None
     if isinstance(spec, OneOf):
-        reasons = []
+        reasons: list[ValueError] = []
         for one in spec.types:
             try:
                 return encode_value(value, one, path)
             except FormatError as refused:
-                reasons.append(str(refused))
+                reasons.append(refused)
         raise FormatError(t("records.encode.none_of", path=path, type=type(value).__name__, spec=spec_name(spec),
-                            reasons="; ".join(reasons)))
+                            reasons="; ".join(str(r) for r in reasons))) from reasons[-1]
     kind = type(value)
     if isinstance(spec, str) and spec in _EXACT and kind is _EXACT[spec]:
         return value

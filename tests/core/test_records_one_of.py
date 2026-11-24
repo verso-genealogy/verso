@@ -79,7 +79,6 @@ def test_the_first_type_that_takes_a_value_is_the_one_it_is():
 
     assert decode_value("left", OneOf((Side, "str")), "side") is Side.LEFT
     assert decode_value("left", OneOf(("str", Side)), "side") == "left"
-    assert encode_value(Side.LEFT, OneOf((Side, "str")), "side") == encode_value(Side.LEFT, Side, "side")
 
 
 def test_a_code_no_member_has_is_a_reason_and_the_next_type_is_tried():

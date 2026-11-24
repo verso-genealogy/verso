@@ -73,6 +73,8 @@ def test_a_text_bound_to_a_name_is_found_where_the_act_uses_it():
     [f] = _found(src)
     assert f["line"] == 3 and "DVC001" in str(f["message"]) and "fix" not in f
     assert "EventDate(1927, Month.FEBRUARY, 24)" in str(f["message"])
+    [f] = _found('MARRIED = "24 февраля 1927"\ndivorce(1, 3, Month.JULY, h, w, 40, 35, MARRIED)\n')
+    assert f["line"] == 2 and "fix" not in f
 
 
 @pytest.mark.parametrize("src", [
@@ -90,6 +92,8 @@ def test_a_name_that_does_not_stand_for_one_text_is_quiet(src: str):
 @pytest.mark.parametrize("src", [
     'def divorce(*args, **kwargs):\n    return None\n\ndivorce(1, 3, Month.JULY, marriage_date="24 февраля 1927")',
     'divorce = print\ndivorce(1, 3, Month.JULY, marriage_date="24 февраля 1927")',
+    'from elsewhere import divorce\ndivorce(1, 3, Month.JULY, marriage_date="24 февраля 1927")',
+    'divorce, other = print, print\ndivorce(1, 3, Month.JULY, marriage_date="24 февраля 1927")',
 ])
 def test_a_file_s_own_divorce_is_no_act(src: str):
     """A DSL file imports `divorce` from `verso.ru.dsl` (IMP001); one that defines or binds its own is no act."""

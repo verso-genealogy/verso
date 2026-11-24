@@ -58,15 +58,27 @@ def _func_name(node: ast.Call) -> str | None:
     return node.func.id if isinstance(node.func, ast.Name) else None
 
 
+#: Where a DSL file's `divorce` comes from (IMP001).
+FACADE = "verso.ru.dsl"
+
+
+def _binds_divorce(stmt: ast.stmt) -> bool:
+    if isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+        return stmt.name == "divorce"
+    if isinstance(stmt, ast.ImportFrom):
+        return stmt.module != FACADE and any((a.asname or a.name) == "divorce" for a in stmt.names)
+    if isinstance(stmt, ast.Import):
+        return any((a.asname or a.name) == "divorce" for a in stmt.names)
+    if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+        targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+        return any(isinstance(n, ast.Name) and n.id == "divorce" for t in targets for n in ast.walk(t))
+    return False
+
+
 def _own_divorce(tree: ast.AST) -> bool:
-    """The file defines or binds a `divorce` of its own: its calls are no act (a DSL file imports the facade's,
-    IMP001)."""
-    return isinstance(tree, ast.Module) and any(
-        (isinstance(stmt, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and stmt.name == "divorce")
-        or (isinstance(stmt, (ast.Assign, ast.AnnAssign)) and any(
-            isinstance(t, ast.Name) and t.id == "divorce"
-            for t in (stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target])))
-        for stmt in tree.body)
+    """The file defines, binds or imports from elsewhere a `divorce` of its own: its calls are no act (a DSL file
+    imports the facade's, IMP001)."""
+    return isinstance(tree, ast.Module) and any(_binds_divorce(stmt) for stmt in tree.body)
 
 
 def _collect(tree: ast.AST, src: str | None = None) -> list[dict[str, object]]:

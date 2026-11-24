@@ -5,7 +5,7 @@ record by `verso.ru.facts.labels.record_number`, and no line of the library writ
 """
 from __future__ import annotations
 
-import re
+import ast
 from pathlib import Path
 
 import tomllib
@@ -29,12 +29,62 @@ def test_a_number_is_said_with_its_sign_and_none_as_unnumbered():
     assert i18n.render(t("cli.facts.unnumbered"), "en") == "unnumbered"
 
 
+#: Where a line may write a `record_num` itself, each with its reason.
+WRITES_ITS_OWN = {
+    "facts/model.py": "`Citation.number`, the one place a citation's number is said",
+    "consolidation/stale_claims.py": "a DSL record's own number, «?» where it has none — no citation's",
+    "consolidation/sibling_spacing.py": "the same",
+    "facts/extract/common.py": "a persona's key (`file#entry:year:number`), no reader's line",
+    "cli/show_record.py": "the number the user asked for, said back",
+}
+#: The packages whose lines a reader reads as a report; the translator's numbers name Terraform resources and Geni's
+#: documents, which no report prints.
+REPORTS = ("facts", "consolidation", "cli")
+
+
+def _writes_a_number(tree: ast.AST) -> list[int]:
+    """The lines that put a `record_num` into text: an f-string, a `+` or `%` with a text, a `.format(…)`, or a
+    message's `number=` — every way a report once printed «№none» or «рек. none»."""
+    def holds(node: ast.AST) -> bool:
+        return any(isinstance(sub, ast.Attribute) and sub.attr == "record_num" for sub in ast.walk(node))
+
+    lines: list[int] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.JoinedStr) and holds(node):
+            lines.append(node.lineno)
+        elif (isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Mod)) and holds(node)
+              and any(isinstance(side, (ast.Constant, ast.JoinedStr)) and isinstance(getattr(side, "value", ""), str)
+                      for side in (node.left, node.right))):
+            lines.append(node.lineno)
+        elif (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "format"
+              and any(holds(a) for a in [*node.args, *(k.value for k in node.keywords)])):
+            lines.append(node.lineno)
+        elif isinstance(node, ast.keyword) and node.arg == "number" and holds(node.value):
+            lines.append(node.value.lineno)
+    return sorted(set(lines))
+
+
 def test_no_line_of_the_library_writes_a_record_s_number_itself():
-    """Each report once wrote «№{…record_num}» on its own and printed «№none» for an unnumbered entry."""
-    written = re.compile(r"№\{[^}]*record_num")
-    found = [f"{path.relative_to(SOURCE)}:{n}" for path in SOURCE.rglob("*.py")
-             for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1) if written.search(line)]
+    """Each report once wrote «№{…record_num}» (or «рек. {…record_num}») on its own and printed «№none» for an
+    unnumbered entry; a citation says its number through `Citation.number` (`record_number`)."""
+    found = [f"{rel}:{n}" for package in REPORTS for path in (SOURCE / package).rglob("*.py")
+             if (rel := path.relative_to(SOURCE).as_posix()) not in WRITES_ITS_OWN
+             for n in _writes_a_number(ast.parse(path.read_text(encoding="utf-8")))]
     assert found == []
+
+
+def test_the_guard_sees_every_way_a_number_was_written():
+    for src in ('f"№{c.record_num}"', 'f"рек. {cite.record_num}"', '"№" + c.record_num', '"№%s" % c.record_num',
+                '"№{}".format(c.record_num)', 't("key", number=c.record_num)'):
+        assert _writes_a_number(ast.parse(src)) == [1], src
+    assert _writes_a_number(ast.parse("c.record_num == 'none'")) == []
+    assert _writes_a_number(ast.parse("sorted(x, key=lambda c: c.record_num)")) == []
+
+
+def test_a_citation_says_its_number_in_every_line_that_names_it():
+    """`str(cite)` (the lines of `verso facts --why`) as well as a report's."""
+    assert "none" not in str(_cite("none")) and f"рек. {t('cli.facts.unnumbered')}," in str(_cite("none"))
+    assert "рек. 7," in str(_cite("7"))
 
 
 #: The templates that may write «№{number}», each with its reason.

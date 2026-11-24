@@ -36,14 +36,14 @@ def decode_value(data: object, spec: TypeSpec, path: str = "") -> object:
     if data is None:
         return None
     if isinstance(spec, OneOf):
-        reasons = []
+        reasons: list[ValueError] = []
         for one in spec.types:
             try:
                 return decode_value(data, one, path)
             except ValueError as refused:            # a FormatError, or an enum's code no member has (`member_of`)
-                reasons.append(str(refused))
+                reasons.append(refused)
         raise FormatError(t("records.decode.none_of", path=path, type=type(data).__name__, spec=spec_name(spec),
-                            reasons="; ".join(reasons)))
+                            reasons="; ".join(str(r) for r in reasons))) from reasons[-1]
     kind = type(data)
     voc = None if isinstance(spec, str) and spec in _SCALARS else vocabulary()
     if voc is None:
