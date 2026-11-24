@@ -96,3 +96,26 @@ def test_a_page_named_as_a_directory_of_the_site_is_refused(workspace: Path) -> 
 
 def test_the_settlements_summary_is_the_historys_first_paragraph(workspace: Path) -> None:
     assert prose.first_paragraph(workspace / "Маниловка" / "docs") == "Село стоит на реке с давних пор."
+
+
+@pytest.mark.parametrize(("heading", "slug"), [
+    ("Первые книги", "первые-книги"), ("Храмы", "храмы"), ("Церковь св. Николая (1791–1894)", "церковь-св-николая-17911894"),
+    ("Что не сохранилось?", "что-не-сохранилось"), ("ГАТО, ф. 12", "гато-ф-12"), ("snake_case и дефис-слово", "snake_case-и-дефис-слово"),
+])
+def test_a_headings_id_is_the_one_github_gives_it(heading: str, slug: str) -> None:
+    assert prose.heading_slug(heading) == slug
+
+
+def test_a_heading_is_slugged_by_its_words_and_a_repeat_is_numbered(workspace: Path, site: model.Site) -> None:
+    (workspace / "Маниловка" / "docs" / "places.md").write_text(
+        "# Места\n\n## Храмы\n\n## [Храмы](history.md) и *часовни*\n\n## Храмы\n\n## Храмы\n\n"
+        "[к повтору](#храмы-1), [в историю](history.md#первые-книги)\n", encoding="utf-8")
+    page = _render(workspace, site, "places.md", Context("Село Маниловка", "ru"))
+    assert re.findall(r'<h2 id="([^"]*)">', page) == ["храмы", "храмы-и-часовни", "храмы-1", "храмы-2"]
+    assert 'href="#%D1%85%D1%80%D0%B0%D0%BC%D1%8B-1"' in page          # the same page's section, as a link spells it
+    assert 'href="../history/#%D0%BF%D0%B5%D1%80%D0%B2%D1%8B%D0%B5-%D0%BA%D0%BD%D0%B8%D0%B3%D0%B8"' in page
+
+
+def test_the_names_the_site_keeps_are_said_once() -> None:
+    from verso.ru import site as site_package
+    assert site_package.RESERVED == {"assets", "books", "cards", "years", "names", "patronymics", "search", "about"}

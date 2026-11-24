@@ -86,8 +86,14 @@ link out of the workspace, a link to nothing and an image are refused; raw HTML 
 shown as text. The front page's paragraph about the settlement is `--summary`, else the first
 paragraph of `history.md`.
 
-Markdown is read by markdown-it-py, the extra `verso-ru[site]`; a village without prose needs
-none.
+A heading's id is GitHub's — its text in lower case, everything but letters, digits, `_`, `-` and spaces
+dropped, each space a hyphen, a heading met again numbered (`-1`) — so a link to a section
+(`places.md#храмы`) reads the same in the repository and on the site; a link to a section the page
+lacks fails a `--strict` build. A page may not take a name the site keeps for itself: `assets`,
+`books`, `cards`, `years`, `names`, `patronymics`, `search`, `about` (`verso.ru.site.RESERVED`).
+
+Markdown is read by markdown-it-py (CommonMark and tables), the extra `verso-ru[site]`; a village
+without prose needs none.
 
 ## On GitHub Pages
 

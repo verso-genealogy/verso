@@ -63,14 +63,34 @@ def order(docs: Path) -> list[Path]:
     return out + [path for path in files.values() if path not in out]
 
 
-def _heading_id(text: str) -> str:
+def heading_slug(text: str) -> str:
+    """A heading's id as GitHub makes it of the heading's text: lower case, everything but letters, digits,
+    `_`, `-` and spaces dropped, each space a hyphen — so a link to a section reads the same in the repository
+    and on the site. A heading met again on its page is numbered there (`-1`, `-2`: `_number`)."""
     return re.sub(r"[^\w\- ]", "", text.strip().lower()).replace(" ", "-")
+
+
+def _plain(inline: Any) -> str:
+    """The text a heading shows: its words without the markup, a link by its words."""
+    return "".join(child.content for child in inline.children or () if child.type in ("text", "code_inline"))
+
+
+def _number(tokens: list[Any]) -> None:
+    """An id on every heading, GitHub's: the slug of its text, a repeat numbered from 1."""
+    seen: dict[str, int] = {}
+    for place, token in enumerate(tokens):
+        if token.type != "heading_open":
+            continue
+        slug = heading_slug(_plain(tokens[place + 1]))
+        met = seen.get(slug, 0)
+        seen[slug] = met + 1
+        token.attrSet("id", slug if not met else f"{slug}-{met}")
 
 
 def _title(tokens: list[Any], fallback: str) -> str:
     for place, token in enumerate(tokens):
         if token.type == "heading_open" and token.tag == "h1":
-            return str(tokens[place + 1].content)
+            return _plain(tokens[place + 1]) or fallback
     return fallback
 
 
@@ -101,7 +121,7 @@ class _Links:
         if parts.scheme or href.startswith(("//", "#")):
             return href
         target = (source.parent / unquote(parts.path)).resolve()
-        fragment = f"#{quote(_heading_id(unquote(parts.fragment)))}" if parts.fragment else ""
+        fragment = f"#{quote(unquote(parts.fragment))}" if parts.fragment else ""
         if target in self.pages:
             return up + self.pages[target] + fragment
         if target in self.books:
@@ -143,9 +163,8 @@ def render(page: Page, docs: Path, site: Site, ctx: Context, workspace: Path) ->
     links = _Links(docs, site, ctx, workspace)
     up = shell.root(page.path)
     tokens = reader.parse(page.source.read_text(encoding="utf-8"))
-    for place, token in enumerate(tokens):
-        if token.type == "heading_open":
-            token.attrSet("id", _heading_id(tokens[place + 1].content))
+    _number(tokens)
+    for token in tokens:
         for child in token.children or ():
             if child.type == "link_open":
                 child.attrSet("href", links.rewrite(str(child.attrGet("href") or ""), page.source, up))

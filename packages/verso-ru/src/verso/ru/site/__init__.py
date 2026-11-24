@@ -19,9 +19,10 @@ from verso.core.records import ui as ui_schema
 from verso.ru.messages import t
 from verso.ru.site import check, model, pages, prose, shell
 from verso.ru.site.records import Ui
-from verso.ru.site.shell import Context
+from verso.ru.site.shell import RESERVED, Context
 
 ASSETS = ("site.css", "search.js")
+__all__ = ["RESERVED", "BuildError", "Built", "build"]
 
 
 class BuildError(ValueError):
