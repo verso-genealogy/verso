@@ -12,18 +12,6 @@ facts report's line of an unnumbered entry («без номера»); and, for a
 `facts_findings.tsv` (see **Added**). A DSL file that still writes `marriage_date=` as text warns, and does not load
 where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is new.
 
-### Changed
-
-- The plugin `verso-reading`: what a reading benchmark's error analysis found, in the agents' prompts and two
-  skills. `scan-reader` and `dsl-writer` count a record's people against the scan (a strong reader's blanks are
-  people and patronymics it did not see, and asking for «?» does not bring them back — measured); name where
-  the errors sit (sureties', fathers' and godparents' surnames, the end
-  of a long household) and the given names taken for one another; `dsl-writer` checks every unflagged surname
-  against the village's records (`verso find-person`) and flags one they do not hold instead of replacing it.
-  `metric-books` and `census` say what a list of the village's people of the nearest years is worth to a
-  reader, that a newer top model reads better than Opus at high, and that two readers of one model agreeing
-  is not a check. No code, no output of a corpus moves.
-
 ### Added
 
 - verso-ru: **an act of divorce is read by the facts layer.** `verso facts` reads the divorce record sets of a
@@ -143,6 +131,15 @@ where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is n
 
 ### Changed
 
+- The plugin `verso-reading`: what a reading benchmark's error analysis found, in the agents' prompts and two
+  skills. `scan-reader` and `dsl-writer` count a record's people against the scan (a strong reader's blanks are
+  people and patronymics it did not see, and asking for «?» does not bring them back — measured); name where
+  the errors sit (sureties', fathers' and godparents' surnames, the end of a long household) and the given names
+  taken for one another; `dsl-writer` checks every unflagged surname against the village's records
+  (`verso find-person`, by its stem) and flags one they do not hold instead of replacing it. `metric-books` and
+  `census` say what a list of the village's people of the nearest years is worth to a reader, that a newer top
+  model reads better than Opus at high, and that two readers of one model agreeing is not a check. The sizes the
+  skills and the plugin's README state are the texts' sizes again. No code, no output of a corpus moves.
 - The reference: a command's or a linter's summary ends at a full stop, not at a colon — fifteen rows of
   `commands.md` and `linters.md` said only «The святцы:», «Fix:» and the like. No output moves.
 

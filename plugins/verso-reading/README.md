@@ -42,9 +42,9 @@ pip install 'verso-core[scans]>=0.1.43' 'verso-ru>=0.1.43'
 
 - **Always in context**: the descriptions of the five skills and two agents — about 4 thousand characters
   together. Nothing else of the plugin is read until a skill is used.
-- **A skill, when used**: its text, once — `metric-books` and `census` about 22–23 thousand characters each (each
-  says its own size), the others 8–11 thousand. `dsl-writer`'s prompt is about 12 thousand, and it reads the
-  project's rules itself; `scan-reader`'s is under one.
+- **A skill, when used**: its text, once — `metric-books` about 25 thousand characters and `census` about 23 (each
+  says its own size), the others 8–11 thousand. `dsl-writer`'s prompt is about 14 thousand, and it reads the
+  project's rules itself; `scan-reader`'s about 2.
 - **The two tiers of reading are two scales of crop**, not two passes of readers: a part crop finds a record, a
   4–5× cut reads each name that enters the DSL. Subagents are optional — a year can be read in the session itself.
   A subagent pays its own context before its first page: give one about ten records, not one or fifty.

@@ -19,7 +19,7 @@ what it needs to and gets surnames wrong at an archive's ~950 px per leaf. The f
 below are mechanical and are handled by `verso scans`; everything after them is reading, and no
 tool helps with that.
 
-**What this costs.** This text — about 23 thousand characters — is read once, when the skill is used;
+**What this costs.** This text — about 25 thousand characters — is read once, when the skill is used;
 otherwise only its description stays in context. The two tiers below are two SCALES of crop — a part
 crop to find a record, a 4–5× cut of each name that enters the DSL — not two passes of reading, and
 subagents are optional: a year can be read in the session itself. A subagent pays its own context

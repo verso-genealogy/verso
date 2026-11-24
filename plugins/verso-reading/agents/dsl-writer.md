@@ -120,7 +120,9 @@ Before outputting the final DSL file, verify:
       because these are not words it failed to read. What does stand on the page and does not read is
       `"?"` in its own argument, not an argument left out — a blank says the scribe wrote nothing
 - [ ] **Every surname is one the village's records hold, or carries «?»**: look up each surname you wrote
-      without «?» (`verso find-person <village> <surname>`). One the village's records do not hold is a
+      without «?» (`verso find-person <village> <stem>`: the search is a substring and folds no orthography, so
+      look up the stem without the ending and the final ъ — «Манилов» for «Маниловъ», «Манилова»). One the
+      village's records do not hold is a
       misreading more often than not: on the benchmark 53–81 % of such surnames were wrong, and they were
       83–95 % of the silently misread surnames — a misread surname is almost never another family of the
       parish, it is a surname the parish does not have. Re-crop it at 4–5×; unless the scan shows it
