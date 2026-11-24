@@ -32,6 +32,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   on it. Both are fields of the records JSON and of the interface's schema (marked `checks`).
 - verso-core: `discover_records(untranslated=)` hands out the record sets the translator does not read, from the
   same walk; `translate_village(untranslated=)` passes them on. What is yielded and fed is unchanged.
+- verso-ru: `verso site --village V --out DIR` — a village's records as a static site ([a village's
+  site](docs/site.md)): every book as the document it was read from, drawn record by record by the interface's
+  schema (`ui-v1.json`), what the record writes told apart from what the library derived, an unread record marked;
+  an index of the names that needs no JavaScript and a search that reads its own index; the settlement's prose
+  (`<village>/docs/*.md`, the new extra `verso-ru[site]`: markdown-it-py) as pages. A record's address is its id
+  (rule `r1`): the page of its book and its token as the anchor, the same at every build. Every link is relative
+  and nothing is fetched from another host, so the site serves from GitHub Pages, a domain or a directory. A new
+  product: no output a corpus compares moves.
 - verso-core: a `late` rule of the interface's schema may name the fields that stand it down — `stand_down` (an
   event late past its days) and `stand_down_before` (one before the first); the build refuses a path the kind lacks.
   verso-ru names them for the christening and the burial: `lag_note` and `source_date_error`, the fields the signals

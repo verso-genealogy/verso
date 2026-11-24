@@ -77,6 +77,7 @@ book's defaults) is derived; what it says is kept verbatim. Then:
 - `verso export-csv --village V` — a CSV per record set, beside its file;
 - `verso generate-tf --village V` — Geni profiles, unions and documents as Terraform;
 - `verso export-records --village V` — the records JSON ([records JSON](docs/records-json.md));
+- `verso site --village V --out DIR` — the records as a static site, book by book ([a village's site](docs/site.md));
 - `verso facts`, `verso death-age`, `verso sibling-spacing`, … — checks over the records
   ([the checks](docs/checks.md), [all commands](docs/reference/commands.md)).
 
@@ -128,7 +129,7 @@ public name to be removed or renamed lives one minor version beside its successo
 ## Documentation
 
 - Guides: [the workspace](docs/workspace.md) · [the DSL](docs/dsl.md) · [the rules of a record](docs/writing-records.md) · [the checks](docs/checks.md) · [plugins](docs/plugins.md) · [the interface's language](docs/i18n.md)
-  · [records JSON](docs/records-json.md) · [the review ratchet](docs/review-ratchet.md)
+  · [records JSON](docs/records-json.md) · [a village's site](docs/site.md) · [the review ratchet](docs/review-ratchet.md)
   · [compatibility](docs/compatibility.md)
 - Reference, written from the code: [commands](docs/reference/commands.md) ·
   [workspace keys](docs/reference/workspace-keys.md) · [linters](docs/reference/linters.md) ·

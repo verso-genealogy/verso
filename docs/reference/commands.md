@@ -63,6 +63,7 @@
 | `verso review-ratchet` | `verso.ru.cli.review_ratchet` | The review ratchet: `<village>/unreviewed_on_geni.tsv` (`verso.core.ratchet`). |
 | `verso show-record` | `verso.ru.cli.show_record` | Show the original source record for a given village/year/type/record number. |
 | `verso sibling-spacing` | `verso.ru.consolidation.sibling_spacing` | Flag two children of one couple born impossibly close together. |
+| `verso site` | `verso.ru.cli.site` | site: a village's records as a static site — its books record by record, an index of the names, a search. |
 | `verso split-couples` | `verso.ru.consolidation.split_couples` | Flag one couple spread over two or more unions held by DIFFERENT profiles. |
 | `verso stale` | `verso.ru.cli.stale` | Fail when a GENERATED artifact is stale with respect to its DSL source. |
 | `verso stale-claims` | `verso.ru.consolidation.stale_claims` | Flag a comment that calls a record the earliest one, when an earlier record of the same person is now in the corpus. |

@@ -76,6 +76,7 @@ births = birth_records(
 - `verso export-csv --village V` — CSV на каждый набор записей, рядом с его файлом;
 - `verso generate-tf --village V` — профили, союзы и документы Geni в виде Terraform;
 - `verso export-records --village V` — JSON записей ([JSON записей](docs/records-json.ru.md));
+- `verso site --village V --out DIR` — записи статическим сайтом, книга за книгой ([сайт села](docs/site.ru.md));
 - `verso facts`, `verso death-age`, `verso sibling-spacing`, … — проверки по записям
   ([проверки](docs/checks.ru.md), [все команды](docs/reference/commands.md)).
 
@@ -126,7 +127,7 @@ births = birth_records(
 ## Документация
 
 - Руководства: [рабочее пространство](docs/workspace.ru.md) · [DSL](docs/dsl.ru.md) · [правила записи](docs/writing-records.ru.md) · [проверки](docs/checks.ru.md) · [плагины](docs/plugins.ru.md) · [язык интерфейса](docs/i18n.ru.md)
-  · [JSON записей](docs/records-json.ru.md) · [храповик вычитки](docs/review-ratchet.ru.md)
+  · [JSON записей](docs/records-json.ru.md) · [сайт села](docs/site.ru.md) · [храповик вычитки](docs/review-ratchet.ru.md)
   · [совместимость](docs/compatibility.ru.md)
 - Справочник, собранный из кода (на английском): [команды](docs/reference/commands.md) ·
   [ключи рабочего пространства](docs/reference/workspace-keys.md) · [линтеры](docs/reference/linters.md) ·
