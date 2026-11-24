@@ -1,6 +1,8 @@
 """Records v1 ids: a record named as it is cited (`verso.core.records.ids`, rule r1)."""
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from verso.ru.domain import Gender, page, person
@@ -79,6 +81,28 @@ def test_a_book_keeps_its_own_year_and_a_file_out_of_a_year_gives_none():
     assert Ids().document_id(k, "1900/fixture.py") == str(k)            # the book's year, not the file's
     assert Ids().document_id(CARDS, "cards.py") == "r1:Маниловка/card/cards"
     assert Ids().document_id(CARDS) == "r1:Маниловка/card/cards"        # a caller that names no file
+
+
+class _Named:
+    """A book a caller knows only by its id (verso-app's `_BookOf`): `document_id` asks it nothing but its text."""
+
+    def __init__(self, text: str) -> None:
+        self.text = text
+
+    def __str__(self) -> str:
+        return self.text
+
+
+def test_a_caller_that_names_no_file_counts_by_the_text_alone():
+    ids = Ids()
+    book: Any = _Named("r1:Маниловка/card/1941/cards")
+    assert [ids.document_id(book), ids.document_id(book)] == [
+        "r1:Маниловка/card/1941/cards", "r1:Маниловка/card/1941/cards~2"]
+
+
+@pytest.mark.parametrize("file", ["0042/x.py", "１９４１/x.py", "194/x.py", "1941\\x.py"])
+def test_a_directory_is_a_year_only_as_four_digits(file: str):
+    assert Ids().document_id(CARDS, file) == "r1:Маниловка/card/cards"
 
 
 def test_the_id_of_a_set_of_cards_parses_with_its_year():

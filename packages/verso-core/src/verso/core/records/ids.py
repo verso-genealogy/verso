@@ -44,6 +44,7 @@ from verso.core import plugins
 from verso.core.messages import t
 
 ID_SCHEME = "r1"
+_YEAR_DIRECTORY = re.compile(r"[1-9][0-9]{3}")     # a year's directory, its digits the year itself (`1941`)
 
 _ESCAPES = (("%", "%25"), ("/", "%2F"), ("~", "%7E"), (";", "%3B"))
 
@@ -137,7 +138,8 @@ class Ids:
         `1941/…py`), so a set is counted among the sets of its year alone, and an export of some of the years
         numbers a set as the export of the whole village does."""
         directory, _, name = (file or "").partition("/")
-        if book.year is None and name and directory.isdigit():
+        # The file first: a caller that names none may hand a book it knows only by its id (verso-app's `_BookOf`).
+        if name and _YEAR_DIRECTORY.fullmatch(directory) and book.year is None:
             book = replace(book, year=int(directory))
         n = self._books[str(book)] = self._books[str(book)] + 1
         return str(book) + ("" if n == 1 else f"~{n}")
