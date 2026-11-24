@@ -101,7 +101,7 @@ def _compare() -> tuple[int, int, list[str], Counter[str], dict[str, str]]:
             js = node_view(rebuilt, bare, node["id"])
             assert js["opaque"] == [] and set(js) == {"record", "consts", "opaque"}
             if len(found) != len(nodes):       # cards have no call in the source: their record alone
-                assert js["record"] == context_in_derived(encode_record(record, node["id"])), (name, node["id"])
+                assert js["record"] == context_in_derived(encode_record(record, node["id"], record_set=None)), (name, node["id"])
                 record_only += 1
                 continue
             dsl = record_view(found[k], record, node["id"])

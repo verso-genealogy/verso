@@ -9,14 +9,17 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import pytest
+
 from verso.core.records.decode import decode_file
 from verso.core.records.encode import encode_namespace, encode_record
-from verso.core.records.fields import CONTEXT_KEY
+from verso.core.records.fields import CONTEXT_KEY, vocabulary
 from verso.core.records.graph import first_difference
 from verso.core.records.ids import Ids, walk
 from verso.core.records.replay import Position, replay_file, replay_record
 from verso.core.records.schema import build_schema
-from verso.ru.domain import page, person
+from verso.ru.domain import Gender, page, person
+from verso.ru.dsl.records.births import birth, birth_records
 from verso.ru.dsl.records.name_lists import ListedPerson, listed_person, name_list_records
 from tests.test_linters_on_json_redundancy import _agree
 
@@ -104,3 +107,30 @@ def test_rvr001_on_json_sees_the_pages_flag() -> None:
             'listed_person(1, person("Иванъ")), listed_person(2, person("Петръ"), reviewed=False), reviewed=True), '
             'document_type="Список", reviewed=False)')
     assert _agree(text, "RVR001") == 0
+
+
+def test_a_field_the_set_does_not_give_stays_out() -> None:
+    """A birth's `case` is the set's too, but the set gives no record its case, and its default is `None`: a birth
+    that holds `None` under a set that names a case writes no `null` (byte neutrality of every other kind)."""
+    births = birth_records("ЦГА", "7", "3", "755", "Примерово", "Церковь", 1850,
+                           *page("2", birth(1, Gender.MALE, 3, 4, child=person("Иванъ")), reviewed=True), reviewed=False)
+    assert births.records[0].case is None and births.case == "755"
+    written = _encode({"births": births})["documents"][0]["pages"][0]["records"][0]["written"]
+    assert "case" not in written and "case" not in written.get(CONTEXT_KEY, ())
+
+
+def test_what_a_set_gives_is_declared() -> None:
+    """The fields a set gives its records are the vocabulary's table, not every field of one name."""
+    inherited = {cls.__name__: names for cls, names in vocabulary().inherited.items()}
+    assert inherited["ListedPerson"] == {"reviewed"} and inherited["Divorce"] == {"reviewed"}
+    assert all(names == {"reviewed"} for names in inherited.values())
+
+
+def test_one_record_is_written_with_its_set_or_says_it_has_none() -> None:
+    ns = _released_leaf()
+    record_set, entry = next(iter(walk(ns)))
+    with pytest.raises(TypeError):
+        encode_record(entry, "r1:test/0")       # type: ignore[call-arg]
+    bare = encode_record(entry, "r1:test/0", record_set=None)
+    assert "reviewed" not in bare["written"]
+    assert encode_record(entry, "r1:test/0", record_set=record_set)["written"]["reviewed"] is True

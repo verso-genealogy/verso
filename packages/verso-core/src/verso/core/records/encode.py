@@ -142,6 +142,7 @@ class _Encoder:
     def __init__(self, ids: Ids) -> None:  # `encode_record` passes none: it is given its record's id
         self.ids = ids
         self.entities: dict[int, str] = {}
+        self.given: dict[tuple[int, type], dict[str, object]] = {}     # `_inherited`, once per set and class
 
     def claim(self, obj: object, path: str) -> None:
         if id(obj) in self.entities:
@@ -150,8 +151,8 @@ class _Encoder:
 
     def node(self, obj: object, path: str, skip: set[str],
              inherited: Mapping[str, object] | None = None) -> dict[str, object]:
-        """`written` and `derived` of one object. `inherited` is what its record set holds of the object's context
-        fields (`_inherited`): a wrapper's value equal to the field's default is still written when it is not the
+        """`written` and `derived` of one object. `inherited` is what its record set holds of the fields it gives the
+        object (`_inherited`): a wrapper's value equal to the field's default is still written when it is not the
         set's."""
         cls = type(obj)
         voc = vocabulary()
@@ -178,10 +179,10 @@ class _Encoder:
                 if f.name not in context or f.name in skip or f.name in as_attr:
                     continue
                 value = attrs[f.name]
-                # A value equal to its default is left out, but for one the set would not give: a field whose
-                # default is a value (a name-list entry's `reviewed:bool=True`) takes the set's when unstated, so
-                # `page(…, reviewed=True)` in a held set is written. A default `None` is the unstated mark itself:
-                # a record that still holds it was given nothing by its set.
+                # A value equal to its default is left out, but for one the set would not give: a field the set
+                # gives (`Vocabulary.inherited`) whose default is a value (a name-list entry's `reviewed:bool=True`)
+                # takes the set's when unstated, so `page(…, reviewed=True)` in a held set is written. A default
+                # `None` is the unstated mark itself: a record that still holds it was given nothing by its set.
                 if (not same(value, f.default)
                         or (f.default is not None and f.name in given and not same(value, given[f.name]))):
                     wrapped[f.name] = encode_value(value, f.type, f"{path}.{f.name}")
@@ -254,9 +255,13 @@ class _Encoder:
         voc = vocabulary()
         if type(record) not in voc.specs:
             raise FormatError(t("records.encode.no_class", cls=type(record).__name__, package=voc.schema_package, path=path))
-        return self.record_node(record, self.ids.of(record_set, record), path, record_set)
+        key = (id(record_set), type(record))
+        if key not in self.given:
+            self.given[key] = _inherited(record_set, record)
+        return self.record_node(record, self.ids.of(record_set, record), path, self.given[key])
 
-    def record_node(self, record: Any, record_id: str, path: str, record_set: object = None) -> dict[str, object]:
+    def record_node(self, record: Any, record_id: str, path: str,
+                    inherited: Mapping[str, object]) -> dict[str, object]:
         voc = vocabulary()
         spec = voc.specs.get(type(record))
         if spec is None:
@@ -267,7 +272,7 @@ class _Encoder:
             node["label"] = label
         node["kind"] = spec.code
         node["review"] = review(record, path)
-        node.update(self.node(record, path, _structural(spec) | {"page"}, _inherited(record_set, record)))
+        node.update(self.node(record, path, _structural(spec) | {"page"}, inherited))
         node["persons"] = self.persons(record, record_id, path)
         return node
 
@@ -292,26 +297,24 @@ class _Encoder:
 
 
 def encode_record(record: object, record_id: str, path: str = "record", *,
-                  record_set: object = None) -> dict[str, object]:
+                  record_set: object | None) -> dict[str, object]:
     """One record as the export writes it under its record set — `id`, `label`, `kind`, `review`,
     `written`, `derived`, `persons` — given the id its file's walk counts it by (the review
-    page's view of one record, `verso.ru.dsl.view`). The export writes each record through it, given its
-    `record_set`; without one, a wrapper's value equal to its field's default is left out even where the set
-    holds another (`_inherited`), and the record reads as `decode_file` reads it."""
-    return _Encoder(_NO_IDS).record_node(record, record_id, path, record_set)
+    page's view of one record, `verso.ru.dsl.view`): the node the export writes (`_Encoder.record`), given its
+    `record_set`. `record_set=None` says there is none to hand: a wrapper's value equal to its field's default is then
+    left out even where the set holds another (`Vocabulary.inherited`), so the node reads as `decode_file` reads it but
+    replays with the set's value — a view's node, not one to store."""
+    return _Encoder(_NO_IDS).record_node(record, record_id, path, _inherited(record_set, record))
 
 
-def _inherited(record_set: object, record: object) -> dict[str, object]:
-    """What `record_set` holds of the context fields of `record` (`Vocabulary.context`) that are fields of its own —
-    a list's `reviewed` for its entries: the value a set's factory gives a record that leaves one unstated. Nothing
-    without a set."""
+def _inherited(record_set: object | None, record: object) -> dict[str, object]:
+    """What `record_set` holds of the fields it gives `record` when the record leaves them unstated
+    (`Vocabulary.inherited`): a list's `reviewed` for its entries. Nothing without a set."""
     voc = vocabulary()
-    spec = voc.specs.get(type(record_set)) if record_set is not None else None
-    if spec is None:
+    if record_set is None or type(record_set) not in voc.specs:
         return {}
-    own = {f.name for f in spec.fields}
-    return {name: vars(record_set)[name] for name in voc.context.get(type(record), frozenset())
-            if name in own and name in vars(record_set)}
+    held = vars(record_set)
+    return {name: held[name] for name in voc.inherited.get(type(record), frozenset()) if name in held}
 
 
 _NO_IDS: Any = None

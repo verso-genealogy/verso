@@ -238,6 +238,13 @@ CONTEXT: dict[type, frozenset[str]] = {
 _SHADOWED = frozenset({"page", "year", "b_month", "k_month", "d_month", "w_month"})
 SHADOWED: dict[type, frozenset[str]] = {cls: names & _SHADOWED for cls, names in CONTEXT.items() if names & _SHADOWED}
 
+#: Of those, what a record set's factory gives a record that leaves it unstated, from its own field of the name: the
+#: flag (`resolve_reviewed`, `census_records`, `name_list_records`). Only a field whose default is a value moves the
+#: export: a name-list entry's and a divorce's `reviewed` (`True`); a `None` is never what a set gives.
+INHERITED: dict[type, frozenset[str]] = {
+    cls: frozenset({"reviewed"})
+    for cls in (Birth, Christening, Marriage, Death, Divorce, CensusHousehold, ListedPerson)}
+
 #: The verbs of a class whose factories `written` cannot tell apart: a card is a criminal, a WWI
 #: or a WWII one, and the three take the same keys. `written.verb` names the one that built it.
 VERBS: dict[type, dict[str, Callable[..., object]]] = {
@@ -255,4 +262,5 @@ POSITIONAL: dict[type, Positional] = {
 VOCABULARY = Vocabulary(specs=SPECS, value_classes=VALUE_CLASSES, param_to_attr=PARAM_TO_ATTR,
                         written_only=WRITTEN_ONLY, item_roles=ITEM_ROLES, person=Person,
                         scalars={"status": STATUS, "cause": CAUSE}, schema_package="verso.ru.records",
-                        json_names=JSON_NAMES, context=CONTEXT, verbs=VERBS, shadowed=SHADOWED, positional=POSITIONAL)
+                        json_names=JSON_NAMES, context=CONTEXT, verbs=VERBS, shadowed=SHADOWED, inherited=INHERITED,
+                        positional=POSITIONAL)

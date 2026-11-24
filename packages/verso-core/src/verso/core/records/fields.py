@@ -155,6 +155,10 @@ class Vocabulary:
     # The wrapper-set attributes a wrapper keeps beside a call's own value of them (`written.wrapper`, records
     # v1.x): a subset of `context` — the Russian books' a page's leaf, a section's months and year.
     shadowed: Mapping[type, frozenset[str]] = dataclass_field(default_factory=dict)
+    # The wrapper-set attributes a record set gives a record that leaves one unstated, from its own field of the same
+    # name — the Russian books' `reviewed`. A record whose value equals its field's default but not its set's is
+    # written under `written.context` (`verso.core.records.encode`), or replay would rebuild it with the set's.
+    inherited: Mapping[type, frozenset[str]] = dataclass_field(default_factory=dict)
     # The record classes whose objects hold their place in the set (`Positional`): what a record
     # built alone is given by its `Position`.
     positional: Mapping[type, Positional] = dataclass_field(default_factory=dict)

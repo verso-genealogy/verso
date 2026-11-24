@@ -44,11 +44,11 @@ def test_the_view_is_the_export_s_record():
     from verso.core.records.ids import walk
     built = list(walk(ns))
     assert len(built) == len(exported) > 10
-    for (_, obj), (record, _) in zip(built, exported, strict=True):
-        assert encode_record(obj, record["id"]) == record
+    for (record_set, obj), (record, _) in zip(built, exported, strict=True):
+        assert encode_record(obj, record["id"], record_set=record_set) == record
     view = _view(BIRTHS, 0)
     # the page's record is the export's, a wrapper's value back in `derived` (records v1.0's shape)
-    assert view["record"] == context_in_derived(encode_record(_built(BIRTHS)[0], "r1:test/0"))
+    assert view["record"] == context_in_derived(encode_record(_built(BIRTHS)[0], "r1:test/0", record_set=None))
     assert view["version"] == source.find_records(BIRTHS)[0].sha
 
 
@@ -139,6 +139,6 @@ def test_a_wrappers_values_reach_the_page_in_derived():
     assert json.dumps(record["derived"]) == json.dumps(
         {"reviewed": False, "birth": {"month": "june"}, "baptism": {"month": "june"}, "year": 1890})
     assert list(record) == ["id", "label", "kind", "review", "written", "derived", "persons"]
-    exported: dict[str, Any] = encode_record(_built(SECTION)[0], "r1:test/0")    # the export keeps v1.x's form
+    exported: dict[str, Any] = encode_record(_built(SECTION)[0], "r1:test/0", record_set=None)    # the export keeps v1.x's form
     assert exported["written"]["context"] == ["reviewed", "birth.month", "baptism.month", "year"]
     assert value_at(record, "birth.month") == value_at(exported, "birth.month") == "june"

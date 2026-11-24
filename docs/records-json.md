@@ -53,9 +53,10 @@ reader reads old files.
   attribute's own key. `written.context` lists those keys (flat, as they stand in `written`); a value
   the call wrote itself is the call's and is not listed. `derived` no longer holds them. Replay hands
   the factory the call's keys and sets the listed ones on the record it built, so a file replays from
-  `written` alone. A value equal to its field's default is not written, unless the record set holds another
-  value of the same field, which its factory would give the record instead: a name-list entry's `reviewed`
-  (default `true`) under `page(…, reviewed=True)` in a list of `reviewed=False` is written. A consumer that edits a wrapper-set field edits it where the wrapper or the set holds it: the marker's
+  `written` alone. A value equal to its field's default is not written, unless the field is one the record set
+  gives a record that leaves it unstated (`Vocabulary.inherited`, the flag `reviewed`), its default is a value, not
+  `null`, and the set holds another: a name-list entry's or a divorce's `reviewed` (default `true`) under
+  `page(…, reviewed=True)` in a set of `reviewed=False` is written. A `null` is never written so. A consumer that edits a wrapper-set field edits it where the wrapper or the set holds it: the marker's
   entry stays. Only a key that a factory takes as a parameter can move to the call's side (drop it from
   `written.context`); a key no factory takes would be refused by decode and replay (`no_factory`,
   `param_spec`). Those are `book` and `inventory` on every metric kind; `archive` and `fund` on a marriage
