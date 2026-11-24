@@ -49,6 +49,8 @@ xlsx = ["openpyxl==3.1.5"]
 dsl-tools = ["libcst==1.9.0"]
 # The Google Sheets importer: it writes DSL, so it takes the DSL's tools too.
 sheets = ["verso-ru[dsl-tools]", "gspread>=6.0"]
+# `verso site` where a village has prose (docs/*.md): the Markdown reader.
+site = ["markdown-it-py==4.3.0"]
 
 # The plugins the core's registry finds (verso.core.plugins); a workspace enables one by
 # name (`plugins = ["ru"]` in verso.toml). After a change here, `make bootstrap`: an entry point
@@ -73,3 +75,4 @@ include = ["verso.ru*"]
 "verso.ru.dsl" = ["api-v*.json"]
 "verso.ru.linters" = ["hosted.toml"]
 "verso.ru.reading" = ["prompts/*.md"]
+"verso.ru.site" = ["assets/*"]

@@ -7,6 +7,8 @@ a person.
 """
 from __future__ import annotations
 
+import re
+import unicodedata
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
@@ -21,6 +23,16 @@ Node = Mapping[str, Any]
 KINDS = ("birth", "marriage", "death", "divorce", "household", "listed")
 UNREVIEWED = ("held", "on_geni")
 _NAME = ("given", "patronymic", "surname")
+
+
+_OLD_LETTERS = str.maketrans("ёѣіѳѵ", "ееифи")  # i18n: content — the letters the 1918 reform dropped
+_HARD_SIGN = re.compile(r"ъ\b")  # i18n: content — the hard sign that ends a word
+
+
+def fold(text: str) -> str:
+    """A name as a search compares it: lower case, the pre-reform letters as their modern ones, no
+    hard sign at a word's end — «Ѳеодоръ» and «Феодор» are one."""
+    return _HARD_SIGN.sub("", unicodedata.normalize("NFC", text).lower().translate(_OLD_LETTERS))
 
 
 class DuplicatePath(ValueError):
