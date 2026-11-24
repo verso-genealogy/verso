@@ -114,14 +114,19 @@ def feed_all_records(gen, village_dir, years: list[int] | None,
                      skipped: list[tuple[Path, Exception]], *,
                      admit_all_unreviewed: bool = False,
                      seen: list[tuple[str, Any, ratchet.RecordPrint]] | None = None,
-                     ids: RecordIds | None = None) -> None:
+                     ids: RecordIds | None = None,
+                     untranslated: list[tuple[str, Any]] | None = None) -> None:
     """Discover every DSL record container under `village_dir` and route it to
     the matching `gen.add_*_records` method, in legacy iteration order. `years`
     restricts discovery; `skipped` collects files that failed to import; `ids`
-    counts the records' ids as they are discovered (`discover_records`)."""
+    counts the records' ids as they are discovered (`discover_records`);
+    `untranslated` takes the record sets the translator does not read (a
+    divorce) as (source file, record set), fed to nothing."""
+    beside: list[tuple[Path, str, object]] = []
     for dsl_path, _, records in discover_records(
             str(village_dir), year=years or None, skipped=skipped,
-            admit_all_unreviewed=admit_all_unreviewed, seen=seen, ids=ids):
+            admit_all_unreviewed=admit_all_unreviewed, seen=seen, ids=ids,
+            untranslated=beside if untranslated is not None else None):
         # Cat A1: DSL files whose basename starts with `other_` carry
         # records from a secondary parish (Неелово / Ябедные Пепелищи) that
         # appeared in the main village's residents' lives; route them to
@@ -144,13 +149,16 @@ def feed_all_records(gen, village_dir, years: list[int] | None,
             gen.add_external_source_records(records)
         elif isinstance(records, NameListRecords):
             gen.add_name_list_records(records)
+    if untranslated is not None:
+        untranslated += [(dsl_path.name, records) for dsl_path, _, records in beside]
 
 
 def translate_village(village_dir, years: list[int] | None = None, *,
                       strict: bool = False, use_consolidation: bool = True,
                       admit_all_unreviewed: bool = False,
                       seen: list[tuple[str, Any, ratchet.RecordPrint]] | None = None,
-                      ids: RecordIds | None = None):
+                      ids: RecordIds | None = None,
+                      untranslated: list[tuple[str, Any]] | None = None):
     """Run the full DSL→domain translation for a village and `finalize()`.
 
     Loads `generate_config_names.py` (when present) into a `Consolidation`,
@@ -173,6 +181,7 @@ def translate_village(village_dir, years: list[int] | None = None, *,
 
     `admit_all_unreviewed` / `seen`: the ratchet's seeding pass (`discover_records`).
     `ids`: every record's id, counted as the records are discovered.
+    `untranslated`: takes the record sets the translation does not read (`feed_all_records`).
     """
     from verso.ru.targets.geni.translator import TerraformGenerator
 
@@ -191,7 +200,8 @@ def translate_village(village_dir, years: list[int] | None = None, *,
     )
     skipped: list[tuple[Path, Exception]] = []
     feed_all_records(gen, village_dir, years, skipped,
-                     admit_all_unreviewed=admit_all_unreviewed, seen=seen, ids=ids)
+                     admit_all_unreviewed=admit_all_unreviewed, seen=seen, ids=ids,
+                     untranslated=untranslated)
     if strict and skipped:
         raise RuntimeError(
             f"{len(skipped)} DSL file(s) skipped due to import failure: "

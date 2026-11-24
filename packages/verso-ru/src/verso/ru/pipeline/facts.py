@@ -13,6 +13,7 @@ from typing import Any, cast
 from verso.ru.facts.extract.births import facts_from_births
 from verso.ru.facts.extract.census import facts_from_census
 from verso.ru.facts.extract.deaths import facts_from_deaths
+from verso.ru.facts.extract.divorces import facts_from_divorces
 from verso.ru.facts.extract.external_sources import facts_from_external_sources
 from verso.ru.facts.extract.marriages import facts_from_marriages
 from verso.ru.facts.extract.name_lists import facts_from_name_lists
@@ -34,15 +35,28 @@ def consolidated_facts(village_dir: Path, *,
 
     Each persona is named by its records-JSON id (rule r1), counted in the
     same walk: the village's files as the records export reads them.
+
+    The record sets the translator does not read — a divorce — come from that
+    walk too, beside the ones it was fed: their people have no profile, so the
+    bridge places none of them, and what they assert is read all the same.
     """
     from verso.ru.pipeline.translate import translate_village
     from verso.ru.facts.extract.common import SlotIndex
 
     ids = RecordIds()
-    gen, _ = translate_village(village_dir, strict=strict, ids=ids)
+    beside: list[tuple[str, Any]] = []
+    gen, _ = translate_village(village_dir, strict=strict, ids=ids, untranslated=beside)
     slots = SlotIndex()
-    assertions = assertions_of(gen.fed_sources, village=village_dir.name, slots=slots, ids=ids)
+    assertions = assertions_of([*gen.fed_sources, *beside], village=village_dir.name, slots=slots, ids=ids)
     return AssertionSet(assertions), gen, slots
+
+
+def unpublished_kinds() -> frozenset[str]:
+    """The kinds of record the translator does not read, by their code (`RecordKind.code`) — a divorce:
+    an appearance in one has no profile, and the bridge to the canonicals counts it apart."""
+    from verso.core import plugins
+
+    return frozenset(kind.code for kind in plugins.dsl().kinds if not kind.translated)
 
 
 def assertions_of(sources: Any, *, village: str, slots: Any,
@@ -56,6 +70,7 @@ def assertions_of(sources: Any, *, village: str, slots: Any,
     from verso.ru.dsl.records.births import BirthRecords
     from verso.ru.dsl.records.census import CensusRecords
     from verso.ru.dsl.records.deaths import DeathRecords
+    from verso.ru.dsl.records.divorces import DivorceRecords
     from verso.ru.dsl.records.external_sources import ExternalSourceRecords
     from verso.ru.dsl.records.marriages import MarriageRecords
     from verso.ru.dsl.records.name_lists import NameListRecords
@@ -64,7 +79,8 @@ def assertions_of(sources: Any, *, village: str, slots: Any,
     assertions: list[Assertion] = []
     for wanted, extract in ((BirthRecords, facts_from_births),
                             (MarriageRecords, facts_from_marriages),
-                            (DeathRecords, facts_from_deaths)):
+                            (DeathRecords, facts_from_deaths),
+                            (DivorceRecords, facts_from_divorces)):
         items = [(r, name) for name, recs in pairs
                  if isinstance(recs, wanted)
                  for r in _dated(cast(Any, recs))]

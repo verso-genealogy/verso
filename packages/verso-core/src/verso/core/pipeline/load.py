@@ -257,6 +257,7 @@ def discover_records(village_dir: str, year: int | list[int] | None = None,
                      admit_all_unreviewed: bool = False,
                      seen: list[tuple[str, Any, ratchet.RecordPrint]] | None = None,
                      ids: RecordIds | None = None,
+                     untranslated: list[tuple[Path, str, object]] | None = None,
                      ) -> Iterator[tuple[Path, str, object]]:
     """Yield (dsl_path, module_name, records_object) triples for every
     DSL-defined records container under `village_dir/[0-9]{4}/*.py`,
@@ -280,9 +281,16 @@ def discover_records(village_dir: str, year: int | list[int] | None = None,
     is the one the records JSON gives it, held records and divorces counted.
     A record set bound to several names is one book: it comes out once, under
     the first name that binds it (`record_sets`).
+
+    `untranslated` takes the record sets the translator does not read (a
+    divorce), as the same triples in the order of the walk: they are never
+    yielded — what is yielded is what the translator is fed — and a reader of
+    the records themselves (the facts) asks for them here, from the one walk
+    that builds every object and counts every id.
     """
     dsl = plugins.dsl()
     translated = record_types(translated=True)
+    beside = tuple(kind.set_type for kind in dsl.kinds if not kind.translated)
     discovered: list[tuple[Path, str, object]] = []
     for dsl_file, module in village_modules(village_dir, year, skipped,
                                             admit_all_unreviewed=admit_all_unreviewed, seen=seen):
@@ -290,6 +298,9 @@ def discover_records(village_dir: str, year: int | list[int] | None = None,
             ids.walk(record_namespace(module))
         for attr_name, value in record_sets(vars(module), translated).items():
             discovered.append((dsl_file, attr_name, value))
+        if untranslated is not None and beside:
+            untranslated += [(dsl_file, attr_name, value)
+                             for attr_name, value in record_sets(vars(module), beside).items()]
 
     village = corpus_data.village(village_dir)
     discovered.sort(key=lambda t: dsl.order(t[0], t[2], village))

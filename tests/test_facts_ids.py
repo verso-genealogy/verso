@@ -12,9 +12,13 @@ from pathlib import Path
 import pytest
 
 import village_fixture
-from verso.ru.facts.model import AssertionSet, Relational
-from verso.ru.pipeline.facts import consolidated_facts
+from verso.core.pipeline import records
 from verso.core.pipeline.records import export_village
+from verso.ru.dsl.records.divorces import DivorceRecords
+from verso.ru.facts.model import Assertion, AssertionSet, DivorcedOn, FactDate, MarriedOn, Record, Relational
+from verso.ru.facts.projection import LooseIndex, consolidated_identity
+from verso.ru.pipeline.facts import consolidated_facts
+from verso.ru.pipeline.translate import translate_village
 
 # A reviewed roll and burial (the fixture's are held), a list and a card: every kind
 # the facts read.
@@ -24,6 +28,7 @@ from calendar import Month
 from verso.ru.dsl import Gender, person
 from verso.ru.dsl import CensusRole, census_records, household, member
 from verso.ru.dsl import death, death_records
+from verso.ru.dsl import divorce, divorce_records
 from verso.ru.dsl import Relationship, relative
 from verso.ru.dsl import external_source_records, wwi_record
 from verso.ru.dsl import listed_person, name_list_records
@@ -47,6 +52,15 @@ manilovka_name_lists_1901 = name_list_records(
     document_type="Список")
 manilovka_external_sources_1901 = external_source_records(
     "Маниловка", wwi_record(person("Василій"), source_url="https://gwar.mil.ru/heroes/chelovek_plen1/"))
+# Three acts of divorce: one numbered, two the book left unnumbered — the second of them with words where
+# the archive's дело is expected.
+manilovka_divorces_1901 = divorce_records(
+    "ГАРО", "9", "1", "4", "Маниловка", "", 1901,
+    divorce(7, 3, Month.JULY, husband=person("Иванъ", "Петровъ", "Справкинъ"), wife=person("Анна", "Иванова"),
+            husband_age=30, wife_age=27, marriage_date="24 февраля 1895"),
+    divorce(None, 5, Month.JULY, husband=person("Павелъ", "Ильинъ"), wife=person("Ольга", "Петрова")),
+    divorce(None, 9, Month.JULY, husband=person("Сергій", "Ильинъ"), wife=person("Марія", "Петрова"),
+            case="судъ 2-го участка"))
 '''
 ROLL = "manilovka_extra_1901.py"
 MARRIAGES_1899 = "1899/manilovka_marriages_1899.py"
@@ -98,7 +112,7 @@ def test_every_persona_is_a_persona_of_the_records_json(village: Path, tmp_path:
     export_village(village, tmp_path / "records")
     named = set(_personas(facts))
     assert {a.cite.record_kind for a in facts} == {"birth", "marriage", "death", "census", "list",
-                                                   "external"}
+                                                   "external", "divorce"}
     assert named and all(p.startswith("r1:") for p in named)   # the parish is Хлестаковка
     assert named <= _json_personas(tmp_path / "records"), sorted(named - _json_personas(tmp_path / "records"))
 
@@ -138,3 +152,58 @@ def test_a_household_held_back_moves_no_other_household(village: Path):
     assert not [p for p in _personas(after, ROLL) if "/household/2/" in p]
     entries = [{a.cite.entry for a in facts if "/household/3/" in a.subject.id} for facts in (before, after)]
     assert entries[1] == {e - 1 for e in entries[0]}, "the held двор must stand before it in the reading"
+
+
+def _divorces(facts: AssertionSet) -> list[Assertion]:
+    return [a for a in facts if a.cite.record_kind == "divorce"]
+
+
+def test_the_divorces_are_read_in_the_village_s_one_walk(village: Path):
+    """The translator does not read a divorce, so its record sets reach the facts beside the ones it was fed:
+    from the same walk, each persona named by the records JSON — an unnumbered act and one with words for
+    its дело included."""
+    facts, gen, _ = consolidated_facts(village)
+    assert not [recs for _, recs in gen.fed_sources if isinstance(recs, DivorceRecords)]
+    found = _divorces(facts)
+    assert {a.date for a in found if isinstance(a, DivorcedOn)} == {
+        FactDate(year=1901, month=7, day=d) for d in (3, 5, 9)}
+    assert {a.date for a in found if isinstance(a, MarriedOn)} == {FactDate(year=1895, month=2, day=24)}
+    personas = {a.subject.id for a in found}
+    assert len(personas) == 6 and all(p.startswith("r1:") and p.endswith(("/husband", "/wife")) for p in personas)
+    assert len({p.rsplit("/", 1)[0] for p in personas}) == 3, "three acts, three ids"
+
+
+def test_the_translation_is_fed_no_divorce_unless_asked(village: Path):
+    gen, _ = translate_village(village)
+    assert {type(recs).__name__ for _, recs in gen.fed_sources}.isdisjoint({"DivorceRecords"})
+    beside: list[tuple[str, object]] = []
+    translate_village(village, untranslated=beside)
+    assert [(name, type(recs)) for name, recs in beside] == [(ROLL, DivorceRecords)]
+
+
+def test_the_divorces_are_the_same_read_from_the_records_json(village: Path, tmp_path: Path):
+    export_village(village, tmp_path / "rec")
+    dsl = [(type(a).__name__, a.sort_key) for a in _facts(village).sorted()]
+    with records.use(tmp_path / "rec"):
+        js = [(type(a).__name__, a.sort_key) for a in _facts(village).sorted()]
+    assert [x for x in dsl if "/divorce/" in x[1][2]], "the divorces are among what is compared"
+    assert dsl == js
+
+
+def test_a_divorce_s_people_are_placed_on_no_canonical(village: Path):
+    """No profile is minted for them, so the bridge refuses — and every reader that asks who a persona is
+    (the folds, the loose stubs, the name matches) passes a divorce by."""
+    facts, gen, slots = consolidated_facts(village)
+    key_of = consolidated_identity(gen, slots.object_of)(Record(()))
+    loose = LooseIndex(gen, slots, "")
+    personas = {a.subject for a in _divorces(facts)}
+    assert personas and all(key_of(p) is None and not loose.is_loose(p) for p in personas)
+
+
+def test_a_divorce_is_dumped_and_explained_whatever_its_id_holds(village: Path, tmp_path: Path):
+    from verso.ru.cli.facts import dump, explain
+    facts = _facts(village)
+    assert dump(facts, tmp_path / "facts.jsonl") == len(facts)
+    lines = (tmp_path / "facts.jsonl").read_text(encoding="utf-8").splitlines()
+    assert sum('"DivorcedOn"' in line for line in lines) == 6
+    assert "DivorcedOn" in explain(facts, "1901:7")
