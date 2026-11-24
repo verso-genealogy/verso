@@ -138,3 +138,15 @@ def test_a_mention_of_a_marriage_names_the_kinship(site: model.Site, ui: Ui) -> 
     assert pages.role_label(witness, ui) == "Поручитель"
     relative = next(m for m in site.mentions if m.role == "relative" and m.entry.book_id == BIRTHS)
     assert pages.role_label(relative, ui) == "отец восприемника №1"
+
+
+def test_the_books_of_one_file_and_year_stand_as_a_year_lists_them(changed: Change, ui: Ui, ctx: Context) -> None:
+    def same_year(node: dict[str, Any]) -> None:
+        deaths = node["documents"][2]
+        deaths["written"] |= {"village": "Маниловка", "year": 1900}
+        for run in deaths["pages"]:
+            for record in run["records"]:
+                record["id"] = record["id"].replace("Хлестаковка/47-9-755/1913", "Маниловка/47-9-755/1900")
+    page = pages.books_index(changed(same_year), ui, ctx)
+    kinds = re.findall(r'<a href="\.\./books/manilovka/47-9-755/1900/(\w+)/">', page)
+    assert kinds == ["birth", "marriage", "death"]                   # not by the kinds' names

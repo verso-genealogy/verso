@@ -129,7 +129,8 @@ def books_index(site: Site, ui: Ui, ctx: Context) -> str:
             f"<tr><td>{E(str(book_.written.get('case') or '')) if not book_.is_cards else ''}</td>"
             f"<td>{book_.year if book_.year is not None else ''}</td><td>{_book_link(book_, ui, up, kind_title(book_, ui))}</td>"
             f"<td>{E(book_.village)}</td><td class=\"n\">{len(book_.entries)}{_unreviewed(book_.unreviewed)}</td></tr>"
-            for book_ in sorted(found, key=lambda b: (_natural(str(b.written.get("case") or "")), b.year or 0, b.kind)))
+            for book_ in sorted(found, key=lambda b: (_natural(str(b.written.get("case") or "")), b.year or 0,
+                                                      site.books.index(b))))
         head = "".join(f"<th>{E(str(label))}</th>" for label in (
             t("site.col.case"), t("site.col.year"), t("site.col.kind"), t("site.col.parish"), t("site.col.records")))
         out.append((f"<h3>{E(fund)}</h3>" if fund else "") +
