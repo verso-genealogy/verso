@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import html
 from collections.abc import Iterable, Mapping, Sequence
-from typing import Any
+from typing import Any, TypeGuard
 
 from verso.core.i18n import Message
 from verso.ru.ages import format_age
@@ -91,7 +91,7 @@ def value(node: Node, path: str, sides: Sequence[str] = ("written", "derived")) 
     return None
 
 
-def _is_date(found: Any) -> bool:
+def _is_date(found: Any) -> TypeGuard[Mapping[str, Any]]:
     return isinstance(found, Mapping) and bool(found) and set(found) <= _DATE_KEYS
 
 
