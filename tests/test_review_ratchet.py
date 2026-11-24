@@ -23,7 +23,7 @@ from verso.ru.domain import Gender, page, person
 from verso.core import ratchet
 from verso.ru.dsl.records.births import BirthRecords, birth, birth_records, christening
 from verso.ru.dsl.records.deaths import DeathRecords, death, death_records
-from verso.ru.dsl.records.divorces import divorce
+from verso.ru.dsl.records.divorces import divorce, divorce_records
 from verso.ru.dsl.records.marriages import marriage, marriage_records
 from verso.ru.dsl.records.reviewed import admitted
 from verso.ru.targets.geni.translator import TerraformGenerator
@@ -49,11 +49,16 @@ def _death(**kw: Any) -> Any:
     return death(1, Gender.MALE, 5, 6, Month.MARCH, Month.MARCH, deceased=person("Иван"), age=40, **kw)
 
 
+def _divorce(**kw: Any) -> Any:
+    return divorce(1, 5, Month.MAY, husband=person("Иван"), wife=person("Анна"), **kw)
+
+
 _KINDS: dict[str, tuple[Callable[..., Any], Callable[..., Any]]] = {
     "birth": (_birth, birth_records),
     "christening": (_christening, birth_records),
     "marriage": (_marriage, marriage_records),
     "death": (_death, death_records),
+    "divorce": (_divorce, divorce_records),
 }
 
 
@@ -79,11 +84,17 @@ class OneFlag(unittest.TestCase):
         self.assertEqual([True, False],
                          [r.reviewed for r in DeathRecords(*_BOOK, [_death(), _death(reviewed=False)]).records])
 
+    def test_a_file_holds_its_divorces(self):
+        held = divorce_records(*_BOOK, _divorce(), _divorce(reviewed=True), reviewed=False)
+        self.assertEqual([False, True], [r.reviewed for r in held.records])
+        self.assertIs(False, held.reviewed)
+
     def test_page_refuses_a_record_with_no_flag(self):
+        class Unflagged:          # no record type of the DSL any more: the guard is for one added without the flag
+            page = None
         with self.assertRaises(TypeError):
-            page("1", divorce(1, 5, Month.MAY, husband=person("Иван"), wife=person("Анна")),
-                 reviewed=False)
-        self.assertEqual(1, len(page("1", divorce(1, 5, Month.MAY, husband=person("Иван")))))
+            page("1", Unflagged(), reviewed=False)  # pyright: ignore[reportArgumentType]
+        self.assertEqual(1, len(page("1", Unflagged())))  # pyright: ignore[reportArgumentType]
 
     def test_admitted(self):
         self.assertTrue(admitted(_birth()), "unstated is not held")

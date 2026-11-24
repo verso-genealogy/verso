@@ -5,6 +5,7 @@ from calendar import Month
 from typing import TYPE_CHECKING
 
 from verso.ru.domain import Person, Gender, RecordDefaults
+from verso.ru.dsl.records.reviewed import resolve_reviewed
 from verso.ru.naming import get_gender_from_name
 from verso.core.written import captures_written, shadow
 
@@ -29,8 +30,12 @@ class Divorce:
             case: str | None = None,
             comment: str | None = None,
             year: int | None = None,
+            reviewed: bool | None = None,
     ):
         self.record_num = record_num
+        # `None` is «not stated»: `page()` and then the record set fill it,
+        # so a whole лист can be held (`verso.ru.dsl.records.reviewed`).
+        self.reviewed = reviewed
         self.d_day = d_day
         self.d_month = d_month
         self.husband = husband
@@ -62,6 +67,7 @@ class DivorceRecords:
             church: str,
             year: int,
             records: list[Divorce],
+            reviewed: bool = True,
     ):
         self.archive = archive
         self.fund = fund
@@ -71,6 +77,10 @@ class DivorceRecords:
         self.church = church
         self.year = year
         self.records = records
+        # File-level default for the per-record `reviewed` flag, resolved here
+        # so a record leaves its record set True or False.
+        self.reviewed = reviewed
+        resolve_reviewed(self.records, reviewed)
 
     def export(self, exporter: RecordsExporter) -> str:
         return exporter.export(self)
@@ -92,6 +102,7 @@ def divorce(
         case: str | None = None,
         comment: str | None = None,
         year: int | None = None,
+        reviewed: bool | None = None,
 ) -> Divorce:
     return Divorce(
         record_num,
@@ -108,6 +119,7 @@ def divorce(
         case=case,
         comment=comment,
         year=year,
+        reviewed=reviewed,
     )
 
 
@@ -122,6 +134,7 @@ def divorce_records(
         year: int,
         *records: Divorce,
         defaults: RecordDefaults | None = None,
+        reviewed: bool = True,
 ) -> DivorceRecords:
     if defaults is not None:
         for record in records:
@@ -129,7 +142,8 @@ def divorce_records(
                 record.husband.residence = defaults.residence
             if record.wife and not record.wife.residence and defaults.residence:
                 record.wife.residence = defaults.residence
-    return DivorceRecords(archive, fund, inventory, case, village, church, year, list(records))
+    return DivorceRecords(archive, fund, inventory, case, village, church, year, list(records),
+                          reviewed=reviewed)
 
 
 def divorce_month(month: Month, *records: Divorce) -> list[Divorce]:

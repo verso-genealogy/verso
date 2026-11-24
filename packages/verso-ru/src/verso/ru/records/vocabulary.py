@@ -72,7 +72,7 @@ _DEATH = _f(f"""record_num:intstr reviewed:bool source_date_error:str source_age
     deceased:person relatives:Relatives=[] witness1:person witness2:person {_CLERGY}
     cause_of_death:cause age:age page:str archive:str fund:str inventory:str case:str
     church:str book:str comment:str civil:bool=False""")
-_DIVORCE = _f("""record_num:intstr d_day:int d_month:Month husband:person wife:person
+_DIVORCE = _f("""record_num:intstr reviewed:bool=True d_day:int d_month:Month husband:person wife:person
     husband_age:age wife_age:age marriage_date:str children:str initiator:str page:str case:str
     comment:str year:int""")
 _MEMBER = _f("""number:int person:person role:CensusRole age:age ref_member:int
@@ -128,7 +128,7 @@ SPECS: dict[type, ClassSpec] = {s.cls: s for s in (
               (marriage_records,), "records"),
     ClassSpec(DeathRecords, "deaths", _f(f"{_BOOK} records:Deaths reviewed:bool=True civil:bool=False"),
               (death_records,), "records"),
-    ClassSpec(DivorceRecords, "divorces", _f(f"{_BOOK} records:Divorces"), (divorce_records,), "records"),
+    ClassSpec(DivorceRecords, "divorces", _f(f"{_BOOK} records:Divorces reviewed:bool=True"), (divorce_records,), "records"),
     ClassSpec(CensusRecords, "census", _CENSUS, (census_records,), "households"),
     ClassSpec(NameListRecords, "name_list", _NAME_LIST, (name_list_records,), "entries"),
     ClassSpec(ExternalSourceRecords, "external_sources", _f("village:str records:Cards"),

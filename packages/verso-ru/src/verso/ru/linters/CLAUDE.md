@@ -568,7 +568,8 @@ reply. That fix carries `kwarg` (the field), as the removal fixes do; the other
 
 A `reviewed=` restating the value it would already inherit. Three levels resolve
 innermost-first — the record → `page(…)` → its record set (`name_list_records`,
-`census_records`, `birth_records`, `marriage_records`, `death_records`; default `True`) —
+`census_records`, `birth_records`, `marriage_records`, `death_records`, `divorce_records`;
+default `True`) —
 so an inner flag is redundant exactly when the value it would otherwise inherit is the
 same, and deleting it is a true no-op. Both `True` and `False` are flagged: holding a лист
 twice is as repeatable as releasing one twice.
@@ -579,7 +580,8 @@ sets (`birth_records`, …) took a file-level `reviewed=`. Before that they defa
 `True`, `page(reviewed=…)` never reached them, and removing an explicit flag there would
 silently have flipped `False` to `True` — so the check refused to look at them. Widening it
 found nothing in the corpus. Removing a redundant flag never moves a ratchet line: the
-fingerprint leaves `reviewed=` out (`packages/verso-core/src/verso/core/ratchet.py`).
+fingerprint leaves `reviewed=` out (`packages/verso-core/src/verso/core/ratchet.py`). Divorces joined
+when `divorce()` and `divorce_records()` took the flag.
 
 Advisory despite the fix being mechanical, because of WHEN it fires: a лист is released by
 adding `page(…, reviewed=True)` on top of entries already released one by one, so every

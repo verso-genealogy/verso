@@ -326,3 +326,59 @@ def test_a_divorces_section_and_page_are_kept_beside_a_records_own() -> None:
     assert "wrapper" not in plain["written"]
     assert first_difference(ns, replay_file(_without_derived(data), context=False)) is None
     assert first_difference(ns, decode_file(data)) is None
+
+
+def _divorces(*records: Any, **kw: Any) -> Any:
+    from verso.ru.dsl.records.divorces import divorce_records
+    return divorce_records("ГАПО", "1605", "59", "59", "Заманиловка", "", 1923, *records, **kw)
+
+
+def _divorce(number: int, **kw: Any) -> Any:
+    from verso.ru.dsl.records.divorces import divorce
+    return divorce(number, 3, Month.JULY, husband=person("Иванъ"), wife=person("Анна"), **kw)
+
+
+def test_a_divorce_with_no_flag_writes_none() -> None:
+    """A divorce book that never names the flag exports as it did before divorces had one: no `reviewed`
+    in a record's `written` or `derived`, nor in the book's."""
+    data = _encode({"divorces": _divorces(*page("4", _divorce(1), _divorce(2)))})
+    assert "reviewed" not in data["documents"][0]["written"]
+    for record in _records(data):
+        assert record["review"] == "reviewed"
+        assert "reviewed" not in record["written"] and "reviewed" not in record["derived"]
+        assert CONTEXT_KEY not in record["written"]
+
+
+def test_a_divorce_is_held_by_its_own_flag_its_page_or_its_book() -> None:
+    ns = {"divorces": _divorces(_divorce(1, reviewed=False), _divorce(2),
+                                *page("5", _divorce(3), reviewed=False))}
+    data = _encode(ns)
+    own, plain, paged = _records(data)
+    assert own["review"] == "held"
+    assert own["written"]["reviewed"] is False and CONTEXT_KEY not in own["written"]
+    assert plain["review"] == "reviewed" and "reviewed" not in plain["written"]
+    assert paged["review"] == "held"
+    assert paged["written"]["reviewed"] is False and "reviewed" in paged["written"][CONTEXT_KEY]
+    assert first_difference(ns, replay_file(_without_derived(data), context=False)) is None
+    assert first_difference(ns, decode_file(data)) is None
+
+    ns = {"divorces": _divorces(_divorce(1), _divorce(2, reviewed=True), reviewed=False)}
+    data = _encode(ns)
+    from jsonschema import Draft202012Validator
+    assert not list(Draft202012Validator(build_schema()).iter_errors(data))
+    assert data["documents"][0]["written"]["reviewed"] is False
+    held, kept = _records(data)
+    assert held["review"] == "held" and "reviewed" in held["written"][CONTEXT_KEY]
+    assert kept["review"] == "reviewed" and kept["written"]["reviewed"] is True
+    assert first_difference(ns, replay_file(_without_derived(data), context=False)) is None
+    assert first_difference(ns, decode_file(data)) is None
+
+
+@pytest.mark.xfail(strict=True, reason="the vocabulary's default True is written nowhere, so a page's True over a held "
+                                       "book leaves no trace (a name list's entry likewise); the encoder's fix is its own")
+def test_a_pages_true_over_a_held_divorce_book_replays() -> None:
+    ns = {"divorces": _divorces(*page("4", _divorce(1), reviewed=True), reviewed=False)}
+    data = _encode(ns)
+    assert ns["divorces"].records[0].reviewed is True
+    assert first_difference(ns, decode_file(data)) is None
+    assert first_difference(ns, replay_file(data)) is None

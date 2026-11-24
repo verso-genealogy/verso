@@ -1,12 +1,14 @@
 # Invented: a record's own reviewed= that restates the record set's (RVR001 inner_records_default, inner_records_set),
-# for each record the check reads — a birth, a christening, a marriage, a death, a household, a listed person. The JSON
+# for each record the check reads — a birth, a christening, a marriage, a death, a household, a listed person, a
+# divorce. The JSON
 # answers a record outside every page() in a run that holds a record with no flag of its own. Quiet or source-form: a
 # flag that differs, a page() that wrote another flag or the set's own, the findings inside a page() and in a run of
 # explicit flags alone (the export cannot say what a page wrote, nor whether a page(None, …) lies over the run), a
-# label repeated by two page() calls or by two death_month sections.
+# label repeated by two page() calls or by two death_month sections. (A page(None, reviewed=True) over a held divorce
+# book is tests/test_linters_on_json_redundancy.py's: its replay is held until the encoder writes that True.)
 from verso.ru.dsl import (
     CensusRole, Gender, Month, birth, birth_records, census_records, christening, death, death_month, death_records,
-    household, listed_person, marriage, marriage_records, member, name_list_records, page, person)
+    divorce, divorce_records, household, listed_person, marriage, marriage_records, member, name_list_records, page, person)
 
 births = birth_records(
     "ГА Глуповской области", "10", "4", "4081", "Маниловка", "Церковь", 1857,
@@ -46,3 +48,9 @@ voters = name_list_records(
     listed_person(1, person("Лука"), reviewed=True), listed_person(2, person("Лука"), reviewed=False),
     listed_person(3, person("Лука")),
     document_type="список избирателей", reviewed=False)
+
+divorces = divorce_records(
+    "ГА Глуповской области", "10", "4", "4086", "Маниловка", "", 1923,
+    divorce(1, 3, reviewed=True), divorce(2, 5), divorce(3, 7, reviewed=False),
+    *page("4", divorce(4, 9), divorce(5, 11, reviewed=False), reviewed=False),
+    reviewed=False)

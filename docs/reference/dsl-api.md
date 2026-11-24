@@ -31,9 +31,9 @@ What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only 
 - `death_month(month, *records)`
 - `death_month_year(month, year, *records)`
 - `death_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`
-- `divorce(record_num, d_day=None, d_month=None, husband=None, wife=None, husband_age=None, wife_age=None, marriage_date=None, children=None, initiator=None, page=None, case=None, comment=None, year=None)`
+- `divorce(record_num, d_day=None, d_month=None, husband=None, wife=None, husband_age=None, wife_age=None, marriage_date=None, children=None, initiator=None, page=None, case=None, comment=None, year=None, reviewed=None)`
 - `divorce_month(month, *records)`
-- `divorce_records(archive, fund, inventory, case, village, church, year, *records, defaults=None)`
+- `divorce_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True)`
 - `external_source_records(village, *records)`
 - `household(family_id, *members, page=None, comment=None, record_day=None, record_month=None, reviewed=None)`
 - `listed_person(number, person, *, age=None, comment=None, reviewed=None, page=None)`

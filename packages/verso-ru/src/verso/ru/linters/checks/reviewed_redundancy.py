@@ -26,6 +26,7 @@ around them was closed with ``page(..., reviewed=True)``.
 ``birth``/``marriage``/``death`` defaulted to ``True``, ``page(reviewed=…)``
 never reached them, and removing an explicit flag there would silently have
 flipped ``False`` to ``True`` — so the check refused to look at them.
+A ``divorce`` took the flag later, with the same ``None`` default.
 
 Advisory, with a ``remove_kwarg`` fix: the removal is mechanical and provably
 byte-neutral, so the editors can offer it as a quick fix.
@@ -46,11 +47,12 @@ from verso.ru.linters.checks import shared_ast
 # Record-set calls carrying the file-level default, and the `reviewed=` default
 # their signature declares when the kwarg is absent.
 RECORD_SETS = {"name_list_records": True, "census_records": True,
-               "birth_records": True, "marriage_records": True, "death_records": True}
+               "birth_records": True, "marriage_records": True, "death_records": True,
+               "divorce_records": True}
 
 # The record types whose own `reviewed` defaults to None, i.e. the ones a
 # page() or a record set can actually fill. See the module docstring.
-INNER_CALLS = {"listed_person", "household", "birth", "christening", "marriage", "death"}
+INNER_CALLS = {"listed_person", "household", "birth", "christening", "marriage", "death", "divorce"}
 
 PAGE_CALL = "page"
 

@@ -258,9 +258,10 @@ def test_a_groom_status_equal_to_the_males_is_the_one_derived():
 PAGES = f'd = death_records({HEAD}, 1857, {{}})'
 
 
-def _rvr(body: str) -> tuple[set[str], set[str]]:
-    """The RVR001 variants `dsllint` gives of `death_records(…, body)` (all of them, the page's too), and the walk."""
-    text = PAGES.format(body)
+def _rvr(body: str, records: str = "death_records") -> tuple[set[str], set[str]]:
+    """The RVR001 variants `dsllint` gives of `death_records(…, body)` — or of another set's call, `records` — (all of
+    them, the page's too), and the walk."""
+    text = PAGES.replace("death_records", records).format(body)
     with tempfile.TemporaryDirectory(prefix="verso-sample-") as tmp:
         path = Path(tmp) / "Примерово" / "sample.py"
         path.parent.mkdir()
@@ -291,6 +292,19 @@ def test_a_record_outside_every_page_is_answered_beside_an_unflagged_one():
     assert said == walked == {"inner_records_default"}
     said, walked = _rvr('death(1, Gender.MALE, 5, reviewed=False), death(2, Gender.MALE, 5), reviewed=False')
     assert said == walked == {"inner_records_set"}
+
+
+def test_a_divorces_flag_is_answered_as_a_deaths():
+    """A divorce has its `reviewed=` as the other kinds do: the walk finds the flag its book repeats — and not the
+    `False` a `page(None, reviewed=True)` makes load-bearing, which its default `True` would hide from the replay."""
+    def rvr(body: str) -> tuple[set[str], set[str]]:
+        return _rvr(body, "divorce_records")
+
+    assert rvr('divorce(1, 5), divorce(2, 5, reviewed=True)') == ({"inner_records_default"},) * 2
+    assert rvr('divorce(1, 5, reviewed=False), divorce(2, 5), reviewed=False') == ({"inner_records_set"},) * 2
+    assert rvr('divorce(1, 5), divorce(2, 5, reviewed=False)') == (set(), set())
+    assert rvr('*page(None, divorce(1, 5), divorce(2, 5, reviewed=False), reviewed=True), reviewed=False') == (
+        set(), set())
 
 
 def test_a_run_of_explicit_flags_alone_is_not_answered():

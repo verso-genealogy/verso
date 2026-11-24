@@ -73,8 +73,9 @@ def page[T: (Birth, Divorce, Marriage, Death, CensusHousehold, ListedPerson)](nu
     per-record flag still wins. Every record type it wraps defaults to `None`
     since 2026-10-03; before that births, marriages and deaths defaulted to
     `True` and a `page(reviewed=False)` around them did nothing
-    (`verso.ru.dsl.records.reviewed`). A record type with no flag at all (a
-    divorce) is REFUSED rather than silently passed over.
+    (`verso.ru.dsl.records.reviewed`). Every record type it wraps has the
+    flag, a divorce too; the refusal below guards a record type added to the
+    constraint without one, which is REFUSED rather than silently passed over.
 
     `ListedPerson` (name lists) carries only `page` and `reviewed` of these
     fields; the provenance kwargs live on `name_list_records()` instead, so

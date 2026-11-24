@@ -2456,10 +2456,17 @@
       "null"
      ]
     },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
+    },
     "context": {
      "type": "array",
      "items": {
       "enum": [
+       "reviewed",
        "divorce.month",
        "case",
        "year"
@@ -2516,6 +2523,12 @@
      "type": [
       "integer",
       "string",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
       "null"
      ]
     },
@@ -4277,6 +4290,12 @@
        "$ref": "#/$defs/record_defaults"
       }
      ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
+      "null"
+     ]
     }
    },
    "additionalProperties": false
@@ -4323,6 +4342,12 @@
     "year": {
      "type": [
       "integer",
+      "null"
+     ]
+    },
+    "reviewed": {
+     "type": [
+      "boolean",
       "null"
      ]
     }
