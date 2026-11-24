@@ -1,4 +1,4 @@
-"""AST-based linter (ZGS001–ZGS005) for a book of the civil registry — `civil=True`.
+"""AST-based linter (ZGS001–ZGS006) for a book of the civil registry — `civil=True`.
 
 A ZAGS book records births, deaths and marriages as acts: the same kinds and the same
 people as a parish book, its second date a registration. What a parish book writes and an
@@ -29,6 +29,10 @@ Advisory (`check_file_advisory` / `check_file_advisory_structured`):
   ѳ, ѵ, a final ъ). The DSL keeps the book's spelling, so this asks whether the act wrote it
   so or the hand typed the old books' habit.
 
+- ZGS006 — a civil birth's `comment=` says a parent's age («отцу 26, матери 22») while that role's
+  field (`father_age=`, `mother_age=`) is empty. It fires only on a fragment `verso fix-parent-ages` would
+  move — `verso.ru.parent_age_text` is the one reader of both; a doubtful or cut one stays no finding.
+
 Two of ZAGS's questions are not here. One deed's books of one year — births, deaths —
 stand in separate files, and a check reads one file: a flag set on one and not the other is
 out of its reach (ZGS003 flags each unflagged one). And a death registered before it
@@ -46,6 +50,8 @@ from pathlib import Path
 
 from verso.ru.linters.checks.file_bindings import module_bindings, record_defaults_call, string_constants
 from verso.ru.linters.checks.status_words import words_of
+from verso.ru.parent_age_text import FIELDS, ROLES, read_comment
+from verso.ru.parent_age_text import Reading as ParentAgeReading
 from verso.ru.linters.issue import issue, line_text, says
 from verso.ru.linters.checks import shared_ast
 
@@ -142,6 +148,32 @@ def _records(book: ast.Call) -> Iterator[ast.Call]:
         if _call_name(node) in kinds:
             assert isinstance(node, ast.Call)
             yield node
+
+
+def civil_births(tree: ast.AST) -> Iterator[ast.Call]:
+    """Each `birth()` of a book flagged `civil=True` — the births ZGS006 reads and `verso fix-parent-ages` edits."""
+    for book in _books(tree):
+        if _civil(book):
+            for record in _records(book):
+                if _call_name(record) == "birth":
+                    yield record
+
+
+def _is_none(node: ast.expr) -> bool:
+    return isinstance(node, ast.Constant) and node.value is None
+
+
+def parent_age_moves(birth: ast.Call) -> tuple[ast.keyword, ParentAgeReading, dict[str, ast.keyword]] | None:
+    """(the birth's `comment=` keyword, what it says of the parents' ages, the `father_age=None`-like keywords the
+    figures replace) when a field of an empty role could take it — the one question the linter and the codemod ask.
+    A role is empty when its keyword is missing or written `None`."""
+    kwargs = _kwargs(birth)
+    comment = _str(kwargs["comment"].value) if "comment" in kwargs else None
+    nones = {role: kwargs[FIELDS[role]] for role in ROLES
+             if FIELDS[role] in kwargs and _is_none(kwargs[FIELDS[role]].value)}
+    empty = tuple(role for role in ROLES if FIELDS[role] not in kwargs or role in nones)
+    reading = read_comment(comment, empty) if comment and empty else None
+    return (kwargs["comment"], reading, nones) if reading is not None else None
 
 
 def _persons(node: ast.AST) -> Iterator[ast.Call]:
@@ -258,6 +290,14 @@ def _old_letters(book: ast.Call) -> Iterator[Issue]:
                 break    # one finding a person: the habit, not every word of it
 
 
+def _parent_ages_in_comment(tree: ast.AST) -> Iterator[Issue]:
+    for record in civil_births(tree):
+        if (move := parent_age_moves(record)) is not None:
+            comment, reading, _ = move
+            for role in reading.ages:
+                yield {"line": comment.value.lineno, **says("ZGS006", role, token="comment")}
+
+
 def _advisory(tree: ast.AST) -> list[Issue]:
     bindings = module_bindings(tree)
     texts = string_constants(bindings)
@@ -267,6 +307,7 @@ def _advisory(tree: ast.AST) -> list[Issue]:
         if _civil(book):
             issues.extend(_old_estates(book, bindings, texts))
             issues.extend(_old_letters(book))
+    issues.extend(_parent_ages_in_comment(tree))
     return issues
 
 

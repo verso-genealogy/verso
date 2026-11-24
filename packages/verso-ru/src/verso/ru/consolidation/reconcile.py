@@ -15,6 +15,7 @@ through the same rule, as its oracle.
 Run:
     python3 -m verso.ru.consolidation.reconcile --village Горюхино
     verso reconcile --village Маниловка [--all] [--json] [--audit-folded]
+    verso reconcile --village Горюхино --parents   # who a civil act's parents are
 """
 from __future__ import annotations
 
@@ -28,7 +29,7 @@ from verso.ru.ages import format_age
 from verso.ru.consolidation.profile_reading import display_name as profile_name
 from verso.ru.facts.checks.births import birth_span
 from verso.ru.facts.checks.reconcile import (
-    Audit, Backing, Reconciliation, Side, VERDICT_AMBIGUOUS, VERDICT_CANDIDATE, VERDICT_NONE, audit_folded, reconcile)
+    Audit, Backing, LISTS_AND_CARDS, PARENTS, Reconciliation, Side, match, VERDICT_AMBIGUOUS, VERDICT_CANDIDATE, VERDICT_NONE, audit_folded)
 from verso.ru.facts.identity import display_name
 from verso.ru.facts.labels import record_number
 from verso.ru.facts.model import AgedYears, BornOn, DiedOn, NameClaim, SurvivedUntil
@@ -233,7 +234,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     ap.add_argument("--audit-folded", action="store_true",
                     help="run the folds already made by hand through the rule")
+    ap.add_argument("--parents", action="store_true",
+                    help="the channel «who are the parents of a civil act»: the father or "
+                         "mother of an act that states an age, against the people the corpus holds")
     args = ap.parse_args(argv)
+    channel = PARENTS if args.parents else LISTS_AND_CARDS
+    name = "reconcile --parents" if args.parents else "reconcile"
 
     from verso.ru.pipeline.facts import consolidated_facts
 
@@ -243,12 +249,14 @@ def main(argv: list[str] | None = None) -> int:
     profiles = gen.canonical_profiles()
     ordered = household_ordered_lists(gen)
     if args.audit_folded:
-        audits = audit_folded(believed, identity, ordered_lists=ordered)
-        print(format_audit(audits, profiles))
+        audits = audit_folded(believed, identity, channel, ordered_lists=ordered)
+        print(format_audit(audits, profiles, channel=name,
+                           folded=str(t("consolidation.reconcile.parents_folded")) if args.parents else None))
         return 1 if any(a.outcome != "FOUND" for a in audits) else 0
-    found = reconcile(believed, identity, ordered)
+    found = match(believed, identity, channel, ordered)
     print(findings_to_json(found) if args.json
-          else format_report(found, profiles, all_targets=args.all_targets))
+          else format_report(found, profiles, all_targets=args.all_targets, channel=name,
+                             targets=str(t("consolidation.reconcile.parents_targets")) if args.parents else None))
     return 1 if any(r.is_candidate for r in found) else 0
 
 

@@ -808,6 +808,28 @@
       "null"
      ]
     },
+    "father_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "mother_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "source_age_error": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
     "inventory": {
      "type": [
       "string",
@@ -929,6 +951,28 @@
      ]
     },
     "lag_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "father_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "mother_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "source_age_error": {
      "type": [
       "string",
       "null"
@@ -1332,6 +1376,28 @@
      ]
     },
     "lag_note": {
+     "type": [
+      "string",
+      "null"
+     ]
+    },
+    "father_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "mother_age": {
+     "type": [
+      "integer",
+      "number",
+      "string",
+      "null"
+     ]
+    },
+    "source_age_error": {
      "type": [
       "string",
       "null"

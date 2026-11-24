@@ -1,0 +1,30 @@
+# Invented: a civil birth whose comment says a parent's age while that role's field is empty (ZGS006) -- the forms
+# the codemod moves (both roles, one role, «возраст N и M», the 1920 «родители: …»), a doubt that stays in the
+# comment but gives its figure to the field, and what is no finding: a cut or interleaved figure, a role whose field
+# is written, a book of the church; RET004 -- source_age_error= on a birth that states no parent's age.
+from verso.ru.dsl import Gender, Month, birth, birth_records, person
+
+civil = birth_records(
+    "Госархив Примерской области", "21", "3", "114", "Примерово", "", 1924,
+    birth(1, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Лука"),
+          comment="записан; отцу 26, матери 22; заявитель — отец"),
+    birth(2, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Иван"), father_age=26,
+          comment="отцу 26, матери 22"),
+    birth(3, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Фома"), father_age=26, mother_age=22,
+          comment="отцу 26, матери 22"),
+    birth(4, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Петр"), comment="матери 3…"),
+    birth(5, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Семен"), comment="отцу 42 (?), матери 43"),
+    birth(6, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Егор"), comment="возраст 31 и 29"),
+    birth(7, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Иван"),
+          comment="родители: Иван (35) и Феврония (29 л.) Горюхины"),
+    birth(8, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Лука"), comment="Мария(?) (2[?](?))"),
+    birth(9, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Фока"), source_age_error="не разобран"),
+    birth(10, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Тит"), mother_age=30,
+          source_age_error="не разобран"),
+    civil=True,
+)
+
+church = birth_records(
+    "Госархив Примерской области", "21", "3", "115", "Примерово", "Церковь", 1824,
+    birth(1, Gender.MALE, 4, 6, Month.MARCH, Month.MARCH, child=person("Лука"), comment="отцу 26, матери 22"),
+)

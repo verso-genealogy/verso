@@ -569,6 +569,12 @@ severity = "refuse"
 scope = "record"
 note = "source_age_error and previous_age_error on one line"
 
+[RET004]
+class = "written"
+severity = "refuse"
+scope = "record"
+note = "source_age_error= on a birth stating no parent's age"
+
 [WSD001]
 class = "written"
 severity = "refuse"
@@ -645,6 +651,13 @@ severity = "warn"
 scope = "record"
 needs = ["book"]
 note = "a civil book writes a name in the old letters"
+
+[ZGS006]
+class = "context"
+severity = "warn"
+scope = "record"
+needs = ["book"]
+note = "a civil birth's comment says a parent's age that its father_age= / mother_age= should hold"
 
 [IMP001]
 class = "source"

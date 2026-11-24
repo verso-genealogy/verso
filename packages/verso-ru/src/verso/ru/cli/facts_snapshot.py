@@ -31,12 +31,14 @@ from verso.ru.facts.checks.dates import date_order_findings, unplaced_within
 from verso.ru.facts.checks.deaths import death_claims
 from verso.ru.facts.checks.fathers import father_findings
 from verso.ru.facts.checks.lags import baptism_lags, burial_lags
+from verso.ru.facts.checks.parent_ages import parent_age_drift, parent_age_findings
 from verso.ru.facts.checks.parenthood import children_spans, posthumous_births
 from verso.ru.facts.checks.lives import Lives, households_of_canonicals, lives_of_canonicals
 from verso.ru.facts.checks.reach import identity_reach
 from verso.ru.facts.checks.reconcile import match, reconcile
 from verso.ru.facts.checks.wedding_ages import wedding_age_findings
 from verso.ru.facts.checks.wedding_calendar import wedding_calendar_findings
+from verso.ru.facts.identity import kin_identity
 from verso.ru.facts.projection import LooseIndex, consolidated_identity
 from verso.ru.pipeline.facts import consolidated_facts, unpublished_kinds
 
@@ -106,6 +108,8 @@ def findings_snapshot(village_dir: Path) -> str:
     posthumous = posthumous_births(believed, identity)
     spans = children_spans(believed, identity)
     wedding_ages = wedding_age_findings(believed).findings
+    parent_ages = parent_age_findings(believed)
+    parent_drift = parent_age_drift(believed, pair=kin_identity(), folded=identity)
 
     rows: list[tuple[str, int, int | None]] = [
         ("baptism-lag", len(late_baptisms),
@@ -125,6 +129,8 @@ def findings_snapshot(village_dir: Path) -> str:
         ("identity-refused-beyond-clergy", reach.refused_beyond_clergy, None),
         ("identity-surplus", reach.surplus, None),
         ("name-variants", len(variants), sum(r.confidence == "HIGH" for r in variants)),
+        ("parent-age-drift", len(parent_drift), sum(f.confidence == "HIGH" for f in parent_drift)),
+        ("parent-ages", len(parent_ages), len(parent_ages)),
         ("posthumous-birth", len(posthumous),
          sum(f.confidence == "HIGH" for f in posthumous)),
         ("reconcile", len(reconciled), sum(r.confidence == "HIGH" for r in reconciled)),

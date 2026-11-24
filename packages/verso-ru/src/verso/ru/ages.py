@@ -297,3 +297,21 @@ def age_bounds(age) -> tuple[float, float] | None:
         granularity = 0.0 if number != int(number) else factor
         seen = True
     return (total, total + granularity) if seen else None
+
+
+def parent_age_prose(age) -> str | None:
+    """A parent's age an act states, as reader-facing prose; «?» and «-» (not recorded, as RET004
+    reads them) and an age `format_age` cannot render say nothing."""
+    return format_age(age)
+
+
+def birth_notes(b) -> str | None:
+    """A birth's `comment=` and the parents' ages its fields hold — what the comment said before
+    the ages had fields of their own («отцу 31 год, матери 30 лет»). A record without the fields
+    answers its comment, byte for byte."""
+    said = [f"{who} {text}" for who, text in (("отцу", parent_age_prose(getattr(b, "father_age", None))),
+                                              ("матери", parent_age_prose(getattr(b, "mother_age", None))))
+            if text]
+    if not said:
+        return b.comment
+    return "; ".join(filter(None, [b.comment, ", ".join(said)]))

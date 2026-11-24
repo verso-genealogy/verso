@@ -219,3 +219,15 @@ def test_an_object_no_field_of_the_schema_draws_is_refused(ui: Ui, written: dict
 
 def test_a_hidden_date_without_a_label_still_has_the_sites() -> None:
     assert str(records.site_labels()["marriage_date"]) == "дата брака"
+
+
+def test_a_birth_puts_each_parents_age_beside_them(ui: Ui) -> None:
+    from tests.records_fixture import aged
+    from verso.core.records.encode import encode_namespace
+    from verso.core.records.ids import Ids
+    node = encode_namespace(aged(), village="Маниловка", file="1900/all.py", sha256="", ids=Ids())
+    site = model.load([node], village="Маниловка")
+    book = site.book(BIRTHS)
+    text = _text(records.render(book.entries[0], book, ui))
+    assert re.search(r"Отец Петръ .*? возраст: 31 год", text), text
+    assert re.search(r"Мать Марья .*? возраст: 30\?", text), text

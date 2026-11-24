@@ -33,6 +33,15 @@ PEASANT = Status("крестьянин", Gender.MALE)
 PEASANT_WIFE = Status("крестьянская жена", Gender.FEMALE)
 
 
+def aged() -> dict[str, Any]:
+    """A book of one act that states both parents' ages, written as the DSL writes it (a call)."""
+    return {"births": birth_records(
+        "ЦГА", "47", "9", "755", "Маниловка", "Церковь", 1900,
+        *page("1", birth(1, Gender.MALE, 3, None, b_month=Month.JANUARY, child=person("Иванъ"),
+                         father=person("Петръ", "Ивановъ"), mother=person("Марья", "Петрова"),
+                         father_age=31, mother_age="30?")))}
+
+
 def namespace() -> dict[str, Any]:
     births = birth_records(
         "ЦГА", "47", "9", "755", "Маниловка", "Церковь", 1900,

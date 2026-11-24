@@ -33,7 +33,7 @@ from verso.ru.facts.extract.marriages import facts_from_marriages
 from verso.ru.facts.extract.name_lists import facts_from_name_lists
 from verso.core.records.ids import RecordIds
 from verso.ru.facts.identity import (
-    canonical_fold, conclusions, display_name, matching_fold, name_identity)
+    canonical_fold, conclusions, display_name, kin_identity, matching_fold, name_identity)
 from verso.ru.facts.checks import FACTS_CHECKS
 from verso.ru.facts.checks.births import BirthFinding, birth_claims_of, birth_span
 from verso.ru.facts.checks.dates import OrderFindings, WithinFinding, date_order_findings, unplaced_within
@@ -41,6 +41,8 @@ from verso.ru.facts.checks.deaths import DeathFinding, death_claims
 from verso.ru.facts.checks.fathers import FatherClaim, FatherFinding, father_findings
 from verso.ru.facts.checks.lags import BAPTISM_DAYS, BURIAL_DAYS, Lags, baptism_lags, burial_lags
 from verso.ru.facts.checks.name_days import FAR_DAYS, NameDays, name_day_findings
+from verso.ru.facts.checks.parent_ages import (
+    DRIFT_SLACK_YEARS, FATHER_MIN, MOTHER_MAX, MOTHER_MIN, DriftFinding, parent_age_drift, parent_age_findings)
 from verso.ru.facts.checks.parenthood import (
     FATHER_DAYS, MOTHER_SPAN_YEARS, PosthumousFinding, SpanFinding, children_spans, posthumous_births)
 from verso.ru.facts.checks.reach import identity_reach
@@ -851,6 +853,55 @@ def wedding_ages_report(village_dir: Path) -> tuple[str, int]:
     return signal_report("wedding-ages", ages), (1 if ages.findings else 0)
 
 
+def parent_ages_text(facts: AssertionSet) -> str:
+    """The report of `parent-ages` over assertions a reader may believe: its line of counts, its findings."""
+    found = parent_age_findings(facts)
+    params = {"mother_min": MOTHER_MIN, "mother_max": MOTHER_MAX, "father_min": FATHER_MIN}
+    if not found:
+        return str(t("cli.facts.parent_ages.ok", **params))
+    head = str(t("cli.facts.parent_ages.head", count=len(found), high=sum(f.confidence == "HIGH" for f in found),
+                 **params))
+    return format_signals([signal_of(f) for f in found], head=head)
+
+
+def parent_ages_report(village_dir: Path) -> tuple[str, int]:
+    """`verso facts --check parent-ages`: the snapshot's loader."""
+    facts, _gen, _slots = consolidated_facts(village_dir)
+    believed = facts.believed()
+    return parent_ages_text(believed), (1 if parent_age_findings(believed) else 0)
+
+
+def parent_age_drift_text(found: list[DriftFinding]) -> str:
+    """The report of `parent-age-drift`: its line of counts, then one group per couple, its rows in date order."""
+    if not found:
+        return str(t("cli.facts.parent_age_drift.ok", slack=DRIFT_SLACK_YEARS))
+    couples = dict.fromkeys(f.couple for f in found)
+    high = sum(f.confidence == "HIGH" for f in found)
+    lines = [str(t("cli.facts.parent_age_drift.head", count=len(found), couples=len(couples), slack=DRIFT_SLACK_YEARS,
+                   high=high, low=len(found) - high)),
+             str(t("cli.facts.parent_age_drift.note"))]
+    for couple in sorted(couples):
+        rows = [f for f in found if f.couple == couple]
+        lines += ["", " + ".join(rows[0].names)]
+        lines += [_drift_row(f) for f in rows]
+    return "\n".join(lines)
+
+
+def _drift_row(f: DriftFinding) -> str:
+    role = str(t("cli.facts.parent_age_drift.father") if f.role == "father" else t("cli.facts.parent_age_drift.mother"))
+    return str(t("cli.facts.parent_age_drift.finding", confidence=f.confidence, role=role, first=f.first_age,
+                 second=f.second_age, years=f.gap_years, first_where=_where(f.first), second_where=_where(f.second)))
+
+
+def parent_age_drift_report(village_dir: Path) -> tuple[str, int]:
+    """`verso facts --check parent-age-drift`: the snapshot's loader, the consolidation's fold passed beside the
+    couple's key."""
+    facts, gen, slots = consolidated_facts(village_dir)
+    believed = facts.believed()
+    found = parent_age_drift(believed, pair=kin_identity(), folded=consolidated_identity(gen, slots.object_of))
+    return parent_age_drift_text(found), (1 if found else 0)
+
+
 def name_days_report(village_dir: Path) -> tuple[str, int]:
     """`verso facts --check name-days`: the births alone — no translation."""
     from verso.ru.church_calendar.svyatcy import load_svyatcy
@@ -1099,6 +1150,14 @@ def main(argv: list[str] | None = None) -> int:
         return code
     if args.check == "wedding-ages":
         report, code = wedding_ages_report(village_dir)
+        print(report)
+        return code
+    if args.check == "parent-age-drift":
+        report, code = parent_age_drift_report(village_dir)
+        print(report)
+        return code
+    if args.check == "parent-ages":
+        report, code = parent_ages_report(village_dir)
         print(report)
         return code
     if args.check == "birth-claims":

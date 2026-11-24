@@ -69,6 +69,9 @@ plugins/verso-reading/                the Claude Code plugin of the scan-reading
   file of `verso-ru`, the lines of code holding Cyrillic: they only shrink. Content (generated prose,
   CSV headers, the sources' vocabulary) never goes through the catalogs; it is declared in
   `tests/ui_content.toml` or marked `# i18n: content`.
+- **A parent's age is a fact of the child's birth.** `birth(father_age=, mother_age=)` of a civil act
+  becomes an `AgedYears` dated to the birth; `death-age` reads death records' ages alone. Two checks hold it:
+  `parent-ages` (one act) and `parent-age-drift` (two acts of one couple); `reconcile --parents` is the channel.
 - **No path from `__file__` to data.** A module finds a corpus through the workspace
   (`verso.core.workspace`: `workspace.use()` → `VERSO_WORKSPACE` → `verso.toml` up from the working
   directory, never across a git boundary), never at import.

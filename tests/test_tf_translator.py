@@ -555,6 +555,62 @@ class TestBirthTranslation(unittest.TestCase):
         self.assertIn(">Населенный пункт восприемника не указан", output)
         self.assertIn("Пометки: Населенный пункт восприемника не указан", output)
 
+    def _aged_birth_output(self, **kw):
+        records = birth_records(
+            "A", "1", "1", "1", "Горюхино", "N", 1801,
+            *[birth(1, Gender.FEMALE, 5, 5, child=person("Дария"), father=person("Иван", "Петров"),
+                    mother=person("Анна", "Сидорова"), god_parent1=person("Фёкла", "Иванова"),
+                    b_month=Month.JANUARY, **kw)],
+        )
+        gen = TerraformGenerator(village_dir=None)
+        gen.add_birth_records(records)
+        return gen.get_output("mk_1801_birth.tf")
+
+    def test_parent_ages_reach_the_document_and_the_about_texts(self):
+        output = self._aged_birth_output(comment="Заявитель — отец", father_age=31, mother_age=30)
+        self.assertIn("Пометки: Заявитель — отец; отцу 31 год, матери 30 лет", output)
+        self.assertIn(">Заявитель — отец; отцу 31 год, матери 30 лет", output)
+        self.assertEqual(2, output.count("Возраст при рождении ребёнка:"))
+        self.assertIn("Возраст при рождении ребёнка: 31 год", output)
+        self.assertIn("Возраст при рождении ребёнка: 30 лет", output)
+
+    def test_a_godparents_about_text_shows_the_parents_ages(self):
+        output = self._aged_birth_output(comment="Заявитель — отец", father_age=31, mother_age=30)
+        godparent = next(blk for blk in output.split('resource "geni_profile"')
+                         if "god_parent_1" in blk.split("{", 1)[0])
+        self.assertIn(">Заявитель — отец; отцу 31 год, матери 30 лет", godparent)
+
+    def test_a_consolidated_parent_carries_the_age_line(self):
+        records = birth_records(
+            "A", "1", "1", "1", "Горюхино", "N", 1801,
+            *[birth(1, Gender.FEMALE, 5, 5, child=person("Дария"), father=person("Иван", "Петров"),
+                    mother=person("Анна", "Сидорова"), b_month=Month.JANUARY,
+                    father_age=31, mother_age=30)],
+        )
+        plain = TerraformGenerator(village_dir=None)
+        plain.add_birth_records(records)
+        father_res = next(name for name in re.findall(r'resource "geni_profile" "([^"]+)"', plain.get_output("mk_1801_birth.tf"))
+                          if name.endswith("_father"))
+        gen = TerraformGenerator(village_dir=None, consolidation=Consolidation(
+            profile_move_list={father_res: "ioann_petrov"}))
+        gen.add_birth_records(records)
+        gen.finalize()
+        consolidated = gen.get_output("consolidated_profiles_1.tf")
+        self.assertIn('resource "geni_profile" "ioann_petrov"', consolidated)
+        self.assertIn("Возраст при рождении ребёнка: 31 год", consolidated)
+        self.assertNotIn("Возраст при рождении ребёнка: 30 лет", consolidated)
+
+    def test_a_parent_age_format_age_leaves_alone_is_said_as_written(self):
+        output = self._aged_birth_output(father_age="около 30")
+        self.assertIn("Пометки: отцу около 30", output)
+        self.assertIn("Возраст при рождении ребёнка: около 30", output)
+
+    def test_without_parent_ages_a_birth_has_no_age_lines(self):
+        output = self._aged_birth_output(comment="Заявитель — отец")
+        self.assertNotIn("Возраст при рождении", output)
+        self.assertNotIn("отцу", output)
+        self.assertIn("Пометки: Заявитель — отец\n", output.replace("\n        ", "\n"))
+
     def test_pometki_no_duplication_with_short_prefix(self):
         """Multi-segment comment where one segment matches a short-form
         pattern: the full comment appears once on `>{comment}` and

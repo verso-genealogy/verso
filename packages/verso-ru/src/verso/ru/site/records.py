@@ -359,6 +359,8 @@ def site_labels() -> dict[str, Message]:
             "village": t("site.field.village"), "birth.day": t("site.field.birth_day"),
             "birth.month": t("site.field.birth_month"), "baptism.year": t("site.field.baptism_year"),
             "source_date_error": t("site.field.source_date_error"), "lag_note": t("site.field.lag_note"),
+            "father_age": t("site.field.father_age"), "mother_age": t("site.field.mother_age"),
+            "source_age_error": t("site.field.source_age_error"),
             "marriage_date": t("site.field.marriage_date")}
 
 

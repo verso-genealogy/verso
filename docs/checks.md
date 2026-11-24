@@ -22,7 +22,7 @@ numbers each check holds are in [the reference](reference/checks.md).
 
 ## One record
 
-Six checks need one record and nothing else, so they speak on a fresh workspace, before anything is
+Seven checks need one record and nothing else, so they speak on a fresh workspace, before anything is
 consolidated. `verso facts --village V --check CHECK` asks one of them of the village.
 
 | Check | It asks | Answered by |
@@ -32,13 +32,22 @@ consolidated. `verso facts --village V --check CHECK` asks one of them of the vi
 | `baptism-lag` | a christening more than 11 days after the birth; HIGH when its day is smaller than the birth's, so its month was taken as the next one and one of the two days is probably misread | `lag_note=` |
 | `burial-lag` | a burial more than 3 days after the death; HIGH past 9 | `lag_note=` |
 | `wedding-ages` | an age at the wedding more than half a year under the minimum of its date (15 and 13 from the decree of 17 December 1774, 18 and 16 from that of 19 July 1830; nothing before); spouses more than 20 years apart (LOW) | `age_note=` |
+| `parent-ages` | a parent's age no birth can have: a mother under 13 or over 52, a father under 15 (the whole interval the age asserts, «14» is [14, 15)); an age that cannot be read asserts nothing | `source_age_error=` |
 | `date-order` | of one entry: a christening before the birth, a burial before the death, a divorce before the marriage its own act names | `source_date_error=` |
+
+**A parent's age** in a civil birth act is read from `father_age=` and `mother_age=` of `birth()`, and the fact is
+dated to the child's birth. `parent-ages` asks one act whether a birth can have such a parent (a mother from 13 to
+52, a father from 15); `parent-age-drift` asks two neighbouring acts of one couple whether they put a parent's birth
+more than 2 years apart. Both are read like every cross-record check: reviewed records only. `verso death-age`
+compares ages from death records alone, and `verso reconcile --parents` matches the father or mother of a civil act
+against the people the corpus already holds — church-book births, weddings, other records; the age-bearing parents
+of other acts are not in its pool.
 
 **An act of divorce** is read too (`divorce()`): it asserts that the two were spouses, the day the marriage was
 dissolved, each one's age that day and — where the act names it — the day they had married. That last is a later
 document's claim about a wedding, read from `marriage_date=EventDate(1926, Month.MARCH, 14)` — a point, a month, a
 year, «около», a range, as an external card's dates are; a text there (DSL v1's, deprecated: DVC001) asserts
-nothing, and no date is guessed from it. Two of the six checks
+nothing, and no date is guessed from it. Two of the seven checks
 read it: `date-order` — the marriage the act names dated after the divorce itself, said once of the entry and
 answered by `divorce(source_date_error=)`, which withdraws the marriage's date and keeps the divorce's — and
 `wedding-calendar`, for a church wedding of 1917 or before, answered by `divorce(calendar_note=)`. The translator
@@ -74,7 +83,12 @@ These compare the records of a village by the names they write, so they too spea
 - `verso stale-claims` — a comment calling a record the earliest («самая ранняя запись», «первое
   упоминание») when an earlier one of the same person is now in the corpus; it reads drafts too;
 - `verso facts --check father-claims`, its class «inside one record» — a patronymic that does not come
-  from the father the same entry names.
+  from the father the same entry names;
+- `verso facts --check parent-age-drift` — two neighbouring acts of one couple (both parents match by name; a
+  patronymic compares only where both state it) whose stated ages put a parent's birth more than 2 years apart; HIGH
+  when both parents drift the same way, else LOW; a parent already folded into one person is `birth-claims`'. Two
+  couples of the same names are the likely reason, and that finding is answered by no field: it stays in the
+  snapshot. `birth(source_age_error=)` is only for an age the act itself got wrong.
 
 `--json` gives `death-age`, `sibling-spacing` and `stale-claims` to a tool.
 

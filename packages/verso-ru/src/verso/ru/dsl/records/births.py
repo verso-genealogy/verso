@@ -56,7 +56,10 @@ class Birth:
                  source_date_error: str | None = None,
                  reviewed: bool | None = None,
                  calendar_note: str | None = None,
-                 lag_note: str | None = None):
+                 lag_note: str | None = None,
+                 father_age: int | str | None = None,
+                 mother_age: int | str | None = None,
+                 source_age_error: str | None = None):
         self.record_num = record_num
         # `None` is «not stated»: `page()` and then the record set fill it,
         # so a whole лист can be held (`verso.ru.dsl.records.reviewed`).
@@ -81,6 +84,15 @@ class Birth:
         # emitted to terraform. Not a retraction (cf. `source_date_error`):
         # both dates stay believed. An empty string is no note.
         self.lag_note = lag_note or None
+        # The parents' ages the entry states (a civil register's act gives them; a church book seldom
+        # does), as written — a number or a string, never normalised (`verso.ru.ages.age_bounds` reads
+        # the interval). The same type as a marriage's `groom_age`.
+        self.father_age = father_age
+        self.mother_age = mother_age
+        # The author's note that the parents' ages are so IN THE SOURCE and cannot be right (a scribe's
+        # slip, re-read on the scan): retracts both ages of this record and stands the checks on them
+        # down. As `source_age_error` of a death. An empty string is no note.
+        self.source_age_error = source_age_error or None
         self.gender = gender
         self.b_day = b_day
         self.b_month = b_month
@@ -407,6 +419,9 @@ def birth(
         reviewed: bool | None = None,
         calendar_note: str | None = None,
         lag_note: str | None = None,
+        father_age: int | str | None = None,
+        mother_age: int | str | None = None,
+        source_age_error: str | None = None,
 ) -> Birth:
     return Birth(record_num,
                  gender,
@@ -434,7 +449,10 @@ def birth(
                  source_date_error=source_date_error,
                  reviewed=reviewed,
                  calendar_note=calendar_note,
-                 lag_note=lag_note)
+                 lag_note=lag_note,
+                 father_age=father_age,
+                 mother_age=mother_age,
+                 source_age_error=source_age_error)
 
 
 @captures_written

@@ -46,6 +46,16 @@ def _registered(day, month, year) -> str | None:
     return f"зарегистрировано {day}.{_v(month) or '?'}.{year}"
 
 
+def parent_ages_text(record) -> str:
+    """The parents' ages an act states, said in the comment: Familio's CSV has no column for them.
+    Written as the DSL has them (verbatim, no `format_age`), so the line repeats the prose the
+    ages used to be written in: «отцу 31, матери 30», «отцу 31», «матери 30», or «» without fields."""
+    said = [f"{who} {age}" for who, age in (("отцу", getattr(record, "father_age", None)),
+                                           ("матери", getattr(record, "mother_age", None)))
+            if age is not None and age != ""]
+    return ", ".join(said)
+
+
 def _mk_orig_name(p):
     """Build a book-level `name patr [last_name]` string for one Person.
 
@@ -187,6 +197,8 @@ class BirthRecordsCsvFamilioExporter(FamilioCsvExporter):
             comments = []
             if r.comment:
                 comments.append(r.comment)
+            if parent_ages_text(r):
+                comments.append(parent_ages_text(r))
             # Add comment from each person
             for person in [r.child, r.father, r.mother, r.god_parent1, r.god_parent2,
                            r.priest, r.deacon, r.dyachok, r.sexton]:

@@ -1,6 +1,7 @@
 import os
 
 from verso.ru.exporters.base import RecordsExporter, csv_writer
+from verso.ru.exporters.csv_familio import parent_ages_text
 
 
 class BirthRecordsCsvExporter(RecordsExporter):
@@ -49,6 +50,8 @@ class BirthRecordsCsvExporter(RecordsExporter):
                 comments = []
                 if r.comment:
                     comments.append(r.comment)
+                if parent_ages_text(r):
+                    comments.append(parent_ages_text(r))
                 # Add comment from each person
                 for person in [r.child, r.father, r.mother, r.god_parent1, r.god_parent2,
                                r.priest, r.deacon, r.dyachok, r.sexton]:

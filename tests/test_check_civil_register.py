@@ -1,4 +1,4 @@
-"""ZGS001–ZGS005: a book of the civil registry (`civil=True`) against what only a church writes,
+"""ZGS001–ZGS006: a book of the civil registry (`civil=True`) against what only a church writes,
 and DBD001 worded for a registration."""
 import tempfile
 import unittest
@@ -155,6 +155,41 @@ class DeathRegisteredFirst(unittest.TestCase):
     def test_a_parish_book_still_says_burial(self):
         [line] = self._hard(self._deaths(civil=False, church="Никольская"))
         self.assertIn("[DBD001] burial 2 APRIL precedes death 11 APRIL: swapped days?", line)
+
+
+class ParentAgesInTheComment(_Check):
+    """ZGS006: a civil birth's comment says a parent's age while that role's field is empty."""
+
+    def _zgs006(self, record: str, **kw) -> list[str]:
+        _, advisory = self._run(_births(record, **kw))
+        return [line.split("] ", 1)[1] for line in advisory if "[ZGS006]" in line]
+
+    def _birth(self, extra: str) -> str:
+        return f"birth(4, Gender.MALE, 2, 9, {CHILD}, {extra})"
+
+    def test_both_ages_in_the_comment(self):
+        found = self._zgs006(self._birth('comment="записан; отцу 26, матери 22; заявитель — отец"'))
+        self.assertEqual(["Возраст отца — в comment; перенесите в father_age=",
+                          "Возраст матери — в comment; перенесите в mother_age="], sorted(found, reverse=True))
+
+    def test_fields_written_is_no_finding(self):
+        self.assertEqual([], self._zgs006(self._birth('father_age=26, mother_age=22, comment="отцу 26, матери 22"')))
+
+    def test_only_the_empty_role_is_found(self):
+        self.assertEqual(["Возраст матери — в comment; перенесите в mother_age="],
+                         self._zgs006(self._birth('father_age=26, comment="отцу 26, матери 22"')))
+
+    def test_a_cut_figure_is_no_finding(self):
+        self.assertEqual([], self._zgs006(self._birth('comment="матери 3…"')))
+
+    def test_a_doubt_still_gives_its_figure_to_the_field(self):
+        self.assertEqual(2, len(self._zgs006(self._birth('comment="отцу 42 (?), матери 43"'))))
+
+    def test_a_church_book_is_no_finding(self):
+        self.assertEqual([], self._zgs006(self._birth('comment="отцу 26, матери 22"'), civil=False, church="Церковь"))
+
+    def test_no_comment_no_finding(self):
+        self.assertEqual([], self._zgs006(self._birth("reviewed=False")))
 
 
 if __name__ == "__main__":  # pragma: no cover

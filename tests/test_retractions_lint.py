@@ -1,4 +1,4 @@
-"""RET001–RET003: an age retraction on a record that states no such age."""
+"""RET001–RET004: an age retraction on a record that states no such age."""
 import ast
 import unittest
 
@@ -61,6 +61,21 @@ class RetractionsThatRetractNothing(unittest.TestCase):
         self.assertEqual(["RET003"], _codes(
             'member(1, person("Фока"), CensusRole.HEAD, age=51, previous_age=33, '
             'source_age_error="x", previous_age_error="y")'))
+
+
+class BirthRetractions(unittest.TestCase):
+    def test_ret004_source_age_error_on_a_birth_with_no_parent_age(self):
+        self.assertEqual(["RET004"], _codes('birth(1, Gender.MALE, 2, 3, source_age_error="x")'))
+
+    def test_a_birth_with_a_parent_age_is_quiet(self):
+        self.assertEqual([], _codes('birth(1, Gender.MALE, 2, 3, mother_age=30, source_age_error="x")'))
+        self.assertEqual([], _codes('birth(1, Gender.MALE, 2, 3, father_age="34?", source_age_error="x")'))
+
+    def test_an_empty_age_counts_as_none(self):
+        self.assertEqual(["RET004"], _codes('birth(1, Gender.MALE, 2, 3, father_age="?", source_age_error="x")'))
+
+    def test_a_birth_without_the_retraction_is_quiet(self):
+        self.assertEqual([], _codes('birth(1, Gender.MALE, 2, 3)'))
 
 
 if __name__ == "__main__":

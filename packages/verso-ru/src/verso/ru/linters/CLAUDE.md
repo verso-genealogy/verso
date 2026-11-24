@@ -244,7 +244,7 @@ Hard and advisory are two registry entries from one module, because the registry
 severity per linter. The hard pair gated at zero from birth; the advisory four
 go through the baseline ratchet.
 
-## `civil_register` / `civil_register_advisory` — ZGS001–ZGS005
+## `civil_register` / `civil_register_advisory` — ZGS001–ZGS006
 
 A book of the civil registry is `civil=True` on its record set: the same kinds and people as
 a parish book, its second date a registration (`docs/dsl.md`). These ask what an act cannot
@@ -271,6 +271,14 @@ say, or what a book of 1918 on could not have written.
 - **ZGS005**: a name in a civil book in the old orthography (ѣ, і, ѳ, ѵ, a final ъ), once a
   person. The DSL keeps the book's spelling; this asks whether the act or the typing hand
   wrote it so.
+- **ZGS006**: a civil birth's `comment=` still says a parent's age («отцу 26, матери 22») while that
+  role's field (`father_age=`, `mother_age=`) is empty — one finding a role, «Возраст отца — в comment;
+  перенесите в father_age=». It fires on exactly what `verso fix-parent-ages` would move:
+  `verso.ru.parent_age_text.read_comment` is the one reader of both, so a figure the field cannot take
+  (cut «3…», interleaved «2[?](?)») is no finding, and a doubt («42 (?)», «34 (или 31 ?)», «40(?)/43(?)») is
+  — its first figure goes to the field, the doubt stays in the comment; «испр.» («34 испр. 31») and a fraction
+  («42 1/2») are no finding. A role whose field is
+  written is skipped. Advisory: the codemod is the fix.
 
 Hard and advisory are two registry entries from one module, as `witness_side`'s. Not
 checked: a deed's births and deaths of one year in two files, one flagged and one not — a
@@ -735,7 +743,7 @@ the fix for a v0 import, and it checks the ratchet's prints; any other is taken 
 `names`, `genders`, `hidden_flag`, `parent_member`, `relationship_ref`,
 `birth_redundancy`.
 
-## `retractions` — RET001–RET003
+## `retractions` — RET001–RET004
 
 An age retraction that names no age. `member(source_age_error=)` /
 `member(previous_age_error=)` / `death(source_age_error=)` withdraw an age — the facts
@@ -748,6 +756,8 @@ kwarg, a figure never transcribed):
 - **RET002**: `source_age_error=` / `namesake=` on a record with no age (a roll line dated
   by a typed `birth_year=`/`birth_day=` counts as stating one).
 - **RET003**: both retractions on one roll line — the whole-line one already covers it.
+- **RET004**: `birth(source_age_error=)` with neither `father_age=` nor `mother_age=` stated — it
+  withdraws the parents' ages, and the birth states none.
 
 Hard from birth (0 findings on the whole corpus).
 

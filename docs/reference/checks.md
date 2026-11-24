@@ -21,6 +21,8 @@
 | `posthumous-birth` | — | — |
 | `children-span` | — | — |
 | `wedding-ages` | yes | `age_note=` |
+| `parent-ages` | yes | `source_age_error=` |
+| `parent-age-drift` | — | — |
 
 ## Thresholds
 
@@ -42,6 +44,7 @@ Each a number a check holds, as Python prints it, with the first sentence of its
 | `verso.ru.facts.checks.neighbours` | `NEIGHBOUR_SPAN` | `4` | How far apart two entries of one list may be numbered and still be read as one household. |
 | `verso.ru.facts.checks.neighbours` | `SPOUSE_MAX_GAP` | `20` | The most years apart the ages of two entries of one household may be and still be spouses. |
 | `verso.ru.facts.checks.neighbours` | `PARENT_MIN_GAP` | `14` | The least years a parent among the entries of one household is older than a child. |
+| `verso.ru.facts.checks.parent_ages` | `DRIFT_SLACK_YEARS` | `2.0` | Two acts of one couple state ages whose birth intervals lie further apart than this: the same pair of lives cannot have both. |
 | `verso.ru.facts.checks.parenthood` | `FATHER_DAYS` | `294` | How long after the father's death a child may still be his: 294 days, the posthumous-birth limit Gramps uses. |
 | `verso.ru.facts.checks.parenthood` | `MOTHER_SPAN_YEARS` | `28.0` | A mother's children born further apart than this are two mothers. |
 | `verso.ru.facts.checks.parenthood` | `MOTHER_SPAN_HIGH_YEARS` | `30.0` | … and past this, no reading of the dates saves the fold. |

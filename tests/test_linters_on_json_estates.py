@@ -31,7 +31,7 @@ from verso.ru.linters.checks.status_words import tables
 from verso.ru.linters.on_json import estates, walk
 
 CODES = ("PSA001", "PSA002", "PSA003", "PSA004", "RTV001", "RTV002", "PAF001", "CAI002",
-         "ZGS001", "ZGS002", "ZGS003", "ZGS004", "ZGS005")
+         "ZGS001", "ZGS002", "ZGS003", "ZGS004", "ZGS005", "ZGS006")
 
 HEAD = """
 from verso.ru.dsl import (
@@ -341,3 +341,18 @@ census = census_records(
 '''
     said, walked = _both("CAI002", text)
     assert not said and sum(walked.values()) == 1
+
+
+def test_zgs006_reads_an_explicit_null_as_an_empty_field():
+    """A JSON `father_age: null` is as empty as a missing key, as the AST rule and the codemod read it."""
+    text = '''
+births = birth_records(
+    "Госархив Примерской области", "21", "3", "1", "Горюхино", "", 1925,
+    birth(1, Gender.MALE, 1, 2, child=person("Лука"), father_age=26, comment="отцу 26, матери 22"),
+    civil=True)
+'''
+    data = _data(text)
+    [record] = [r for doc in data["documents"] for run in doc["pages"] for r in run["records"] if r["kind"] == "birth"]
+    assert [f.variant for f in on_json.lint_records(copy.deepcopy(data), codes=["ZGS006"])] == ["mother"]
+    record["written"]["father_age"] = None
+    assert sorted(f.variant for f in on_json.lint_records(copy.deepcopy(data), codes=["ZGS006"])) == ["father", "mother"]

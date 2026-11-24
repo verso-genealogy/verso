@@ -49,7 +49,7 @@ from verso.ru.facts.checks.stated_age import (
     DEFAULT_TOLERANCE_DAYS, DEFAULT_TOLERANCE_FRACTION, NAMESAKE_RATIO, stated_age_findings)
 from verso.ru.facts.extract.births import facts_from_births
 from verso.ru.facts.extract.deaths import facts_from_deaths
-from verso.ru.facts.model import AssertionSet
+from verso.ru.facts.model import AgedYears, AssertionSet
 from verso.ru.naming import matching_base
 from verso.ru.relationship import Relationship, Relative
 from verso.ru.messages import t
@@ -275,9 +275,13 @@ def find_death_age_conflicts(
     """
     births = _entries(birth_record_sets)
     deaths = _entries(death_record_sets)
+    # Only a death record states a burial's age. A birth entry's ages (a parent's
+    # in a civil act, a christening's) are no burial's, and a finding on one
+    # would index a death record that is not there.
     facts = AssertionSet(
-        list(facts_from_births([(rec, src) for rec, src, _ in births],
-                               village="", slots=None))
+        [a for a in facts_from_births([(rec, src) for rec, src, _ in births],
+                                      village="", slots=None)
+         if not isinstance(a, AgedYears)]
         + list(facts_from_deaths([(rec, src) for rec, src, _ in deaths],
                                  village="", slots=None)))
     found = stated_age_findings(facts, tolerance_days=tolerance_days,

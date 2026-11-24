@@ -66,7 +66,7 @@ def test_every_record_field_is_placed():
                     assert f.name in defaults, f"{spec.code}.{f.name}"
                 continue
             assert keys[f.name] in placed.get(spec.code, set()), f"{spec.code}: {keys[f.name]}"
-    assert count == 284
+    assert count == 290
 
 
 def test_every_label_has_both_languages():

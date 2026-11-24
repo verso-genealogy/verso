@@ -9,6 +9,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
+from verso.ru.ages import birth_notes
 from verso.ru.domain.event_date import date_text
 from verso.ru.dsl.records.births import BirthRecords
 from verso.ru.dsl.records.census import CensusRecords
@@ -200,7 +201,7 @@ def insert_births(conn: sqlite3.Connection, records: BirthRecords, source_file: 
                 b.k_day,
                 b.k_month.value if b.k_month else None,
                 b.page,
-                b.comment,
+                birth_notes(b),
                 source_file,
             ),
         )

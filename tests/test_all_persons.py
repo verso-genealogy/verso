@@ -29,6 +29,26 @@ def _make_marriage_records(year, records):
     )
 
 
+class TestBirthCommentCarriesParentAges(unittest.TestCase):
+    def _comment(self, **kw):
+        conn = sqlite3.connect(":memory:")
+        create_db(conn)
+        b = Birth(record_num=1, gender=Gender.MALE, b_day=5, b_month=Month.JANUARY,
+                  child=_person("Иван"), father=_person("Петр"), **kw)
+        insert_births(conn, _make_birth_records(1920, [b]), "test.py")
+        row = conn.execute("SELECT comment FROM births").fetchone()
+        conn.close()
+        return row[0]
+
+    def test_the_listing_says_the_parents_ages(self):
+        self.assertEqual("Заявитель — отец; отцу 31 год, матери 30 лет",
+                         self._comment(comment="Заявитель — отец", father_age=31, mother_age=30))
+
+    def test_without_ages_the_comment_is_as_it_was(self):
+        self.assertEqual("Заявитель — отец", self._comment(comment="Заявитель — отец"))
+        self.assertIsNone(self._comment())
+
+
 class TestInsertBirthsWithRelatives(unittest.TestCase):
     def test_relatives_inserted(self):
         conn = sqlite3.connect(":memory:")

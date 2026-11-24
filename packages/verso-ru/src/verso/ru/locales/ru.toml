@@ -577,6 +577,9 @@ baptism_year = "год крещ."
 source_date_error = "ошибка даты в подлиннике"
 calendar_note_birth = "имя не по святцам — верно"
 lag_note_birth = "позднее крещение — верно"
+father_age = "Возраст"
+mother_age = "Возраст"
+source_age_error_birth = "Возраст родителей — так в подлиннике"
 lag_note_death = "позднее погребение — верно"
 age_note = "возраст при венчании — верно"
 relationship = "кем приходится"
@@ -670,6 +673,8 @@ marriage = "венчание"
 divorce = "развод"
 
 [ui.row]
+father_age = "возраст"
+mother_age = "возраст"
 groom_age = "возраст"
 bride_age = "возраст"
 groom_marriage_number = "№ брака"
@@ -980,6 +985,13 @@ estate = "сословие «{status}» в книге ЗАГС: сословия
 [ZGS005]
 old_letters = "«{name}» в книге ЗАГС (1918 и позже) написано по старой орфографии — так ли в акте?"
 
+[RET004]
+birth = "source_age_error= у рождения без возраста родителей (ни father_age=, ни mother_age=) — снимать нечего"
+
+[ZGS006]
+father = "Возраст отца — в comment; перенесите в father_age="
+mother = "Возраст матери — в comment; перенесите в mother_age="
+
 [on_json]
 unsupported = "{code}: такого кода линтера нет — линтеры на records JSON знают коды dsllint и никакие другие"
 source_code = "{code}: код о виде исходного текста — у файла он есть, у records JSON нет; линтеры на records JSON его не проверяют"
@@ -1033,6 +1045,32 @@ help_out = "корень выгрузки (по умолчанию records/ в �
 help_strict = "выход 1, если какой-то файл не импортировался"
 done = "{files}, {records} → {target}"
 skipped = "пропущено файлов: {count} (см. {where})"
+
+[cli.fix_parent_ages]
+description = "Перенести возраст родителей из comment рождения (книга ЗАГС) в father_age= / mother_age="
+help_files = "файлы DSL"
+help_check = "только сообщить, ничего не писать (выход 1, если есть что переносить; 2, если файл отклонён)"
+guard_build = "{side}: файл не собирается — {error}"
+side_before = "до правки"
+side_after = "после правки"
+guard_written = "{id}: записанный {key}= изменился"
+guard_differs = "{id}: Records JSON отличается не только father_age, mother_age и comment"
+refused = "{path}: не тронут — {why}"
+file = "{path}: рождений {births} ({forms})"
+guard_digits = "{id}: цифры, ушедшие из comment, не совпали с возрастами в полях ({digits})"
+unparsable = "не разбирается — {error}"
+not_found = "нет такого файла"
+not_py = "не файл .py"
+skipped = "{path}: пропущен — {why}"
+total = "Перенесено: файлов {files}, рождений {births}; отклонено файлов: {refused}; пропущено: {skipped}"
+total_check = "Можно перенести: файлов {files}, рождений {births}; отклонено файлов: {refused}; пропущено: {skipped}"
+
+[cli.fix_parent_ages.form]
+father_and_mother = "«отцу N, матери M»"
+father = "«отцу N»"
+mother = "«матери M»"
+pair = "«возраст N и M»"
+parents_1920 = "«родители: Имя (N) и Имя (M)»"
 
 [cli.facts]
 unnumbered = "без номера"
@@ -1336,6 +1374,18 @@ bride = "невеста"
 under_age = "[{confidence}] {married}, {who} «{age}» — моложе {minimum}  {where}"
 gap = "[{confidence}] {married}, жених «{groom}», невеста «{bride}» — {years:g} г.  {where}"
 
+[cli.facts.parent_age_drift]
+head = "parent-age-drift: {count} (пар: {couples}; HIGH {high} — оба родителя расходятся в одну сторону; LOW {low}; допуск {slack:g} г.)"
+ok = "parent-age-drift: OK — 0 findings (ни одной пары, чьи два акта расходятся больше чем на {slack:g} г.)."
+note = "Два акта одних родителей: возраст не сходится с датами — другая пара тех же имён или ошибка чтения."
+father = "отца"
+mother = "матери"
+finding = "  [{confidence}] возраст {role} {first} и {second}: зазор {years:g} г.  {first_where} → {second_where}"
+
+[cli.facts.parent_ages]
+head = "parent-ages: {count} (HIGH {high} — возраст родителя вне границ: матери {mother_min}–{mother_max}, отцу от {father_min})"
+ok = "parent-ages: OK — 0 findings (ни одного возраста родителя вне границ: матери {mother_min}–{mother_max}, отцу от {father_min})."
+
 [cli.facts.basis]
 none = "фактов нет"
 total = "утверждений всего: {total}"
@@ -1371,6 +1421,8 @@ backing_by_name = "      сосед по списку №{number} {name} — п�
 backing = "      сосед по списку №{number} {name} → {canonical} — {relation} кандидата"
 targets = "человек только из списков и карточек"
 folded = "записей списков и карточек"
+parents_targets = "отец или мать акта ЗАГС с возрастом"
+parents_folded = "отец или мать акта ЗАГС с возрастом"
 by_neighbours = ", по соседям {backed}"
 head = "{channel}: {count} {targets} — {candidates} кандидат(ов) (HIGH {high}{by_list}), {ambiguous} неоднозначно, {none} не найдено"
 signal = "Находка — СИГНАЛ, не вердикт: прочесть записи обоих, прежде чем сводить."
@@ -1595,6 +1647,12 @@ under_age_bride = "Невесте «{age}» — меньше {minimum} лет н
 under_age_why = "Минимум — по дате венчания: с 17.12.1774 15/13, с 19.07.1830 18/16; полгода книги допускают сами."
 age_gap = "Жениху «{groom}», невесте «{bride}»: разница в возрасте — {years}."
 age_gap_why = "Супруги дальше {gap} лет друг от друга: в книгах такого почти нет — повод перечитать возраст."
+
+[facts.signal.parent_ages]
+out_of_range_mother = "Матери «{age}» при рождении ребёнка — сверьте чтение."
+out_of_range_father = "Отцу «{age}» при рождении ребёнка — сверьте чтение."
+out_of_range_why_mother = "Матери в книгах от {minimum} до {maximum} лет: возраст вне этих границ — вероятно, ошибка чтения."
+out_of_range_why_father = "Отцу в книгах не меньше {minimum} лет: возраст ниже — вероятно, ошибка чтения."
 
 [facts.signal.date_order]
 baptism_before_birth = "Крещение {left} раньше рождения {right}."
@@ -1853,6 +1911,9 @@ birth_month = "месяц рождения"
 baptism_year = "год крещения"
 source_date_error = "ошибка даты в источнике"
 lag_note = "о задержке"
+father_age = "возраст отца"
+mother_age = "возраст матери"
+source_age_error = "ошибка возраста в источнике"
 other = "прочее"
 
 [site.cite]
