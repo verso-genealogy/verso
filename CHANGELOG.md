@@ -24,7 +24,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 ### Fixed
 
 - verso-ru: every report names an entry its book left unnumbered «без номера» — the lines of `union-dups` (households,
-  baptisms, deaths, signs of life), `reconcile` (`verso reconcile` and the check under it) and `estate-conflicts`,
+  baptisms, deaths, signs of life), `reconcile` (`verso reconcile`, the check under it and `verso name-variants`,
+  which describes a record by it) and `estate-conflicts`,
   the noted pairs of `father-claims` and `verso facts --why` (its header, and every evidence line: `str(Citation)`
   wrote «рек. none»), which 0.1.47 left printing «№none» (or a bare «none»). A citation says its number itself,
   `Citation.number` (`verso.ru.facts.labels.record_number`), and a test holds the reports' modules and the catalogs
