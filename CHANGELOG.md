@@ -110,8 +110,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   0.2: a wrapper's field a call writes as `None` in so many words (`year=None` in a section, `reviewed=None` in a
   `page()`; not a record's leaf) is filled by the wrapper, and only `derived` holds its value, so a rebuild from
   `written` alone leaves it unset or gives it the set's value: `replay_file(…, context=False)`, `replay_record` with its
-  default `context=False`, and `on_json.lint_record` and the signals of one record, which replay so. No corpus file
-  and no verso-app path writes the shape; no output moves.
+  default `context=False`, a store that keeps `written` alone, and `on_json.lint_record` and the signals of one record,
+  which replay so, silently. A `book()`'s priest written as `None` loses the call's `null` in every replay. The guide's
+  claims that `lint_record` gives `lint_records`'s findings, that a card agrees with `verso facts --check`, and that
+  `replay_record` equals `replay_file` now name the exception. No corpus file writes the shape, nor any verso-app
+  path seen; no output moves.
 
 ### Changed
 
