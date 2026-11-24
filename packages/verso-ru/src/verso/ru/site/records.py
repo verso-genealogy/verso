@@ -47,6 +47,7 @@ _MEMBER_HEAD = frozenset({"number", "role", "ref_member"})
 _MEMBER_NOT_SHOWN = frozenset({"hidden"})
 _CARD_DATES = ("date", "birth_date", "draft_date", "casualty_date", "feat_date")
 _CARD_SOURCE = ("archive", "fund", "inventory", "case", "archive_location", "original_text", "bibliography")
+_DATE_KEYS = frozenset({"year", "month", "day", "year_end", "date_range"})
 
 
 class Ui:
@@ -95,6 +96,8 @@ def text(found: Any, field: Mapping[str, Any], ui: Ui) -> str:
     """A value as a reader's text: an enum by its label, an age in words, a flag as «yes»."""
     if found is True:
         return str(t("site.yes"))
+    if isinstance(found, Mapping) and _DATE_KEYS & set(found):
+        return _card_date(found, ui)                 # a date object (EventDate), wherever the vocabulary has one
     if field.get("type") == "enum" and field.get("enum"):
         return ui.enum(field["enum"], found)
     if _is_age(str(field.get("path", ""))):
@@ -121,6 +124,10 @@ def date_text(day: object, month: object, year: object, ui: Ui) -> str:
 def _card_date(found: Mapping[str, Any], ui: Ui) -> str:
     start = date_text(found.get("day"), found.get("month"), found.get("year"), ui)
     end = date_text(found.get("day_end"), found.get("month_end"), found.get("year_end"), ui)
+    if found.get("circa"):
+        start = str(t("site.date.circa", date=start))
+    if found.get("circa_end") and end:
+        end = str(t("site.date.circa", date=end))
     match found.get("date_range"):
         case "between" if end:
             return str(t("site.date.between", start=start, end=end))
@@ -340,7 +347,8 @@ def site_labels() -> dict[str, Message]:
             "baptism.age": t("site.field.baptism_age"), "church": t("site.field.church"),
             "village": t("site.field.village"), "birth.day": t("site.field.birth_day"),
             "birth.month": t("site.field.birth_month"), "baptism.year": t("site.field.baptism_year"),
-            "source_date_error": t("site.field.source_date_error"), "lag_note": t("site.field.lag_note")}
+            "source_date_error": t("site.field.source_date_error"), "lag_note": t("site.field.lag_note"),
+            "marriage_date": t("site.field.marriage_date")}
 
 
 def _site_label(path: str) -> Message:

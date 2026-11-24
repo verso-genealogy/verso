@@ -1890,6 +1890,7 @@ member_ref = "No. {number}"
 member_of = "of No. {number}"
 
 [site.date]
+circa = "c. {date}"
 between = "{start} — {end}"
 before = "before {date}"
 after = "after {date}"
@@ -1912,6 +1913,7 @@ records = "records"
 book = "book"
 
 [site.field]
+marriage_date = "date of the marriage"
 date = "date"
 birth_date = "born"
 draft_date = "drafted"

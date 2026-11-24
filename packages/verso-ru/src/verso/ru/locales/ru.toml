@@ -1807,6 +1807,7 @@ member_ref = "№ {number}"
 member_of = "к № {number}"
 
 [site.date]
+circa = "около {date}"
 between = "{start} — {end}"
 before = "до {date}"
 after = "после {date}"
@@ -1829,6 +1830,7 @@ records = "записей"
 book = "книга"
 
 [site.field]
+marriage_date = "дата брака"
 date = "дата"
 birth_date = "дата рождения"
 draft_date = "дата призыва"

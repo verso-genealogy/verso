@@ -174,3 +174,22 @@ def test_a_kind_the_vocabulary_does_not_know_is_refused(changed: Change, ui: Ui)
     site = changed(strange)
     with pytest.raises(model.NotAnExport, match="betrothal"):
         _drawn(site, ui, MARRIAGES, "1")
+
+
+@pytest.mark.parametrize(("written", "shown"), [
+    ("14 марта 1926", "дата брака 14 марта 1926"),                               # the text DSL v1 writes
+    ({"year": 1926, "month": "march", "day": 14}, "дата брака 14 марта 1926"),   # a date, as a card's
+    ({"year": 1926, "year_end": 1927, "date_range": "between"}, "дата брака 1926 — 1927"),
+    ({"year": 1926, "circa": True}, "дата брака около 1926"),
+])
+def test_the_marriage_a_divorce_names_reads_in_either_form(changed: Change, ui: Ui, written: Any, shown: str) -> None:
+    """The marriage an act of divorce names: a text in DSL v1, a date object where the vocabulary makes it one
+    (a field the interface's schema may hide from its editor — the site draws it all the same)."""
+    def named(node: dict[str, Any]) -> None:
+        node["documents"][3]["pages"][0]["records"][0]["written"]["marriage_date"] = written
+    text = _text(_drawn(changed(named), ui, "r1:Заманиловка/1605-59-59/1923/divorce", "1"))
+    assert shown in text and "{" not in text
+
+
+def test_a_hidden_date_without_a_label_still_has_the_sites() -> None:
+    assert str(records.site_labels()["marriage_date"]) == "дата брака"
