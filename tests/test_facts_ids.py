@@ -266,3 +266,32 @@ def test_the_cli_reads_a_divorce_as_a_kind_of_its_own(village: Path, capsys: pyt
     assert cli.main(["--village", str(village), "--kind", "divorce", "--dump"]) == 0
     assert sum('"DivorcedOn"' in line for line in (village / "facts.jsonl").read_text(encoding="utf-8").splitlines()) == 6
     assert cli.main(["--village", str(village), "--kind", "divorce"]) == 0        # no pair to report, and no crash
+
+
+HELD = '''\
+from calendar import Month
+
+from verso.ru.dsl import divorce, divorce_records, page, person
+
+manilovka_divorces_1902 = divorce_records(
+    "ГАРО", "9", "1", "5", "Маниловка", "", 1902,
+    divorce(1, 3, Month.JULY, husband=person("Иванъ", "Петровъ"), wife=person("Анна", "Иванова")),
+    divorce(2, 4, Month.JULY, husband=person("Павелъ", "Ильинъ"), wife=person("Ольга", "Петрова"), reviewed=False),
+    *page("7", divorce(3, 5, Month.JULY, husband=person("Сергій", "Ильинъ"), wife=person("Марія", "Петрова")),
+          reviewed=False))
+'''
+
+
+def test_a_held_divorce_asserts_nothing_from_the_dsl_or_from_the_records_json(village: Path, tmp_path: Path):
+    """`reviewed=False` on the act or on its лист: the village's reading holds no claim of it, whichever of the two
+    it is read from."""
+    (village / "1902").mkdir()
+    (village / "1902" / "manilovka_divorces_1902.py").write_text(HELD, encoding="utf-8")
+
+    def of_1902(facts: AssertionSet) -> set[str]:
+        return {a.cite.record_num for a in _divorces(facts) if a.cite.year == 1902}
+
+    assert of_1902(_facts(village)) == {"1"}
+    export_village(village, tmp_path / "rec")
+    with records.use(tmp_path / "rec"):
+        assert of_1902(_facts(village)) == {"1"}
