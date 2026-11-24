@@ -186,7 +186,8 @@ a persona as the record's id with its slot (`…/godparent2`), a repeated number
 order, a record with no number `_1`, a card `r1:<village>/card/wwi/<key of its catalog address>`.
 A document (a record set) is its book's id, `~2` from the second set of one book on; a set of cards states no
 year and takes its file's (`r1:<village>/card/1941/cards`), so it is counted among the sets of its year alone —
-an export of some of a village's years numbers it as the whole village's does.
+an export of some of a village's years numbers it as the whole village's does. What `r1` promises is a record's
+id; a document's id names a set within an export.
 A corrected name moves no id; a corrected number, sex or shelfmark does. `~k` and `_k` are counted
 in export order (years, files by name, records in file order). `r1` versions the rule, not the
 schema. The facts layer names its personas by the same ids, and the review page takes one as a
