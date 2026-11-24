@@ -21,7 +21,9 @@ from verso.core.records.schema import build_schema
 from verso.ru.domain import Gender, page, person
 from verso.ru.dsl.records.births import birth, birth_records
 from verso.ru.dsl.records.name_lists import ListedPerson, listed_person, name_list_records
-from tests.test_linters_on_json_redundancy import _agree
+from verso.ru.linters import on_json
+from verso.ru.linters.on_json.walk import FileView
+from tests.test_linters_on_json_redundancy import _agree, _encode as _encode_text
 
 
 def _list(*entries: ListedPerson, reviewed: bool) -> dict[str, Any]:
@@ -100,13 +102,19 @@ def test_the_schema_takes_the_flag() -> None:
 
 def test_rvr001_on_json_sees_the_pages_flag() -> None:
     """A page with no leaf releasing entries of a held list, one of them holding itself: the entry's flag is not the
-    one it would inherit (the page's), and the walk, which reads the page's flag off the unflagged entry, says
-    nothing — as the check on the source. Before, the unflagged entry replayed held and the walk took its run for
-    the set's."""
+    one it would inherit (the page's), and the walk says nothing — as the check on the source. RVR001 reads a run's
+    level through `on_json.review_level`, which answers the kind's default where `written` says nothing, so it is
+    quiet without the encoder's key too; what the key changes is the record the walk replays, which now holds the
+    page's flag and agrees with `review_level`. Before, it replayed held."""
     text = ('n = name_list_records("ЦГА", "7", "3", "41", "Примерово", 1917, *page(None, '
             'listed_person(1, person("Иванъ")), listed_person(2, person("Петръ"), reviewed=False), reviewed=True), '
             'document_type="Список", reviewed=False)')
     assert _agree(text, "RVR001") == 0
+    view = FileView(_encode_text(text))
+    unflagged = view.data["documents"][0]["pages"][0]["records"][0]
+    built = view.object_of(unflagged)
+    assert built.reviewed is True
+    assert on_json.review_level(unflagged, built) is built.reviewed
 
 
 def test_a_field_the_set_does_not_give_stays_out() -> None:

@@ -1,5 +1,6 @@
 """One record as the review page reads it (`/api/v2`): the records JSON's record, as the export
-writes it, and two things the JSON does not say — which paths the source writes as a constant of a
+writes it but without its set (`encode_record(…, record_set=None)`: a page's flag equal to its field's default and
+not the set's stays out, as `decode_file` reads it), and two things the JSON does not say — which paths the source writes as a constant of a
 catalog (`consts`: L9, the constants' names in `written`), and which no schema can edit (`opaque`) —
 with the record's version, the hash of its call. `record_view` reads them off the source;
 `node_view` is its twin for a record that has no source, only its JSON node (a folder of records

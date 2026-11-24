@@ -5,7 +5,7 @@
 # flag that differs, a page() that wrote another flag or the set's own, the findings inside a page() and in a run of
 # explicit flags alone (the export cannot say what a page wrote, nor whether a page(None, …) lies over the run), a
 # label repeated by two page() calls or by two death_month sections, a page(None, reviewed=True) over a held divorce
-# book (its True is in the export, so the run is not the book's).
+# book (quiet on the JSON by on_json.review_level; its True is in the export, which test_node_view rebuilds from).
 from verso.ru.dsl import (
     CensusRole, Gender, Month, birth, birth_records, census_records, christening, death, death_month, death_records,
     divorce, divorce_records, household, listed_person, marriage, marriage_records, member, name_list_records, page, person)

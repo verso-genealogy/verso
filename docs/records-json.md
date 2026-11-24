@@ -206,8 +206,10 @@ read as stale (fixed in verso-app 0.5.2).
 
 ## A single record
 
-`verso.core.records.encode.encode_record(record, record_id)` writes one record as the export writes it
-under its record set — the export writes each record through it. The review page's view of a record
+`verso.core.records.encode.encode_record(record, record_id, record_set=…)` writes one record as the export
+writes it under its record set, given that set; `record_set=None` says there is none, and then a page's flag equal
+to its field's default but not the set's is left out (a view's node, not one to store). Left out, the keyword is
+`None` and warns (`DeprecationWarning`); it is required from 0.2. The review page's view of a record
 (`verso.ru.dsl.view.record_view`) is that record and three things the JSON does not say: `consts`, the
 paths the source writes as a constant of a catalog (`{"mother/status": "PEASANT_WIFE"}`); `opaque`, the
 paths it writes as an expression (`relatives=ROWS`, `age=2 + 3`), which no edit reaches; and
