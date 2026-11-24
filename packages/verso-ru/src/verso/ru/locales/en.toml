@@ -1873,3 +1873,9 @@ help_count = "where the счётъ column lies across the frame (fractions; defa
 help_top = "where the writing begins under the column titles (fraction; default: the album's `top`, else {top})"
 help_bottom = "where the writing ends (fraction; default: the album's `bottom`, else 1)"
 help_out = "where to write the ruler sheet (default: rows_<leaf>_<part>.jpg in the album directory)"
+
+[site.urls]
+no_slug = "«{text}»: no letter or digit to make an address of"
+
+[site]
+duplicate_path = "two books make one address {path}: {first} and {second}"
