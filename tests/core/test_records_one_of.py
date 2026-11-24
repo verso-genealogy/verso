@@ -48,3 +48,47 @@ def test_the_schema_allows_each_type_and_null():
     check = Draft202012Validator(schema)
     assert all(check.is_valid(v) for v in (True, "x", None))
     assert not check.is_valid(3)
+
+
+def test_the_decoder_names_the_types_as_the_encoder_does():
+    with pytest.raises(FormatError) as refused:
+        decode_value(3, BOOL_OR_STR, "flag")
+    assert "bool | str" in str(refused.value) and "OneOf" not in str(refused.value)
+
+
+def test_a_refusal_says_why_each_type_did_not_take_the_value():
+    """A value of the right shape for one type, wrong inside — its cause, not only «none of them»."""
+    from verso.core.records.fields import ListOf
+
+    ints_or_text = OneOf((ListOf("int"), "str"))
+    with pytest.raises(FormatError) as refused:
+        decode_value([1, "два"], ints_or_text, "counts")
+    assert "counts[1]" in str(refused.value)
+    with pytest.raises(FormatError) as refused:
+        encode_value([1, "два"], ints_or_text, "counts")
+    assert "counts[1]" in str(refused.value)
+
+
+def test_the_first_type_that_takes_a_value_is_the_one_it_is():
+    """The order the vocabulary writes is the order tried: a text a member's code reads as is that member where
+    the enum comes first, and stays a text where the text does."""
+    from enum import Enum
+
+    class Side(Enum):
+        LEFT = "left"
+
+    assert decode_value("left", OneOf((Side, "str")), "side") is Side.LEFT
+    assert decode_value("left", OneOf(("str", Side)), "side") == "left"
+    assert encode_value(Side.LEFT, OneOf((Side, "str")), "side") == encode_value(Side.LEFT, Side, "side")
+
+
+def test_a_code_no_member_has_is_a_reason_and_the_next_type_is_tried():
+    from enum import Enum
+
+    class Side(Enum):
+        LEFT = "left"
+
+    assert decode_value("right", OneOf((Side, "str")), "side") == "right"
+    with pytest.raises(FormatError) as refused:
+        decode_value("right", OneOf((Side, "int")), "side")
+    assert "right" in str(refused.value) and "left" in str(refused.value)

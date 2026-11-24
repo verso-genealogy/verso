@@ -19,7 +19,7 @@ from verso.core.records import SCHEMA_ID
 from verso.core.records.encode import FormatError, review
 from verso.core.records.notes import check_notes
 from verso.core.records.fields import (
-    PERSON, WRAPPER_KEY, ClassSpec, ListOf, OneOf, TypeSpec, Vocabulary, attr_of, member_of, param_of_key_in, param_spec_in,
+    PERSON, WRAPPER_KEY, ClassSpec, ListOf, OneOf, TypeSpec, Vocabulary, attr_of, spec_name, member_of, param_of_key_in, param_spec_in,
     split_context, split_wrapper, ungroup, vocabulary)
 from verso.core.targets.geni.held import ON_GENI
 from verso.core.written import VERB_ATTR, WRAPPER_ATTR, WRITTEN_ATTR
@@ -36,12 +36,14 @@ def decode_value(data: object, spec: TypeSpec, path: str = "") -> object:
     if data is None:
         return None
     if isinstance(spec, OneOf):
+        reasons = []
         for one in spec.types:
             try:
                 return decode_value(data, one, path)
-            except FormatError:
-                continue
-        raise FormatError(t("records.decode.wrong_type", path=path, type=type(data).__name__, spec=repr(spec)))
+            except ValueError as refused:            # a FormatError, or an enum's code no member has (`member_of`)
+                reasons.append(str(refused))
+        raise FormatError(t("records.decode.none_of", path=path, type=type(data).__name__, spec=spec_name(spec),
+                            reasons="; ".join(reasons)))
     kind = type(data)
     voc = None if isinstance(spec, str) and spec in _SCALARS else vocabulary()
     if voc is None:
@@ -66,7 +68,7 @@ def decode_value(data: object, spec: TypeSpec, path: str = "") -> object:
             return [decode_value(item, spec.item, f"{path}[{i}]") for i, item in enumerate(data)]  # type: ignore[arg-type]
     elif spec == PERSON:
         pass
-    raise FormatError(t("records.decode.wrong_type", path=path, type=kind.__name__, spec=repr(spec)))
+    raise FormatError(t("records.decode.wrong_type", path=path, type=kind.__name__, spec=spec_name(spec)))
 
 
 def _value_object(cls: type, data: Mapping[str, Any], path: str) -> object:

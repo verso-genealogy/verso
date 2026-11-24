@@ -16,7 +16,7 @@ from typing import Any, overload
 from verso.core import plugins
 from verso.core.records import SCHEMA_ID, FormatError
 from verso.core.records.fields import (
-    CONTEXT_KEY, PERSON, WRAPPER_KEY, ClassSpec, ListOf, OneOf, TypeSpec, code, enum_code, flatten, group, nest, param_spec_in,
+    CONTEXT_KEY, PERSON, WRAPPER_KEY, ClassSpec, ListOf, OneOf, TypeSpec, code, spec_name, enum_code, flatten, group, nest, param_spec_in,
     role_of, ungroup, vocabulary, written_key_in)
 from verso.core.records.ids import (
     Ids, book_key, person_label, persona_id, record_label, records_of)
@@ -71,12 +71,14 @@ def encode_value(value: object, spec: TypeSpec, path: str = "") -> object:
     if value is None:
         return None
     if isinstance(spec, OneOf):
+        reasons = []
         for one in spec.types:
             try:
                 return encode_value(value, one, path)
-            except FormatError:
-                continue
-        raise FormatError(t("records.encode.wrong_type", path=path, type=type(value).__name__, spec=_spec_name(spec)))
+            except FormatError as refused:
+                reasons.append(str(refused))
+        raise FormatError(t("records.encode.none_of", path=path, type=type(value).__name__, spec=spec_name(spec),
+                            reasons="; ".join(reasons)))
     kind = type(value)
     if isinstance(spec, str) and spec in _EXACT and kind is _EXACT[spec]:
         return value
@@ -102,19 +104,7 @@ def encode_value(value: object, spec: TypeSpec, path: str = "") -> object:
         if _is_entity_list(spec) and value:
             raise FormatError(t("records.encode.list_of_entities", path=path))
         return [encode_value(item, spec.item, f"{path}[{i}]") for i, item in enumerate(value)]  # type: ignore[arg-type]
-    raise FormatError(t("records.encode.wrong_type", path=path, type=kind.__name__, spec=_spec_name(spec)))
-
-
-def _spec_name(spec: TypeSpec) -> str:
-    if isinstance(spec, OneOf):
-        return " | ".join(_spec_name(one) for one in spec.types)
-    if isinstance(spec, tuple):
-        return " | ".join(c.__name__ for c in spec)
-    if isinstance(spec, type):
-        return spec.__name__
-    if isinstance(spec, ListOf):
-        return f"list[{_spec_name(spec.item)}]"
-    return spec
+    raise FormatError(t("records.encode.wrong_type", path=path, type=kind.__name__, spec=spec_name(spec)))
 
 
 def _value_object(value: object, path: str) -> dict[str, object]:

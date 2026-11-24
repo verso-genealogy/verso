@@ -95,6 +95,19 @@ class ClassSpec:
         raise KeyError(f"{self.cls.__name__}.{name}")
 
 
+def spec_name(spec: TypeSpec) -> str:
+    """A field's type as a refusal names it: «str», «EventDate», «list[int]», «EventDate | str»."""
+    if isinstance(spec, OneOf):
+        return " | ".join(spec_name(one) for one in spec.types)
+    if isinstance(spec, tuple):
+        return " | ".join(c.__name__ for c in spec)
+    if isinstance(spec, type):
+        return spec.__name__
+    if isinstance(spec, ListOf):
+        return f"list[{spec_name(spec.item)}]"
+    return spec
+
+
 def parse_fields(spec: str, types: Mapping[str, TypeSpec]) -> tuple[Field, ...]:
     """`name:type[=default]` pairs, space-separated: a row per field, in `vars()` order; a
     type named in `types` is that type, any other is its own name (`str`, `person`); `a|b`
