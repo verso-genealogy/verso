@@ -132,6 +132,15 @@ checked; wrapper values found in `derived` with no `written.context` are read as
 later changed; `context=False` rebuilds from `written` alone and is for files whose context is in `written`); a card without `verb` replays when its keys fit one factory, else `ReplayGap`. To get the new
 keys into an old export, export again (`verso export-records`).
 
+**A known limit, until 0.2: a wrapper's field the call wrote as `None`.** A call that writes a field a wrapper
+sets, as `None` in so many words (`birth(…, year=None)` inside `birth_month_year(…)`, `listed_person(…,
+reviewed=None)` inside `page(…, reviewed=True)`), leaves the wrapper to fill it, as if it had not written it. The
+export keeps the call's `None` in `written` and the wrapper's value in `derived` alone: `decode_file` and
+`replay_file` (with `context=True`, the default) read the record right, while `replay_file(…, context=False)`,
+`replay_record` and a store that keeps `written` alone rebuild the field the factory's way: unset, or the set's
+flag. One key cannot hold both values, so the fix is an addition to the format; until then, leave such an argument
+out rather than write it as `None`.
+
 ## A book without a DSL source
 
 A book started where no DSL file exists — on a review page — is a records JSON from its first day.

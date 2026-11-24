@@ -106,6 +106,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   nowhere), not a birth's (always written), is what keeps an unflagged book's bytes; a `page(…, reviewed=True)` inside
   `divorce_records(…, reviewed=False)` is written as the entry's is (see **Fixed**). RVR001 on the records JSON reads
   a run's levels as the export shows them, `on_json.review_level(node, built)` — a store's `run_levels` too.
+- Docs: [records JSON](docs/records-json.md#compatibility-and-reading-an-old-export) names a known limit, until
+  0.2: a wrapper's field a call writes as `None` in so many words (`year=None` in a section, `reviewed=None` in a
+  `page()`) is filled by the wrapper, and only `derived` holds its value, so a rebuild from `written` alone
+  (`replay_file(…, context=False)`, `replay_record`) leaves it unfilled. No corpus file and no verso-app path writes
+  the shape; no output moves.
 
 ### Changed
 
