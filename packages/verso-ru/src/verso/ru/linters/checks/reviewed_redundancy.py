@@ -26,7 +26,7 @@ around them was closed with ``page(..., reviewed=True)``.
 ``birth``/``marriage``/``death`` defaulted to ``True``, ``page(reviewed=…)``
 never reached them, and removing an explicit flag there would silently have
 flipped ``False`` to ``True`` — so the check refused to look at them.
-A ``divorce`` has had the flag since 0.1.47, with the same ``None`` default.
+A ``divorce`` took the flag later, with the same ``None`` default.
 
 Advisory, with a ``remove_kwarg`` fix: the removal is mechanical and provably
 byte-neutral, so the editors can offer it as a quick fix.

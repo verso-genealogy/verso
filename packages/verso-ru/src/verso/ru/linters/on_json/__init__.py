@@ -37,13 +37,14 @@ from verso.ru.domain import statuses
 from verso.ru.linters import hosted
 from verso.ru.linters.on_json import census, common, estates, events, names, places, redundancy
 from verso.ru.linters.on_json.places import file_in_scope
+from verso.ru.linters.on_json.redundancy import review_level
 from verso.ru.linters.on_json.walk import (
     FileView, Finding, NoReplay, RecordView, ReplayRefused, Rule, Unsupported, check_input, estates_present,
     keeping_written, names_table_present)
 from verso.ru.messages import t
 
 __all__ = ["RULES", "SUPPORTED", "FileView", "Finding", "Position", "Rule", "Unsupported", "estates_present",
-           "file_in_scope", "lint_header", "lint_record", "lint_records", "names_table_present"]
+           "file_in_scope", "lint_header", "lint_record", "lint_records", "names_table_present", "review_level"]
 
 RULES: dict[str, Rule] = {
     **census.RULES, **common.RULES, **estates.RULES, **events.RULES, **names.RULES, **places.RULES, **redundancy.RULES}
@@ -168,7 +169,8 @@ def lint_record(node: Mapping[str, Any], *, header: Mapping[str, Any], page: str
     whole file: `file_in_scope` (`places.file_in_scope(headers)`), refused without it (`on_json.needs_file_scope`).
     `run_levels` is what RVR001 cannot see of a record alone: a record's own `reviewed=` is redundant only if its page
     run holds an unflagged record built with the set's level, so the caller that knows the run gives the `reviewed` the
-    run's other unflagged records are built with (an empty collection: the run holds no other). RVR001 asked without
+    run's other unflagged records show — `review_level(node, built)` of each (an empty collection: the run holds no
+    other). RVR001 asked without
     it is refused (`Unsupported`, `on_json.needs_run_levels`), never answered from a run it cannot see.
 
     A record the factories cannot build, or a names table that lacks a name it writes, leaves unanswered the codes that

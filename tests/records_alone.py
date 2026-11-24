@@ -11,7 +11,7 @@ from typing import Any, NamedTuple
 
 from verso.core.records.fields import vocabulary
 from verso.core.records.replay import Position, replay_file
-from verso.ru.linters.on_json import FileView
+from verso.ru.linters.on_json import FileView, review_level
 
 
 class Located(NamedTuple):
@@ -45,5 +45,5 @@ def located(data: Mapping[str, Any], whole: Mapping[str, object] | None = None) 
                         counter = m.record_number
                 k += 1
                 yield Located(header, run["page"], record, position, in_book[k - 1],
-                              frozenset(in_book[first + i].reviewed for i, other in enumerate(run["records"])
+                              frozenset(review_level(other, in_book[first + i]) for i, other in enumerate(run["records"])
                                         if other is not record and "reviewed" not in FileView.written(other["kind"], other)))

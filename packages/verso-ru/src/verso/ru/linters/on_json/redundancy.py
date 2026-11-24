@@ -29,7 +29,10 @@ into one run, so a leaf spanning two `death_month` sections, or two `page()` cal
 two flags in it, and `page(None, …)` is a run that looks page-less. A false RVR001 invites removing a flag, which
 changes a record's review state, and a missed one is safe, so the walk ABSTAINS on every labelled run and answers a
 run with no page only when at least one UNFLAGGED record of it shows the set's value, and none shows another: a
-`page(None, reviewed=…)` over unflagged records would show its flag, so it cannot lie over them. A run whose records
+`page(None, reviewed=…)` over unflagged records would show its flag, so it cannot lie over them. An unflagged record
+shows the flag its export holds — a wrapper's in `written`, else its kind's default (a divorce's, a name list's
+entry's `True` is written nowhere) — never its replayed object's: a set's `False` would fill that object and hide a
+`page(None, reviewed=True)` over it. A run whose records
 all wrote their own flags tells nothing and is not answered. What stays is a `page(None, …)` whose records all
 wrote flags, beside page-less records that wrote none (one run, one set's value shown): it is a call outside the
 DSL's contract (the leaf number is a `str`; `""` is a leaf and labels its run), absent from the corpus, and the
@@ -124,6 +127,7 @@ from collections.abc import Collection, Iterator, Mapping
 from typing import Any, cast
 
 from verso.core.i18n import Message
+from verso.core.records.fields import vocabulary
 from verso.ru.domain.statuses import child_status_for
 from verso.ru.gender import Gender
 from verso.ru.linters.checks import deaths_burial_date as burial
@@ -420,6 +424,18 @@ _SET_CALL = {"births": "birth_records", "marriages": "marriage_records", "deaths
              "divorces": "divorce_records"}     # the set's kind, the call that wrote it
 
 
+def review_level(node: Mapping[str, Any], built: Any) -> Any:
+    """The `reviewed` a record node that wrote no flag of its own shows, `built` the record replayed from it: a
+    wrapper's in `written` (`written.context`), else its kind's default when the kind has one — a divorce's, a name
+    list's entry's `True` is written nowhere, so the replayed record, filled by its set, may not hold it — else the
+    replayed record's. RVR001 reads a run's levels so, and a store gives `lint_record` its `run_levels` so."""
+    if "reviewed" in node["written"]:
+        return node["written"]["reviewed"]
+    voc = vocabulary()
+    default = voc.specs[voc.by_code[node["kind"]]].field("reviewed").default
+    return default if isinstance(default, bool) else built.reviewed
+
+
 def rvr001(view: FileView) -> Iterator[Finding]:
     """A record's own `reviewed=` equal to the record set's (`reviewed_redundancy._inner_issue`, `inner_records_*`)
     in a run with no page that holds an unflagged record, every unflagged record carrying the set's value. A
@@ -436,7 +452,7 @@ def rvr001(view: FileView) -> Iterator[Finding]:
             if run["page"] is not None:
                 continue
             wrote = [(r, view.written(r["kind"], r)) for r in run["records"]]
-            shown = {view.object_of(r).reviewed for r, written in wrote if "reviewed" not in written}
+            shown = {review_level(r, view.object_of(r)) for r, written in wrote if "reviewed" not in written}
             shown |= view.run_mates(run)
             if shown != {level}:        # nothing shown (all flagged), or a flag from elsewhere: `page(None, reviewed=…)`
                 continue

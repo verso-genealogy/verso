@@ -581,7 +581,7 @@ sets (`birth_records`, …) took a file-level `reviewed=`. Before that they defa
 silently have flipped `False` to `True` — so the check refused to look at them. Widening it
 found nothing in the corpus. Removing a redundant flag never moves a ratchet line: the
 fingerprint leaves `reviewed=` out (`packages/verso-core/src/verso/core/ratchet.py`). Divorces joined
-in 0.1.47, when `divorce()` and `divorce_records()` took the flag.
+when `divorce()` and `divorce_records()` took the flag.
 
 Advisory despite the fix being mechanical, because of WHEN it fires: a лист is released by
 adding `page(…, reviewed=True)` on top of entries already released one by one, so every

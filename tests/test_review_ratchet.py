@@ -90,7 +90,7 @@ class OneFlag(unittest.TestCase):
         self.assertIs(False, held.reviewed)
 
     def test_page_refuses_a_record_with_no_flag(self):
-        class Unflagged:          # no record type of the DSL any more: a divorce has had the flag since 0.1.47
+        class Unflagged:          # no record type of the DSL any more: the guard is for one added without the flag
             page = None
         with self.assertRaises(TypeError):
             page("1", Unflagged(), reviewed=False)  # pyright: ignore[reportArgumentType]

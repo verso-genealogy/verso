@@ -39,24 +39,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   `verso death-age`, `verso candidates --sweep`) where they named a corpus's Makefile targets (`facts-check
   check=…`, `death-age-check`, `consolidation-sweep`). The reports' own first words are unchanged: no output moves.
 
-- verso-ru: a divorce takes the review flag, as every other kind does. `divorce(…, reviewed=None)` and
+- verso-ru: a divorce takes the review flag. `divorce(…, reviewed=None)` and
   `divorce_records(…, reviewed=True)`: resolved innermost-first — the record, its `page(…, reviewed=)` (which
   refused a divorce until now), the book — so an unproofread divorce can be held. `Divorce.reviewed` and
-  `DivorceRecords.reviewed`; the records JSON writes the flag where it writes the other kinds' (`reviewed` on the
-  `divorce` and `divorces` nodes of `records-v1.json`, default `True`, written nowhere when it is the default), and a
-  held divorce's `review` is `held`. A divorce reaches no Geni document and no fact, so the review ratchet lists
+  `DivorceRecords.reviewed`; the records JSON writes the flag as it writes a name list's entry's, not a birth's
+  (`reviewed` on the `divorce` and `divorces` nodes of `records-v1.json`, default `True`, written nowhere when it is
+  the default; a `False` where a birth's stands), and a held divorce's `review` is `held`. A divorce reaches no Geni document and no fact, so the review ratchet lists
   none; `tables(…, reviewed_only=True)` leaves a held one out, and RVR001 reads `divorce` and `divorce_records`. The
   interface's schema hides the flag on the divorce and its book, as on the other kinds.
 
   **No output moves.** A divorce file that does not name the flag gives the same bytes as on 0.1.46 — its familio
   CSV, its records JSON, the Terraform (a divorce writes none), the facts, dsllint; a held divorce moves its records
   JSON alone (its `review`, its `reviewed`), its CSV row stays. A corpus that writes `reviewed=` on a divorce needs
-  this version: an older one refuses the keyword, and a reader validating against an older `records-v1.json`
-  refuses a divorce that writes `reviewed`. The records JSON writes the flag as a name list's entry's (default
-  `True`, written nowhere), not a birth's (always written) — that is what keeps an unflagged book's bytes. It costs
-  the entry's one case: a `page(…, reviewed=True)` inside `divorce_records(…, reviewed=False)` leaves no trace, so
+  this version: an older one refuses the keyword, and an older decoder, or a reader validating against an older
+  `records-v1.json`, refuses a divorce that writes `reviewed` (the vocabulary's version stays 1) — so the library
+  and its readers move before a corpus writes the flag. Writing it as a name list's entry's (default `True`, written
+  nowhere), not a birth's (always written), is what keeps an unflagged book's bytes. It costs the entry's one case: a `page(…, reviewed=True)` inside `divorce_records(…, reviewed=False)` leaves no trace, so
   `replay_file` rebuilds its records held (`decode_file` reads them right). The encoder's fix belongs to both kinds
-  and moves a name list's bytes, so it is a change of its own.
+  and moves a name list's bytes, so it is a change of its own. RVR001 on the records JSON reads a run's levels as
+  the export shows them, `on_json.review_level(node, built)` — a store's `run_levels` too — so it no longer calls
+  load-bearing a held record's `reviewed=False` under such a page: a false finding gone for a divorce and for a
+  name list's entry alike.
 
 ### Changed
 
