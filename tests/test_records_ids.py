@@ -60,6 +60,32 @@ def test_a_repeated_number_takes_a_tilde_in_order():
     assert [ids.document_id(k), ids.document_id(k)] == [str(k), f"{k}~2"]
 
 
+CARDS = BookKey("Маниловка", "card", None, None, "cards")
+
+
+def test_a_set_of_cards_is_counted_among_the_sets_of_its_year():
+    """A village's sets of cards state no year: each takes its file's, so an export of some of the years (a tree
+    that leaves the young ones out) numbers a set as the export of the whole village does."""
+    whole, some = Ids(), Ids()
+    assert [whole.document_id(CARDS, "1932/a.py"), whole.document_id(CARDS, "1941/b.py"),
+            whole.document_id(CARDS, "1941/c.py")] == [
+        "r1:Маниловка/card/1932/cards", "r1:Маниловка/card/1941/cards", "r1:Маниловка/card/1941/cards~2"]
+    assert [some.document_id(CARDS, "1941/b.py"), some.document_id(CARDS, "1941/c.py")] == [
+        "r1:Маниловка/card/1941/cards", "r1:Маниловка/card/1941/cards~2"]
+
+
+def test_a_book_keeps_its_own_year_and_a_file_out_of_a_year_gives_none():
+    k = BookKey("Маниловка", "47-9-755", None, 1842, "birth")
+    assert Ids().document_id(k, "1900/fixture.py") == str(k)            # the book's year, not the file's
+    assert Ids().document_id(CARDS, "cards.py") == "r1:Маниловка/card/cards"
+    assert Ids().document_id(CARDS) == "r1:Маниловка/card/cards"        # a caller that names no file
+
+
+def test_the_id_of_a_set_of_cards_parses_with_its_year():
+    p = parse("r1:Маниловка/card/1941/cards")
+    assert (p.shelfmark, p.year, p.kind) == ("card", 1941, "cards")
+
+
 def test_a_numberless_record_inserted_above_shifts_the_ones_below():
     # What r1 does not promise: a record without a number is counted, not cited.
     alone = _ids(_births(birth(None, Gender.MALE, 3, 4, child=person("Иванъ"))))

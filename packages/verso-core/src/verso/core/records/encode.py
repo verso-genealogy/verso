@@ -139,8 +139,9 @@ def _structural(spec: ClassSpec) -> set[str]:
 
 
 class _Encoder:
-    def __init__(self, ids: Ids) -> None:  # `encode_record` passes none: it is given its record's id
-        self.ids = ids
+    def __init__(self, ids: Ids, file: str | None = None) -> None:
+        self.ids = ids               # `encode_record` passes none: it is given its record's id
+        self.file = file             # the DSL file, relative to its village: a set of cards takes its year
         self.entities: dict[int, str] = {}
         self.given: dict[tuple[int, type], dict[str, object]] = {}     # `_inherited`, once per set and class
 
@@ -280,7 +281,7 @@ class _Encoder:
         spec = vocabulary().specs.get(type(record_set))
         if spec is None or spec.records_attr is None:
             raise FormatError(t("records.encode.not_a_set", variable=variable, type=type(record_set).__name__))
-        node: dict[str, object] = {"id": self.ids.document_id(book_key(record_set)),
+        node: dict[str, object] = {"id": self.ids.document_id(book_key(record_set), self.file),
                                    "variable": variable, "kind": spec.code}
         node.update(self.node(record_set, variable, {spec.records_attr}))
         pages: list[dict[str, Any]] = []
@@ -367,7 +368,7 @@ def review(record: object, path: str = "") -> str:
 def encode_namespace(namespace: Mapping[str, object], *, village: str, file: str, sha256: str,
                      ids: Ids) -> dict[str, object]:
     """The record sets of one DSL file, in the module's order, as a records-v1 file node."""
-    encoder = _Encoder(ids)
+    encoder = _Encoder(ids, file)
     named: dict[int, str] = {}
     documents: list[dict[str, object]] = []
     for variable, record_set in namespace.items():
