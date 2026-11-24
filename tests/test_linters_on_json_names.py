@@ -10,6 +10,7 @@ import ast
 import copy
 import json
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
@@ -190,15 +191,28 @@ def test_a_code_that_needs_names_is_a_warning_without_them(tmp_path: Path, monke
 
 def test_no_names_table_never_raises(tmp_path: Path):
     """No supported code raises in a workspace without a names table, on any sample, and what a code that needs the
-    table finds there is a warning."""
+    table finds there is a warning. A sample is asked every code in one call — each rule runs on its own there, and the
+    input is checked once a call, which asked a code at a time was most of this test's minute."""
     unset, nofile = thin_workspace(tmp_path / "unset", names=False), _no_file(tmp_path / "nofile")
     table = hosted.readiness()
+    needing = [code for code in on_json.SUPPORTED if "names" in table[code].needs]
     for sample in oracle.samples()[0]:
-        for code in on_json.SUPPORTED:
-            for found in on_json.lint_records(copy.deepcopy(sample.data), codes=[code], workspace=unset):
-                assert found.level == "warn" or "names" not in table[found.code].needs, (sample.name, code)
-            if "names" in table[code].needs:
-                on_json.lint_records(copy.deepcopy(sample.data), codes=[code], workspace=nofile)
+        for found in _every_code(sample, on_json.SUPPORTED, unset):
+            assert found.level == "warn" or "names" not in table[found.code].needs, (sample.name, found.code)
+        _every_code(sample, needing, nofile)
+
+
+def _every_code(sample: Any, codes: Sequence[str], workspace: Path) -> list[on_json.Finding]:
+    """`lint_records` of `codes` on a sample in one call; if it raises, the code that raises asked alone is named."""
+    try:
+        return on_json.lint_records(copy.deepcopy(sample.data), codes=codes, workspace=workspace)
+    except Exception:
+        for code in codes:
+            try:
+                on_json.lint_records(copy.deepcopy(sample.data), codes=[code], workspace=workspace)
+            except Exception as error:
+                raise AssertionError((sample.name, code)) from error
+        raise
 
 
 def test_a_code_that_reads_the_names_table_says_so(monkeypatch: pytest.MonkeyPatch):

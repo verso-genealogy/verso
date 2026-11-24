@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # The distributions, by their directory, and the extras the tests need.
 DISTS: dict[str, str] = {"packages/verso-core": "schema,heic", "packages/verso-ru": "xlsx,sheets,dsl-tools,site"}
 # The tests' own pins, read from requirements-dev.txt.
-TEST_PINS: tuple[str, ...] = ("pytest", "jsonschema", "pyyaml")
+TEST_PINS: tuple[str, ...] = ("pytest", "pytest-xdist", "jsonschema", "pyyaml")
 # What a child must not inherit: the checkout's code (make exports PYTHONPATH) or its workspace.
 _DROPPED = ("PYTHONPATH", "PYTHONHOME", "VIRTUAL_ENV", "VERSO_WORKSPACE", "VERSO_TEST_WORKSPACE")
 
@@ -167,7 +167,7 @@ def run(*, keep: Path | None) -> int:
                     capture_output=True).stdout.strip()
         guard_children(Path(site), copy / "tests" / "sentinel.py")
         _install(venv, [*_wheels(copy, wheels), *pins()])
-        return _pytest(venv, copy, "tests", "--doctest-modules") + _pytest(venv, copy, "-p", "tests.core.block",
+        return _pytest(venv, copy, "tests", "--doctest-modules", "-n", "auto", "--dist", "worksteal") + _pytest(venv, copy, "-p", "tests.core.block",
                                                                          "tests/core")
 
 

@@ -30,8 +30,9 @@ ci: lint test test-core ui-ratchet layering reference-check dsl-surface records-
 # Before a merge or a release: what CI runs (ci.yml), standalone included.
 premerge: ci standalone
 
+# One worker a core (pytest-xdist, worksteal), as CI runs it on its two; `n=0` runs it in one process, `n=4` on four.
 test:
-	$(PY) -m pytest tests --doctest-modules -q
+	$(PY) -m pytest tests --doctest-modules -q -n $(or $(n),auto) --dist worksteal
 
 # The core alone: tests/core on the toy plugin with verso.ru blocked (tests/core/block.py).
 test-core:
