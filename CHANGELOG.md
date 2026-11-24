@@ -7,14 +7,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Changed
 
-- verso-ru, the site (`verso site`): a new look. The page is
-  a tile on warm paper with a soft glow behind it, the bar a glass tile with its sections as round buttons; a
-  record is a card, its name in a brass display italic (an unread one with a stripe at its left), the labels of its parts in small spaced mono capitals, what
-  the library derived after an arrow; a book's facts and its leaves are chips. Light and dark follow the system.
-  The site draws with four fonts of its own, in `assets/fonts/` beside their licences (SIL OFL 1.1, 130 KB in all;
-  NOTICE names them): Onest, Cormorant Garamond italic, JetBrains Mono and Noto Sans's pre-reform letters. The
-  stylesheet's classes are as they were; nothing is fetched from another host. No output of a corpus but its site
-  moves.
+- verso-ru, the site (`verso site`): a new look. The page is a tile on warm paper with a soft glow behind it, the bar
+  a glass tile with its sections as round buttons; a record is a card, its name in a brass display italic (an unread
+  one with a stripe at its left), the labels of its parts in small spaced mono capitals, what the library derived
+  after an arrow; a book's facts and its leaves are chips. Light and dark follow the system. The site draws with four
+  fonts of its own, in `assets/fonts/` beside their licences (SIL OFL 1.1, 130 KB in all; NOTICE names them): Onest,
+  Cormorant Garamond italic, JetBrains Mono and Noto Sans's pre-reform letters. The stylesheet's classes are as they
+  were; nothing is fetched from another host. No output of a corpus but its site moves.
 - verso-ru, the site (`verso site`), from a reader's word: the years' index named a year's books by their kind
   alone, so five rolls of one year read «Ревизия, Ревизия, Ревизия, Ревизия, Ревизия». A book of another village
   than the site's own parish — the one most of its records name, not the village's directory — is named with it

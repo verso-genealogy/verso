@@ -101,7 +101,7 @@ main { width: min(62rem, calc(100% - 2rem)); margin: 1.4rem auto 0; padding: 1.6
 /* a record: a card, its name in the brass italic */
 .rec { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-card); padding: .85rem 1.1rem .75rem;
   margin: .75rem 0; }
-.rec.held { border-left: 3px solid var(--warn); }                 /* an unread record, at a glance */
+.rec.held, .rec.held:target { border-left: 3px solid var(--warn); }   /* an unread record, at a glance */
 .rec:target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .rec > header { display: flex; flex-wrap: wrap; gap: .3rem .6rem; align-items: center; margin-bottom: .35rem; }
 .rec h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: .55rem; margin: 0; font: 650 1rem/1.3 var(--font-body); }
