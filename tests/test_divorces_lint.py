@@ -21,14 +21,28 @@ def _found(src: str) -> list[dict[str, object]]:
 
 
 def test_a_text_date_offers_its_event_date():
-    src = 'divorce(49, 14, Month.JULY, husband=h, wife=w, marriage_date="24 февраля 1927")\n'
+    src = 'divorce(3, 11, Month.MAY, husband=h, wife=w, marriage_date="18 марта 1924")\n'
     [f] = _found(src)
     assert str(f["message"]).startswith("[DVC001] ")
     assert f["level"] == "warn" and f["line"] == 1
     fix = f["fix"]
-    assert fix == {"type": "replace_kwarg", "old": '"24 февраля 1927"', "new": "EventDate(1927, Month.FEBRUARY, 24)",
-                   "col": src.index('"24')}
-    assert (f["col"], f["end_col"]) == (src.index('"24'), src.index('"24') + len('"24 февраля 1927"'))
+    assert fix == {"type": "replace_kwarg", "old": '"18 марта 1924"', "new": "EventDate(1924, Month.MARCH, 18)",
+                   "col": src.index('"18')}
+    assert (f["col"], f["end_col"]) == (src.index('"18'), src.index('"18') + len('"18 марта 1924"'))
+
+
+def test_the_columns_are_characters_after_cyrillic_text():
+    """The IDEs place a quick fix by character, and `ast` counts bytes: on a line of Cyrillic before the text the
+    two differ, and the fix must still land on the text."""
+    src = 'divorce(3, 11, Month.MAY, husband=person("Иванъ", "Петровъ"), marriage_date="18 марта 1924")\n'
+    [f] = _found(src)
+    col = src.index('"18')
+    assert (f["col"], f["end_col"], f["fix"]["col"]) == (col, col + len('"18 марта 1924"'), col)  # type: ignore[index]
+    assert src[col:col + len(f["fix"]["old"])] == f["fix"]["old"]  # type: ignore[index]
+
+
+def test_an_empty_text_is_no_date_and_is_quiet():
+    assert _found('divorce(1, 3, Month.JULY, marriage_date="")') == []
 
 
 @pytest.mark.parametrize("text, new", [
@@ -69,7 +83,7 @@ def test_dsllint_runs_it_as_advisory(tmp_path: Path):
     path.write_text('from verso.ru.dsl import Month, divorce, divorce_records, person\n'
                     'd = divorce_records("ГА", "1", "2", "3", "Маниловка", "", 1927,\n'
                     '    divorce(1, 3, Month.JULY, husband=person("Иванъ"), wife=person("Анна"), '
-                    'marriage_date="24 февраля 1927"))\n', encoding="utf-8")
+                    'marriage_date="18 марта 1924"))\n', encoding="utf-8")
     found = [i for r in dsllint.check_file_json(path) for i in r["issues"] if i["code"] == "DVC001"]
     assert len(found) == 1 and found[0]["level"] == "warn" and found[0]["fix"]["type"] == "replace_kwarg"
     assert json.dumps(found, ensure_ascii=False)

@@ -1001,7 +1001,7 @@ class TestInsertDivorces(unittest.TestCase):
             wife=Person("Анисья", "Лукина", name_modern_orth="Анисья", patr_old="Лукина",
                          last_name="Спорщикова", gender=Gender.FEMALE, residence="Заманиловка"),
             husband_age=23, wife_age=21,
-            marriage_date=EventDate(1926, Month.JANUARY, 17), initiator="жена",
+            marriage_date=EventDate(1925, Month.MAY, 9), initiator="жена",
         )
         records = DivorceRecords("ГАПО", "1605", "59", "59", "Заманиловка", "", 1927, [d])
         count = insert_divorces(self.conn, records, "1927/zamanilovka_divorces_1927.py")
@@ -1014,7 +1014,7 @@ class TestInsertDivorces(unittest.TestCase):
         self.assertEqual(rows[0][4], 8)    # d_month (August)
         self.assertEqual(rows[0][5], 23)   # husband_age
         self.assertEqual(rows[0][6], 21)   # wife_age
-        self.assertEqual(rows[0][7], "17 января 1926")  # marriage_date
+        self.assertEqual(rows[0][7], "9 мая 1925")  # marriage_date
         self.assertEqual(rows[0][9], "жена")  # initiator
 
     def test_insert_divorces_creates_persons(self):

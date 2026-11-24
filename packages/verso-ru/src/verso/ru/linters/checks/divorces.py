@@ -64,15 +64,17 @@ def _collect(tree: ast.AST, src: str | None = None) -> list[dict[str, object]]:
         keyword = next((kw for kw in node.keywords if kw.arg == "marriage_date"), None)
         value = keyword.value if keyword is not None else (
             node.args[MARRIAGE_DATE_POSITION] if len(node.args) > MARRIAGE_DATE_POSITION else None)
-        if not (isinstance(value, ast.Constant) and isinstance(value.value, str)):
+        if not (isinstance(value, ast.Constant) and isinstance(value.value, str)) or not value.value.strip():
             continue
         finding = {**said(value.value), "level": "warn", "line": value.lineno}
         date = read_written_date(value.value)
         source = ast.get_source_segment(src, value) if src is not None else None
         on_one_line = value.lineno == value.end_lineno and value.lineno <= len(lines)
         if keyword is not None and date is not None and source is not None and on_one_line:
-            finding.update(col=value.col_offset, end_col=value.col_offset + len(source),
-                           fix={"type": "replace_kwarg", "old": source, "new": as_code(date), "col": value.col_offset})
+            # `ast` counts UTF-8 bytes; the IDEs place a fix by character.
+            col = len(lines[value.lineno - 1].encode("utf-8")[:value.col_offset].decode("utf-8", "ignore"))
+            finding.update(col=col, end_col=col + len(source),
+                           fix={"type": "replace_kwarg", "old": source, "new": as_code(date), "col": col})
         found.append(finding)
     return sorted(found, key=lambda i: int(str(i["line"])))
 

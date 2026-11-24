@@ -31,6 +31,7 @@ one spouse's word says nothing of where the other was.
 from __future__ import annotations
 
 from collections.abc import Iterable, Iterator
+from dataclasses import replace
 from typing import Any
 
 from verso.ru.ages import age_recorded
@@ -39,11 +40,22 @@ from verso.ru.domain.event_date import EventDate
 from verso.ru.facts.extract.common import (
     Entry, RecordId, SlotIndex, event_fact_date, fact_date, reviewed, stated_unless)
 from verso.ru.facts.model import (
-    AgedYears, Assertion, DivorcedOn, MarriedOn, Persona, SpouseOf, Stated)
+    AgedYears, Assertion, DivorcedOn, FactDate, MarriedOn, Persona, SpouseOf, Stated)
 
 __all__ = ["RECORD_KIND", "facts_from_divorces"]
 
 RECORD_KIND = "divorce"
+
+def _named_wedding(named: EventDate) -> FactDate | None:
+    """The interval an `EventDate` of the wedding asserts — saying no more than it can: a day needs its month, as for
+    the divorce's own date, and a date with no year names no wedding."""
+    if named.year is None:
+        return None
+    date = event_fact_date(named)
+    if named.month is None and date.day is not None:
+        date = replace(date, day=None)
+    return date
+
 
 def _figure(value: object) -> int | None:
     """A day or a month as the DSL holds it, or None — not recorded — where it holds none or holds words
@@ -68,12 +80,12 @@ def _facts_from_divorce(rec: Any, village: str, source_file: str, entry: int,
                         ids: RecordId | None = None) -> list[Assertion]:
     e = Entry(rec, village=village, source_file=source_file,
               record_kind=RECORD_KIND, entry=entry, slots=slots, ids=ids)
-    # A day means nothing without its month, as in `named_wedding`.
+    # A day means nothing without its month, as for the wedding the act names (`_named_wedding`).
     month = _figure(rec.d_month)
     divorced = fact_date(_figure(rec.d_day) if month else None, month, rec.year)
     # The wedding the act names, as an `EventDate`; a text (DSL v1's, deprecated) asserts nothing — never parsed.
     named = getattr(rec, "marriage_date", None)
-    wed = event_fact_date(named) if isinstance(named, EventDate) else None
+    wed = _named_wedding(named) if isinstance(named, EventDate) else None
 
     # The record set's defaults fill a residence in place (`divorce_records`),
     # so which of the two the act itself wrote is no longer knowable.

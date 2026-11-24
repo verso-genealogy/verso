@@ -2,8 +2,8 @@
 
 What an act of divorce says: these two were spouses, the day the marriage was
 dissolved, how old each was — and, where the act names it, the day they had
-married. That last one is a later document's claim about a wedding: it is read
-only in the forms a date is written in, and anything else asserts nothing.
+married. That last one is a later document's claim about a wedding: it is an
+`EventDate`, read as an external card's dates are; a text there asserts nothing.
 """
 from __future__ import annotations
 
@@ -45,6 +45,13 @@ def _facts(*records: Any, drafts: bool = False) -> AssertionSet:
 def test_the_wedding_an_act_names_is_its_event_date(named: EventDate, date: FactDate) -> None:
     """A point, a month, a year, «около», a range: the interval the date asserts, as an external card's is read."""
     assert {a.date for a in _facts(_divorce(marriage_date=named)).of(MarriedOn)} == {date}
+
+
+@pytest.mark.parametrize("named", [EventDate(1926, None, 14), EventDate(None, Month.MARCH, 14)])
+def test_a_named_wedding_with_a_day_and_no_month_or_no_year_says_no_more_than_it_can(named: EventDate) -> None:
+    """A day needs its month, as for the divorce's own date; a date with no year asserts no wedding."""
+    dates = {a.date for a in _facts(_divorce(marriage_date=named)).of(MarriedOn)}
+    assert dates == ({FactDate(year=1926)} if named.year else set())
 
 
 def test_a_wedding_written_as_text_asserts_nothing() -> None:
@@ -193,3 +200,38 @@ def test_a_divorce_is_asked_of_the_cli_by_kind_only_for_what_it_answers(village:
     from verso.ru.cli import facts as cli
     assert cli.main(["--village", str(village), "--kind", "divorce"]) == 2
     assert "--dump" in capsys.readouterr().err
+
+
+UNNUMBERED = '''\
+from calendar import Month
+
+from verso.ru.dsl import EventDate, divorce, divorce_records, person
+
+manilovka_divorces_1902 = divorce_records(
+    "ГАРО", "9", "1", "5", "Маниловка", "", 1902,
+    divorce(None, 3, Month.JULY, husband=person("Иванъ", "Петровъ", "Справкинъ"), wife=person("Анна", "Иванова"),
+            marriage_date=EventDate(1902, Month.SEPTEMBER, 12), page="4"))
+'''
+
+
+def test_an_unnumbered_act_is_said_without_a_number(village: Path) -> None:
+    """A book that numbers no act: the report says «без номера», never «№none»."""
+    from verso.core import i18n
+    from verso.ru.cli.facts import date_order
+    from verso.ru.messages import t
+    (village / "1902").mkdir()
+    (village / "1902" / "manilovka_divorces_1902.py").write_text(UNNUMBERED, encoding="utf-8")
+    report, _ = date_order(village)
+    assert "none" not in report
+    assert f"manilovka_divorces_1902.py {i18n.render(t('cli.facts.unnumbered'), 'ru')}" in report
+
+
+def test_every_report_of_the_facts_cli_names_a_number_one_way():
+    """The facts CLI prints a record's number through one helper (`_number`): an f-string `№{…record_num}` written
+    anywhere else would print «№none» for an unnumbered entry again."""
+    import re
+    import inspect
+    from verso.ru.cli import facts as cli
+    source = inspect.getsource(cli)
+    helper = inspect.getsource(cli._number)
+    assert re.findall(r"№\{[^}]*record_num\}", source.replace(helper, "")) == []

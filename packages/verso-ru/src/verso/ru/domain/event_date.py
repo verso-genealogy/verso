@@ -74,36 +74,39 @@ def _julian_month_end(year: int, month: int) -> int:
     return 29 if month == 2 and year % 4 == 0 else monthrange(year, month)[1]
 
 
-def _point(year: int | None, month: Month | None, day: int | None) -> str:
+def _point(year: int | None, month: Month | None, day: int | None, *, governed: bool = False) -> str:
+    """One end of a date: «24 февраля 1927», «февраль 1927», «1927». `governed` — after «до», «около», «после» —
+    puts a month without a day in the genitive too («до мая 1915»)."""
     if year is None:
         return ""
     if month is None:
         return str(year)
     if day is None:
-        return f"{_NOMINATIVE[int(month) - 1]} {year}"
+        return f"{(_GENITIVE if governed else _NOMINATIVE)[int(month) - 1]} {year}"
     return f"{day} {_GENITIVE[int(month) - 1]} {year}"
 
 
 def written_date(date: EventDate) -> str:
-    """`date` as a record's text writes a date: «24 февраля 1927», «февраль 1927», «1927»; «около 1915»;
-    «до 1915», «после мая 1915»; a range «1914–1915», or «3 мая 1914 – 1 июня 1914» where an end names more than
-    a year. A day without its month is not written. What the CSV and the people's database write for an
-    `EventDate` of a field that once held text (`divorce(marriage_date=)`), so a file moved to the structure
-    writes the same bytes."""
-    start = _point(date.year, date.month, date.day)
-    if date.circa and start:
-        start = f"{_CIRCA} {start}"
-    if date.date_range == "before":
-        return f"{_BEFORE} {start}"
-    if date.date_range == "after":
-        after = (f"{_GENITIVE[int(date.month) - 1]} {date.year}" if date.month and not date.day else start)
-        return f"{_AFTER} {after}"
+    """`date` as a record's text writes a date: «24 февраля 1927», «февраль 1927», «1927»; «около 1915», «около мая
+    1915»; «до 1915», «после мая 1915»; a range «1914–1915», or «3 мая 1914 – 1 июня 1914» where an end names more
+    than a year (an end that names no month of its own takes the start's). A date with no year is "". What the CSV
+    and the people's database write for an `EventDate` of a field that once held text (`divorce(marriage_date=)`),
+    so a file moved to the structure writes the same bytes."""
+    if date.year is None:
+        return ""
+    if date.date_range in ("before", "after"):
+        word = _BEFORE if date.date_range == "before" else _AFTER
+        return f"{word} {_point(date.year, date.month, date.day, governed=True)}"
     if date.has_range:
+        start = _point(date.year, date.month, date.day)
         year_end = date.year_end if date.year_end is not None else date.year
         if date.month is None and date.month_end is None:
             return f"{start}–{year_end}"
-        return f"{start} – {_point(year_end, date.month_end, date.day_end)}"
-    return start
+        month_end = date.month_end if date.month_end is not None else (date.month if date.day_end else None)
+        return f"{start} – {_point(year_end, month_end, date.day_end)}"
+    if date.circa:
+        return f"{_CIRCA} {_point(date.year, date.month, date.day, governed=True)}"
+    return _point(date.year, date.month, date.day)
 
 
 def date_text(value: object) -> str:

@@ -106,6 +106,10 @@ def wedding_calendar_findings(facts: AssertionSet) -> WeddingCalendar:
         d = married.date
         if d.year is None or d.month is None or d.day is None or d.year > LAST_YEAR:
             continue
+        # A day the Church married or did not is a single day: «около», «до», «после», a range ask nothing
+        # (a wedding an act of divorce names may be any of them).
+        if d.circa or d.bound is not None:
+            continue
         if not is_valid(d.year, d.month, d.day):
             continue
         checked += 1

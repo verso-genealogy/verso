@@ -1,8 +1,8 @@
 """The marriage an act of divorce names is an `EventDate`, the library's one structure of a date; the text an older
 file writes is still read, and warns.
 
-`divorce(marriage_date=EventDate(1927, Month.FEBRUARY, 24))` — a point, a month, a year, `circa`, a range, as an
-external card's dates are. A text (`marriage_date="24 февраля 1927"`) is what DSL v1 wrote until now: it is
+`divorce(marriage_date=EventDate(1924, Month.MARCH, 18))` — a point, a month, a year, `circa`, a range, as an
+external card's dates are. A text (`marriage_date="18 марта 1924"`) is what DSL v1 wrote until now: it is
 accepted, kept as it is and exported as it is, with a `DeprecationWarning` at the line that wrote it; no reader
 parses it. The CSV and the people's database write an `EventDate` the way the corpus wrote the text.
 """
@@ -46,7 +46,7 @@ def _written(data: dict[str, Any]) -> dict[str, Any]:
 def test_an_event_date_is_written_whole_and_replays():
     with warnings.catch_warnings():
         warnings.simplefilter("error")
-        ns = {"divorces": _divorces(_act(marriage_date=EventDate(1927, Month.FEBRUARY, 24)))}
+        ns = {"divorces": _divorces(_act(marriage_date=EventDate(1924, Month.MARCH, 18)))}
     data = _export(ns)
     from jsonschema import Draft202012Validator
     assert not list(Draft202012Validator(build_schema()).iter_errors(data))
@@ -57,18 +57,18 @@ def test_an_event_date_is_written_whole_and_replays():
 
 def test_a_text_is_still_taken_and_warns_at_the_line_that_wrote_it():
     with pytest.warns(DeprecationWarning, match="marriage_date") as warned:
-        record = _act(marriage_date="24 февраля 1927")
-    assert record.marriage_date == "24 февраля 1927"
+        record = _act(marriage_date="18 марта 1924")
+    assert record.marriage_date == "18 марта 1924"
     assert warned[0].filename == __file__
 
 
 def test_a_text_exports_as_text_and_an_older_export_reads():
     with pytest.warns(DeprecationWarning):
-        ns = {"divorces": _divorces(_act(marriage_date="24 февраля 1927"))}
+        ns = {"divorces": _divorces(_act(marriage_date="18 марта 1924"))}
     data = _export(ns)
     from jsonschema import Draft202012Validator
     assert not list(Draft202012Validator(build_schema()).iter_errors(data))
-    assert _written(data)["marriage_date"] == "24 февраля 1927"
+    assert _written(data)["marriage_date"] == "18 марта 1924"
     # An export is read as it was written, with no call made: an older file's text reads quietly …
     with warnings.catch_warnings():
         warnings.simplefilter("error")
@@ -76,6 +76,12 @@ def test_a_text_exports_as_text_and_an_older_export_reads():
     # … and replaying it calls the factory, which says so.
     with pytest.warns(DeprecationWarning):
         assert first_difference(ns, replay_file(data)) is None
+
+
+def test_an_empty_text_is_no_date_and_warns_nothing():
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        assert _act(marriage_date="").marriage_date == ""
 
 
 def test_no_date_warns_nothing_and_writes_nothing():
@@ -86,32 +92,42 @@ def test_no_date_warns_nothing_and_writes_nothing():
 
 
 @pytest.mark.parametrize("date, text", [
-    (EventDate(1927, Month.FEBRUARY, 24), "24 февраля 1927"),
-    (EventDate(1930, Month.FEBRUARY, 13), "13 февраля 1930"),
-    (EventDate(1927, Month.FEBRUARY), "февраль 1927"),
+    (EventDate(1924, Month.MARCH, 18), "18 марта 1924"),
+    (EventDate(1922, Month.APRIL, 21), "21 апреля 1922"),
+    (EventDate(1924, Month.MARCH), "март 1924"),
     (EventDate(1927), "1927"),
     (EventDate(1915, circa=True), "около 1915"),
     (EventDate(1915, date_range="before"), "до 1915"),
     (EventDate(1915, Month.MAY, date_range="after"), "после мая 1915"),
     (EventDate(1914, year_end=1915), "1914–1915"),
     (EventDate(1914, Month.MAY, 3, year_end=1914, month_end=Month.JUNE, day_end=1), "3 мая 1914 – 1 июня 1914"),
+    # a month after «до», «около», «после» is in the genitive, as beside a day
+    (EventDate(1915, Month.MAY, date_range="before"), "до мая 1915"),
+    (EventDate(1915, Month.MAY, circa=True), "около мая 1915"),
+    (EventDate(1915, Month.MAY, 3, circa=True), "около 3 мая 1915"),
+    (EventDate(1915, circa=True, date_range="after"), "после 1915"),
+    # an end that names a day but no month of its own takes the start's
+    (EventDate(1914, Month.MAY, 3, year_end=1914, day_end=9), "3 мая 1914 – 9 мая 1914"),
+    # no year, nothing to write
+    (EventDate(None, Month.MAY, date_range="after"), ""),
+    (EventDate(), ""),
 ])
 def test_an_event_date_is_written_as_the_corpus_writes_a_date(date: EventDate, text: str):
     assert written_date(date) == text
 
 
-@pytest.mark.parametrize("text", ["24 февраля 1927", "13 февраля 1930", "7 ноября 1915", "февраль 1927", "1927"])
+@pytest.mark.parametrize("text", ["18 марта 1924", "21 апреля 1922", "9 ноября 1913", "март 1924", "1927"])
 def test_the_text_of_a_date_reads_back_to_the_same_text(text: str):
     date = read_written_date(text)
     assert date is not None and written_date(date) == text
 
 
 @pytest.mark.parametrize("text, date", [
-    ("24.02.1927", EventDate(1927, Month.FEBRUARY, 24)),
-    ("7 ноября 1915 г.", EventDate(1915, Month.NOVEMBER, 7)),
+    ("18.03.1924", EventDate(1924, Month.MARCH, 18)),
+    ("9 ноября 1913 г.", EventDate(1913, Month.NOVEMBER, 9)),
     ("9 Ноября 1913 года", EventDate(1913, Month.NOVEMBER, 9)),
     ("  1915 г. ", EventDate(1915)),
-    ("февраля 1927", EventDate(1927, Month.FEBRUARY)),
+    ("марта 1924", EventDate(1924, Month.MARCH)),
     # the old spelling of the months an act of 1918–1919 may still write
     ("12 іюня 1915", EventDate(1915, Month.JUNE, 12)),
     ("7 іюля 1913", EventDate(1913, Month.JULY, 7)),

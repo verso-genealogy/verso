@@ -116,7 +116,7 @@ def divorce(
         source_date_error: str | None = None,
         calendar_note: str | None = None,
 ) -> Divorce:
-    if isinstance(marriage_date, str):
+    if isinstance(marriage_date, str) and marriage_date.strip():
         # DSL v1 wrote the marriage as the act's text; the library reads a date as an `EventDate` only. The text is
         # kept and exported as written, no reader parses it, and it goes in 0.2. `stacklevel` reaches past
         # `captures_written` to the line of the DSL file.

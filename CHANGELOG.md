@@ -29,9 +29,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - verso-ru: **the marriage an act of divorce names is an `EventDate`** — `divorce(marriage_date=EventDate(1927,
   Month.FEBRUARY, 24))`, the library's one structure of a date (a point, a month, a year, `circa`, a range), as an
   external card's dates are; the facts layer reads it as it reads a card's. The familio CSV («Дата заключения брака»)
-  and `village.db` write it as the corpus wrote the text — «24 февраля 1927», «февраль 1927», «1927»
+  and `village.db` write it as the corpus wrote the text — «24 февраля 1927», «февраль 1927», «1927», «около мая 1915»,
+  «до 1915», «1914–1915»
   (`verso.ru.domain.event_date.written_date`, `date_text`) — so a file moved to the structure writes the same CSV.
-  `read_written_date` reads a text in those forms back. The interface's schema hides the field, as a card's dates.
+  `read_written_date` reads a text in those forms back. The interface's schema hides the field, as a card's dates —
+  the review page neither shows nor edits it (it has no card for a divorce). `wedding-calendar` asks a single day
+  only: a wedding named «около», «до», «после» or as a range is not asked of the calendar.
 - verso-ru: **DVC001** (advisory): a divorce's `marriage_date=` written as text, with its `EventDate` offered as the
   quick fix where the text is a date in a known form; answered on records JSON too.
 - verso-core: a field of the vocabulary may hold **one of several types** — `OneOf`, written `a|b`
@@ -114,8 +117,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - verso-ru: `divorce(marriage_date=)` written as **text**. It is taken, kept and exported as written, and warns
   (`DeprecationWarning`, at the line that wrote it; shown where Python shows one — a test run, `-W default`); no
   reader parses it, so the facts layer does not see the wedding it names. DVC001 says so and offers the
-  `EventDate`. Refused from 0.2. A corpus that wrote the text moves its records to `EventDate` on a commit of its
-  own: its CSV does not move, its records JSON and its facts do.
+  `EventDate`. Refused from 0.2. A corpus that wrote the text moves its records to `EventDate`: its CSV does not
+  move, its records JSON and its facts do. **Where a `DeprecationWarning` is an error** — as
+  [compatibility](docs/compatibility.md) advises a corpus's checks to run, `PYTHONWARNINGS=error::DeprecationWarning`
+  — a DSL file that writes the text no longer loads, and the loader skips it with every record in it: move the
+  records in the same commit that takes this release. An empty text (`""`) is no date and does not warn.
 - verso-core: `encode_record` without `record_set=`. Left out, it is `None` and warns (`DeprecationWarning`, at the
   caller's line; `warnings.deprecated` on its overload, so a type checker that reports deprecations names the call), so
   a caller written before the keyword — verso-app's rebuild of a record — keeps working and keeps the gap in the node it
