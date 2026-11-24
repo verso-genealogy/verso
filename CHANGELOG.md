@@ -3,7 +3,14 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased
+## 0.1.47 — 2026-11-24
+
+A corpus's CSVs and Terraform do not move. What does, and only where a corpus holds it: the records JSON of a
+name-list entry or a divorce under `page(…, reviewed=True)` in a held book (see **Fixed**), and of a divorce whose
+`marriage_date=` moves to an `EventDate`; dsllint's report of a divorce that writes it as text (DVC001, advisory); a
+facts report's line of an unnumbered entry («без номера»); and, for a corpus with divorces, its facts reports and
+`facts_findings.tsv` (see **Added**). A DSL file that still writes `marriage_date=` as text warns, and does not load
+where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is new.
 
 ### Added
 
@@ -33,14 +40,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   «до 1915», «1914–1915»
   (`verso.ru.domain.event_date.written_date`, `date_text`) — so a file moved to the structure writes the same CSV.
   `read_written_date` reads a text in those forms back. The interface's schema hides the field, as a card's dates —
-  the review page neither shows nor edits it (it has no card for a divorce). `wedding-calendar` asks a single day
-  only: a wedding named «около», «до», «после» or as a range is not asked of the calendar.
+  the review page neither shows nor edits it (it has no card for a divorce); `verso site` draws it, either form.
+  `wedding-calendar` asks a single day only: a wedding named «около», «до», «после» or as a range is not asked of
+  the calendar.
 - verso-ru: **DVC001** (advisory): a divorce's `marriage_date=` written as text, with its `EventDate` offered as the
   quick fix where the text is a date in a known form; answered on records JSON too.
 - verso-core: a field of the vocabulary may hold **one of several types** — `OneOf`, written `a|b`
   (`marriage_date:EventDate|str`): encoded by the first type that takes the value, decoded by the first that reads
   it, `anyOf` in `records-v1.json`. An export of before (a text) reads as it was written.
-- verso-ru: the facts reports say «без номера» for an entry its book left unnumbered, where they printed «№none»;
+- verso-ru: the reports `verso facts` writes say «без номера» for an entry its book left unnumbered, where they
+  printed «№none» (the lines of the checks `lives` and `reconcile` still print it);
   `verso facts --kind divorce` without `--dump`, `--why` or `--basis-census` is refused, saying why (an act of
   divorce names no godparents, witnesses or parents to pair).
 - DSL v1: `divorce(source_date_error=)` withdraws the date of the marriage an act of divorce names (the divorce's
@@ -87,7 +96,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - The docstrings and comments of the checks name the library's commands (`verso facts --check name-days`,
   `verso death-age`, `verso candidates --sweep`) where they named a corpus's Makefile targets (`facts-check
   check=…`, `death-age-check`, `consolidation-sweep`). The reports' own first words are unchanged: no output moves.
-
 - verso-ru: a divorce takes the review flag. `divorce(…, reviewed=None)` and
   `divorce_records(…, reviewed=True)`: resolved innermost-first — the record, its `page(…, reviewed=)` (which
   refused a divorce until now), the book — so an unproofread divorce can be held. `Divorce.reviewed` and
@@ -97,7 +105,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   none; `tables(…, reviewed_only=True)` leaves a held one out, and RVR001 reads `divorce` and `divorce_records`. The
   interface's schema hides the flag on the divorce and its book, as on the other kinds.
 
-  **No output moves.** A divorce file that does not name the flag gives the same bytes as on 0.1.46 — its familio
+  **The flag moves no output.** A divorce file that does not name it gives the same bytes as on 0.1.46 — its familio
   CSV, its records JSON, the Terraform (a divorce writes none), dsllint; a held divorce moves its records
   JSON alone (its `review`, its `reviewed`), its CSV row stays. A corpus that writes `reviewed=` on a divorce needs
   this version: an older one refuses the keyword, and an older decoder, or a reader validating against an older
