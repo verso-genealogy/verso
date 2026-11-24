@@ -69,7 +69,7 @@ class Signal:
     variant: str                    # which finding of the check
     confidence: str                 # "HIGH" | "LOW" — the finding's own, not re-judged
     record: str                     # the record's id, as the caller named it
-    locator: str                    # the slot it is about: "child", "groom", "bride", "deceased"; "" — the entry
+    locator: str                    # the slot it is about: "child", "groom", "bride", "deceased", "husband"; "" — the entry
     said: Message                      # what is wrong
     why: Message                       # why it is worth a second look
     details: tuple[Message, ...]       # lines that help the re-reading: an open day beside, a look-alike name

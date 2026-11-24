@@ -51,19 +51,24 @@ _MONTHS: dict[str, int] = {word: number for number, words in enumerate((
     ("сентября", "сентябрь"), ("октября", "октябрь"), ("ноября", "ноябрь"), ("декабря", "декабрь"),  # i18n: content — the months a record's text writes
 ), start=1) for word in words}
 _YEAR_END = r"\s*(?:г\.?|года)?"  # i18n: content — «1915 г.», «1915 года»
-_IN_WORDS = re.compile(rf"(?:(\d{{1,2}})\s+)?(?:([а-яё]+)\s+)?(\d{{4}}){_YEAR_END}")  # i18n: content — a date in words
-_IN_FIGURES = re.compile(rf"(\d{{1,2}})\.(\d{{1,2}})\.(\d{{4}}){_YEAR_END}")
+# The figures are the ASCII ones: `\d` would read a digit of any script as a day.
+_IN_WORDS = re.compile(rf"(?:([0-9]{{1,2}})\s+)?(?:([а-яё]+)\s+)?([0-9]{{4}}){_YEAR_END}")  # i18n: content — a date in words
+_IN_FIGURES = re.compile(rf"([0-9]{{1,2}})\.([0-9]{{1,2}})\.([0-9]{{4}}){_YEAR_END}")
 
 
-def named_wedding(text: str | None) -> FactDate | None:
+def named_wedding(text: object) -> FactDate | None:
     """The day of the marriage as the act names it, or None.
 
     Read: «24 февраля 1927», «февраль 1927», «1927», «24.02.1927», each with or
     without «г.». A day needs its month, a month must be one, and the day must
     exist in it. Anything else — «в феврале 1927 г.», «1915?», «24/II-1927» —
-    is None: a wedding the layer cannot date is not asserted.
+    is None: a wedding the layer cannot date is not asserted. So is a value
+    that is no text at all — a figure typed where the act's words belong must
+    not stop the reading of the village.
     """
-    written = (text or "").strip().lower()
+    if not isinstance(text, str):
+        return None
+    written = text.strip().lower()
     if not written:
         return None
     figures = _IN_FIGURES.fullmatch(written)
@@ -74,6 +79,8 @@ def named_wedding(text: str | None) -> FactDate | None:
     if not words:
         return None
     day_text, month_word, year_text = words.groups()
+    if int(year_text) == 0:
+        return None
     if month_word is None:
         return None if day_text else FactDate(year=int(year_text))
     month = _MONTHS.get(month_word)
@@ -86,9 +93,10 @@ def named_wedding(text: str | None) -> FactDate | None:
 
 def _a_day(year: int, month: int, day: int) -> FactDate | None:
     """A date to the day, or None when the month has no such day."""
-    date = FactDate(year=year, month=month)
-    last = date.latest
-    if not 1 <= month <= 12 or last is None or not 1 <= day <= last[2]:
+    if year == 0 or not 1 <= month <= 12:
+        return None
+    last = FactDate(year=year, month=month).latest
+    if last is None or not 1 <= day <= last[2]:
         return None
     return FactDate(year=year, month=month, day=day)
 

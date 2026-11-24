@@ -295,3 +295,13 @@ def test_a_held_divorce_asserts_nothing_from_the_dsl_or_from_the_records_json(vi
     export_village(village, tmp_path / "rec")
     with records.use(tmp_path / "rec"):
         assert of_1902(_facts(village)) == {"1"}
+
+
+def test_a_kind_the_tree_does_not_publish_is_named_as_its_extractor_cites_it():
+    """`unpublished_kinds()` gives the DSL's codes and the reach compares them with a citation's kind: two
+    vocabularies that agree for a divorce and differ elsewhere (a `household` is cited as `census`). A kind
+    that joins the unpublished ones under another citation would count as a defect of the bridge — held here."""
+    from verso.ru.facts.extract import divorces
+    from verso.ru.pipeline.facts import unpublished_kinds
+
+    assert unpublished_kinds() == {divorces.RECORD_KIND}

@@ -19,7 +19,7 @@ how it is dropped:
   `True` with it;
 - on the record set — dropped the same way, record by record.
 
-A divorce takes the flag too (`divorce(…, reviewed=False)`, `divorce_records(…, reviewed=False)`). It reaches no Geni document and no fact, so the list never names one; held, it is `held` in the
+A divorce takes the flag too (`divorce(…, reviewed=False)`, `divorce_records(…, reviewed=False)`). It reaches no Geni document, so the list never names one — the facts layer reads it once it is reviewed; held, it is `held` in the
 records JSON and left out wherever only the reviewed records are read (`tables(…, reviewed_only=True)`).
 
 RVR001 flags a `reviewed=` restating the value it would inherit.

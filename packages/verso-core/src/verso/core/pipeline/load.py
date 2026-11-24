@@ -29,8 +29,9 @@ from verso.core.targets.geni.held import ON_GENI
 
 def record_types(*, translated: bool = False) -> tuple[type, ...]:
     """The record sets the workspace's DSL binds: every kind — the records export reads them
-    all —, or the ones the translator reads (`translated`; a divorce reaches only its CSV
-    and the JSON)."""
+    all —, or the ones the translator reads (`translated`; a plugin's kind it does not read —
+    the Russian books' divorce — reaches no generated tree: its CSV, the JSON, and whoever asks
+    `discover_records(untranslated=)` for it)."""
     return tuple(kind.set_type for kind in plugins.dsl().kinds if kind.translated or not translated)
 
 

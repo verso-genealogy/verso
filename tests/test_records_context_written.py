@@ -380,7 +380,7 @@ def test_a_divorces_notes_are_written_and_replayed() -> None:
     plain = _records(_encode({"divorces": _divorces(_divorce(1))}))[0]
     assert "source_date_error" not in plain["written"] and "calendar_note" not in plain["written"]
 
-    ns = {"divorces": _divorces(_divorce(1, marriage_date="7 ноября 1915", source_date_error="так в акте",
+    ns = {"divorces": _divorces(_divorce(1, marriage_date="9 ноября 1913", source_date_error="так в акте",
                                          calendar_note="суббота, так в акте"))}
     assert (ns["divorces"].records[0].source_date_error, ns["divorces"].records[0].calendar_note) == (
         "так в акте", "суббота, так в акте")

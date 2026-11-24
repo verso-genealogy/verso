@@ -36,22 +36,35 @@ def _facts(*records: Any, drafts: bool = False) -> AssertionSet:
 
 @pytest.mark.parametrize("text, date", [
     ("24 февраля 1927", FactDate(year=1927, month=2, day=24)),
-    ("7 ноября 1915 г.", FactDate(year=1915, month=11, day=7)),
-    ("7 Ноября 1915 года", FactDate(year=1915, month=11, day=7)),
-    ("07.11.1915", FactDate(year=1915, month=11, day=7)),
+    ("9 ноября 1913 г.", FactDate(year=1913, month=11, day=9)),
+    ("9 Ноября 1913 года", FactDate(year=1913, month=11, day=9)),
+    ("09.11.1913", FactDate(year=1913, month=11, day=9)),
     ("февраль 1927", FactDate(year=1927, month=2)),
     ("февраля 1927", FactDate(year=1927, month=2)),
     ("1915", FactDate(year=1915)),
     ("  1915 г. ", FactDate(year=1915)),
+    # the books' calendar is Julian: 1900 has its 29 February
+    ("29 февраля 1900", FactDate(year=1900, month=2, day=29)),
+    ("29.02.1900", FactDate(year=1900, month=2, day=29)),
 ])
 def test_the_wedding_an_act_names_is_read_in_the_forms_a_date_is_written_in(text: str, date: FactDate) -> None:
     assert named_wedding(text) == date
 
 
 @pytest.mark.parametrize("text", [None, "", "в феврале 1927 г.", "1915?", "24/II-1927", "31 февраля 1927",
-                                  "24 фебруария 1927", "32.01.1927", "24 февраля", "около 1915"])
+                                  "24 фебруария 1927", "32.01.1927", "24 февраля", "около 1915",
+                                  "29 февраля 1901", "0000", "0 мая 1925", "12 мая 1925 и 3 июня",
+                                  "٣ мая 1925", "１２ мая 1925", "12.13.1925"])
 def test_anything_else_names_no_wedding(text: str | None) -> None:
     assert named_wedding(text) is None
+
+
+@pytest.mark.parametrize("value", [1926, 1926.0, ["1926"], True])
+def test_a_marriage_date_that_is_no_text_names_no_wedding_and_breaks_nothing(value: Any) -> None:
+    """A figure where the text of the act belongs must not take the village's reading down with it."""
+    assert named_wedding(value) is None
+    facts = _facts(_divorce(marriage_date=value))
+    assert facts.of(MarriedOn) == () and len(facts.of(DivorcedOn)) == 2
 
 
 def test_a_divorce_asserts_the_couple_the_day_and_the_ages() -> None:
@@ -106,9 +119,9 @@ def test_source_date_error_withdraws_the_wedding_and_keeps_the_divorce() -> None
 
 
 def test_calendar_note_rides_on_the_wedding() -> None:
-    facts = _facts(_divorce(marriage_date="7 ноября 1915", calendar_note="суббота, так в акте"))
+    facts = _facts(_divorce(marriage_date="9 ноября 1913", calendar_note="суббота, так в акте"))
     assert {a.calendar_note for a in facts.of(MarriedOn)} == {"суббота, так в акте"}
-    assert {a.calendar_note for a in _facts(_divorce(marriage_date="7 ноября 1915")).of(MarriedOn)} == {None}
+    assert {a.calendar_note for a in _facts(_divorce(marriage_date="9 ноября 1913")).of(MarriedOn)} == {None}
 
 
 def test_an_unreviewed_divorce_asserts_nothing_and_is_read_as_a_draft() -> None:

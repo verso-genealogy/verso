@@ -11,13 +11,13 @@ divorces = divorce_records(
     divorce(2, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="12 сентября 1925",
             source_date_error="такъ въ актѣ"),
     # wedding-calendar: the Nativity fast (strict), a Saturday (loose), and stood down
-    divorce(3, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="1 декабря 1915"),
-    divorce(4, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="7 ноября 1915"),
-    divorce(5, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="1 декабря 1915",
+    divorce(3, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="1 декабря 1913"),
+    divorce(4, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="9 ноября 1913"),
+    divorce(5, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="1 декабря 1913",
             calendar_note="такъ въ актѣ"),
     # quiet: a marriage of the registry's years on such a day, an open day, no marriage named
     divorce(6, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="1 декабря 1924"),
-    divorce(7, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="9 января 1915"),
+    divorce(7, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="9 января 1913"),
     divorce(8, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина")),
     # held, and read on its card all the same
     divorce(9, 3, Month.JULY, person("Иванъ", "Петровъ"), person("Анна", "Ильина"), marriage_date="12 сентября 1925",

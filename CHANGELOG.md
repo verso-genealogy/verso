@@ -19,6 +19,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   for a divorce's people: the checks that compare records do not see them, `--check identity` counts them on a
   line of their own («вид без профилей») and the snapshot's `identity-refused-beyond-clergy` leaves them out; a
   finding of theirs inside one entry is in the village's `date-order` report and in `date-order-within`.
+  The people index (`verso.ru.persons.people.sightings_of`) reads no divorce, as before.
   **A corpus that holds divorces moves**: its `facts.jsonl`, its `identity` and `wedding-calendar` reports.
 - DSL v1: `divorce(source_date_error=)` withdraws the date of the marriage an act of divorce names (the divorce's
   own day stays), `divorce(calendar_note=)` notes that the wedding's day is right although the Church did not marry

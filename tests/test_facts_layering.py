@@ -76,7 +76,7 @@ _FORBIDDEN_EVERYWHERE = ("verso.ru.cli",)
 _RULE_FORBIDDEN_NAMES = (
     "record_kind", "locator", "stated_role",
     "ParentOf", "GodparentOf", "SpouseOf", "WitnessedAt", "OfficiatedAt",
-    "BornOn", "BaptizedOn", "MarriedOn", "DiedOn", "BuriedOn", "AgedYears",
+    "BornOn", "BaptizedOn", "MarriedOn", "DivorcedOn", "DiedOn", "BuriedOn", "AgedYears",
     "NameClaim", "ResidedIn", "FosterParentOf", "KinOf",
     "EnumeratedIn", "MovedTo", "ArrivedFrom", "SurvivedUntil",
     # `KinOf.term` is the source's own word for kin we cannot place. A rule may
@@ -163,7 +163,7 @@ class RulesKnowNothingOfRecords(unittest.TestCase):
         vocabulary = ("рожден", "венчан", "восприемник", "поручител",
                       "отец", "мать", "ревизи", "исповед", "двор", "семь",
                       "birth", "marriage", "death", "census", "godparent",
-                      "household")
+                      "household", "divorce", "развод", "расторж")
         for path in _modules("rules/*.py"):
             source = path.read_text(encoding="utf-8").lower()
             hits = [w for w in vocabulary if w in source]
