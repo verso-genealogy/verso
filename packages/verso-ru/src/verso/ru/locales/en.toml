@@ -1035,6 +1035,10 @@ christening = "christening() in a civil registry book (civil=True): an act recor
 [ZGS002]
 precedes = "registration {registration} precedes the birth {birth} in a civil registry book — a misread day or month?"
 
+[DVC001]
+text = "divorce: marriage_date={text!r} is a date as text; write {date} (EventDate and Month come from verso.ru.dsl): no check reads the text, and from 0.2 it is refused"
+unread = "divorce: marriage_date={text!r} is a date as text, in no form the library reads as a date; write EventDate(year, Month.MONTH, day) from the act"
+
 [ZGS003]
 unflagged = "a book of {year} with no church — a civil registry book? Then civil=True: otherwise its registrations read as christenings and burials"
 

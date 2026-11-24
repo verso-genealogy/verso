@@ -39,6 +39,7 @@ import verso.ru.linters.checks.reviewed_redundancy as check_reviewed_redundancy
 import verso.ru.linters.checks.retractions as check_retractions
 import verso.ru.linters.checks.witness_side as check_witness_side
 import verso.ru.linters.checks.civil_register as check_civil_register
+import verso.ru.linters.checks.divorces as check_divorces
 import verso.ru.linters.checks.status_orthography as check_status_orthography
 import verso.ru.linters.checks.dsl_imports as check_dsl_imports
 from verso.ru.linters.issue import as_dict, issue
@@ -180,6 +181,8 @@ class Linter:
 # reading. ZGS003-ZGS005 are advisory: each asks whether the book really writes it so.
 # dsl_imports (IMP001) is hard from birth: the codemod left every DSL file on the
 # facade, its catalogs and corpus.statuses, and a v0 import no longer loads.
+# divorces (DVC001) is advisory: DSL v1 still takes a divorce's marriage as text (deprecated, refused from
+# 0.2), and a corpus that wrote it moves to `EventDate` on a commit of its own; the quick fix offers the date.
 LINTERS: tuple[Linter, ...] = (
     Linter("single_line_calls", _check_single_line_calls_structured, check_single_line_calls.check_file),
     Linter("genders", check_genders.check_file_structured, check_genders.check_file),
@@ -216,6 +219,7 @@ LINTERS: tuple[Linter, ...] = (
     Linter("civil_register", check_civil_register.check_file_structured, check_civil_register.check_file),
     Linter("civil_register_advisory", check_civil_register.check_file_advisory_structured, check_civil_register.check_file_advisory, advisory=True),
     Linter("dsl_imports", check_dsl_imports.check_file_structured, check_dsl_imports.check_file),
+    Linter("divorces", check_divorces.check_file_structured, check_divorces.check_file, advisory=True),
 )
 
 

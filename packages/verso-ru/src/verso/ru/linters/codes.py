@@ -49,6 +49,7 @@ LINTER_CODES: dict[str, tuple[str, ...]] = {
     "civil_register": ("ZGS001", "ZGS002"),
     "civil_register_advisory": ("ZGS003", "ZGS004", "ZGS005"),
     "dsl_imports": ("IMP001",),
+    "divorces": ("DVC001",),
     # Not a DSL check: the names layers' own (`checks/lexicon.py`), run over a layer's files.
     "lexicon": ("LEX001", "LEX002", "LEX003", "LEX004", "LEX005", "LEX006", "LEX007", "LEX008", "LEX009", "LEX010"),
 }
