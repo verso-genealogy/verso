@@ -1035,6 +1035,8 @@ done = "{files}, {records} → {target}"
 skipped = "пропущено файлов: {count} (см. {where})"
 
 [cli.facts]
+unnumbered = "без номера"
+kind_answers_no_pairs = "--kind {kind}: акт этого вида не называет ни восприемников, ни поручителей, ни родителей — отчёту пар нечего свести; спросите --dump, --why или --basis-census"
 dumped = { one = "{count} утверждение → {path}", few = "{count} утверждения → {path}", many = "{count} утверждений → {path}", other = "{count} утверждения → {path}" }
 leaf = ", л. {page}"
 calendar_noted = "; снято заметкой calendar_note — {noted}"
@@ -1541,8 +1543,6 @@ death = "смерть"
 burial = "погребение"
 marriage = "венчание"
 counted_alive = "учтён живым"
-divorce = "развод"
-named_marriage = "брак, названный актом"
 
 [facts.date_order.hint]
 baptism_before_birth = "крещение раньше рождения — обычно не задан k_year= на декабрьском рождении, либо перепутан день/год в источнике"

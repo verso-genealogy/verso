@@ -225,7 +225,8 @@ def test_the_bridge_counts_a_kind_the_tree_does_not_publish_apart(village: Path)
     assert reach.refused == strict.refused and reach.total == strict.total
     report, code = identity_report(facts, gen, slots)
     assert code == 0
-    assert "    из них вид без профилей (divorce):   6" in report.splitlines()
+    from verso.ru.messages import t
+    assert str(t("cli.facts.identity.unpublished", kind="divorce", count=6)) in report.splitlines()
 
 
 def test_a_village_without_such_a_kind_reads_as_before(tmp_path: Path):
@@ -265,7 +266,6 @@ def test_the_cli_reads_a_divorce_as_a_kind_of_its_own(village: Path, capsys: pyt
     assert capsys.readouterr().out.strip()
     assert cli.main(["--village", str(village), "--kind", "divorce", "--dump"]) == 0
     assert sum('"DivorcedOn"' in line for line in (village / "facts.jsonl").read_text(encoding="utf-8").splitlines()) == 6
-    assert cli.main(["--village", str(village), "--kind", "divorce"]) == 0        # no pair to report, and no crash
 
 
 HELD = '''\

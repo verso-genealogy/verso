@@ -59,6 +59,12 @@ from verso.ru.messages import t
 if TYPE_CHECKING:
     from verso.core.targets.geni.date import GeniDate
 
+def _number(cite: Citation) -> str:
+    """How a report names a record by its number: «№7», or «без номера» for an entry its book left unnumbered
+    (the extractors' `record_num` is then "none")."""
+    return str(t("cli.facts.unnumbered")) if cite.record_num == "none" else f"№{cite.record_num}"
+
+
 def village_path(arg: str) -> Path:
     """A `--village` argument as a directory: an absolute path as given, a name
     under the workspace's root."""
@@ -353,7 +359,7 @@ def entries_alone(facts: AssertionSet, found: list[WithinFinding]) -> list[Entry
     for record_id, group in grouped.items():
         cite = group[0].left.cite
         who = ", ".join(display_name(claim) for claim in named.get(record_id, {}).values()) or "?"
-        out.append((f"{who} ({cite.source_file} №{cite.record_num})", group))
+        out.append((f"{who} ({cite.source_file} {_number(cite)})", group))
     return out
 
 
@@ -377,19 +383,15 @@ def date_order_report(within: OrderFindings, across: OrderFindings,
             lines.append(f"  {name_of(res_name)} ({res_name}):")
             for kind, _event, _reference, a, b in within[res_name]:
                 signal = signal_of(WithinFinding(kind=kind, left=a, right=b))
-                lines.append(f"      {signal.said}  [{kind}]  {a.cite.source_file} №{a.cite.record_num}")
+                lines.append(f"      {signal.said}  [{kind}]  {a.cite.source_file} {_number(a.cite)}")
                 lines.append(f"      → {signal.why}")
         # The entries of people no canonical holds (a record the tree does not publish): the same class,
         # each finding said once though both of a couple carry it.
         for who, findings in alone:
             lines.append(f"  {who}:")
-            said: set[tuple[str, str]] = set()
-            for f in findings:
+            for f in findings:             # `within_entry` says a couple's finding once
                 signal = signal_of(f)
-                if (f.kind, str(signal.said)) in said:
-                    continue
-                said.add((f.kind, str(signal.said)))
-                lines.append(f"      {signal.said}  [{f.kind}]  {f.left.cite.source_file} №{f.left.cite.record_num}")
+                lines.append(f"      {signal.said}  [{f.kind}]  {f.left.cite.source_file} {_number(f.left.cite)}")
                 lines.append(f"      → {signal.why}")
     if across:
         lines += ["", str(t("cli.facts.date_order.across"))]
@@ -398,8 +400,8 @@ def date_order_report(within: OrderFindings, across: OrderFindings,
             for _kind, event, reference, a, b in across[res_name]:
                 lines.append(
                     f"      {event} {a.date} [{a.cite.source_file} "
-                    f"№{a.cite.record_num}] < {reference} {b.date} "
-                    f"[{b.cite.source_file} №{b.cite.record_num}]")
+                    f"{_number(a.cite)}] < {reference} {b.date} "
+                    f"[{b.cite.source_file} {_number(b.cite)}]")
     return "\n".join(lines), 1
 
 
@@ -416,7 +418,7 @@ def _birth_claim_line(claim: Any) -> str:
         first, last = span.first_year, span.last_year
         implied = (str(t("cli.facts.birth.implied_year", year=first)) if first == last
                    else str(t("cli.facts.birth.implied_years", first=first, last=last)))
-    return f"{said}{implied}  [{c.source_file} №{c.record_num}{page} · {c.locator}]"
+    return f"{said}{implied}  [{c.source_file} {_number(c)}{page} · {c.locator}]"
 
 
 @dataclass(frozen=True)
@@ -586,7 +588,7 @@ def birth_claims(village_dir: Path, *, min_gap_years: float = 0.0) -> tuple[str,
 
 
 def _father_said(c: FatherClaim) -> str:
-    return (f"{c.said} [{c.cite.source_file} №{c.cite.record_num} · {c.cite.locator}"
+    return (f"{c.said} [{c.cite.source_file} {_number(c.cite)} · {c.cite.locator}"
             f"{str(t('cli.facts.father.derived_dot')) if c.derived else ''}]")
 
 
@@ -626,7 +628,7 @@ def format_father_claims(found: list[FatherFinding],
                                  f"{str(t('cli.facts.father.derived_comma')) if c.derived else ''})"
                                  for c in claims)
                 lines.append(f"  {name_of(f.canonical)} ({f.canonical}): {said}  "
-                             f"[{cite.source_file} №{cite.record_num}]")
+                             f"[{cite.source_file} {_number(cite)}]")
     if noted:
         lines += ["", str(t("cli.facts.father.noted"))]
         for f in noted:
@@ -685,7 +687,7 @@ def format_death_claims(found: list[DeathFinding],
             word = str(t("cli.facts.death_claims.death") if isinstance(c, DiedOn) else t("cli.facts.death_claims.burial"))
             told = str(t("cli.facts.death_claims.told")) if c.date.circa else ""
             lines.append(f"    {word} {c.date}{told} [{c.cite.source_file} "
-                         f"№{c.cite.record_num} · {c.cite.locator}]")
+                         f"{_number(c.cite)} · {c.cite.locator}]")
     return "\n".join(lines)
 
 
@@ -721,7 +723,7 @@ def format_signals(signals: Sequence[Signal], *, head: str) -> str:
     for s in signals:
         page = str(t("cli.facts.leaf", page=s.cite.page)) if s.cite.page else ""
         lines += ["", f"[{s.confidence}] {s.said}", *(f"    {detail}" for detail in s.details),
-                  f"    {s.cite.source_file} №{s.cite.record_num}{page}"]
+                  f"    {s.cite.source_file} {_number(s.cite)}{page}"]
     return "\n".join(lines)
 
 
@@ -792,7 +794,7 @@ def lags_report(village_dir: Path, kind: str) -> tuple[str, int]:
 
 
 def _where(cite: Citation) -> str:
-    return f"{cite.source_file} №{cite.record_num}"
+    return f"{cite.source_file} {_number(cite)}"
 
 
 def format_posthumous(found: list[PosthumousFinding], name_of: Callable[[str], str]) -> str:
@@ -999,7 +1001,7 @@ def explain_person(facts: AssertionSet, gen: Any, slots: Any, res_name: str) -> 
         page = str(t("cli.facts.leaf", page=c.page)) if c.page else ""
         lines.append("")
         lines.append(f"{c.year} · {c.record_kind} · {c.source_file} "
-                     f"№{c.record_num}{page} · {c.locator}")
+                     f"{_number(c)}{page} · {c.locator}")
         render = functools.partial(_render, record)
         lines += ["    " + line for a in here
                   for line in why(a, render=render).splitlines()]
@@ -1111,6 +1113,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.dump or args.basis_census or args.why:
         return _side_channel(village_dir, args)
+    if args.kind == "divorce":
+        print(t("cli.facts.kind_answers_no_pairs", kind=args.kind), file=sys.stderr)
+        return 2
 
     # One translation feeds both the assertions and the bridge that says which
     # of them still stand as a profile of their own: the join key is the DSL
@@ -1125,8 +1130,7 @@ def main(argv: list[str] | None = None) -> int:
                          "death": "parent×parent",
                          "census": "parent×parent",
                          "list": "parent×parent",
-                         "external": "parent×parent",
-                         "divorce": "parent×parent"}[args.kind]
+                         "external": "parent×parent"}[args.kind]
     fold = matching_fold if args.matching_base else canonical_fold
     groups = run(facts, min_count=args.min_count, fold=fold,
                  kin_guard=args.kin_guard, join=join)
@@ -1141,7 +1145,7 @@ def main(argv: list[str] | None = None) -> int:
     slot_label = "gp" if right_label == "godparent" else right_label[0]
     unit = {"birth": "births", "marriage": "weddings", "death": "burials",
             "census": "households", "list": "lists",
-            "external": "cards", "divorce": "divorces"}[args.kind]
+            "external": "cards"}[args.kind]
     print(format_report(groups, args.min_count, index,
                         labels=(left_label, right_label, slot_label), unit=unit,
                         compare=state_compare(village_dir) if args.state else None))

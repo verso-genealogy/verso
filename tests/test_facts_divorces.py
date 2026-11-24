@@ -176,7 +176,8 @@ def test_the_village_s_date_order_report_says_a_divorce_before_its_marriage(vill
     assert code == 1
     assert "date-order: 1 внутри записи, 0 между записями" in report
     assert report.count("Развод 03.07.1901 раньше брака 12.09.1901, который называет акт.") == 1
-    assert "  Справкин Иоанн Петрович, Анна Ивановна (manilovka_divorces_1901.py №7):" in report.splitlines()
+    assert "Справкин Иоанн Петрович, Анна Ивановна (manilovka_divorces_1901.py №7):" in {
+        line.strip() for line in report.splitlines()}
     assert "№8" not in report
 
 
@@ -184,3 +185,11 @@ def test_the_snapshot_counts_it_inside_one_entry(village: Path) -> None:
     from verso.ru.cli.facts_snapshot import findings_snapshot
     rows = dict(line.split("\t", 1) for line in findings_snapshot(village).splitlines() if "\t" in line)
     assert rows["date-order-within"] == "1\t-" and rows["date-order-across"] == "0\t-"
+
+
+def test_a_divorce_is_asked_of_the_cli_by_kind_only_for_what_it_answers(village: Path, capsys: pytest.CaptureFixture[str]):
+    """`--kind divorce` reads one kind's assertions for `--dump`, `--why`, `--basis-census`; the pairs report joins
+    godparents, witnesses or parents, and an act of divorce names none — so it is refused, saying why."""
+    from verso.ru.cli import facts as cli
+    assert cli.main(["--village", str(village), "--kind", "divorce"]) == 2
+    assert "--dump" in capsys.readouterr().err

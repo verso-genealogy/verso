@@ -52,12 +52,11 @@ def orderings() -> list[tuple[Any, Any, str, str, str]]:
 #: `orderings()`. An act of divorce names the marriage it ends, and dating that
 #: marriage after the divorce is the act contradicting itself; between two
 #: records it is the order of a life — a man divorced marries again — so the
-#: class «two entries disagree» never asks it.
+#: class «two entries disagree» never asks it. The event and reference words of
+#: `orderings()` are what that class prints; a finding inside one entry is said
+#: by its signal, so this table needs none.
 def within_orderings() -> list[tuple[Any, Any, str, str, str]]:
-    return [
-        (DivorcedOn, MarriedOn, "divorce_before_marriage",
-         str(t("facts.event.divorce")), str(t("facts.event.named_marriage"))),
-    ]
+    return [(DivorcedOn, MarriedOn, "divorce_before_marriage", "", "")]
 
 
 #: A burial measured against an event only when no dated death exists — with

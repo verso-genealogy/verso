@@ -160,3 +160,10 @@ def test_no_printer_of_its_own_is_left_for_any_of_the_six():
                 "cli.facts.wedding_ages.under_age", "cli.facts.wedding_ages.gap", "cli.facts.wedding_ages.note",
                 "cli.facts.wedding_ages.groom", "cli.facts.wedding_ages.bride", "cli.facts.abbr."):
         assert key not in source, key
+
+
+def test_an_unnumbered_record_is_said_so_not_none():
+    """A book that numbers no entry: the report says «без номера» where it would print the number, never «№none»."""
+    report = signal_report("burial-lag", burial_lags(_deaths(_died(None, 3, 1, Month.APRIL))))   # type: ignore[arg-type]
+    assert "№none" not in report
+    assert f"deaths_1850.py {i18n.render(cli.t('cli.facts.unnumbered'), 'ru')}" in report

@@ -1103,6 +1103,8 @@ done = "{files}, {records} → {target}"
 skipped = "files skipped: {count} (see {where})"
 
 [cli.facts]
+unnumbered = "unnumbered"
+kind_answers_no_pairs = "--kind {kind}: a record of this kind names no godparents, witnesses or parents — the pairs report has nothing to join; ask --dump, --why or --basis-census"
 dumped = { one = "{count} assertion → {path}", other = "{count} assertions → {path}" }
 leaf = ", f. {page}"
 calendar_noted = "; stood down by a calendar_note — {noted}"
@@ -1609,8 +1611,6 @@ death = "death"
 burial = "burial"
 marriage = "wedding"
 counted_alive = "counted alive"
-divorce = "divorce"
-named_marriage = "the marriage the act names"
 
 [facts.date_order.hint]
 baptism_before_birth = "a christening before the birth — usually no k_year= on a December birth, or a day/year swapped in the source"
