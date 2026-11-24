@@ -7,8 +7,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 A corpus's CSVs, Terraform and facts (`facts.jsonl`) do not move. What does: the records JSON's id of every set
 of cards, which names its file's year (`r1:<village>/card/1941/cards`, see **Changed**); a report's line of an
-entry its book left unnumbered — the facts reports among them —, «№none» becoming «без номера» (see **Fixed**);
-and a site built by `verso site`, which names a newborn with its father's patronymic.
+entry its book left unnumbered — the facts reports among them —, «№none» (or a bare «none») becoming «без номера»
+(see **Fixed**); dsllint's report of a corpus with divorces, where a file writes `marriage_date=` by a name bound
+to a text (DVC001 says it now) or defines its own `divorce` (it reads no act there); and a site built by
+`verso site`, which names a newborn with its father's patronymic.
 
 ### Changed
 
@@ -24,8 +26,12 @@ and a site built by `verso site`, which names a newborn with its father's patron
   of some of its years (a tree that leaves the young ones out) gave a set another id than the export of the
   whole village. `Ids.document_id` takes the file (`file=`, as the records JSON writes it); a caller that names
   none counts as before, by the book's text alone. A reviewing application that counts a year's ids from a fresh
-  counter already named a set of cards so within its year; the export now agrees with it. No record's id moves,
-  nor a document of a book that states its year. **A corpus's records JSON moves**: the id of every set of cards.
+  counter already named a set of cards so within its year; the export now agrees with it wherever a year holds one
+  set of cards (an application that counts a year's earlier sets must pass `file=` too for a year that holds two).
+  No record's id moves, nor a document of a book that states its year. It is still rule `r1`: what `r1` promises
+  ([compatibility](docs/compatibility.md), «Outputs that are addresses») is a record's id, which names it in the
+  records JSON, the facts and links; a document's id names a set within an export. **A corpus's records JSON
+  moves**: the id of every set of cards.
 - The guide to writing records (and its translation) and the toy example: their invented surname is now
   «Обноскин» in every form — a corpus turned out to hold the old one. No output of a corpus moves.
 - The plugin `verso-reading`: what a reading benchmark's error analysis found, in the agents' prompts and two
@@ -49,7 +55,8 @@ and a site built by `verso site`, which names a newborn with its father's patron
   wrote «рек. none»), which 0.1.47 left printing «№none» (or a bare «none»). A citation says its number itself,
   `Citation.number` (`verso.ru.facts.labels.record_number`), and a test holds the reports' modules and the catalogs
   to it. **A corpus's reports move** where they name an unnumbered entry: «№none» becomes «без номера».
-  The catalog's `cli.facts.father.noted_pair` writes the number it is handed as it is (`{number}`, with its sign).
+  The catalog's `cli.facts.father.noted_pair` writes the number it is handed as it is (`{number}`, with its sign):
+  a locale of a corpus's own that wrote «№{number}» writes «№» twice, and drops its own.
 - verso-core: a field of several types (`OneOf`) refused a value naming no cause: the refusal now says why each type
   did not take it (`records.encode.none_of`, `records.decode.none_of`) — an `EventDate` whose month is no month's
   code is said so. A code no member of an enum has is a reason there, and the next type is tried, where it stopped
