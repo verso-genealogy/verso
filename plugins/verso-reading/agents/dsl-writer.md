@@ -116,19 +116,22 @@ Before outputting the final DSL file, verify:
 - [ ] **Every person and every word of the record is there**: count the record's people against the scan —
       the sureties of a wedding, both godparents, every line of a household — and look for a patronymic
       beside each name. On the benchmark two fifths of a strong model's silent errors were people and
-      patronymics it did not see at all; asking it for «?» instead of a blank changed nothing (measured),
-      because these are not words it failed to read. What does stand on the page and does not read is
+      patronymics it did not see at all; asking it for «?» instead of a blank changed nothing for those
+      (measured), because these are not words it failed to read — unlike the «?» on a word settled from
+      context, below, which did lower the errors. What does stand on the page and does not read is
       `"?"` in its own argument, not an argument left out — a blank says the scribe wrote nothing
 - [ ] **Every surname is one the village's records hold, or carries «?»**: look up each surname you wrote
-      without «?» (`verso find-person <village> <stem>`: the search is a substring and folds no orthography, so
-      look up the stem without the ending and the final ъ — «Манилов» for «Маниловъ», «Манилова»). One the
-      village's records do not hold is a
+      without «?» — `verso all-persons <village>` builds `village.db` (or brings it up to date), then
+      `verso find-person <village> <stem>`. The search is a substring that folds no orthography: ask for the
+      stem in modern spelling, without the ending — «Фемистоклов» finds «Ѳемистокловъ», «Фемистокловъ»
+      and «Фемистоклова» alike. A hit only in the year you are writing, or only in records not yet
+      proofread, is no hit: it may be this very misreading. One the village's records do not hold is a
       misreading more often than not: on the benchmark 53–81 % of such surnames were wrong, and they were
       83–95 % of the silently misread surnames — a misread surname is almost never another family of the
       parish, it is a surname the parish does not have. Re-crop it at 4–5×; unless the scan shows it
       plainly, write it with «?». Do NOT put a parish surname of the same shape in its place: the benchmark
-      also saw readers write a frequent surname over the ink. The look-up says nothing for given names and
-      patronymics (8–27 % wrong among those it marks)
+      also saw readers write a frequent surname over the ink. The look-up says little for given names and
+      patronymics: of those the records do not hold, only 8–27 % were wrong
 - [ ] **The second look went where the errors are**: sureties', fathers' and godparents' surnames (37–56 %
       wrong on the benchmark, a child's name 4 %) and the last third of a long household (half again as
       bad as its start). Names taken for one another, each in several records: Марья / Марѳа, Настасья /

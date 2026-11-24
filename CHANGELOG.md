@@ -136,10 +136,12 @@ where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is n
   people and patronymics it did not see, and asking for «?» does not bring them back — measured); name where
   the errors sit (sureties', fathers' and godparents' surnames, the end of a long household) and the given names
   taken for one another; `dsl-writer` checks every unflagged surname against the village's records
-  (`verso find-person`, by its stem) and flags one they do not hold instead of replacing it. `metric-books` and
-  `census` say what a list of the village's people of the nearest years is worth to a reader, that a newer top
-  model reads better than Opus at high, and that two readers of one model agreeing is not a check. The sizes the
-  skills and the plugin's README state are the texts' sizes again. No code, no output of a corpus moves.
+  (`verso find-person`, by its modern stem, never a hit in the year being written) and flags one they do not hold
+  instead of replacing it; `scan-reader` takes a list of the parish's people in its brief as a reading aid, not an
+  answer. `metric-books` says what a list of the village's people of the nearest years is worth to a reader and that
+  two readers of one model agreeing is not a check; `census` asks a reader to count each двор against the page;
+  both say that a newer top model reads better than Opus at high and how to ask for it. The sizes the skills and
+  the plugin's README state are the texts' sizes again. No code, no output of a corpus moves.
 - The reference: a command's or a linter's summary ends at a full stop, not at a colon — fifteen rows of
   `commands.md` and `linters.md` said only «The святцы:», «Fix:» and the like. No output moves.
 

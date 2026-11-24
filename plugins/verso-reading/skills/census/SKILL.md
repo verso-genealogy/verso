@@ -20,7 +20,7 @@ DSL — this skill covers finding and verifying, those rules cover the encoding.
 list read the project's confession-list rules as well, and see "Confession lists" below: they are
 searched differently, because there is no previous-revision age column to fingerprint with.
 
-**What this costs.** This text — about 22 thousand characters — is read once, when the skill is
+**What this costs.** This text — about 23 thousand characters — is read once, when the skill is
 used. The sweeps below read strips and fingerprints, not whole pages; subagents are optional, and one pays
 its own context before its first page.
 
@@ -299,7 +299,7 @@ were two fifths of one strong model's silent errors (asking for «?» instead of
 them back, measured), and the last third of a long двор read half again as badly as its start. Model,
 effort and how much to give one agent were measured on a reading benchmark: Opus at effort high
 (a newer top model better still where you have it — Fable 5.2 at high, 4.0 silent errors per 100
-names against 7.3),
+names against 7.3; in Claude Code `model: "fable"` on the Agent call),
 about ten records' worth per agent (each pays its context before its first page; a much bigger
 range flags less and leaves more silent errors), parallel reads, and the lean
 `verso-reading:scan-reader` for a sweep that only reports — for a long sweep, one brief per agent,

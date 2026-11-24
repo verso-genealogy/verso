@@ -204,15 +204,18 @@ name that will enter the DSL** — not only the ones that change a conclusion.
 ten records per agent, the lean `verso-reading:scan-reader` for a sweep that only reports, and
 `verso-reading:dsl-writer` straight from the scan for the DSL. A newer top model reads better
 still where you have it: Fable 5.2 at high left 4.0 silent errors per 100 names against 7.3 for
-Opus at high, with as many flags (through the API; pass `model:` on the Agent call). Outside the Claude Code plugin
+Opus at high, with as many flags (measured through the API; in Claude Code pass `model: "fable"` on
+the Agent call, which overrides the agents' own `opus`). Outside the Claude Code plugin
 there are no such agents: give your harness's own subagent the same brief — the crops listed,
 read-only, «?» for what does not read — or read the crops yourself. For a long sweep, run
 the readers from outside the repository, so that each starts with no project context (the
 AGENTS.md проекта says whether the project has a launcher for that).
 
 **Give the reader the village's people of the nearest years** — from proofread records of ±10
-years, never the year being read (`verso.ru.reading.people` builds such a list from a records
-export; the AGENTS.md проекта says whether the project has a command for it). Measured: errors in
+years, never the year being read (`verso.ru.reading.people`, from verso-ru 0.1.44, builds such a
+list from a records export; the AGENTS.md проекта says whether the project has a command for it).
+A bare list of the parish's surnames is worth far less (see the `transcription` skill: silent errors
+unchanged); the people — names, patronymics, households, years — are what helped. Measured: errors in
 all fell by a quarter to a half, and nearly all of the gain was where the source is bad and in
 surnames — on screen photographs one reader's silent errors fell from 9.4 to 1.0 per 100 names, on
 good scans from 2.5 to 2.3. Call it a reading aid in the brief and ask for «?» where the page does
