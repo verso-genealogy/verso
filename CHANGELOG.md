@@ -72,8 +72,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   `decode_file` read it right, but `replay_file`, `replay_record` and so the linters on JSON and a store's views
   rebuilt it held. `on_json.review_level` worked around it for RVR001 and now gives what the replayed record holds.
   The fields a set gives its records are the vocabulary's (`Vocabulary.inherited`, verso-ru's `INHERITED`: the flag of
-  every record kind), never inferred from a field's name. `encode_record` takes the set (`record_set=`, a keyword it
-  now requires: `record_set=None` says there is none, and the node then leaves the flag out as before).
+  every record kind), never inferred from a field's name. `encode_record` takes the set (`record_set=`): `record_set=None`
+  says there is none, and the node then leaves the flag out as before. Left out, it is `None` and warns
+  (`DeprecationWarning`, at the caller's line), so a caller written before the keyword — verso-app's rebuild of a
+  record — keeps working and keeps the gap in the node it stores until it passes its set; it is required from 0.2.
   An export written before keeps the gap until `verso export-records` writes it again: the bump alone fixes nothing
   a store already holds.
   **A corpus's records JSON moves** for those records alone: each gains `"reviewed": true` in its `written` and

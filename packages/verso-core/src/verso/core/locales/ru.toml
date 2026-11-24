@@ -115,6 +115,7 @@ args_metavar = "аргументы"
 
 [records.encode]
 list_of_entities = "{path}: список сущностей не может быть значением"
+no_record_set = "encode_record без record_set=: запись пишется так, будто набора у неё нет (record_set=None), и флаг страницы, равный умолчанию, но не флагу набора, не пишется; передайте набор записей или None для представления. С 0.2 обязателен."
 wrong_type = "{path}: {type} в поле {spec}"
 no_field_in_vocabulary = "{cls}.{attr}: поля нет в словаре записей {package} — впишите его в таблицу ({path})"
 no_attribute = "{cls}.{name}: поля нет у объекта ({path})"
