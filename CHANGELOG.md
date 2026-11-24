@@ -106,6 +106,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   nowhere), not a birth's (always written), is what keeps an unflagged book's bytes; a `page(…, reviewed=True)` inside
   `divorce_records(…, reviewed=False)` is written as the entry's is (see **Fixed**). RVR001 on the records JSON reads
   a run's levels as the export shows them, `on_json.review_level(node, built)` — a store's `run_levels` too.
+- Docs: [records JSON](docs/records-json.md#compatibility-and-reading-an-old-export) names a known limit, until
+  0.2: a wrapper's field a call writes as `None` in so many words (`year=None` in a section, `reviewed=None` in a
+  `page()`; not a record's leaf) is filled by the wrapper, and only `derived` holds its value, so a rebuild from
+  `written` alone leaves it unset or gives it the set's value: `replay_file(…, context=False)`, `replay_record` with its
+  default `context=False`, a store that keeps `written` alone, and `on_json.lint_record` and the signals of one record,
+  which replay so, silently. A `book()`'s priest written as `None` loses the call's `null` in every replay. The guide's
+  claims that `lint_record` gives `lint_records`'s findings, that a card agrees with `verso facts --check`, and that
+  `replay_record` equals `replay_file` now name the exception. No corpus file writes the shape, nor any verso-app
+  path seen; no output moves.
 
 ### Changed
 

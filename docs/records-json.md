@@ -132,6 +132,19 @@ checked; wrapper values found in `derived` with no `written.context` are read as
 later changed; `context=False` rebuilds from `written` alone and is for files whose context is in `written`); a card without `verb` replays when its keys fit one factory, else `ReplayGap`. To get the new
 keys into an old export, export again (`verso export-records`).
 
+**A known limit, until 0.2: a wrapper's field the call wrote as `None`.** A call that writes, as `None` in so many
+words, a field a wrapper sets and `written.context` would otherwise carry (`birth(…, year=None)` inside
+`birth_month_year(…)`, `listed_person(…, reviewed=None)` inside `page(…, reviewed=True)`; a record's leaf is not one,
+its page run gives it) leaves the wrapper to fill it, as if it had not written it. The export keeps the call's `None`
+in `written` and the wrapper's value in `derived` alone. `decode_file`, and `replay_file` and `replay_record` with
+`context=True` (the default of `replay_file`), read the record right. A rebuild from `written` alone builds the field
+the factory's way, unset or the set's value (its flag, a census's record day): `replay_file(…, context=False)`,
+`replay_record` with its default `context=False`, a store that keeps `written` alone, and the readers of one record
+that replay it so (`on_json.lint_record`, the signals of one record) even when the node carries `derived`. Apart from those, a `book()`'s
+priest written as `None` comes back with its value but without the call's `null` from every replay, `context=True`
+included, so a re-export of a replayed file drops it; `decode_file` keeps it. One key cannot hold both values, so
+the fix is an addition to the format; until then, leave such an argument out rather than write it as `None`.
+
 ## A book without a DSL source
 
 A book started where no DSL file exists — on a review page — is a records JSON from its first day.
@@ -244,7 +257,10 @@ position_values(node, position=Position(5, 21))     # {"index": 6}, or {"members
 
 `replay_record` builds the record through its set's own factory, so the book's defaults, the clergy's parish and the
 `on_geni` mark apply as in the book, and then sets the counters. The result equals the record `replay_file` makes of the
-same node inside its book, once the position is given.
+same node inside its book, once the position is given and both read with one `context`. Their defaults differ (`replay_record`'s is `False`,
+`replay_file`'s `True`), and at the defaults the two part on a wrapper's field the call wrote as `None` ([the known
+limit](#compatibility-and-reading-an-old-export)) and on an export of before v1.x, whose wrapper values only `derived`
+holds.
 
 The counters are the whole of a position. `Position.ordinal` is the record's 0-based place among the records of its set,
 in the order of the export; it gives a list entry's and a card's `index` (`ordinal + 1`). `Position.members_before` is the
@@ -314,7 +330,9 @@ the positional codes folding into one included).
 rules over one record and its set's header (the record built alone, see «A record on its own»), and
 `lint_header(header, codes=…, workspace=…, file_in_scope=…)` over a set's header. Every finding of a file is addressed to
 a record or to a set, so the findings of `lint_record` over a file's records and of `lint_header` over its sets are
-those of `lint_records` — by code, variant, params, token, level and id. `hosted.toml` gives each code a `scope`
+those of `lint_records` — by code, variant, params, token, level and id; not for a wrapper's field the call wrote as
+`None` ([the known limit](#compatibility-and-reading-an-old-export)), which `lint_record` answers from the record
+unfilled, with no `Unsupported` to say so. `hosted.toml` gives each code a `scope`
 (`hosted.readiness()[code].scope`): `record` (87 codes — one record, or one двор, with its set's header; the findings the
 same rule addresses to the book, like a default status written in the old orthography, are `lint_header`'s), `set` (ZGS003,
 a finding about the header alone: `lint_record` refuses it by name), `file` (ULC001, which fires only in a file where some
@@ -465,7 +483,8 @@ got.unanswered                        # the checks that could not be asked
   functions `verso facts --check` calls, with their thresholds. `signal_of(finding)` is the one place a finding
   becomes words; the report prints from it too (`verso.ru.cli.facts.format_signals`).
 - **A record is read whether it is reviewed or not.** `verso facts --check` reads what is reviewed; a card is where
-  a record gets reviewed. On reviewed records the two agree record by record.
+  a record gets reviewed. On reviewed records the two agree record by record, but for a wrapper's field the call wrote as `None` ([the known
+  limit](#compatibility-and-reading-an-old-export)): the card reads the record unfilled.
 - **A signal refuses nothing.** It is a prompt to look at the scan again. Nothing raises for what the record holds: a
   record the factories cannot build, or a workspace with no names table, leaves the checks `unanswered`.
 - **«Так в подлиннике» is a field of the record.** `stand_down` names it: `calendar_note` (`name-days`,
