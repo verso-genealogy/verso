@@ -156,6 +156,18 @@ def test_a_daughter_takes_the_feminine_and_the_file_node_is_left_as_it_was(file_
     assert node == before                                        # the export read, not rewritten
 
 
+def test_a_christening_names_its_child_as_a_birth_does_and_a_null_form_is_no_patronymic(
+        changed: Any) -> None:
+    """A christening is a birth (`Christening(Birth)`); `person("Иван", None)` exports a patronymic of no form,
+    which writes none."""
+    def rewrite(node: dict[str, Any]) -> None:
+        record = next(r for d in node["documents"] if "pages" in d for p in d["pages"] for r in p["records"]
+                      if r["id"] == CHILD.rsplit("/", 1)[0])
+        record["kind"] = "christening"
+        next(p for p in record["persons"] if p["role"] == "child")["written"]["patronymic"] = {"original": None}
+    assert model.form(_child(changed(rewrite)).persona, "patronymic", "modern") == ("Петрович", "d")
+
+
 @pytest.mark.parametrize("change", ["written", "no father", "unread father", "no gender"])
 def test_no_patronymic_is_made_where_the_record_gives_one_or_none_can_be_made(
         changed: Any, change: str) -> None:

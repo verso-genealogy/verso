@@ -28,8 +28,8 @@ vocabulary gains reaches the page by itself.
 
 - **What the record writes is the text; what the library derived stands beside it, marked.** A
   name is shown in the spelling of the source; a modern form, a surname a child takes from the
-  father, an estate carried from a parent are set in another face. A newborn's patronymic, which no
-  birth writes, is the father's as the library derives it (`derive_patronymic`: what the Geni translator
+  father, an estate carried from a parent are set in another face. A newborn's patronymic, where the
+  record writes none, is the father's as the library derives it (`derive_patronymic`: what the Geni translator
   and the CSV give the child) — the site's own, not the records JSON's, and marked the same. A value the book's defaults
   give every entry — the parish as the place, «крестьянин» — is said once, at the head of the book.
 - **An unread record is shown and marked.** A record that is `reviewed=False` carries a mark, and

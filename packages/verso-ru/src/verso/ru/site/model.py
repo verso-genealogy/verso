@@ -218,8 +218,8 @@ def infant_patronymic(node: Node) -> Node:
     gender = _GENDERS.get(str((node.get("written") or {}).get("gender")))
     if child is None or father is None or gender is None:
         return node
-    if any((child.get(side) or {}).get("patronymic") for side in ("written", "derived")):
-        return node
+    if any(any(((child.get(side) or {}).get("patronymic") or {}).values()) for side in ("written", "derived")):
+        return node                                  # a form with a value; `person("Иван", None)` writes none
     given = form(father, "given", "modern")
     patronymic = derive_patronymic(given[0], gender) if given else ""
     if not patronymic or "?" in patronymic:
