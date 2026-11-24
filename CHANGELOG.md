@@ -9,14 +9,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 - The plugin `verso-reading`: what a reading benchmark's error analysis found, in the agents' prompts and two
   skills. `scan-reader` and `dsl-writer` count a record's people against the scan (a strong reader's blanks are
-  people and patronymics it did not see, and asking for «?» does not bring them back — measured); name where
+  people and patronymics it did not see, and asking for «?» does not bring them back — measured through the API); name where
   the errors sit (sureties', fathers' and godparents' surnames, the end of a long household) and the given names
   taken for one another; `dsl-writer` checks every unflagged surname against the village's records
   (`verso find-person`, by its modern stem, never a hit in the year being written) and flags one they do not hold
   instead of replacing it; `scan-reader` takes a list of the parish's people in its brief as a reading aid, not an
   answer. `metric-books` says what a list of the village's people of the nearest years is worth to a reader and that
   two readers of one model agreeing is not a check; `census` asks a reader to count each двор against the page;
-  both say that a newer top model reads better than Opus at high and how to ask for it. The sizes the skills and
+  both say that a stronger model reads better than Opus at high and how to ask for it. The sizes the skills and
   the plugin's README state are the texts' sizes again. No code, no output of a corpus moves.
 
 ## 0.1.47 — 2026-11-24
