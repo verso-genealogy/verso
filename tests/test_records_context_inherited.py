@@ -131,8 +131,8 @@ def test_one_record_is_written_with_its_set_or_says_it_has_none() -> None:
     record_set, entry = next(iter(walk(ns)))
     bare: dict[str, Any] = encode_record(entry, "r1:test/0", record_set=None)
     with pytest.warns(DeprecationWarning, match="record_set") as warned:
-        unnamed = encode_record(entry, "r1:test/0")      # a caller written before the keyword: None, warned
-    assert warned[0].filename == __file__                # at the caller's line
+        unnamed = encode_record(entry, "r1:test/0")      # a caller written before the keyword: None, warned  # pyright: ignore[reportDeprecated]
+    assert warned.pop(DeprecationWarning).filename == __file__      # at the caller's line
     assert unnamed == bare
     whole: dict[str, Any] = encode_record(entry, "r1:test/0", record_set=record_set)
     assert "reviewed" not in bare["written"]

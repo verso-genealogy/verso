@@ -63,6 +63,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - The reference: a command's or a linter's summary ends at a full stop, not at a colon — fifteen rows of
   `commands.md` and `linters.md` said only «The святцы:», «Fix:» and the like. No output moves.
 
+### Deprecated
+
+- verso-core: `encode_record` without `record_set=`. Left out, it is `None` and warns (`DeprecationWarning`, at the
+  caller's line; `warnings.deprecated` on its overload, so a type checker that reports deprecations names the call), so
+  a caller written before the keyword — verso-app's rebuild of a record — keeps working and keeps the gap in the node it
+  stores until it passes its set. Python shows the warning where it shows a `DeprecationWarning` (a test run,
+  `-W default`), not in a server's log. Required from 0.2.
+
 ### Fixed
 
 - Records JSON: a wrapper's value equal to its field's default is written under `written.context` when the record
@@ -73,9 +81,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   rebuilt it held. `on_json.review_level` worked around it for RVR001 and now gives what the replayed record holds.
   The fields a set gives its records are the vocabulary's (`Vocabulary.inherited`, verso-ru's `INHERITED`: the flag of
   every record kind), never inferred from a field's name. `encode_record` takes the set (`record_set=`): `record_set=None`
-  says there is none, and the node then leaves the flag out as before. Left out, it is `None` and warns
-  (`DeprecationWarning`, at the caller's line), so a caller written before the keyword — verso-app's rebuild of a
-  record — keeps working and keeps the gap in the node it stores until it passes its set; it is required from 0.2.
+  says there is none, and the node then leaves the flag out as before (see **Deprecated**).
   An export written before keeps the gap until `verso export-records` writes it again: the bump alone fixes nothing
   a store already holds.
   **A corpus's records JSON moves** for those records alone: each gains `"reviewed": true` in its `written` and

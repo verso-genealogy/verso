@@ -11,7 +11,7 @@ from __future__ import annotations
 import warnings
 from collections.abc import Mapping
 from enum import Enum
-from typing import Any
+from typing import Any, overload
 
 from verso.core import plugins
 from verso.core.records import SCHEMA_ID, FormatError
@@ -297,13 +297,15 @@ class _Encoder:
         return node
 
 
-class _Unnamed:
-    """`encode_record`'s `record_set` left out: a caller written before the keyword, warned (`DeprecationWarning`)."""
+_UNNAMED: Any = object()     # `encode_record`'s `record_set` left out: a caller written before the keyword
 
 
-_UNNAMED: Any = _Unnamed()
-
-
+@overload
+def encode_record(record: object, record_id: str, path: str = "record", *,
+                  record_set: object | None) -> dict[str, object]: ...
+@overload
+@warnings.deprecated("encode_record without record_set=: pass the record set, or None for a view; required from 0.2")
+def encode_record(record: object, record_id: str, path: str = "record") -> dict[str, object]: ...
 def encode_record(record: object, record_id: str, path: str = "record", *,
                   record_set: object | None = _UNNAMED) -> dict[str, object]:
     """One record as the export writes it under its record set — `id`, `label`, `kind`, `review`,
