@@ -16,7 +16,7 @@ from typing import Any, overload
 from verso.core import plugins
 from verso.core.records import SCHEMA_ID, FormatError
 from verso.core.records.fields import (
-    CONTEXT_KEY, PERSON, WRAPPER_KEY, ClassSpec, ListOf, TypeSpec, code, enum_code, flatten, group, nest, param_spec_in,
+    CONTEXT_KEY, PERSON, WRAPPER_KEY, ClassSpec, ListOf, OneOf, TypeSpec, code, enum_code, flatten, group, nest, param_spec_in,
     role_of, ungroup, vocabulary, written_key_in)
 from verso.core.records.ids import (
     Ids, book_key, person_label, persona_id, record_label, records_of)
@@ -70,6 +70,13 @@ def encode_value(value: object, spec: TypeSpec, path: str = "") -> object:
     """One value as JSON, by its field's type."""
     if value is None:
         return None
+    if isinstance(spec, OneOf):
+        for one in spec.types:
+            try:
+                return encode_value(value, one, path)
+            except FormatError:
+                continue
+        raise FormatError(t("records.encode.wrong_type", path=path, type=type(value).__name__, spec=_spec_name(spec)))
     kind = type(value)
     if isinstance(spec, str) and spec in _EXACT and kind is _EXACT[spec]:
         return value
@@ -99,6 +106,8 @@ def encode_value(value: object, spec: TypeSpec, path: str = "") -> object:
 
 
 def _spec_name(spec: TypeSpec) -> str:
+    if isinstance(spec, OneOf):
+        return " | ".join(_spec_name(one) for one in spec.types)
     if isinstance(spec, tuple):
         return " | ".join(c.__name__ for c in spec)
     if isinstance(spec, type):

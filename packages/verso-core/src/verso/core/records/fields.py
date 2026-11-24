@@ -18,7 +18,9 @@ The `type` of a field is one of:
 * an enum class, or a tuple of them where a field takes several (`document_type`);
 * a value class (`EventDate`, `SourceCitation`, `RecordDefaults`), written whole;
 * `PERSON`, or `ListOf(...)` of a type — a list of entities (`relatives`, `members`)
-  or of values (`labels`).
+  or of values (`labels`);
+* `OneOf(...)` of types — a value of any of them, tried in order (`marriage_date`: an
+  `EventDate`, or the text an older file wrote); the vocabulary writes it `EventDate|str`.
 
 A field is written in the JSON under its key (records v1): its attribute's name unless
 the vocabulary's `json_names` names it otherwise. A dotted key — `birth.day` — puts the
@@ -50,7 +52,15 @@ class ListOf:
     item: TypeSpec
 
 
-type TypeSpec = str | type | tuple[type[Enum], ...] | ListOf
+@dataclass(frozen=True)
+class OneOf:
+    """A field that holds a value of one of several types: written by the first that takes it, read back by the
+    first that reads it. What a plugin uses to move a field from one type to another while the old one is still
+    written and read."""
+    types: tuple[TypeSpec, ...]
+
+
+type TypeSpec = str | type | tuple[type[Enum], ...] | ListOf | OneOf
 
 
 @dataclass(frozen=True)
@@ -87,13 +97,15 @@ class ClassSpec:
 
 def parse_fields(spec: str, types: Mapping[str, TypeSpec]) -> tuple[Field, ...]:
     """`name:type[=default]` pairs, space-separated: a row per field, in `vars()` order; a
-    type named in `types` is that type, any other is its own name (`str`, `person`)."""
+    type named in `types` is that type, any other is its own name (`str`, `person`); `a|b`
+    is a value of either (`OneOf`), tried in that order."""
     out = []
     for item in spec.split():
         name, _, rest = item.partition(":")
         kind, _, default = rest.partition("=")
         value: object = {"": None, "True": True, "False": False, "''": "", "[]": []}[default]
-        out.append(Field(name, types.get(kind, kind), value))
+        named = [types.get(k, k) for k in kind.split("|")]
+        out.append(Field(name, OneOf(tuple(named)) if len(named) > 1 else named[0], value))
     return tuple(out)
 
 

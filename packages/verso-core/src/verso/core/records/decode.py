@@ -19,7 +19,7 @@ from verso.core.records import SCHEMA_ID
 from verso.core.records.encode import FormatError, review
 from verso.core.records.notes import check_notes
 from verso.core.records.fields import (
-    PERSON, WRAPPER_KEY, ClassSpec, ListOf, TypeSpec, Vocabulary, attr_of, member_of, param_of_key_in, param_spec_in,
+    PERSON, WRAPPER_KEY, ClassSpec, ListOf, OneOf, TypeSpec, Vocabulary, attr_of, member_of, param_of_key_in, param_spec_in,
     split_context, split_wrapper, ungroup, vocabulary)
 from verso.core.targets.geni.held import ON_GENI
 from verso.core.written import VERB_ATTR, WRAPPER_ATTR, WRITTEN_ATTR
@@ -35,6 +35,13 @@ def decode_value(data: object, spec: TypeSpec, path: str = "") -> object:
     """One JSON value back into what its field holds."""
     if data is None:
         return None
+    if isinstance(spec, OneOf):
+        for one in spec.types:
+            try:
+                return decode_value(data, one, path)
+            except FormatError:
+                continue
+        raise FormatError(t("records.decode.wrong_type", path=path, type=type(data).__name__, spec=repr(spec)))
     kind = type(data)
     voc = None if isinstance(spec, str) and spec in _SCALARS else vocabulary()
     if voc is None:
