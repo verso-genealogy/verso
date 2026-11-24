@@ -114,6 +114,7 @@ args_metavar = "arguments"
 
 [records.encode]
 list_of_entities = "{path}: a list of entities cannot be a value"
+no_record_set = "encode_record without record_set=: the record is written as if it had no set (record_set=None), so a page's flag equal to its default and not the set's is left out; pass the record set, or None for a view. Required from 0.2."
 wrong_type = "{path}: {type} in the field {spec}"
 no_field_in_vocabulary = "{cls}.{attr}: no such field in the vocabulary of {package} — write it into the table ({path})"
 no_attribute = "{cls}.{name}: the object has no such field ({path})"

@@ -8,9 +8,10 @@ entity reached twice, which JSON v0 cannot share.
 """
 from __future__ import annotations
 
+import warnings
 from collections.abc import Mapping
 from enum import Enum
-from typing import Any
+from typing import Any, overload
 
 from verso.core import plugins
 from verso.core.records import SCHEMA_ID, FormatError
@@ -296,14 +297,27 @@ class _Encoder:
         return node
 
 
+_UNNAMED: Any = object()     # `encode_record`'s `record_set` left out: a caller written before the keyword
+
+
+@overload
 def encode_record(record: object, record_id: str, path: str = "record", *,
-                  record_set: object | None) -> dict[str, object]:
+                  record_set: object | None) -> dict[str, object]: ...
+@overload
+@warnings.deprecated("encode_record without record_set=: pass the record set, or None for a view; required from 0.2")
+def encode_record(record: object, record_id: str, path: str = "record") -> dict[str, object]: ...
+def encode_record(record: object, record_id: str, path: str = "record", *,
+                  record_set: object | None = _UNNAMED) -> dict[str, object]:
     """One record as the export writes it under its record set — `id`, `label`, `kind`, `review`,
     `written`, `derived`, `persons` — given the id its file's walk counts it by (the review
     page's view of one record, `verso.ru.dsl.view`): the node the export writes (`_Encoder.record`), given its
     `record_set`. `record_set=None` says there is none to hand: a wrapper's value equal to its field's default is then
     left out even where the set holds another (`Vocabulary.inherited`), so the node reads as `decode_file` reads it but
-    replays with the set's value — a view's node, not one to store."""
+    replays with the set's value — a view's node, not one to store. Left out, it is `None` and warns
+    (`DeprecationWarning`); from 0.2 it is required."""
+    if record_set is _UNNAMED:
+        warnings.warn(str(t("records.encode.no_record_set")), DeprecationWarning, stacklevel=2)
+        record_set = None
     return _Encoder(_NO_IDS).record_node(record, record_id, path, _inherited(record_set, record))
 
 
