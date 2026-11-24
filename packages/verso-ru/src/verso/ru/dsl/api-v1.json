@@ -1126,6 +1126,16 @@
       "reviewed",
       "POSITIONAL_OR_KEYWORD",
       "None"
+     ],
+     [
+      "source_date_error",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "calendar_note",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
      ]
     ]
    },

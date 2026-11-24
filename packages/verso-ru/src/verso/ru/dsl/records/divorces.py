@@ -31,6 +31,8 @@ class Divorce:
             comment: str | None = None,
             year: int | None = None,
             reviewed: bool | None = None,
+            source_date_error: str | None = None,
+            calendar_note: str | None = None,
     ):
         self.record_num = record_num
         # `None` is «not stated»: `page()` and then the record set fill it,
@@ -49,6 +51,12 @@ class Divorce:
         self.case = case
         self.comment = comment
         self.year = year
+        # «Так в акте»: the marriage the act names is dated after the divorce itself — the author
+        # has re-read the scan and withdraws that date (`verso.ru.facts.extract.divorces`).
+        self.source_date_error = source_date_error
+        # The day of the marriage the act names is RIGHT although the Church did not marry on it:
+        # a note, not a retraction — `marriage(calendar_note=)`'s word for a wedding a later act names.
+        self.calendar_note = calendar_note
 
         if self.husband and not self.husband.gender:
             self.husband.gender = get_gender_from_name(self.husband.name_modern) or Gender.MALE
@@ -103,6 +111,8 @@ def divorce(
         comment: str | None = None,
         year: int | None = None,
         reviewed: bool | None = None,
+        source_date_error: str | None = None,
+        calendar_note: str | None = None,
 ) -> Divorce:
     return Divorce(
         record_num,
@@ -120,6 +130,8 @@ def divorce(
         comment=comment,
         year=year,
         reviewed=reviewed,
+        source_date_error=source_date_error,
+        calendar_note=calendar_note,
     )
 
 

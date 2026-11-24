@@ -374,6 +374,25 @@ def test_a_divorce_is_held_by_its_own_flag_its_page_or_its_book() -> None:
     assert first_difference(ns, decode_file(data)) is None
 
 
+def test_a_divorces_notes_are_written_and_replayed() -> None:
+    """`source_date_error=` and `calendar_note=` answer the checks that read the marriage the act names: a record
+    that writes neither exports as before, one that writes them carries both and replays."""
+    plain = _records(_encode({"divorces": _divorces(_divorce(1))}))[0]
+    assert "source_date_error" not in plain["written"] and "calendar_note" not in plain["written"]
+
+    ns = {"divorces": _divorces(_divorce(1, marriage_date="7 ноября 1915", source_date_error="так в акте",
+                                         calendar_note="суббота, так в акте"))}
+    assert (ns["divorces"].records[0].source_date_error, ns["divorces"].records[0].calendar_note) == (
+        "так в акте", "суббота, так в акте")
+    data = _encode(ns)
+    from jsonschema import Draft202012Validator
+    assert not list(Draft202012Validator(build_schema()).iter_errors(data))
+    written = _records(data)[0]["written"]
+    assert (written["source_date_error"], written["calendar_note"]) == ("так в акте", "суббота, так в акте")
+    assert first_difference(ns, replay_file(_without_derived(data), context=False)) is None
+    assert first_difference(ns, decode_file(data)) is None
+
+
 def test_a_pages_true_over_a_held_divorce_book_replays() -> None:
     ns = {"divorces": _divorces(*page("4", _divorce(1), reviewed=True), reviewed=False)}
     data = _encode(ns)
