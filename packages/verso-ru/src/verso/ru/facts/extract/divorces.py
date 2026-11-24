@@ -12,7 +12,7 @@ otherwise.
 **The marriage the act names is a later document's claim about a wedding.**
 The source says so, and nothing is concluded here, so it is `MarriedOn` and
 `Stated` — what makes it a later claim is its citation, this record. The DSL
-keeps it as the text of the act (`marriage_date="24 февраля 1927"`), and it is
+keeps it as the text of the act (`marriage_date="14 марта 1926"`), and it is
 read only in the forms a date is written in (`named_wedding`): a text it does
 not know asserts NOTHING, never a guessed day. An author who has re-read the
 scan and found the act's own two dates out of order withdraws this one
@@ -44,22 +44,24 @@ __all__ = ["RECORD_KIND", "facts_from_divorces", "named_wedding"]
 
 RECORD_KIND = "divorce"
 
-# The months as an act writes them: «24 февраля 1927», «февраль 1927».
+# The months as an act writes them: «14 марта 1926», «март 1926» — and as one of 1918–1919 may still
+# spell them («іюня», «апрѣля», «генваря»).
 _MONTHS: dict[str, int] = {word: number for number, words in enumerate((
     ("января", "январь"), ("февраля", "февраль"), ("марта", "март"), ("апреля", "апрель"),  # i18n: content — the months a record's text writes
     ("мая", "май"), ("июня", "июнь"), ("июля", "июль"), ("августа", "август"),  # i18n: content — the months a record's text writes
     ("сентября", "сентябрь"), ("октября", "октябрь"), ("ноября", "ноябрь"), ("декабря", "декабрь"),  # i18n: content — the months a record's text writes
-), start=1) for word in words}
+), start=1) for word in words} | {  # i18n: content — the months in the old spelling
+    "генваря": 1, "генварь": 1, "апрѣля": 4, "апрѣль": 4, "іюня": 6, "іюнь": 6, "іюля": 7, "іюль": 7}
 _YEAR_END = r"\s*(?:г\.?|года)?"  # i18n: content — «1915 г.», «1915 года»
 # The figures are the ASCII ones: `\d` would read a digit of any script as a day.
-_IN_WORDS = re.compile(rf"(?:([0-9]{{1,2}})\s+)?(?:([а-яё]+)\s+)?([0-9]{{4}}){_YEAR_END}")  # i18n: content — a date in words
+_IN_WORDS = re.compile(rf"(?:([0-9]{{1,2}})\s+)?(?:([а-яёіѣ]+)\s+)?([0-9]{{4}}){_YEAR_END}")  # i18n: content — a date in words
 _IN_FIGURES = re.compile(rf"([0-9]{{1,2}})\.([0-9]{{1,2}})\.([0-9]{{4}}){_YEAR_END}")
 
 
 def named_wedding(text: object) -> FactDate | None:
     """The day of the marriage as the act names it, or None.
 
-    Read: «24 февраля 1927», «февраль 1927», «1927», «24.02.1927», each with or
+    Read: «14 марта 1926», «март 1926», «1926», «14.03.1926», each with or
     without «г.». A day needs its month, a month must be one, and the day must
     exist in it. Anything else — «в феврале 1927 г.», «1915?», «24/II-1927» —
     is None: a wedding the layer cannot date is not asserted. So is a value
@@ -101,6 +103,15 @@ def _a_day(year: int, month: int, day: int) -> FactDate | None:
     return FactDate(year=year, month=month, day=day)
 
 
+def _figure(value: object) -> int | None:
+    """A day or a month as the DSL holds it, or None — not recorded — where it holds none or holds words
+    («3?», «июль»): a divorce whose day cannot be read is still read, and the village's reading with it."""
+    try:
+        return int(value) if value else None  # pyright: ignore[reportArgumentType]
+    except (TypeError, ValueError):
+        return None
+
+
 def facts_from_divorces(items: Iterable[tuple[Any, str]], *, village: str,
                         slots: SlotIndex | None = None, drafts: bool = False,
                         ids: RecordId | None = None) -> Iterator[Assertion]:
@@ -115,7 +126,9 @@ def _facts_from_divorce(rec: Any, village: str, source_file: str, entry: int,
                         ids: RecordId | None = None) -> list[Assertion]:
     e = Entry(rec, village=village, source_file=source_file,
               record_kind=RECORD_KIND, entry=entry, slots=slots, ids=ids)
-    divorced = fact_date(rec.d_day, rec.d_month, rec.year)
+    # A day means nothing without its month, as in `named_wedding`.
+    month = _figure(rec.d_month)
+    divorced = fact_date(_figure(rec.d_day) if month else None, month, rec.year)
     wed = named_wedding(getattr(rec, "marriage_date", None))
 
     # The record set's defaults fill a residence in place (`divorce_records`),

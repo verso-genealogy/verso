@@ -35,7 +35,12 @@ def _facts(*records: Any, drafts: bool = False) -> AssertionSet:
 
 
 @pytest.mark.parametrize("text, date", [
-    ("24 февраля 1927", FactDate(year=1927, month=2, day=24)),
+    ("14 марта 1926", FactDate(year=1926, month=3, day=14)),
+    # the old spelling of the months an act of 1918–1919 may still write
+    ("12 іюня 1915", FactDate(year=1915, month=6, day=12)),
+    ("7 іюля 1913", FactDate(year=1913, month=7, day=7)),
+    ("3 апрѣля 1914", FactDate(year=1914, month=4, day=3)),
+    ("3 Апрѣля 1914 г.", FactDate(year=1914, month=4, day=3)),
     ("9 ноября 1913 г.", FactDate(year=1913, month=11, day=9)),
     ("9 Ноября 1913 года", FactDate(year=1913, month=11, day=9)),
     ("09.11.1913", FactDate(year=1913, month=11, day=9)),
@@ -54,7 +59,9 @@ def test_the_wedding_an_act_names_is_read_in_the_forms_a_date_is_written_in(text
 @pytest.mark.parametrize("text", [None, "", "в феврале 1927 г.", "1915?", "24/II-1927", "31 февраля 1927",
                                   "24 фебруария 1927", "32.01.1927", "24 февраля", "около 1915",
                                   "29 февраля 1901", "0000", "0 мая 1925", "12 мая 1925 и 3 июня",
-                                  "٣ мая 1925", "１２ мая 1925", "12.13.1925"])
+                                  "٣ мая 1925", "１２ мая 1925", "12.13.1925",
+                                  # a day needs its month; the year nought in figures too
+                                  "12 1927", "5 1915 г.", "24.02.0000", "1 января 0000"])
 def test_anything_else_names_no_wedding(text: str | None) -> None:
     assert named_wedding(text) is None
 
@@ -97,6 +104,27 @@ def test_a_divorce_dated_to_the_year_alone_is_dated_so() -> None:
     facts = _facts(_divorce(day=None, month=None, husband_age=35))
     assert {a.date for a in facts.of(DivorcedOn)} == {FactDate(year=1925)}
     assert [a.as_of for a in facts.of(AgedYears)] == [FactDate(year=1925)]
+
+
+def test_an_undated_divorce_asserts_no_day_and_no_age() -> None:
+    """No day, no month, no year of its own and none from a book: the act is read — its couple, its wedding — and
+    dates nothing, so no age is dated by it either."""
+    facts = _facts(_divorce(day=None, month=None, year=None, husband_age=30, wife_age=27, marriage_date="1920"))
+    assert facts.of(DivorcedOn) == () and facts.of(AgedYears) == ()
+    assert len(facts.of(SpouseOf)) == 2 and len(facts.of(MarriedOn)) == 2
+
+
+@pytest.mark.parametrize("day, month, date", [
+    ("3?", Month.JULY, FactDate(year=1925, month=7)),
+    (3, "июль", FactDate(year=1925)),
+    ("3?", "июль", FactDate(year=1925)),
+])
+def test_a_divorce_dated_in_words_where_a_figure_belongs_breaks_nothing(day: Any, month: Any, date: FactDate) -> None:
+    """A day or a month the DSL holds as text is not recorded, as an empty column is: the act is still read, and
+    the village's reading with it."""
+    facts = _facts(_divorce(day=day, month=month, husband_age=30))
+    assert {a.date for a in facts.of(DivorcedOn)} == {date}
+    assert [a.as_of for a in facts.of(AgedYears)] == [date]
 
 
 def test_a_divorce_with_one_spouse_asserts_what_it_has() -> None:

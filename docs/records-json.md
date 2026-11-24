@@ -122,8 +122,8 @@ A consumer that validates against the **previous** closed `records-v1.json` reje
 `note`, `key`, `vocabulary`, `lang`, `written.context` or `written.wrapper` (the schema is closed on those
 nodes), and
 every external-source card node, since it carries `verb` (the 0.1.15 schema says «'verb' was
-unexpected»), and a divorce or a divorce book that writes `reviewed` (a divorce book that never names the flag writes
-none) — the decoder of an older release refuses it too, with no word of the vocabulary's version, which stays 1: take the schema from the release that writes them (`verso records-schema --write`).
+unexpected»), a divorce or a divorce book that writes `reviewed` (a divorce book that never names the flag writes
+none), and a divorce that writes `source_date_error` or `calendar_note` — the decoder of an older release refuses it too, with no word of the vocabulary's version, which stays 1: take the schema from the release that writes them (`verso records-schema --write`).
 
 An export written before these additions reads as it always did: no `vocabulary`/`lang` means none is
 checked; wrapper values found in `derived` with no `written.context` are read as the wrapper's
@@ -451,7 +451,7 @@ for signal in got.found:              # HIGH before LOW, then in the order of si
     signal.confidence                 # "HIGH" | "LOW" — the finding's own
     signal.said, signal.why           # messages of verso.ru's catalog: a key and plain params
     signal.details                    # more of them: Pascha's date, an open day beside, a look-alike name
-    signal.locator                    # the slot: "child", "groom", "bride", "deceased", "husband"; "" — the entry
+    signal.locator                    # the slot: "child", "groom", "bride", "deceased", "husband", "wife"; "" — the entry
     signal.stand_down                 # the key of `written` that answers it, or None
 got.unanswered                        # the checks that could not be asked
 ```
