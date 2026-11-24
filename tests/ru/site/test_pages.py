@@ -84,7 +84,7 @@ def test_a_surname_gathers_its_mentions_and_its_feminine_form(site: model.Site, 
     assert list(found) == ["Сидоров"] and found["Сидоров"].title == "Сидоров, Сидорова"
     page = pages.name(found["Сидоров"], pages.NAMES, site, ui, ctx)
     rows = [_text(row) for row in re.findall(r"<tr><td>(.*?)</tr>", page)]
-    assert rows[0] == "1900 Иванъ Иван Сидоров Младенец Рождения, Маниловка"
+    assert rows[0] == "1900 Иванъ Иван Петрович Сидоров Младенец Рождения, Маниловка"
     assert rows[2] == "1900 Марья Петрова Марья Петровна Сидорова Мать Рождения, Маниловка"
     assert rows[-1] == "1917 Петръ Ивановъ Сидоровъ Петр Иванович Сидоров Человек Список избирателей, Горюхино"
     assert 'href="../../books/manilovka/47-9-755/1900/birth/#m1"' in page

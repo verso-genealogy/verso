@@ -7,6 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Changed
 
+- verso-ru, the site (`verso site`): a newborn is named with a patronymic — its father's, as the library
+  derives it (`verso.ru.naming.patronymics.derive_patronymic`, what the Geni translator and the CSV give the
+  child), marked derived as the surname the child takes from the father — where the record of the birth or the
+  christening writes none and the export derived none. A son of Петр Сидоров was «Иван Сидоров»; he is
+  «Иван Петрович Сидоров». The site derives it on its own: the records JSON, the facts
+  and every other output of a corpus stay as they were.
 - The guide to writing records (and its translation) and the toy example: their invented surname is now
   «Обноскин» in every form — a corpus turned out to hold the old one. No output of a corpus moves.
 - The plugin `verso-reading`: what a reading benchmark's error analysis found, in the agents' prompts and two

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from typing import Any
 
 import pytest
@@ -120,3 +121,71 @@ def test_a_village_no_address_can_be_made_of_is_refused(file_node: dict[str, Any
     stored = {**file_node, "documents": [{**doc, "pages": [{**run, "records": [record]}]}]}
     with pytest.raises(SiteError, match="адрес не из чего"):
         model.load([stored], village="Маниловка")
+
+
+# --- an infant's patronymic ---------------------------------------------------------------------------------
+
+CHILD = "r1:Маниловка/47-9-755/1900/birth/m1/child"
+
+
+def _persons(node: dict[str, Any], record: str) -> list[dict[str, Any]]:
+    return next(r for d in node["documents"] if "pages" in d for p in d["pages"] for r in p["records"]
+                if r["id"] == record)["persons"]
+
+
+def _child(site: model.Site) -> model.Mention:
+    return next(m for m in site.mentions if m.persona["id"] == CHILD)
+
+
+def test_an_infant_takes_its_fathers_patronymic_as_the_library_derives_it(site: model.Site) -> None:
+    """A birth writes no patronymic of the child; the site says the father's, as derived — as it says the
+    father's surname (`Birth`), and as the Geni translator and the CSV derive it."""
+    child = _child(site)
+    assert child.modern == "Иван Петрович Сидоров"
+    assert model.form(child.persona, "patronymic", "modern") == ("Петрович", "d")
+
+
+def test_a_daughter_takes_the_feminine_and_the_file_node_is_left_as_it_was(file_node: dict[str, Any]) -> None:
+    node = copy.deepcopy(file_node)
+    record = next(r for d in node["documents"] if "pages" in d for p in d["pages"] for r in p["records"]
+                  if r["id"] == CHILD.rsplit("/", 1)[0])
+    record["written"]["gender"] = "female"
+    before = copy.deepcopy(node)
+    site = model.load([node], village="Маниловка")
+    assert model.form(_child(site).persona, "patronymic", "modern") == ("Петровна", "d")
+    assert node == before                                        # the export read, not rewritten
+
+
+def test_a_christening_names_its_child_as_a_birth_does_and_a_null_form_is_no_patronymic(
+        changed: Any) -> None:
+    """A christening is a birth (`Christening(Birth)`); `person("Иван", None)` exports a patronymic of no form,
+    which writes none."""
+    def rewrite(node: dict[str, Any]) -> None:
+        record = next(r for d in node["documents"] if "pages" in d for p in d["pages"] for r in p["records"]
+                      if r["id"] == CHILD.rsplit("/", 1)[0])
+        record["kind"] = "christening"
+        next(p for p in record["persons"] if p["role"] == "child")["written"]["patronymic"] = {"original": None}
+    assert model.form(_child(changed(rewrite)).persona, "patronymic", "modern") == ("Петрович", "d")
+
+
+@pytest.mark.parametrize("change", ["written", "no father", "unread father", "no gender"])
+def test_no_patronymic_is_made_where_the_record_gives_one_or_none_can_be_made(
+        changed: Any, change: str) -> None:
+    def rewrite(node: dict[str, Any]) -> None:
+        persons = _persons(node, CHILD.rsplit("/", 1)[0])
+        child = next(p for p in persons if p["role"] == "child")
+        if change == "written":
+            child["written"]["patronymic"] = {"original": "Сергѣевъ"}
+        elif change == "no father":
+            persons[:] = [p for p in persons if p["role"] != "father"]
+        elif change == "unread father":
+            father = next(p for p in persons if p["role"] == "father")
+            father["written"]["given"] = {"original": "?"}
+            father["derived"]["given"] = {"modern": "?"}
+        else:
+            next(r for d in node["documents"] if "pages" in d for p in d["pages"] for r in p["records"]
+                 if r["id"] == CHILD.rsplit("/", 1)[0])["written"].pop("gender")
+    child = _child(changed(rewrite))
+    assert model.form(child.persona, "patronymic", "modern") is None
+    if change == "written":
+        assert model.form(child.persona, "patronymic", "original") == ("Сергѣевъ", "w")
