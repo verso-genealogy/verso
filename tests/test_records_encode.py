@@ -36,6 +36,11 @@ def test_the_fixture_encodes_as_the_golden_file():
     assert text == GOLDEN.read_text(encoding="utf-8")
 
 
+def test_a_set_of_cards_takes_the_year_of_its_file():
+    doc = _encode(fixture.namespace())
+    assert [d["id"] for d in doc["documents"] if d.get("kind") == "external_sources"] == ["r1:Маниловка/card/1900/cards"]
+
+
 def test_every_record_and_persona_carries_its_id_and_label():
     records = _records(_encode(fixture.namespace()))
     assert records[0]["id"] == "r1:Маниловка/47-9-755/1900/birth/m1" and records[0]["label"] == "Иванъ"

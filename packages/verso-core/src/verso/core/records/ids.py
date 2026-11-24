@@ -20,6 +20,9 @@ file, its file renamed), and a numberless record's `_k` when another numberless 
 of its book does. A record inserted or moved anywhere else, or a file renamed, moves no
 other id. `r1` is the version of this RULE, not of the schema; a new rule is `r2`.
 
+A document — a record set — is named by its book, `~k` from the second set of one book on. A village's sets of
+cards state no year: each takes its file's directory (`card/1941/cards`), and is counted among its year's alone.
+
 The records export (`verso.core.pipeline.records`) and the facts layer (`verso.ru.pipeline.facts`)
 count with one walk (`walk`, `RecordIds`), so a persona of `facts.jsonl` is the persona
 of the records JSON, byte for byte.
@@ -34,13 +37,14 @@ from __future__ import annotations
 import re
 from collections import Counter
 from collections.abc import Iterator, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, NamedTuple, Protocol
 
 from verso.core import plugins
 from verso.core.messages import t
 
 ID_SCHEME = "r1"
+_YEAR_DIRECTORY = re.compile(r"[1-9][0-9]{3}")     # a year's directory, its digits the year itself (`1941`)
 
 _ESCAPES = (("%", "%25"), ("/", "%2F"), ("~", "%7E"), (";", "%3B"))
 
@@ -128,7 +132,15 @@ class Ids:
         """A record's id, counted as the next of its key."""
         return self.record_id(book_key(record_set, record), entry_token(record))
 
-    def document_id(self, book: BookKey) -> str:
+    def document_id(self, book: BookKey, file: str | None = None) -> str:
+        """A record set's id: its book's, `~k` from the second set of the book on. A book that states no year
+        (a village's cards) takes the year of its file's directory (`file`, as the records JSON writes it:
+        `1941/…py`), so a set is counted among the sets of its year alone, and an export of some of the years
+        numbers a set as the export of the whole village does."""
+        directory, _, name = (file or "").partition("/")
+        # The file first: a caller that names none may hand a book it knows only by its id (verso-app's `_BookOf`).
+        if name and _YEAR_DIRECTORY.fullmatch(directory) and book.year is None:
+            book = replace(book, year=int(directory))
         n = self._books[str(book)] = self._books[str(book)] + 1
         return str(book) + ("" if n == 1 else f"~{n}")
 
