@@ -15,7 +15,7 @@ its AGENTS.md; an agent that finds none there writes by these. The calls and the
   writes it (the civil registry's books do). An entry that writes no patronymic gets `None` in its place,
   not one recovered from another record.
 - **The surname is the third positional argument** of `person()`; `last_name_orig=` only when a slot
-  before it is empty (`person("?", last_name_orig="Коровкина")`).
+  before it is empty (`person("?", last_name_orig="Обноскина")`).
 - **Kinship is what this entry states.** `father=`, `mother=`, a `relative(…, Relationship.FATHER)` name a
   person the entry names. What another record tells you — a father's patronymic, a mother's maiden name —
   goes into that person's `comment=`, with the record it came from; the people are joined later, by the
@@ -107,7 +107,7 @@ stepanchikovo_births_1852 = birth_records(
                              god_parent2=person("Марія", "?", "Ежевикина")),
                        birth(4, Gender.FEMALE, 5, 7,
                              child=person("Агрипина?"),
-                             father=person("Иванъ", None, "Коровкинъ", comment="отчество — по записи о его венчании: Иванъ Ѳомичъ"),
+                             father=person("Иванъ", None, "Обноскинъ", comment="отчество — по записи о его венчании: Иванъ Ѳомичъ"),
                              mother=person("Ва?"),
                              comment="имя ребёнка: «Агрипина» или «Агафія» — чернила расплылись"),
                        ),
@@ -126,7 +126,7 @@ stepanchikovo_deaths_1852 = death_records(
     *death_month(Month.MAY,
                  death(1, Gender.MALE, 3, 5, deceased=person("Ѳеодоръ"), age="2 мес",
                        relatives=[relative(person("Петръ", "Степановъ", "Видоплясовъ"), Relationship.FATHER)]),
-                 death(2, Gender.FEMALE, 4, 6, deceased=person("Пелагея", "Иванова", "Коровкина"), age=60),
+                 death(2, Gender.FEMALE, 4, 6, deceased=person("Пелагея", "Иванова", "Обноскина"), age=60),
                  death(3, Gender.MALE, 9, 21, deceased=person("Сидоръ", "Ильинъ"), age="1 г 6 мес",
                        lag_note="погребён 21-го: так в подлиннике, скан сверен")),
     defaults=RecordDefaults(residence="Степанчиково", status_male=STATE_PEASANT_MALE, status_female=STATE_PEASANT_FEMALE),

@@ -14,7 +14,7 @@
 - **Отчество — в форме книги**: «Петровъ», «Ѳомина». «Петровичъ» — только там, где так пишет книга (в книгах
   ЗАГС пишут). Если запись отчества не пишет, на его месте `None`, а не отчество из другой записи.
 - **Фамилия — третий позиционный аргумент** `person()`; `last_name_orig=` — только когда слот перед ней
-  пуст (`person("?", last_name_orig="Коровкина")`).
+  пуст (`person("?", last_name_orig="Обноскина")`).
 - **Родство — то, что называет эта запись.** `father=`, `mother=`, `relative(…, Relationship.FATHER)`
   называют человека, которого называет запись. Что сказала другая запись — отчество отца, девичья фамилия
   матери, — идёт в `comment=` этого человека, с указанием записи; людей соединяет потом консолидация
@@ -101,7 +101,7 @@ stepanchikovo_births_1852 = birth_records(
                              god_parent2=person("Марія", "?", "Ежевикина")),
                        birth(4, Gender.FEMALE, 5, 7,
                              child=person("Агрипина?"),
-                             father=person("Иванъ", None, "Коровкинъ", comment="отчество — по записи о его венчании: Иванъ Ѳомичъ"),
+                             father=person("Иванъ", None, "Обноскинъ", comment="отчество — по записи о его венчании: Иванъ Ѳомичъ"),
                              mother=person("Ва?"),
                              comment="имя ребёнка: «Агрипина» или «Агафія» — чернила расплылись"),
                        ),
@@ -120,7 +120,7 @@ stepanchikovo_deaths_1852 = death_records(
     *death_month(Month.MAY,
                  death(1, Gender.MALE, 3, 5, deceased=person("Ѳеодоръ"), age="2 мес",
                        relatives=[relative(person("Петръ", "Степановъ", "Видоплясовъ"), Relationship.FATHER)]),
-                 death(2, Gender.FEMALE, 4, 6, deceased=person("Пелагея", "Иванова", "Коровкина"), age=60),
+                 death(2, Gender.FEMALE, 4, 6, deceased=person("Пелагея", "Иванова", "Обноскина"), age=60),
                  death(3, Gender.MALE, 9, 21, deceased=person("Сидоръ", "Ильинъ"), age="1 г 6 мес",
                        lag_note="погребён 21-го: так в подлиннике, скан сверен")),
     defaults=RecordDefaults(residence="Степанчиково", status_male=STATE_PEASANT_MALE, status_female=STATE_PEASANT_FEMALE),
