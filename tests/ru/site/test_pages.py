@@ -6,7 +6,7 @@ from collections.abc import Callable
 from typing import Any
 
 from tests.ru.site.conftest import BIRTHS, MARRIAGES
-from verso.ru.site import model, pages
+from verso.ru.site import model, pages, prose
 from verso.ru.site.records import Ui
 from verso.ru.site.shell import Context
 
@@ -61,6 +61,72 @@ def test_a_year_lists_its_books(site: model.Site, ui: Ui, ctx: Context) -> None:
     year = pages.year(1900, site, ui, ctx)
     assert "Рождения 1900 — Маниловка" in year and "Браки 1900 — Маниловка" in year and "Смерти" not in year
     assert 'href="../1828/"' in year and 'href="../1913/"' in year
+
+
+def _cells(index: str, year_: int) -> str:
+    return re.search(rf'<tr><td><a href="{year_}/">.*?</tr>', index).group(0)
+
+
+def _row(index: str, year_: int) -> str:
+    return re.sub(r"<[^>]+>", "", re.search(rf'<tr><td><a href="{year_}/">.*?</tr>', index).group(0))
+
+
+def _twin(node: dict[str, Any], **written: str) -> None:
+    """A second book of births of 1900 in the same village, its record set's header rewritten by `written`."""
+    births = next(d for d in node["documents"] if d.get("kind") == "births")
+    case = written.get("case", "755")
+    suffix = written.get("archive_suffix")
+    book = "47-9-" + case + (f";{suffix.removeprefix('47-9-' + case + '-')}" if suffix else "")
+    twin = {**births, "id": births["id"].replace("47-9-755", book), "variable": "twin",
+            "written": {**births["written"], **written},
+            "pages": [{**run, "records": [{**r, "id": r["id"].replace("47-9-755", book)} for r in run["records"]]}
+                      for run in births["pages"]]}
+    node["documents"].append(twin)
+
+
+def test_the_years_name_a_book_of_another_village_and_tell_two_of_one_kind_apart(
+        site: model.Site, changed: Any, ui: Ui, ctx: Context) -> None:
+    """«Ревизия, Ревизия, Ревизия» said nothing of whose: a book of another village than the site's own parish
+    is named with it, and two books of one kind, year and village by their shelfmarks and parts."""
+    index = pages.years_index(site, ui, ctx)
+    assert "Исповедная роспись — Заманиловка" in _row(index, 1828) and "— Хлестаковка" in _row(index, 1913)
+    assert "Рождения, Браки" in _row(index, 1900)                       # the site's own parish: as it was
+    def other_case(node: dict[str, Any]) -> None:
+        _twin(node, case="756")
+
+    def other_part(node: dict[str, Any]) -> None:
+        _twin(node, archive_suffix="47-9-755-стр-9")
+    row = _row(pages.years_index(changed(other_case), ui, ctx), 1900)
+    assert "Рождения — 47-9-755" in row and "Рождения — 47-9-756" in row and "Браки —" not in row
+    links = re.findall(r'<a href="[^"]*">([^<]*)</a>', _cells(pages.years_index(changed(other_part), ui, ctx), 1900))
+    assert sorted(links[1:]) == ["Браки", "Рождения — 47-9-755", "Рождения — 47-9-755, стр-9"]   # [0]: the year
+
+
+def test_a_site_whose_directory_is_not_its_parish_names_no_village(file_node: dict[str, Any], ui: Ui,
+                                                                     ctx: Context) -> None:
+    """A village kept under another directory than its parish (a village of its church's village's books): the
+    parish most of its records name is its own, and so is the village itself where a book names it."""
+    site = model.load([file_node], village="Другое")
+    assert "Рождения, Браки" in _row(pages.years_index(site, ui, ctx), 1900)
+    site = model.load([file_node], village="Заманиловка")             # a book of its own, its parish another's
+    assert "Исповедная роспись" in _row(pages.years_index(site, ui, ctx), 1828)
+    assert "— Заманиловка" not in _row(pages.years_index(site, ui, ctx), 1828)
+
+
+def test_a_year_page_tells_two_parts_of_one_case_apart(changed: Any, ui: Ui, ctx: Context) -> None:
+    def other_part(node: dict[str, Any]) -> None:
+        _twin(node, archive_suffix="47-9-755-стр-9")
+    page = pages.year(1900, changed(other_part), ui, ctx)
+    lines = re.findall(r"<li>(.*?)</li>", page)
+    assert len(lines) == len(set(lines)) and any("стр-9" in line for line in lines)
+
+
+def test_every_page_but_the_one_of_no_address_leads_back_to_its_top(site: model.Site, ui: Ui, ctx: Context) -> None:
+    """The head's id is no heading's: GitHub's slug drops the dot (a prose page's «Top» is `top`)."""
+    year = pages.year(1900, site, ui, ctx)
+    assert 'id="page.top"' in year and 'href="#page.top"' in year
+    assert prose.heading_slug("page.top") != "page.top"
+    assert 'href="#page.top"' not in pages.not_found(ctx)             # its <base> would lead to the front page
 
 
 def test_the_front_page_counts_what_the_site_holds(site: model.Site, ctx: Context) -> None:
