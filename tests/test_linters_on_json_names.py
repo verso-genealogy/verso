@@ -206,13 +206,13 @@ def _every_code(sample: Any, codes: Sequence[str], workspace: Path) -> list[on_j
     """`lint_records` of `codes` on a sample in one call; if it raises, the code that raises asked alone is named."""
     try:
         return on_json.lint_records(copy.deepcopy(sample.data), codes=codes, workspace=workspace)
-    except Exception:
+    except Exception as together:
         for code in codes:
             try:
                 on_json.lint_records(copy.deepcopy(sample.data), codes=[code], workspace=workspace)
             except Exception as error:
                 raise AssertionError((sample.name, code)) from error
-        raise
+        raise AssertionError((sample.name, "every code at once; none alone")) from together
 
 
 def test_a_code_that_reads_the_names_table_says_so(monkeypatch: pytest.MonkeyPatch):
