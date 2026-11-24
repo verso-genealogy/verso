@@ -217,14 +217,17 @@ AGENTS.md проекта says whether the project has a launcher for that).
 **Give the reader the village's people of the nearest years** — from proofread records of ±10
 years, never the year being read (`verso.ru.reading.people`, from verso-ru 0.1.44, builds such a
 list from a records export; the AGENTS.md проекта says whether the project has a command for it).
-A bare list of the parish's surnames is worth far less (see the `transcription` skill: silent errors
-unchanged); the people — names, patronymics, households, years — are what helped. Measured through
-the API, a record per request with the list in its brief, two runs each: Opus at high's errors in all fell by a quarter (21.4 to 15.7 per 100 names) and its flags with
-them, its silent errors only within noise; a reader of another vendor's fell by half (10.7 to 5.7), its
-silent ones from 3.6 to 2.1. Nearly all of the gain was where the source is bad and in surnames — on
-screen photographs that reader's silent errors fell from 9.4 to 1.0 per 100 names, on three quarters
-of the set from 2.5 to 2.3. Call it a reading aid in the brief and ask for «?» where the page does
-not show the name: given a list, a reader also writes a frequent parish surname over the ink.
+A bare list of the parish's surnames is worth less (see the `transcription` skill: silent errors
+unchanged); the people — names, patronymics, statuses, years — are what helped. Measured through
+the API, a record per request with the list in its brief, two runs each, on the benchmark's own
+measure: Opus at high's errors in all fell by a quarter (21.4 to 15.7 per 100 names) and its flags
+with them, its silent errors only within noise (7.3 to 6.3); a reader of another vendor's fell by
+half (10.7 to 5.7), its silent ones from 3.6 to 2.1. About four fifths of that reader's silent gain
+was on the bad source — on screen photographs (15 % of the names) its silent errors fell from 9.3 to
+1.0 per 100 names, on three quarters of the set from 2.5 to 2.3 — while Opus at high's did not fall
+there (14.2 to 14.7). Surnames gained most per name and, though a tenth of the names, made about half
+of each reader's gain in errors in all. Call it a reading aid in the brief and ask for «?» where the
+page does not show the name: given a list, a reader also writes a frequent parish surname over the ink.
 
 **Where the errors are, and what agreement is worth.** Counting every error, flagged or not, over
 twelve strong runs of six models: a surety's surname was wrong or left blank in 56 % of the cases
