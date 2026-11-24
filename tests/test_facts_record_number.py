@@ -45,7 +45,7 @@ SIGNED = {
 }
 
 
-def _templates(tree: dict, prefix: str = "") -> dict[str, str]:
+def _templates(tree: dict[str, object], prefix: str = "") -> dict[str, str]:
     out: dict[str, str] = {}
     for key, value in tree.items():
         if isinstance(value, dict) and not ({"one", "other"} & set(value)):
