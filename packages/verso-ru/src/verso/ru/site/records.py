@@ -47,7 +47,8 @@ _MEMBER_HEAD = frozenset({"number", "role", "ref_member"})
 _MEMBER_NOT_SHOWN = frozenset({"hidden"})
 _CARD_DATES = ("date", "birth_date", "draft_date", "casualty_date", "feat_date")
 _CARD_SOURCE = ("archive", "fund", "inventory", "case", "archive_location", "original_text", "bibliography")
-_DATE_KEYS = frozenset({"year", "month", "day", "year_end", "date_range"})
+_DATE_PARTS = frozenset({"year", "month", "day", "year_end", "month_end", "day_end"})
+_DATE_KEYS = _DATE_PARTS | {"date_range", "circa", "circa_end"}   # an EventDate, and nothing beside it
 
 
 class Ui:
@@ -84,8 +85,14 @@ def value(node: Node, path: str, sides: Sequence[str] = ("written", "derived")) 
             found = found["text"]
         if found is None or found is False or (isinstance(found, (str, list, tuple, Mapping)) and not found):
             continue                         # nothing written — but 0 is a number the source wrote
+        if _is_date(found) and not any(found.get(part) for part in _DATE_PARTS):
+            continue                         # a date with no part of one: a range or «circa» of nothing
         return found, side[0]
     return None
+
+
+def _is_date(found: Any) -> bool:
+    return isinstance(found, Mapping) and bool(found) and set(found) <= _DATE_KEYS
 
 
 def _is_age(path: str) -> bool:
@@ -96,8 +103,10 @@ def text(found: Any, field: Mapping[str, Any], ui: Ui) -> str:
     """A value as a reader's text: an enum by its label, an age in words, a flag as «yes»."""
     if found is True:
         return str(t("site.yes"))
-    if isinstance(found, Mapping) and _DATE_KEYS & set(found):
+    if _is_date(found):
         return _card_date(found, ui)                 # a date object (EventDate), wherever the vocabulary has one
+    if isinstance(found, Mapping):                   # drawn as a date or as text, it would lose what it holds
+        raise model.NotAnExport(str(t("site.unknown_value", path=field.get("path", "?"), keys=", ".join(found))))
     if field.get("type") == "enum" and field.get("enum"):
         return ui.enum(field["enum"], found)
     if _is_age(str(field.get("path", ""))):
@@ -128,6 +137,8 @@ def _card_date(found: Mapping[str, Any], ui: Ui) -> str:
         start = str(t("site.date.circa", date=start))
     if found.get("circa_end") and end:
         end = str(t("site.date.circa", date=end))
+    if not start:                                    # an end alone is what the source wrote
+        start, end = end, ""
     match found.get("date_range"):
         case "between" if end:
             return str(t("site.date.between", start=start, end=end))

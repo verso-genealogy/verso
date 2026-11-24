@@ -1879,6 +1879,7 @@ no_slug = "«{text}»: no letter or digit to make an address of"
 
 [site]
 unknown_kind = "a record of the kind «{kind}», which the records' vocabulary does not know — not an export of this library's version"
+unknown_value = "the field «{path}» holds an object ({keys}) the site cannot draw — not an export of this library's version"
 duplicate_path = "two books make one address {path}: {first} and {second}"
 not_an_export = "{file}: the record {record} does not say whether it was proofread (review) — the site is built of an export (verso export-records)"
 yes = "yes"

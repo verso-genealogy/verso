@@ -191,5 +191,31 @@ def test_the_marriage_a_divorce_names_reads_in_either_form(changed: Change, ui: 
     assert shown in text and "{" not in text
 
 
+@pytest.mark.parametrize(("written", "shown"), [
+    ({"date_range": "after"}, ""),                                   # no part of a date: nothing written
+    ({"year": None, "circa": True}, ""),
+    ({"year_end": 1927}, "1927"),                                    # an end alone is what is written
+    ({"year_end": 1927, "date_range": "before"}, "до 1927"),
+    ({"year_end": 1927, "circa_end": True}, "около 1927"),
+    ({"circa": True}, ""),
+])
+def test_a_date_with_parts_missing_says_what_it_has(ui: Ui, written: dict[str, Any], shown: str) -> None:
+    found = records.value({"written": {"when": written}}, "when")
+    if not shown:
+        assert found is None
+    else:
+        assert found is not None and records.text(found[0], {}, ui) == shown
+
+
+@pytest.mark.parametrize("written", [
+    {"year": 1900, "reason": "умер"},                                # a year beside what is no date's
+    {"status": "крестьянин"},
+])
+def test_an_object_no_field_of_the_schema_draws_is_refused(ui: Ui, written: dict[str, Any]) -> None:
+    """A value the site cannot draw would be lost from the page without a word — a refusal says it."""
+    with pytest.raises(model.NotAnExport):
+        records.text(written, {"path": "departure"}, ui)
+
+
 def test_a_hidden_date_without_a_label_still_has_the_sites() -> None:
     assert str(records.site_labels()["marriage_date"]) == "дата брака"
