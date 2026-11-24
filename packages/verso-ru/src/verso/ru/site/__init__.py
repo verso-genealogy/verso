@@ -22,7 +22,11 @@ from verso.ru.site.errors import SiteError
 from verso.ru.site.records import Ui
 from verso.ru.site.shell import RESERVED, Context
 
-ASSETS = ("site.css", "search.js")
+# The library's own files, under assets/: the stylesheet, the search, and the fonts the stylesheet draws with,
+# each beside its licence (SIL OFL 1.1; NOTICE names them).
+FONTS = ("onest.woff2", "cormorant-garamond-italic.woff2", "jetbrains-mono.woff2", "noto-sans-old.woff2",
+         "OFL-Onest.txt", "OFL-CormorantGaramond.txt", "OFL-JetBrainsMono.txt", "OFL-NotoSans.txt")
+ASSETS = ("site.css", "search.js", *(f"fonts/{name}" for name in FONTS))
 __all__ = ["RESERVED", "BuildError", "Built", "SiteError", "build"]
 
 
@@ -115,7 +119,8 @@ def _build(site: model.Site, out: Path, ctx: Context, docs: Path | None, workspa
     assets = resources("verso.ru.site").joinpath("assets")
     (out / "assets").mkdir(parents=True, exist_ok=True)
     for name in ASSETS:
-        data = assets.joinpath(name).read_bytes()
+        data = assets.joinpath(*name.split("/")).read_bytes()
+        (out / "assets" / name).parent.mkdir(parents=True, exist_ok=True)
         (out / "assets" / name).write_bytes(data)
         total += len(data)
     return Built(out, len(listed), total, len(site.books), site.records, site.unreviewed, tuple(check.verify(out)))
