@@ -27,7 +27,8 @@ where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is n
   line of their own («вид без профилей») and the snapshot's `identity-refused-beyond-clergy` leaves them out; a
   finding of theirs inside one entry is in the village's `date-order` report and in `date-order-within`.
   The people index (`verso.ru.persons.people.sightings_of`) reads no divorce, as before.
-  **A corpus that holds divorces moves**: its `identity` and `wedding-calendar` reports, its `date-order` report and
+  **A corpus that holds divorces moves**: its `identity` report and, where an act names its marriage as an
+  `EventDate`, its `wedding-calendar` report, its `date-order` report and
   `facts_findings.tsv` (`date-order-within`, `wedding-calendar-strict`) where an act contradicts itself or names a
   church wedding on a strict ban; the dump of each other kind does not move (`--kind divorce --dump` is new). A day
   or a month the DSL holds as words is not recorded, as an empty column is: a divorce never stops a village's reading.
@@ -38,8 +39,11 @@ where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is n
   external card's dates are; the facts layer reads it as it reads a card's. The familio CSV («Дата заключения брака»)
   and `village.db` write it as the corpus wrote the text — «24 февраля 1927», «февраль 1927», «1927», «около мая 1915»,
   «до 1915», «1914–1915»
-  (`verso.ru.domain.event_date.written_date`, `date_text`) — so a file moved to the structure writes the same CSV.
-  `read_written_date` reads a text in those forms back. The interface's schema hides the field, as a card's dates —
+  (`verso.ru.domain.event_date.written_date`, `date_text`) — so a text already in one of those forms, moved to the
+  structure, writes the same CSV. `read_written_date` reads a text in those forms back, and in a few more
+  («24.02.1927», «1927 г.», the months in the old spelling): DVC001's fix for such a text writes the CSV's form, so
+  its row moves. An older release, or a reader validating against an older `records-v1.json`, refuses an `EventDate`
+  in `marriage_date`. The interface's schema hides the field, as a card's dates —
   the review page neither shows nor edits it (it has no card for a divorce); `verso site` draws it, either form.
   `wedding-calendar` asks a single day only: a wedding named «около», «до», «после» or as a range is not asked of
   the calendar.
@@ -49,7 +53,8 @@ where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is n
   (`marriage_date:EventDate|str`): encoded by the first type that takes the value, decoded by the first that reads
   it, `anyOf` in `records-v1.json`. An export of before (a text) reads as it was written.
 - verso-ru: the reports `verso facts` writes say «без номера» for an entry its book left unnumbered, where they
-  printed «№none» (the lines of the checks `lives` and `reconcile` still print it);
+  printed «№none» (the header of `--why`, the noted pairs of `father-claims` and the lines of the checks `lives`
+  and `reconcile` still print the bare number);
   `verso facts --kind divorce` without `--dump`, `--why` or `--basis-census` is refused, saying why (an act of
   divorce names no godparents, witnesses or parents to pair).
 - DSL v1: `divorce(source_date_error=)` withdraws the date of the marriage an act of divorce names (the divorce's
@@ -132,13 +137,15 @@ where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is n
 ### Deprecated
 
 - verso-ru: `divorce(marriage_date=)` written as **text**. It is taken, kept and exported as written, and warns
-  (`DeprecationWarning`, at the line that wrote it; shown where Python shows one — a test run, `-W default`); no
+  (`DeprecationWarning`, at the line that wrote it — or, replaying an export that holds the text, in the library;
+  shown where Python shows one — a test run, `-W default`); no
   reader parses it, so the facts layer does not see the wedding it names. DVC001 says so and offers the
   `EventDate`. Refused from 0.2. A corpus that wrote the text moves its records to `EventDate`: its CSV does not
-  move, its records JSON and its facts do. **Where a `DeprecationWarning` is an error** — as
+  move where the text was in the form the CSV writes, its records JSON and its facts do. **Where a `DeprecationWarning` is an error** — as
   [compatibility](docs/compatibility.md) advises a corpus's checks to run, `PYTHONWARNINGS=error::DeprecationWarning`
-  — a DSL file that writes the text no longer loads, and the loader skips it with every record in it: move the
-  records in the same commit that takes this release. An empty text (`""`) is no date and does not warn.
+  — a DSL file that writes the text no longer loads, and the loader skips it with every record in it, and a replay of
+  an export that holds the text (`replay_file`, the linters on JSON, a store's views) raises: move the records, and
+  write the export again, in the same commit that takes this release. An empty text (`""`) is no date and does not warn.
 - verso-core: `encode_record` without `record_set=`. Left out, it is `None` and warns (`DeprecationWarning`, at the
   caller's line; `warnings.deprecated` on its overload, so a type checker that reports deprecations names the call), so
   a caller written before the keyword — verso-app's rebuild of a record — keeps working and keeps the gap in the node it
@@ -161,9 +168,8 @@ where a `DeprecationWarning` is an error (see **Deprecated**). `verso site` is n
   An export written before keeps the gap until `verso export-records` writes it again: the bump alone fixes nothing
   a store already holds.
   **A corpus's records JSON moves** for those records alone: each gains `"reviewed": true` in its `written` and
-  `"reviewed"` in its `written.context` (the kinds `listed_person` and `divorce`). Its `review` stays `reviewed`; the
-  schema, the Terraform, the CSVs, the facts reports and the review ratchet's prints (read from the source) do not
-  move.
+  `"reviewed"` in its `written.context` (the kinds `listed_person` and `divorce`). Its `review` stays `reviewed`; this fix moves
+  no schema, Terraform, CSV, facts report or print of the review ratchet (read from the source).
 
 ## 0.1.46 — 2026-11-20
 
