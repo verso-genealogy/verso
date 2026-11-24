@@ -54,8 +54,12 @@ jobs:
           code=true
           if [ "$GITHUB_EVENT_NAME" = pull_request ] || [ "$GITHUB_EVENT_NAME" = merge_group ]; then
             if [ "$GITHUB_EVENT_NAME" = merge_group ]; then
-              git fetch --quiet --depth=1 origin "$GROUP_BASE"
-              changed=$(git diff --name-only "$GROUP_BASE" HEAD)
+              # A failed fetch or diff runs everything: this job failing would skip the required jobs that
+              # need it, and a skipped required check lets the queue merge a group nothing tested.
+              if ! changed=$(git fetch --quiet --depth=1 origin "$GROUP_BASE" && git diff --name-only "$GROUP_BASE" HEAD); then
+                echo "::warning::no diff against the group's base $GROUP_BASE — everything runs"
+                changed=""
+              fi
             else
               changed=$(git diff --name-only HEAD^1 HEAD)
             fi
