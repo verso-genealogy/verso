@@ -183,10 +183,10 @@ def test_the_translation_is_fed_no_divorce_unless_asked(village: Path):
 
 def test_the_divorces_are_the_same_read_from_the_records_json(village: Path, tmp_path: Path):
     export_village(village, tmp_path / "rec")
-    dsl = [(type(a).__name__, a.sort_key) for a in _facts(village).sorted()]
+    dsl = [(type(a).__name__, a.subject.id, a.sort_key) for a in _facts(village).sorted()]
     with records.use(tmp_path / "rec"):
-        js = [(type(a).__name__, a.sort_key) for a in _facts(village).sorted()]
-    assert [x for x in dsl if "/divorce/" in x[1][2]], "the divorces are among what is compared"
+        js = [(type(a).__name__, a.subject.id, a.sort_key) for a in _facts(village).sorted()]
+    assert [x for x in dsl if "/divorce/" in x[1]], "the divorces are among what is compared"
     assert dsl == js
 
 
@@ -207,3 +207,44 @@ def test_a_divorce_is_dumped_and_explained_whatever_its_id_holds(village: Path, 
     lines = (tmp_path / "facts.jsonl").read_text(encoding="utf-8").splitlines()
     assert sum('"DivorcedOn"' in line for line in lines) == 6
     assert "DivorcedOn" in explain(facts, "1901:7")
+
+
+def test_the_bridge_counts_a_kind_the_tree_does_not_publish_apart(village: Path):
+    """A divorce's people are refused because their record is of a kind no profile is minted for — known, like the
+    причт, and no defect of the bridge: told which kinds those are, the reach counts them apart."""
+    from verso.ru.cli.facts import identity_report
+    from verso.ru.facts.checks.reach import identity_reach
+    from verso.ru.pipeline.facts import unpublished_kinds
+
+    assert unpublished_kinds() == {"divorce"}
+    facts, gen, slots = consolidated_facts(village)
+    strict = identity_reach(facts, gen, slots)
+    reach = identity_reach(facts, gen, slots, unpublished=unpublished_kinds())
+    assert strict.unpublished == {} and reach.unpublished == {"divorce": 6}
+    assert strict.refused_beyond_clergy - reach.refused_beyond_clergy == 6
+    assert reach.refused == strict.refused and reach.total == strict.total
+    report, code = identity_report(facts, gen, slots)
+    assert code == 0
+    assert "    из них вид без профилей (divorce):   6" in report.splitlines()
+
+
+def test_a_village_without_such_a_kind_reads_as_before(tmp_path: Path):
+    from verso.ru.cli.facts import identity_report
+    from verso.ru.facts.checks.reach import identity_reach
+    from verso.ru.pipeline.facts import unpublished_kinds
+
+    facts, gen, slots = consolidated_facts(village_fixture.root(tmp_path) / "Маниловка")
+    reach = identity_reach(facts, gen, slots, unpublished=unpublished_kinds())
+    assert reach.unpublished == {}
+    assert reach.refused_beyond_clergy == identity_reach(facts, gen, slots).refused_beyond_clergy
+    assert "вид без профилей" not in identity_report(facts, gen, slots)[0]
+
+
+def test_the_snapshot_holds_the_bridge_to_no_refusal_beyond_the_known(village: Path):
+    """The committed count is the reach told which kinds have no profiles: six refusals fewer than the strict one."""
+    from verso.ru.cli.facts_snapshot import findings_snapshot
+    from verso.ru.facts.checks.reach import identity_reach
+
+    strict = identity_reach(*consolidated_facts(village)).refused_beyond_clergy
+    rows = dict(line.split("\t", 1) for line in findings_snapshot(village).splitlines() if "\t" in line)
+    assert rows["identity-refused-beyond-clergy"] == f"{strict - 6}\t-"

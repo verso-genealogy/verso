@@ -140,7 +140,7 @@ def test_the_page_s_tables_are_in_the_hints():
     for kind, check in (("birth", "baptism-lag"), ("death", "burial-lag")):
         (rule,) = [r for r in schema["kinds"][kind]["rules"] if r["rule"] == "late"]
         assert (rule["stand_down"], rule["stand_down_before"]) == (STAND_DOWN[check], STAND_DOWN["date-order"])
-    assert DATE_ORDER_STOOD_DOWN == {"baptism_before_birth", "burial_before_death"}
+    assert DATE_ORDER_STOOD_DOWN == {"baptism_before_birth", "burial_before_death", "divorce_before_marriage"}
     follows = [r for r in schema["kinds"]["birth"]["rules"] if r["rule"] == "follows"]
     assert follows == [{"rule": "follows", "from": "birth.month", "to": "baptism.month",
                         "advance": {"day_from": "birth.day", "day_to": "baptism.day"}}]

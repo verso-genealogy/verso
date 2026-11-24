@@ -38,7 +38,7 @@ from verso.ru.facts.checks.reconcile import match, reconcile
 from verso.ru.facts.checks.wedding_ages import wedding_age_findings
 from verso.ru.facts.checks.wedding_calendar import wedding_calendar_findings
 from verso.ru.facts.projection import LooseIndex, consolidated_identity
-from verso.ru.pipeline.facts import consolidated_facts
+from verso.ru.pipeline.facts import consolidated_facts, unpublished_kinds
 
 SNAPSHOT_FILE = "facts_findings.tsv"
 
@@ -74,7 +74,7 @@ def findings_snapshot(village_dir: Path) -> str:
     facts, gen, slots = consolidated_facts(village_dir)
     believed = facts.believed()
     identity = consolidated_identity(gen, slots.object_of)
-    reach = identity_reach(facts, gen, slots)
+    reach = identity_reach(facts, gen, slots, unpublished=unpublished_kinds())
     within, across = date_order_findings(facts, identity)
     # … and the entries of people the bridge places on nobody (a divorce's), asked alone: one a count.
     alone = {f.left.cite.record_id for f in unplaced_within(facts, identity)}

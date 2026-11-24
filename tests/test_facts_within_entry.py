@@ -18,8 +18,8 @@ from verso.ru.facts.checks.dates import date_order_findings, unplaced_within, wi
 from verso.ru.facts.extract.births import facts_from_births
 from verso.ru.facts.extract.deaths import facts_from_deaths
 from verso.ru.facts.extract.divorces import facts_from_divorces
-from verso.ru.facts.identity import name_identity, self_identity
-from verso.ru.facts.model import AssertionSet
+from verso.ru.facts.identity import IdentityKey, name_identity, self_identity
+from verso.ru.facts.model import AssertionSet, Persona, Record
 from verso.ru.gender import Gender
 
 
@@ -88,8 +88,13 @@ def _divorces(*records) -> AssertionSet:
     return AssertionSet(facts_from_divorces([(r, "divorces_1925.py") for r in records], village="Маниловка"))
 
 
-def _nobody(_record):
-    return lambda _persona: None
+def _refused(_persona: Persona) -> IdentityKey | None:
+    return None
+
+
+def _nobody(_record: Record):
+    """An identity that places nobody: every appearance refused, as the bridge refuses a divorce's people."""
+    return _refused
 
 
 class DivorceBeforeItsMarriage(unittest.TestCase):

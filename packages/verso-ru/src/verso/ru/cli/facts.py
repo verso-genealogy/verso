@@ -52,7 +52,7 @@ from verso.ru.facts.projection import (
     LooseIndex, canonical_key, canonical_name, consolidated_identity)
 from verso.ru.facts.rules.cooccurrence import Occurrence, Pair, cooccurrences
 from verso.ru.facts.signals import Signal, signal_of
-from verso.ru.pipeline.facts import consolidated_facts
+from verso.ru.pipeline.facts import consolidated_facts, unpublished_kinds
 from verso.core.tools import tool
 from verso.ru.messages import t
 
@@ -297,7 +297,7 @@ def identity_census(village_dir: Path) -> tuple[str, int]:
 
 def identity_report(facts: AssertionSet, gen: Any, slots: Any) -> tuple[str, int]:
     """`verso facts --check identity`, drawn from `identity_reach`."""
-    r = identity_reach(facts, gen, slots)
+    r = identity_reach(facts, gen, slots, unpublished=unpublished_kinds())
     minted = r.total - sum(r.refused.values())
     lines = [
         str(t("cli.facts.identity.appearances", total=r.total)),
@@ -306,6 +306,7 @@ def identity_report(facts: AssertionSet, gen: Any, slots: Any) -> tuple[str, int
     ]
     lines += [f"      {kind} · {slot}: {n}"
               for (kind, slot), n in sorted(r.refused.items(), key=lambda kv: -kv[1])]
+    lines += [str(t("cli.facts.identity.unpublished", kind=kind, count=n)) for kind, n in sorted(r.unpublished.items())]
     lines += [
         str(t("cli.facts.identity.reached", placed=len(r.placed), canonicals=len(gen.canonical_profiles()))),
         str(t("cli.facts.identity.folded", folded=sum(1 for v in r.placed.values() if len(v) > 1))),
