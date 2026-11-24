@@ -367,7 +367,7 @@ def _site_label(path: str) -> Message:
 
 
 def shelfmark(node: Node, book: Book) -> str:
-    """«ГАРО. Ф. 627. Оп. 255. Д. 13.» — the record's own shelfmark where it states one, else the book's;
+    """«ГАРО. Ф. 9. Оп. 1. Д. 4.» — the record's own shelfmark where it states one, else the book's;
     «шифр не установлен» where a part of it is unknown."""
     of_book = book.shelf
     parts = {key: str((value(node, key, ("written",)) or (of_book[key], "w"))[0] or "") for key in of_book}
