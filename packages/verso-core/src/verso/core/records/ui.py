@@ -60,8 +60,12 @@ RULE_KEYS: dict[str, frozenset[str]] = {
     "late": frozenset({"rule", "after", "event", "days", "stand_down", "stand_down_before"}),
 }
 RULES = frozenset(RULE_KEYS)
-#: The two days a `follows` rule's `advance` compares.
-ADVANCE_KEYS = frozenset({"day_from", "day_to"})
+#: A rule's keys that hold a table, and the keys each table takes: `follows`'s `advance` compares two days,
+#: `shown_when`'s `when` names the book's two readings and the item field its gender is of.
+RULE_TABLES: dict[tuple[str, str], frozenset[str]] = {
+    ("follows", "advance"): frozenset({"day_from", "day_to"}),
+    ("shown_when", "when"): frozenset({"book", "women", "gender_of"}),
+}
 GENDERS = frozenset({"male", "female", "of_record"})
 WIDGETS = frozenset({"wide", "checkbox"})
 REF_TO = frozenset({"item", "slot"})   # another item of the field's own group, or a slot
@@ -371,14 +375,19 @@ class _Build:
 
         name = rule["rule"]
         unread = [key for key in rule if key not in RULE_KEYS[name]]
-        if name == "follows":
-            unread += [f"advance.{key}" for key in dict(rule.get("advance", {})) if key not in ADVANCE_KEYS]
+        for (kind, key), keys in RULE_TABLES.items():
+            if kind != name or key not in rule:
+                continue
+            table = rule[key]
+            if not isinstance(table, Mapping):
+                raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key=key))
+            unread += [f"{key}.{inner}" for inner in table if inner not in keys]
         if unread:
             raise UiError(t("records.ui.unknown_rule_key", kind=code_, rule=name, key=unread[0]))
         if name == "follows":
             known(rule.get("from"))
             known(rule.get("to"))
-            for path in dict(rule.get("advance", {})).values():
+            for path in rule.get("advance", {}).values():
                 known(path)
         elif name == "late":
             for key in ("after", "event"):
@@ -397,6 +406,10 @@ class _Build:
             item = {f["path"] for f in group["item"]["fields"]}
             named = [rule.get("path")] if name in ("ref_choices", "shown_when") else [rule.get("number"),
                                                                                     *rule.get("refs", ())]
+            # The item's field a rule reads besides: the one a member's gender is of. (`ref_choices`' `party` is a field
+            # of the person a reference names, not of the group's item.)
+            if name == "shown_when":
+                named.append(rule.get("when", {}).get("gender_of"))
             for path in named:
                 if path not in item:
                     raise unknown(path)

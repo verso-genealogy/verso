@@ -3,11 +3,14 @@ field of the vocabulary, labels each in both languages, and names in its referen
 the translator reads."""
 from __future__ import annotations
 
+import copy
 from typing import Any
+
+import pytest
 
 from verso.core import i18n, plugins
 from verso.core.records.fields import PERSON, ListOf, role_of
-from verso.core.records.ui import build_ui, load_ui, main
+from verso.core.records.ui import UiError, build_ui, load_ui, main
 from verso.ru.linters.checks.relationship_ref import is_allowed
 from verso.ru.records.vocabulary import VOCABULARY as V
 from verso.ru.facts.signals import DATE_ORDER_STOOD_DOWN, STAND_DOWN
@@ -202,4 +205,28 @@ def test_what_the_plugin_sets_itself_is_marked_auto():
     """«фамилия в книге»: unticked by the plugin wherever it derives a surname (a mother's, a wife's) — offered in no «+»."""
     marked = [f["path"] for f in _fields(_schema()) if f.get("auto")]
     assert marked == ["surname.in_book"]
+
+
+def _refused(kind: str, rule: str, edit: dict[str, Any]) -> tuple[str, dict[str, object]]:
+    """The build's refusal of verso-ru's hints with `edit` merged into the first `rule` of `kind`."""
+    hints = copy.deepcopy(dict(plugins.ui()))
+    target = next(r for r in hints["kinds"][kind]["rules"] if r["rule"] == rule)
+    target.update(edit)
+    with pytest.raises(UiError) as caught:
+        build_ui(V, hints)
+    return caught.value.key, dict(caught.value.params)
+
+
+def test_a_rule_s_tables_and_the_item_fields_it_reads_are_checked():
+    """A typo one level down is refused as one at the top: `when` and `advance` take their own keys and are tables, and
+    the item field a rule reads besides its `path` — the one a member's gender is of — is the group's."""
+    when = {"book": "previous_age", "women": "female_previous_age", "gender_of": "role"}
+    assert _refused("household", "shown_when", {"when": {**when, "gendre_of": "role"}}) == (
+        "records.ui.unknown_rule_key", {"kind": "household", "rule": "shown_when", "key": "when.gendre_of"})
+    assert _refused("household", "shown_when", {"when": "previous_age"}) == (
+        "records.ui.rule_not_table", {"kind": "household", "rule": "shown_when", "key": "when"})
+    assert _refused("household", "shown_when", {"when": {**when, "gender_of": "rol"}}) == (
+        "records.ui.unknown_path", {"kind": "household", "path": "rol"})
+    assert _refused("birth", "follows", {"advance": [["day_from", "birth.day"], ["day_to", "baptism.day"]]}) == (
+        "records.ui.rule_not_table", {"kind": "birth", "rule": "follows", "key": "advance"})
 
