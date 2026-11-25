@@ -225,6 +225,11 @@ def test_a_rule_s_tables_and_the_item_fields_it_reads_are_checked():
         "records.ui.unknown_rule_key", {"kind": "household", "rule": "shown_when", "key": "when.gendre_of"})
     assert _refused("household", "shown_when", {"when": "previous_age"}) == (
         "records.ui.rule_not_table", {"kind": "household", "rule": "shown_when", "key": "when"})
+    hints = copy.deepcopy(dict(plugins.ui()))
+    del next(r for r in hints["kinds"]["household"]["rules"] if r["rule"] == "shown_when")["when"]
+    with pytest.raises(UiError) as caught:
+        build_ui(V, hints)
+    assert (caught.value.key, caught.value.params.get("key")) == ("records.ui.rule_not_table", "when")
     assert _refused("household", "shown_when", {"when": {**when, "gender_of": "rol"}}) == (
         "records.ui.unknown_path", {"kind": "household", "path": "rol"})
     assert _refused("birth", "follows", {"advance": [["day_from", "birth.day"], ["day_to", "baptism.day"]]}) == (

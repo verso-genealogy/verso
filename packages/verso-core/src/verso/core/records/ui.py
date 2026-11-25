@@ -89,7 +89,7 @@ FORMAT = (
     "orderable", "day", "month", "year", "late_days", "follows", "creatable", "code", "forms",
     "fills", "flags", "field", "fallback", "package", "of", "queue",
     "from", "advance", "after", "event", "number", "refs",          # the rules' keys
-    "days", "when", "stand_down", "stand_down_before", "day_from", "day_to", "book", "women", "gender_of",
+    "group", "days", "when", "stand_down", "stand_down_before", "day_from", "day_to", "book", "women", "gender_of",
     "offer", "not_in",                                               # whom a «+» offers a field
     "text", "integer", "boolean", "age", *FLAGS,
 )
@@ -410,7 +410,9 @@ class _Build:
             # The item's field a rule reads besides: the one a member's gender is of. (`ref_choices`' `party` is a field
             # of the person a reference names, not of the group's item.)
             if name == "shown_when":
-                named.append(rule.get("when", {}).get("gender_of"))
+                if "when" not in rule:              # the page asks it of every member: a rule without it is no rule
+                    raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="when"))
+                named.append(rule["when"].get("gender_of"))
             for path in named:
                 if path not in item:
                     raise unknown(path)
