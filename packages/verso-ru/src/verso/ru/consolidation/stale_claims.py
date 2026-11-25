@@ -50,7 +50,10 @@ from verso.ru.messages import t
 # mentions a date.
 CLAIM_PATTERNS: tuple[tuple[str, str], ...] = (
     (r"сам\w* ранн\w+", "самая ранняя"),  # i18n: content — the primacy phrases the notes write
-    (r"перв\w+ (?:метрическ\w+ )?(?:запись|упоминание)", "первая запись"),  # i18n: content — the primacy phrases the notes write
+    # The word «первый» in its own endings, not any word that starts with «перв»: «первоначальная
+    # запись» is the act as first written, before a correction, and claims nothing about order.
+    (r"\bперв(?:ая|ое|ой|ою|ую|ый|ым|ые|ых|ыми|ого|аго|ому|ыя) (?:метрическ\w+ )?(?:запись|упоминание)",  # i18n: content — the primacy phrases the notes write
+     "первая запись"),  # i18n: content — the primacy phrases the notes write
     (r"старш\w+ (?:известн\w+ )?(?:ребёнок|ребенок|сын|дочь)", "старший ребёнок"),  # i18n: content — the primacy phrases the notes write
     (r"прежн\w+ сам\w+ ранн\w+", "прежняя самая ранняя"),  # i18n: content — the primacy phrases the notes write
 )

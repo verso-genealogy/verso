@@ -3,6 +3,14 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.52.dev0)
+
+### Fixed
+
+- verso-ru, `verso stale-claims` (`claim-check`): «первая запись» is the word «первый» in its own endings, no longer
+  any word that begins with «перв» — a comment's «Первоначальная запись» (the act as first written, before a
+  correction) claimed primacy and gave a false finding. Only that channel's report moves.
+
 ## 0.1.51 — 2026-11-25
 
 Only a site built by `verso site` moves; a corpus's CSVs, Terraform, records JSON, facts and reports do not. Every

@@ -46,6 +46,23 @@ class Phrases(unittest.TestCase):
                      None, ""):
             self.assertEqual([], sc.matched_phrases(text))
 
+    def test_first_in_every_case_is_a_claim(self):
+        for text in ("первая запись о нём",
+                     "это его первое упоминание",
+                     "считать первую запись двора",
+                     "стала первой метрической записью двора",
+                     "стала первою записью двора",
+                     "Первая метрическая запись главы двора"):
+            self.assertEqual(["первая запись"], sc.matched_phrases(text), text)
+
+    def test_an_original_entry_is_not_a_claim(self):
+        # «Первоначальная запись» is the act as first written, before a
+        # correction — it says nothing about which record came first.
+        for text in ("Первоначальная запись ('Пётр Небывалов', отец) исправлена",
+                     "первоначальное упоминание отца зачёркнуто",
+                     "первородная запись"):
+            self.assertEqual([], sc.matched_phrases(text), text)
+
     def test_retraction_marker(self):
         self.assertTrue(sc.RETRACTED.search(
             "Самой ранней в корпусе эта связка считалась лишь до 05.09.2026"))
