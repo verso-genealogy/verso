@@ -2034,6 +2034,11 @@ derived_word = "derived"
 derived = "what the library worked out: a modern form of a name, a surname taken from the father"
 unreviewed = "the reading has not been checked against the scan yet"
 
+[site.theme]
+auto = "Theme: as the system's"
+light = "Theme: light"
+dark = "Theme: dark"
+
 [site.footer]
 top = "↑ Top"
 license = "Data:"

@@ -1,4 +1,4 @@
-"""The frame every page stands in: the head, the menu, the search field, the footer — and the two
+"""The frame every page stands in: the head, the menu, the search field, the theme button, the footer — and the two
 files a crawler reads.
 
 Every link is relative to the page, so the site is served the same from a project's path on a host and
@@ -16,6 +16,7 @@ from verso.ru.messages import t
 E = html.escape
 CSS = "assets/site.css"
 SEARCH_JS = "assets/search.js"
+THEME_JS = "assets/theme.js"
 # The directories the site keeps for itself: no page of prose may take one.
 RESERVED = frozenset({"assets", "books", "cards", "years", "names", "patronymics", "search", "about"})
 
@@ -65,11 +66,33 @@ def page(title: str, body: str, *, ctx: Context, path: str, head: str = "", scri
               f'placeholder="{E(str(t("site.search.placeholder")))}">'
               f'<button type="submit">{E(str(t("site.search.go")))}</button></form>')
     tail = "".join(f'<script src="{up}{E(src)}" defer></script>' for src in scripts)
+    theme = _theme_button()
     return (f'<!doctype html>\n<html lang="{E(ctx.lang)}">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-            f'<title>{full}</title>\n<link rel="stylesheet" href="{up}{CSS}">\n{canonical}{head}</head>\n'
+            f'<title>{full}</title>\n<link rel="stylesheet" href="{up}{CSS}">\n'
+            f'<script src="{up}{THEME_JS}"></script>\n{canonical}{head}</head>\n'
             f'<body>\n<header class="top" id="{TOP}"><a class="brand" href="{up or "./"}">{name}</a>'
-            f'<nav aria-label="{E(str(t("site.nav.label")))}">{nav}</nav>{search}</header>\n<main>\n{body}\n</main>\n{_footer(ctx, up, top)}{tail}\n</body>\n</html>\n')
+            f'<nav aria-label="{E(str(t("site.nav.label")))}">{nav}</nav>{search}{theme}</header>\n<main>\n{body}\n</main>\n{_footer(ctx, up, top)}{tail}\n</body>\n</html>\n')
+
+
+# The three marks of the theme button: the system's (half a disc), light (a sun), dark (a crescent).
+_THEME_MARKS = (
+    ("auto", '<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/>'),
+    ("light", '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8'
+              'M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/>'),
+    ("dark", '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
+)
+
+
+def _theme_button() -> str:
+    """The bar's theme button: hidden until `theme.js` wires it, so a page without scripts shows no dead control.
+    Each mode's label rides in a `data-` attribute; the script shows the one in force."""
+    said = {"auto": t("site.theme.auto"), "light": t("site.theme.light"), "dark": t("site.theme.dark")}
+    labels = "".join(f' data-{mode}="{E(str(said[mode]))}"' for mode, _ in _THEME_MARKS)
+    marks = "".join(f'<svg class="i-{mode}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">{body}</svg>'
+                    for mode, body in _THEME_MARKS)
+    return (f'<button type="button" class="theme" id="theme" hidden data-mode="auto"{labels} '
+            f'aria-label="{E(str(said["auto"]))}">{marks}</button>')
 
 
 def _footer(ctx: Context, up: str, top: bool) -> str:

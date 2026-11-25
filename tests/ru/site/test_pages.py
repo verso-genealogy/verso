@@ -129,6 +129,20 @@ def test_every_page_but_the_one_of_no_address_leads_back_to_its_top(site: model.
     assert 'href="#page.top"' not in pages.not_found(ctx)             # its <base> would lead to the front page
 
 
+
+def test_every_page_draws_in_the_chosen_theme_from_its_first_frame(site: model.Site, ui: Ui, ctx: Context) -> None:
+    """The theme script is read in the head, before the body is drawn (no flash of the other theme); the bar's
+    button is hidden until the script wires it, its three labels from the catalog — the 404's, under its
+    `<base>`, too."""
+    for page in (pages.year(1900, site, ui, ctx), pages.not_found(ctx)):
+        head, body = page.split("</head>")
+        assert re.search(r'<script src="(\.\./)*assets/theme\.js"></script>', head)   # neither defer nor async
+        button = re.search(r'<button type="button" class="theme" id="theme" hidden[^>]*>', body)
+        assert button and body.index(button.group(0)) < body.index("</header>")
+        assert 'data-light="Тема: светлая"' in button.group(0) and 'data-dark="Тема: тёмная"' in button.group(0)
+        assert 'aria-label="Тема: как в системе"' in button.group(0)
+        assert [m for m in re.findall(r'class="i-(\w+)"', body)] == ["auto", "light", "dark"]
+
 def test_the_front_page_counts_what_the_site_holds(site: model.Site, ctx: Context) -> None:
     text = _text(pages.front(site, ctx))
     assert "9 книг" in text and "17 записей" in text and "годы 1828–1923" in text

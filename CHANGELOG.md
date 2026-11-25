@@ -23,6 +23,11 @@ on each (a lint baseline will count them), which `verso fix-parent-ages` moves i
   every village's `facts_findings.tsv` gets two new rows (`parent-ages`, `parent-age-drift`); verso's people index
   reads drafts, so parents gain a birth year there for villages that state ages. The files that write no parent age
   do not move.
+- verso-ru, the site (`verso site`): a theme button at the bar's end — as the system's, light or dark, in turn.
+  The choice is kept in the browser (`localStorage`, key `verso.site.theme`), so every site served from one host
+  shares it, and a page opens in it without a flash of the other theme (`assets/theme.js`, read in the head).
+  Without scripts the button stays hidden and the page follows the system, as before. Print is always light.
+  Catalog keys `site.theme.auto|light|dark`. Only the site moves.
 
 ## 0.1.49 — 2026-11-24
 

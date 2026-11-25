@@ -29,7 +29,7 @@ def test_a_built_site_holds_no_dead_end(file_node: dict[str, Any], tmp_path: Pat
     assert built.problems == ()
     assert (built.books, built.records, built.unreviewed) == (9, 17, 2)
     made = set(_digest(tmp_path / "site"))
-    assert {"index.html", "404.html", "robots.txt", "sitemap.xml", "assets/site.css", "assets/search.js",
+    assert {"index.html", "404.html", "robots.txt", "sitemap.xml", "assets/site.css", "assets/search.js", "assets/theme.js",
             "search/index.html", "search/index.json", "books/index.html", "years/1900/index.html",
             "books/manilovka/47-9-755/1900/birth/index.html", "cards/manilovka/wwi/index.html",
             "names/Сидоров/index.html", "patronymics/Иванов/index.html", "patronymics/-/index.html"} <= made
@@ -159,3 +159,14 @@ def test_every_refusal_is_one_family() -> None:
     from verso.ru.site import prose, urls
     for refusal in (site_package.BuildError, model.DuplicatePath, model.NotAnExport, prose.ProseError, urls.BadAddress):
         assert issubclass(refusal, site_package.SiteError)
+
+
+def test_the_dark_theme_is_one_set_of_colours_whether_the_system_or_the_reader_chose_it() -> None:
+    """The stylesheet spells the dark tokens twice — under the system's dark (unless the reader chose light) and
+    under the reader's dark — as CSS has no one selector for both; the two must not drift apart."""
+    css = (Path(site_package.__file__).parent / "assets" / "site.css").read_text(encoding="utf-8")
+    def tokens(selector: str) -> list[str]:
+        block = css[css.index(selector + " {"):]
+        return sorted(re.findall(r"--[\w-]+:[^;]+;", block[:block.index("}")]))
+    system, chosen = tokens(':root:not([data-theme="light"])'), tokens(':root[data-theme="dark"]')
+    assert system and system == chosen

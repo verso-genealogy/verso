@@ -27,8 +27,10 @@
   --r-tile: 1.1rem; --r-card: .55rem; --r-pill: 99px;
   color-scheme: light dark;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
+/* dark, on a screen: the system's, unless the reader chose light; or the reader's own choice (theme.js sets
+   data-theme). Print stays light. The two blocks hold the same tokens — a test keeps them so. */
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
     --bg: #07090f; --tile: rgb(18 22 34 / 70%); --panel: #121622; --chip: #1c2333;
     --text: #e9ecf4; --muted: #9aa1b4; --faint: #8890a5; --line: rgb(233 236 244 / 10%);
     --field-line: #737479; --accent: #7fa2ff; --accent-text: #0b1020; --accent-soft: rgb(127 162 255 / 16%);
@@ -36,6 +38,17 @@
     --shadow: rgb(0 0 0 / 55%); --glow-1: #26398f; --glow-2: #6e4810;
   }
 }
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #07090f; --tile: rgb(18 22 34 / 70%); --panel: #121622; --chip: #1c2333;
+    --text: #e9ecf4; --muted: #9aa1b4; --faint: #8890a5; --line: rgb(233 236 244 / 10%);
+    --field-line: #737479; --accent: #7fa2ff; --accent-text: #0b1020; --accent-soft: rgb(127 162 255 / 16%);
+    --brass: #e8c983; --warn: #f0c060; --warn-bg: rgb(240 192 96 / 13%); --ok: #6fd39b; --ok-bg: rgb(111 211 155 / 14%);
+    --shadow: rgb(0 0 0 / 55%); --glow-1: #26398f; --glow-2: #6e4810;
+  }
+}
+:root[data-theme="light"] { color-scheme: light; }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 5.5rem; }   /* a target clear of the bar */
 body { margin: 0; background: var(--bg); color: var(--text); font: 15.5px/1.55 var(--font-body); min-height: 100vh; }
@@ -81,6 +94,15 @@ code { font: .76rem var(--font-mono); color: var(--faint); overflow-wrap: anywhe
 .search.wide input { width: min(30rem, 100%); flex: 1; }
 .search button { font: 600 .88rem/1.2 var(--font-body); padding: .4rem 1rem; border: 1px solid var(--accent);
   border-radius: var(--r-pill); background: var(--accent); color: var(--accent-text); cursor: pointer; }
+/* the theme button: a round one at the bar's end, its mark the mode in force */
+.theme { display: inline-grid; place-items: center; width: 2.1rem; height: 2.1rem; padding: 0; flex: none;
+  border: 1px solid var(--line); border-radius: var(--r-pill); background: var(--panel); color: var(--muted); cursor: pointer; }
+.theme[hidden] { display: none; }
+.theme:hover { color: var(--text); border-color: var(--accent); }
+.theme:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.theme svg { display: none; width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round; }
+.theme[data-mode="auto"] .i-auto, .theme[data-mode="light"] .i-light, .theme[data-mode="dark"] .i-dark { display: block; }
 
 /* the page: one tile */
 main { width: min(62rem, calc(100% - 2rem)); margin: 1.4rem auto 0; padding: 1.6rem 2rem 2.2rem;
@@ -183,13 +205,13 @@ td a { font-weight: 500; }
   .top { width: 100%; margin: 0; border-radius: 0; border-width: 0 0 1px; }
   main { width: 100%; margin: 0; border-radius: 0; border-width: 0; padding: 1rem 1rem 2rem; box-shadow: none; }
   .p, .more { grid-template-columns: 1fr; }
-  .search input { width: 100%; } .search { flex: 1 1 100%; }
+  .search input { width: 100%; } .search { flex: 1 1 12rem; }   /* the theme button beside it */
   h1 { font-size: 1.9rem; }
   body::before { display: none; }
 }
 @media print {
-  .top nav, .search, .bottom, .leaves, .crumbs { display: none; }
-  body { background: #fff; } body::before { display: none; }
+  .top nav, .search, .theme, .bottom, .leaves, .crumbs { display: none; }
+  :root { color-scheme: light; } body { background: #fff; } body::before { display: none; }
   main { border: 0; box-shadow: none; }
   .rec { break-inside: avoid; }
 }
