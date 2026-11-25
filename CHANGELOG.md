@@ -10,6 +10,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - verso-ru, `verso stale-claims` (`claim-check`): «первая запись» is the word «первый» in its own endings, no longer
   any word that begins with «перв» — a comment's «Первоначальная запись» (the act as first written, before a
   correction) claimed primacy and gave a false finding. Only that channel's report moves.
+- verso-core, the interface schema (`verso.core.records.ui`): a rule's key its kind does not read is refused
+  (`records.ui.unknown_rule_key`), as a path the kind lacks is — a typo such as `stand_dwon` used to ship, and the page
+  never read it. The keys each kind reads are `RULE_KEYS`. A rule's tables are held alike (`RULE_TABLES`): `follows`'
+  `advance` takes `day_from` and `day_to`, `shown_when`'s `when` takes `book`, `women` and `gender_of`, and either must be
+  a table (`records.ui.rule_not_table`; `advance` written as a list used to ship, and a string to fail with a bare
+  `ValueError`); `when.gender_of` is a field of the group's item, as `path` is. verso-ru's hints use nothing else:
+  `ui-v1.json` does not move.
 
 ## 0.1.51 — 2026-11-25
 

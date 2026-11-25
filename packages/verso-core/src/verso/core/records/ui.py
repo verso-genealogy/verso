@@ -18,7 +18,8 @@ A field's `type` is the vocabulary's, never the hints': `str` → `text`, `int` 
 `path` is its JSON key (records v1). A label is a key of the plugin's catalog, checked against its
 English one. The hints place every field of every kind they name — in `fields`, or `hidden` — and
 the build refuses rather than guesses: a path the vocabulary lacks, a field left unplaced, a label
-the catalog lacks, a path placed twice, a rule of no known kind (`UiError`, `records.ui.*`).
+the catalog lacks, a path placed twice, a rule of no known kind or a key its kind does not read
+(`UiError`, `records.ui.*`).
 
 The schema is generated, not written, and committed beside `records-v1.json`
 (`Vocabulary.schema_package`):
@@ -49,8 +50,22 @@ from verso.core.records.fields import PERSON, ListOf, TypeSpec, Vocabulary, code
 UI_FILE = "ui-v1.json"
 UI_ID = "ui-v1"
 
-#: The kinds of rule a page may run on a record's own fields: any other is refused.
-RULES = frozenset({"follows", "shown_when", "renumber", "ref_choices", "late"})
+#: The kinds of rule a page may run on a record's own fields, and the keys each reads: any other kind, and any other key
+#: (a typo the page would never read), is refused.
+RULE_KEYS: dict[str, frozenset[str]] = {
+    "follows": frozenset({"rule", "from", "to", "advance"}),
+    "shown_when": frozenset({"rule", "group", "path", "when"}),
+    "renumber": frozenset({"rule", "group", "number", "refs"}),
+    "ref_choices": frozenset({"rule", "group", "path", "party"}),
+    "late": frozenset({"rule", "after", "event", "days", "stand_down", "stand_down_before"}),
+}
+RULES = frozenset(RULE_KEYS)
+#: A rule's keys that hold a table, and the keys each table takes: `follows`'s `advance` compares two days,
+#: `shown_when`'s `when` names the book's two readings and the item field its gender is of.
+RULE_TABLES: dict[tuple[str, str], frozenset[str]] = {
+    ("follows", "advance"): frozenset({"day_from", "day_to"}),
+    ("shown_when", "when"): frozenset({"book", "women", "gender_of"}),
+}
 GENDERS = frozenset({"male", "female", "of_record"})
 WIDGETS = frozenset({"wide", "checkbox"})
 REF_TO = frozenset({"item", "slot"})   # another item of the field's own group, or a slot
@@ -74,6 +89,7 @@ FORMAT = (
     "orderable", "day", "month", "year", "late_days", "follows", "creatable", "code", "forms",
     "fills", "flags", "field", "fallback", "package", "of", "queue",
     "from", "advance", "after", "event", "number", "refs",          # the rules' keys
+    "group", "days", "when", "stand_down", "stand_down_before", "day_from", "day_to", "book", "women", "gender_of",
     "offer", "not_in",                                               # whom a «+» offers a field
     "text", "integer", "boolean", "age", *FLAGS,
 )
@@ -359,10 +375,20 @@ class _Build:
             return UiError(t("records.ui.unknown_path", kind=code_, path=path))
 
         name = rule["rule"]
+        unread = [key for key in rule if key not in RULE_KEYS[name]]
+        for (kind, key), keys in RULE_TABLES.items():
+            if kind != name or key not in rule:
+                continue
+            table = rule[key]
+            if not isinstance(table, Mapping):
+                raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key=key))
+            unread += [f"{key}.{inner}" for inner in table if inner not in keys]
+        if unread:
+            raise UiError(t("records.ui.unknown_rule_key", kind=code_, rule=name, key=unread[0]))
         if name == "follows":
             known(rule.get("from"))
             known(rule.get("to"))
-            for path in dict(rule.get("advance", {})).values():
+            for path in rule.get("advance", {}).values():
                 known(path)
         elif name == "late":
             for key in ("after", "event"):
@@ -381,6 +407,12 @@ class _Build:
             item = {f["path"] for f in group["item"]["fields"]}
             named = [rule.get("path")] if name in ("ref_choices", "shown_when") else [rule.get("number"),
                                                                                     *rule.get("refs", ())]
+            # The item's field a rule reads besides: the one a member's gender is of. (`ref_choices`' `party` is a field
+            # of the person a reference names, not of the group's item.)
+            if name == "shown_when":
+                if "when" not in rule:              # the page asks it of every member: a rule without it is no rule
+                    raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="when"))
+                named.append(rule["when"].get("gender_of"))
             for path in named:
                 if path not in item:
                     raise unknown(path)
