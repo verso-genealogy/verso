@@ -89,6 +89,7 @@ FORMAT = (
     "orderable", "day", "month", "year", "late_days", "follows", "creatable", "code", "forms",
     "fills", "flags", "field", "fallback", "package", "of", "queue",
     "from", "advance", "after", "event", "number", "refs",          # the rules' keys
+    "days", "when", "stand_down", "stand_down_before", "day_from", "day_to", "book", "women", "gender_of",
     "offer", "not_in",                                               # whom a «+» offers a field
     "text", "integer", "boolean", "age", *FLAGS,
 )
