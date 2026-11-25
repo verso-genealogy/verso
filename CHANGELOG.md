@@ -3,6 +3,21 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.51.dev0)
+
+### Added
+
+- verso-ru, the site (`verso site`): a theme button at the bar's end — as the system's, light or dark, in turn.
+  The choice is kept in the browser (`localStorage`, key `verso.site.theme`), so every site served from one host
+  shares it, and a page opens in it without a flash of the other theme (`assets/theme.js`, read in the head).
+  Without scripts the button stays hidden and the page follows the system, as before. Print is always light.
+  Catalog keys `site.theme.auto|light|dark`. Only the site moves.
+
+### Fixed
+
+- verso-ru, the site: `404.html` names its `<base>` before its stylesheet, so a missing page at any depth is drawn
+  with the site's look (it was unstyled below the first level: the links resolved before the base).
+
 ## 0.1.50 — 2026-11-25
 
 Nothing a corpus already writes moves until a birth gains `father_age=` or `mother_age=`: its CSVs, Terraform, records

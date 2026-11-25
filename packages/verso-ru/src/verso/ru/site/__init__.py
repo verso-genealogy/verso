@@ -22,11 +22,11 @@ from verso.ru.site.errors import SiteError
 from verso.ru.site.records import Ui
 from verso.ru.site.shell import RESERVED, Context
 
-# The library's own files, under assets/: the stylesheet, the search, and the fonts the stylesheet draws with,
+# The library's own files, under assets/: the stylesheet, the search, the theme, and the fonts the stylesheet draws with,
 # each beside its licence (SIL OFL 1.1; NOTICE names them).
 FONTS = ("onest.woff2", "cormorant-garamond-italic.woff2", "jetbrains-mono.woff2", "noto-sans-old.woff2",
          "OFL-Onest.txt", "OFL-CormorantGaramond.txt", "OFL-JetBrainsMono.txt", "OFL-NotoSans.txt")
-ASSETS = ("site.css", "search.js", *(f"fonts/{name}" for name in FONTS))
+ASSETS = ("site.css", "search.js", "theme.js", *(f"fonts/{name}" for name in FONTS))
 __all__ = ["RESERVED", "BuildError", "Built", "SiteError", "build"]
 
 
