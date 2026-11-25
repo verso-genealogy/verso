@@ -25,7 +25,7 @@
   apply(mode);
 
   function wire() {
-    var button = document.getElementById("theme");
+    var button = document.getElementById("page.theme");
     if (!button) { return; }
     function show() {
       button.setAttribute("data-mode", mode);
@@ -42,6 +42,13 @@
     // a choice made in another tab of the same host
     window.addEventListener("storage", function (event) {
       if (event.key !== KEY && event.key !== null) { return; }
+      mode = read();
+      apply(mode);
+      show();
+    });
+    // a page back from the browser's cache, while the choice changed on another
+    window.addEventListener("pageshow", function (event) {
+      if (!event.persisted) { return; }
       mode = read();
       apply(mode);
       show();

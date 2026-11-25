@@ -45,8 +45,9 @@ def address(site_url: str, path: str) -> str:
     return site_url + quote(path)
 
 
-# The head's id: no heading's, as GitHub's slug drops the dot (a prose page's «Top» is `top`).
+# The head's id and the theme button's: no heading's, as GitHub's slug drops the dot (a prose page's «Top» is `top`).
 TOP = "page.top"
+THEME = "page.theme"
 
 
 def page(title: str, body: str, *, ctx: Context, path: str, head: str = "", scripts: Iterable[str] = (),
@@ -69,8 +70,8 @@ def page(title: str, body: str, *, ctx: Context, path: str, head: str = "", scri
     theme = _theme_button()
     return (f'<!doctype html>\n<html lang="{E(ctx.lang)}">\n<head>\n<meta charset="utf-8">\n'
             '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-            f'<title>{full}</title>\n<link rel="stylesheet" href="{up}{CSS}">\n'
-            f'<script src="{up}{THEME_JS}"></script>\n{canonical}{head}</head>\n'
+            f'<title>{full}</title>\n{head}<link rel="stylesheet" href="{up}{CSS}">\n'   # a <base> before the links it resolves
+            f'<script src="{up}{THEME_JS}"></script>\n{canonical}</head>\n'
             f'<body>\n<header class="top" id="{TOP}"><a class="brand" href="{up or "./"}">{name}</a>'
             f'<nav aria-label="{E(str(t("site.nav.label")))}">{nav}</nav>{search}{theme}</header>\n<main>\n{body}\n</main>\n{_footer(ctx, up, top)}{tail}\n</body>\n</html>\n')
 
@@ -91,7 +92,7 @@ def _theme_button() -> str:
     labels = "".join(f' data-{mode}="{E(str(said[mode]))}"' for mode, _ in _THEME_MARKS)
     marks = "".join(f'<svg class="i-{mode}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">{body}</svg>'
                     for mode, body in _THEME_MARKS)
-    return (f'<button type="button" class="theme" id="theme" hidden data-mode="auto"{labels} '
+    return (f'<button type="button" class="theme" id="{THEME}" hidden data-mode="auto"{labels} '
             f'aria-label="{E(str(said["auto"]))}">{marks}</button>')
 
 

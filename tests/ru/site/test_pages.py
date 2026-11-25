@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import replace
 from collections.abc import Callable
 from typing import Any
 
@@ -134,14 +135,19 @@ def test_every_page_draws_in_the_chosen_theme_from_its_first_frame(site: model.S
     """The theme script is read in the head, before the body is drawn (no flash of the other theme); the bar's
     button is hidden until the script wires it, its three labels from the catalog — the 404's, under its
     `<base>`, too."""
-    for page in (pages.year(1900, site, ui, ctx), pages.not_found(ctx)):
+    first = pages.year(1900, site, ui, ctx)
+    for page in (first, pages.not_found(replace(ctx, site_url="https://example.org/s/"))):
         head, body = page.split("</head>")
-        assert re.search(r'<script src="(\.\./)*assets/theme\.js"></script>', head)   # neither defer nor async
-        button = re.search(r'<button type="button" class="theme" id="theme" hidden[^>]*>', body)
+        script = re.search(r'<script src="(\.\./)*assets/theme\.js"></script>', head)   # neither defer nor async
+        assert script and head.find("<base ") < head.index('rel="stylesheet"') < script.start()   # resolved by <base>
+        assert ("<base " in head) == (page is not first)
+        button = re.search(r'<button type="button" class="theme" id="page.theme" hidden[^>]*>', body)
         assert button and body.index(button.group(0)) < body.index("</header>")
         assert 'data-light="Тема: светлая"' in button.group(0) and 'data-dark="Тема: тёмная"' in button.group(0)
         assert 'aria-label="Тема: как в системе"' in button.group(0)
         assert [m for m in re.findall(r'class="i-(\w+)"', body)] == ["auto", "light", "dark"]
+    assert prose.heading_slug("page.theme") != "page.theme"                   # no heading takes the button's id
+
 
 def test_the_front_page_counts_what_the_site_holds(site: model.Site, ctx: Context) -> None:
     text = _text(pages.front(site, ctx))
