@@ -166,6 +166,28 @@ def test_an_unknown_rule_is_refused():
     assert _refused(hints, "unknown_rule") == {"kind": "note", "rule": "guess"}
 
 
+def test_a_rule_key_its_kind_does_not_read_is_refused():
+    """A typo in a rule's key (`stand_dwon`) would ship, and the page would never read it: the build refuses a key the
+    rule's kind does not read, as it refuses a path the kind lacks."""
+    def note(rule: dict[str, Any]) -> dict[str, Any]:
+        hints = _hints()
+        hints["kinds"]["note"]["events"] = [{"label": "ui.note.page", "day": "number", "month": "page"}] * 2
+        hints["kinds"]["note"]["rules"] = [rule]
+        return hints
+
+    late = {"rule": "late", "after": 0, "event": 1, "days": 3}
+    build_ui(TOY_VOCABULARY, note({**late, "stand_down": "page", "stand_down_before": "number"}))
+    assert _refused(note({**late, "stand_dwon": "page"}), "unknown_rule_key") == {
+        "kind": "note", "rule": "late", "key": "stand_dwon"}
+    # A key another kind of rule reads is not this one's.
+    follows = {"rule": "follows", "from": "number", "to": "page"}
+    build_ui(TOY_VOCABULARY, note({**follows, "advance": {"day_from": "number", "day_to": "page"}}))
+    assert _refused(note({**follows, "days": 3}), "unknown_rule_key") == {"kind": "note", "rule": "follows", "key": "days"}
+    # `advance` names its two days and nothing else.
+    assert _refused(note({**follows, "advance": {"day_from": "number", "month": "page"}}), "unknown_rule_key") == {
+        "kind": "note", "rule": "follows", "key": "advance.month"}
+
+
 def test_a_rule_naming_an_unknown_path_is_refused():
     """A rule is what the page trusts for writes (a renumbering takes references along): every path,
     group and event it names is the kind's, or the build refuses rather than ships it."""

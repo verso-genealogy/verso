@@ -186,6 +186,7 @@ unplaced = "{kind}: {path} — подсказки его никуда не ст�
 unknown_label = "{key}: нет такого ключа в каталоге {package}"
 repeated = "{kind}: {path} стоит дважды"
 unknown_rule = "{kind}: {rule} — нет такого вида правила"
+unknown_rule_key = "{kind}: правило {rule} — нет ключа {key}"
 no_type = "{kind}: {path} — значение, которое страница не правит по полям: скройте его"
 unknown_widget = "{kind}: {path} — нет такого виджета {widget}"
 not_a_flag = "{kind}: {path} — {flag} бывает только true или не пишется"

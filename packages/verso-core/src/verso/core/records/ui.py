@@ -18,7 +18,8 @@ A field's `type` is the vocabulary's, never the hints': `str` → `text`, `int` 
 `path` is its JSON key (records v1). A label is a key of the plugin's catalog, checked against its
 English one. The hints place every field of every kind they name — in `fields`, or `hidden` — and
 the build refuses rather than guesses: a path the vocabulary lacks, a field left unplaced, a label
-the catalog lacks, a path placed twice, a rule of no known kind (`UiError`, `records.ui.*`).
+the catalog lacks, a path placed twice, a rule of no known kind or a key its kind does not read
+(`UiError`, `records.ui.*`).
 
 The schema is generated, not written, and committed beside `records-v1.json`
 (`Vocabulary.schema_package`):
@@ -49,8 +50,18 @@ from verso.core.records.fields import PERSON, ListOf, TypeSpec, Vocabulary, code
 UI_FILE = "ui-v1.json"
 UI_ID = "ui-v1"
 
-#: The kinds of rule a page may run on a record's own fields: any other is refused.
-RULES = frozenset({"follows", "shown_when", "renumber", "ref_choices", "late"})
+#: The kinds of rule a page may run on a record's own fields, and the keys each reads: any other kind, and any other key
+#: (a typo the page would never read), is refused.
+RULE_KEYS: dict[str, frozenset[str]] = {
+    "follows": frozenset({"rule", "from", "to", "advance"}),
+    "shown_when": frozenset({"rule", "group", "path", "when"}),
+    "renumber": frozenset({"rule", "group", "number", "refs"}),
+    "ref_choices": frozenset({"rule", "group", "path", "party"}),
+    "late": frozenset({"rule", "after", "event", "days", "stand_down", "stand_down_before"}),
+}
+RULES = frozenset(RULE_KEYS)
+#: The two days a `follows` rule's `advance` compares.
+ADVANCE_KEYS = frozenset({"day_from", "day_to"})
 GENDERS = frozenset({"male", "female", "of_record"})
 WIDGETS = frozenset({"wide", "checkbox"})
 REF_TO = frozenset({"item", "slot"})   # another item of the field's own group, or a slot
@@ -359,6 +370,11 @@ class _Build:
             return UiError(t("records.ui.unknown_path", kind=code_, path=path))
 
         name = rule["rule"]
+        unread = [key for key in rule if key not in RULE_KEYS[name]]
+        if name == "follows":
+            unread += [f"advance.{key}" for key in dict(rule.get("advance", {})) if key not in ADVANCE_KEYS]
+        if unread:
+            raise UiError(t("records.ui.unknown_rule_key", kind=code_, rule=name, key=unread[0]))
         if name == "follows":
             known(rule.get("from"))
             known(rule.get("to"))

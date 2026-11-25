@@ -185,6 +185,7 @@ unplaced = "{kind}: {path} — the hints place it nowhere: give it a place, or h
 unknown_label = "{key}: no such key in the catalog of {package}"
 repeated = "{kind}: {path} is placed twice"
 unknown_rule = "{kind}: {rule} — no such kind of rule"
+unknown_rule_key = "{kind}: rule {rule} — no key {key}"
 no_type = "{kind}: {path} — a value no page edits field by field: hide it"
 unknown_widget = "{kind}: {path} — no such widget {widget}"
 not_a_flag = "{kind}: {path} — {flag} is true or absent"
