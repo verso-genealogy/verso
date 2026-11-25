@@ -66,6 +66,9 @@ burial_namesake = "namesake= on a burial that states no age — nothing to excus
 [RET003]
 both = "previous_age_error= beside source_age_error= — the whole-line retraction already withdraws the previous figure; drop one"
 
+[RET004]
+birth = "source_age_error= on a birth that states no parent's age (no father_age=, no mother_age=) — nothing to withdraw"
+
 [RVR001]
 page_labelled_default = "redundant reviewed={value} on page(\"{label}\") — {records} defaults to reviewed={level_set}"
 page_labelled_set = "redundant reviewed={value} on page(\"{label}\") — {records} already sets reviewed={level_set}"
@@ -645,6 +648,9 @@ baptism_year = "baptism year"
 source_date_error = "date error in the original"
 calendar_note_birth = "a name out of the calendar — it is right"
 lag_note_birth = "a late christening — it is right"
+father_age = "Age"
+mother_age = "Age"
+source_age_error_birth = "The parents' ages — so in the original"
 lag_note_death = "a late burial — it is right"
 age_note = "the ages at the wedding — they are right"
 relationship = "relation"
@@ -738,6 +744,8 @@ marriage = "wedding"
 divorce = "divorce"
 
 [ui.row]
+father_age = "age"
+mother_age = "age"
 groom_age = "age"
 bride_age = "age"
 groom_marriage_number = "marriage no."
@@ -1048,6 +1056,10 @@ estate = "estate «{status}» in a civil registry book: estates were abolished i
 [ZGS005]
 old_letters = "«{name}» is spelled the old way in a civil registry book (1918 on) — does the act write it so?"
 
+[ZGS006]
+father = "The father's age is in the comment; move it to father_age="
+mother = "The mother's age is in the comment; move it to mother_age="
+
 [on_json]
 unsupported = "{code}: no such linter code — the linters on records JSON know the codes of dsllint and no other"
 source_code = "{code}: the form of the source text — a file has it, records JSON does not; no linter on records JSON answers this code"
@@ -1101,6 +1113,32 @@ help_out = "the export's root (default records/ at the workspace's root)"
 help_strict = "exit 1 if some file did not import"
 done = "{files}, {records} → {target}"
 skipped = "files skipped: {count} (see {where})"
+
+[cli.fix_parent_ages]
+description = "Move the parents' ages from a civil birth's comment (a ZAGS book) into father_age= / mother_age="
+help_files = "DSL files"
+help_check = "report only, write nothing (exit 1 if something would move; 2 if a file was refused)"
+guard_build = "{side}: the file does not build — {error}"
+side_before = "before the edit"
+side_after = "after the edit"
+guard_written = "{id}: the written {key}= changed"
+guard_differs = "{id}: the Records JSON differs by more than father_age, mother_age and comment"
+refused = "{path}: left untouched — {why}"
+file = "{path}: {births} births ({forms})"
+guard_digits = "{id}: the digits that left the comment do not match the ages in the fields ({digits})"
+unparsable = "does not parse — {error}"
+not_found = "no such file"
+not_py = "not a .py file"
+skipped = "{path}: skipped — {why}"
+total = "Moved: {files} files, {births} births; files refused: {refused}; skipped: {skipped}"
+total_check = "Would move: {files} files, {births} births; files refused: {refused}; skipped: {skipped}"
+
+[cli.fix_parent_ages.form]
+father_and_mother = "«отцу N, матери M»"
+father = "«отцу N»"
+mother = "«матери M»"
+pair = "«возраст N и M»"
+parents_1920 = "«родители: Имя (N) и Имя (M)»"
 
 [cli.facts]
 unnumbered = "unnumbered"
@@ -1404,6 +1442,18 @@ bride = "bride"
 under_age = "[{confidence}] {married}, {who} «{age}» — under {minimum}  {where}"
 gap = "[{confidence}] {married}, groom «{groom}», bride «{bride}» — {years:g} years  {where}"
 
+[cli.facts.parent_age_drift]
+head = "parent-age-drift: {count} (in {couples} couples; HIGH {high} — both parents drift the same way; LOW {low}; allowed {slack:g} years)"
+ok = "parent-age-drift: OK — 0 findings (no couple whose two acts differ by more than {slack:g} years)."
+note = "Two acts of the same parents: the ages do not fit the dates — another couple of the same names, or a misreading."
+father = "father's"
+mother = "mother's"
+finding = "  [{confidence}] {role} age {first} and {second}: gap {years:g} years  {first_where} → {second_where}"
+
+[cli.facts.parent_ages]
+head = "parent-ages: {count} (HIGH {high} — a parent's age out of range: mothers {mother_min}–{mother_max}, fathers from {father_min})"
+ok = "parent-ages: OK — 0 findings (no parent's age out of range: mothers {mother_min}–{mother_max}, fathers from {father_min})."
+
 [cli.facts.basis]
 none = "no facts"
 total = "assertions in all: {total}"
@@ -1439,6 +1489,8 @@ backing_by_name = "      list neighbour №{number} {name} — by given name and
 backing = "      list neighbour №{number} {name} → {canonical} — the candidate's {relation}"
 targets = "people made of lists and cards alone"
 folded = "list entries and cards"
+parents_targets = "fathers or mothers of a civil act, an age stated"
+parents_folded = "fathers or mothers of a civil act, an age stated"
 by_neighbours = ", by neighbours {backed}"
 head = "{channel}: {count} {targets} — {candidates} candidate(s) (HIGH {high}{by_list}), {ambiguous} ambiguous, {none} not found"
 signal = "A finding is a SIGNAL, not a verdict: read both people's records before folding."
@@ -1663,6 +1715,12 @@ under_age_bride = "The bride, «{age}», is under {minimum} at the wedding of {m
 under_age_why = "The minimum follows the wedding's date: 15/13 from 17.12.1774, 18/16 from 19.07.1830; the books themselves allow half a year short."
 age_gap = "The groom «{groom}», the bride «{bride}»: {years} years apart."
 age_gap_why = "Spouses more than {gap} years apart: the books hold almost none — read the ages again."
+
+[facts.signal.parent_ages]
+out_of_range_mother = "The mother, «{age}», at the child's birth — read the age again."
+out_of_range_father = "The father, «{age}», at the child's birth — read the age again."
+out_of_range_why_mother = "The books' mothers are {minimum} to {maximum}: an age outside it is most likely a misreading."
+out_of_range_why_father = "The books' fathers are at least {minimum}: a younger age is most likely a misreading."
 
 [facts.signal.date_order]
 baptism_before_birth = "The christening {left} is before the birth {right}."
@@ -1936,6 +1994,9 @@ birth_month = "month of birth"
 baptism_year = "year of the christening"
 source_date_error = "a date the source has wrong"
 lag_note = "on the delay"
+father_age = "father's age"
+mother_age = "mother's age"
+source_age_error = "age error in the source"
 other = "other"
 
 [site.cite]

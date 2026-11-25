@@ -80,7 +80,9 @@ The matcher serves more than this channel. A `Channel` says who is looked for
 take back out (`auditable`) and whether the father must be written on both
 sides; `LISTS_AND_CARDS` is this one, and `name-variants` is the second
 (`verso.ru.consolidation.name_variants`): a loose record of the corpus proper
-against the canonicals, the father required, as that channel always did.
+against the canonicals, the father required, as that channel always did. The
+third is `PARENTS` (`verso reconcile --parents`): the father or mother of a
+civil act, whose age the act states, against the people already held.
 """
 from __future__ import annotations
 
@@ -730,6 +732,21 @@ def corpus_proper(side: Side) -> bool:
     return bool(side.kinds - TARGET_KINDS)
 
 
+#: The slots of a birth record that name a parent.
+PARENT_SLOTS = ("father", "mother")
+
+
+def civil_parents(side: Side) -> bool:
+    """A person made only of the father or mother of births, one of them with
+    an age stated. A parent's age at the child's birth is stated only by the
+    civil acts (ЗАГС) — a `Citation` has no field for that — so the age is the
+    mark of one."""
+    return (bool(side.claims)
+            and all(c.cite.record_kind == "birth" and c.cite.locator in PARENT_SLOTS
+                    for c in side.claims)
+            and any(isinstance(c, AgedYears) for c in side.claims))
+
+
 @dataclass(frozen=True)
 class Channel:
     """Who is looked for, among whom, which folded appearance the oracle may
@@ -745,6 +762,20 @@ class Channel:
 #: `verso reconcile`: the deliberate duplicates against the corpus proper.
 LISTS_AND_CARDS = Channel(is_target=lists_and_cards, in_pool=corpus_proper,
                           auditable=lists_and_cards, by_neighbours=True)
+
+
+#: `verso reconcile --parents`: the father or mother of a civil act (a person made
+#: only of births' parents, one of them with an age stated) against the people the
+#: corpus already holds — anyone with a record of the corpus proper (church births,
+#: weddings, deaths, censuses, other records), a parent without a stated age
+#: included. The pool leaves the targets out, as `name-variants` does, or each
+#: would find itself; so the age-bearing parent of another act is no candidate —
+#: «the same father in two acts» is `parent-age-drift`'s question, and a fold's.
+#: The audit takes back out the same appearances the channel
+#: looks for: it makes no more sense here than that.
+PARENTS = Channel(is_target=civil_parents,
+                  in_pool=lambda s: corpus_proper(s) and not civil_parents(s),
+                  auditable=civil_parents)
 
 
 def _life_of(entries: EntryDays) -> Callable[[Side], Lives]:

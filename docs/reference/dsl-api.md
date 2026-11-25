@@ -19,7 +19,7 @@ What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only 
 - `Status` (class)
 - `WwiDocumentType` (enum): `CASUALTY_LISTS`, `CASUALTY_CARD_LOWER`, `WOUNDED_NOTICE`, `ARRIVAL_CARD_HIGHER`, `ARRIVAL_CARD_LOWER`, `AWARD_LISTS`, `REPORTING_CARD`, `POW_CARD`
 - `WwiiDocumentType` (enum): `NAGRADNOY_LIST`, `AWARD_ORDER`, `ANNIVERSARY_AWARD`, `CASUALTY_REPORT`, `MEMORY_BOOK`, `SERVICE_CARD`, `POW_CARD`, `AWARD_CARD`, `CASUALTY_CLARIFICATION`, `WOUND_CARD`, `TRANSIT_POINT`, `UNIT_ROSTER`
-- `birth(record_num, gender, b_day=None, k_day=None, b_month=None, k_month=None, child=None, father=None, mother=None, god_parent1=None, god_parent2=None, god_parent3=None, god_parent4=None, priest=None, deacon=None, dyachok=None, sexton=None, page=None, case=None, comment=None, relatives=None, year=None, k_year=None, source_date_error=None, reviewed=None, calendar_note=None, lag_note=None)`
+- `birth(record_num, gender, b_day=None, k_day=None, b_month=None, k_month=None, child=None, father=None, mother=None, god_parent1=None, god_parent2=None, god_parent3=None, god_parent4=None, priest=None, deacon=None, dyachok=None, sexton=None, page=None, case=None, comment=None, relatives=None, year=None, k_year=None, source_date_error=None, reviewed=None, calendar_note=None, lag_note=None, father_age=None, mother_age=None, source_age_error=None)`
 - `birth_month(month, *records)`
 - `birth_month_year(month, year, *records)`
 - `birth_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`

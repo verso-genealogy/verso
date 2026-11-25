@@ -3,6 +3,21 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.50.dev0)
+
+### Added
+
+- verso-ru: the parents' ages of a civil birth act. `birth(father_age=, mother_age=, source_age_error=)` (records
+  JSON keys alike); the facts layer reads each as an `AgedYears` dated to the child's birth, and `death-age` now
+  compares only ages from death records. The CSV «Комментарий», the Geni texts (through `format_age`) and the
+  village.db listing print them. Two checks: `parent-ages` (one act; mother 13–52, father from 15; also a card signal)
+  and `parent-age-drift` (two acts of one couple, 2 years of slack), the channel `verso reconcile --parents`, the
+  advisory ZGS006 (an age left in the comment while its field is empty), the hard RET004 (`source_age_error` on a birth
+  with no age) and the codemod `verso fix-parent-ages FILE… [--check]`, guarded by a records-JSON comparison. Moves in a corpus:
+  every village's `facts_findings.tsv` gets two new rows (`parent-ages`, `parent-age-drift`); verso's people index
+  reads drafts, so parents gain a birth year there for villages that state ages. The files that write no parent age
+  do not move.
+
 ## 0.1.49 — 2026-11-24
 
 Only a site built by `verso site` moves; a corpus's CSVs, Terraform, records JSON, facts and reports do not. The

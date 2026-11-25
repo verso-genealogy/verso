@@ -15,6 +15,30 @@ def walked() -> list[Path]:
     return code_files("verso.core", "verso.ru")
 
 
+class TestBirthCsvParentAges(unittest.TestCase):
+    def _comment(self, **kw):
+        birth = Birth(record_num=1, gender="муж", b_day=15, k_day=16, b_month=3, k_month=3,
+                      child=Person("Иванъ", name_modern_orth="Иван"), father=None, mother=None,
+                      god_parent1=None, god_parent2=None, **kw)
+        records = BirthRecords(archive="ГАТО", fund="1", inventory="1", case="1", village="Заманиловка",
+                               church="Троицкая", year=1920, records=[birth])
+        import csv
+        with tempfile.TemporaryDirectory() as tmpdir:
+            name = BirthRecordsCsvExporter().export(records, tmpdir)
+            with open(name, encoding="utf-8") as f:
+                reader = csv.reader(f)
+                header = next(reader)
+                return next(reader)[header.index("Комментарий")]
+
+    def test_ages_follow_the_comment(self):
+        self.assertEqual("Заявитель — отец; отцу 31, матери 30",
+                         self._comment(comment="Заявитель — отец", father_age=31, mother_age=30))
+
+    def test_without_ages_the_comment_is_as_it_was(self):
+        self.assertEqual("Заявитель — отец", self._comment(comment="Заявитель — отец"))
+        self.assertEqual("", self._comment())
+
+
 class TestBirthRecordsCsvExporter(unittest.TestCase):
 
     def test_inherits_from_records_exporter(self):

@@ -54,7 +54,7 @@ def _wedding(day: int = 1, month: Month = Month.DECEMBER, year: int | None = 185
 def _born(b_day: int, k_day: int, b_month: Month, k_month: Month | None = None, name: str = "Иван", gender: Gender = M,
           **more):
     return birth(1, gender, b_day, k_day, b_month, k_month or b_month, year=1850,
-                 child=person(name), father=person("Петр", "Иванов"), **more)
+                 child=person(name), father=person("Петр", "Иванов"), mother=person("Анна", "Иванова"), **more)
 
 
 def _died(d_day: int, b_day: int, d_month: Month, b_month: Month | None = None, **more):
@@ -89,10 +89,11 @@ def test_a_wedding_in_the_nativity_fast_is_a_strict_signal():
 
 
 def test_the_checks_and_the_fields_that_stand_them_down():
-    assert CHECKS == ("wedding-calendar", "name-days", "baptism-lag", "burial-lag", "wedding-ages", "date-order")
+    assert CHECKS == ("wedding-calendar", "name-days", "baptism-lag", "burial-lag", "wedding-ages", "parent-ages", "date-order")
     assert STAND_DOWN == {"wedding-calendar": "calendar_note", "name-days": "calendar_note",
                           "baptism-lag": "lag_note", "burial-lag": "lag_note",
-                          "wedding-ages": "age_note", "date-order": "source_date_error"}
+                          "wedding-ages": "age_note", "parent-ages": "source_age_error",
+                          "date-order": "source_date_error"}
 
 
 def test_a_divorce_before_the_marriage_its_act_names_is_said_once():
@@ -389,6 +390,7 @@ def _every_signal() -> list[Signal]:
         _born(3, 20, Month.JANUARY), _born(20, 5, Month.JANUARY, Month.FEBRUARY), _born(18, 11, Month.OCTOBER),
         _died(3, 8, Month.MARCH), _died(3, 1, Month.MARCH, Month.APRIL), _died(9, 8, Month.MARCH),
         _divorced("12 сентября 1925"), _divorced("1 декабря 1915"),
+        _born(3, 4, Month.MAY, mother_age=2), _born(3, 4, Month.MAY, father_age=9),
     ]
     return [s for r in records for s in signals_of(r, record_id=RID, svyatcy=_SVYATCY).found]
 
@@ -400,6 +402,7 @@ def test_every_signal_has_its_text_in_both_catalogs():
         "facts.signal.name_days.lookalike", "facts.signal.baptism_lag.late", "facts.signal.baptism_lag.month_carried",
         "facts.signal.burial_lag.late", "facts.signal.burial_lag.very_late", "facts.signal.wedding_ages.under_age_groom",
         "facts.signal.wedding_ages.under_age_bride", "facts.signal.wedding_ages.age_gap",
+        "facts.signal.parent_ages.out_of_range_mother", "facts.signal.parent_ages.out_of_range_father",
         "facts.signal.date_order.baptism_before_birth", "facts.signal.date_order.burial_before_death",
         "facts.signal.date_order.divorce_before_marriage"}
     for lang in ("ru", "en"):
@@ -423,6 +426,8 @@ SIGNAL_KEYS = {
     *(f"baptism_lag.{n}" for n in ("late", "late_why", "month_carried", "month_carried_why")),
     *(f"burial_lag.{n}" for n in ("late", "late_why", "very_late", "very_late_why")),
     *(f"wedding_ages.{n}" for n in ("under_age_groom", "under_age_bride", "under_age_why", "age_gap", "age_gap_why")),
+    *(f"parent_ages.{n}" for n in ("out_of_range_mother", "out_of_range_father", "out_of_range_why_mother",
+                                   "out_of_range_why_father")),
     *(f"date_order.{kind}" for _l, _r, kind, _e, _w in (*orderings(), *within_orderings())),
 }
 
@@ -449,3 +454,8 @@ def test_a_signal_s_params_are_plain_values():
 def test_the_note_s_default_text_is_content():
     for lang in ("ru", "en"):
         assert str(i18n.catalog("verso.ru", lang)["facts.signal.note_default"]) == "так в подлиннике"
+
+
+def test_signal_of_refuses_a_finding_no_check_says():
+    with pytest.raises(TypeError):
+        signal_of(object())  # type: ignore[arg-type]

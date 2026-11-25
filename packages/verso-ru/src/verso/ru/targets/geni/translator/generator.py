@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     pass
-from verso.ru.ages import format_age
+from verso.ru.ages import birth_notes, format_age, parent_age_prose
 from verso.ru.domain.event_date import EventDate
 from verso.ru.dsl.records.reviewed import admitted
 from verso.ru.naming.transliteration import generate_res_name
@@ -2115,12 +2115,13 @@ class TerraformGenerator:
                 priest_for_mk,
                 *relative_persons_for_mk,
             )
-            if names_in_mk or b.comment:
+            notes = birth_notes(b)
+            if names_in_mk or notes:
                 about_lines.append("Комментарий из МК:")
                 if names_in_mk:
                     about_lines.append(f">Имена в МК: {names_in_mk}")
-                if b.comment:
-                    about_lines.append(f">{b.comment}")
+                if notes:
+                    about_lines.append(f">{notes}")
             # GeniProfile.to_terraform places the first line after 8 leading
             # spaces inside the trimspace(<<-EOT ...) block; subsequent lines
             # need the same indent so `terraform fmt` leaves the block aligned.
@@ -2146,8 +2147,12 @@ class TerraformGenerator:
                 father_about_lines = [
                     f"<strong>{_book_tag(records)} {records.village} {year}:</strong> отец ребенка"
                 ]
+                _father_age = parent_age_prose(b.father_age)
+                if _father_age:
+                    father_about_lines.append(f"Возраст при рождении ребёнка: {_father_age}")
                 if b.father.status:
                     father_about_lines.append(f"Титул/звание: {b.father.status}")
+                # The parent's own age stands on its line above; the comment stays plain so the age is not said twice.
                 if names_in_mk or b.comment:
                     father_about_lines.append("Комментарий из МК:")
                     if names_in_mk:
@@ -2175,8 +2180,12 @@ class TerraformGenerator:
                 mother_about_lines = [
                     f"<strong>{_book_tag(records)} {records.village} {year}:</strong> мать ребенка"
                 ]
+                _mother_age = parent_age_prose(b.mother_age)
+                if _mother_age:
+                    mother_about_lines.append(f"Возраст при рождении ребёнка: {_mother_age}")
                 if b.mother.status:
                     mother_about_lines.append(f"Титул/звание: {b.mother.status}")
+                # The parent's own age stands on its line above; the comment stays plain so the age is not said twice.
                 if names_in_mk or b.comment:
                     mother_about_lines.append("Комментарий из МК:")
                     if names_in_mk:
@@ -2280,7 +2289,7 @@ class TerraformGenerator:
                     birth=gp_birth_range,
                     death=gp_death_after,
                     about=self._build_godparent_about(
-                        gp_person, records.village, year, names_in_mk, b.comment,
+                        gp_person, records.village, year, names_in_mk, notes,
                     ),
                     **common)
                 self._emit_profile(filename, profile)
@@ -2305,7 +2314,7 @@ class TerraformGenerator:
             # `_<date>_marina_andreevna_mk_births_41_god_parent_2`
             # ending up as a "child" of the parents). Removed.
 
-            def _rel_about(rel, *, _year=year, _b=b,
+            def _rel_about(rel, *, _year=year, _notes=notes,
                            _names_in_mk=names_in_mk):
                 """Legacy parity:
                 relatives tied to a godparent get an `about` block with
@@ -2321,12 +2330,12 @@ class TerraformGenerator:
                 ]
                 if rel.person.status:
                     lines.append(f"Титул/звание: {rel.person.status}")
-                if _names_in_mk or _b.comment:
+                if _names_in_mk or _notes:
                     lines.append("Комментарий из МК:")
                     if _names_in_mk:
                         lines.append(f">Имена в МК: {_names_in_mk}")
-                    if _b.comment:
-                        lines.append(f">{_b.comment}")
+                    if _notes:
+                        lines.append(f">{_notes}")
                 return ("\n" + " " * 8).join(lines)
 
             relative_profiles = self._emit_relatives(
@@ -2506,12 +2515,12 @@ class TerraformGenerator:
             # (reconstructed here as "Имена в МК: ...") and `Пометки: {notes}`
             # (DSL's birth.comment). One blank separator before whichever
             # appears first.
-            if names_in_mk or b.comment:
+            if names_in_mk or notes:
                 text_lines.append("")
             if names_in_mk:
                 text_lines.append(f"Комментарий: Имена в МК: {names_in_mk}")
-            if b.comment:
-                text_lines.append(f"Пометки: {b.comment}")
+            if notes:
+                text_lines.append(f"Пометки: {notes}")
             text = "\n".join(f"        {line}" if line else line for line in text_lines)
             self._outputs[filename] += _document_resource(
                 res_name=doc_res_name,

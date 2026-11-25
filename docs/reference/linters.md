@@ -17,7 +17,7 @@ The baseline ratchet (`dsllint --baseline FILE`) keeps a row per advisory findin
 | `census_parent_link` | CPL001, CPL002, CPL003, CPL004, CPL005, CPL006, CPL007, CPL008, CPL009, CPL010, CPL011, CPL012 | AST-based linters (CPL001-CPL012) that WARN on census members whose parent/spouse link is silently lost — or silently invented — in the generated tree. |
 | `census_redundancy` | CRD001, CRD002, CRD003, CRD004, CRD005, CRD006 | CRD001 — AST linter that flags redundant surname / patronymic arguments on a census `member()`'s `person()` when `CensusHousehold.__init__` would auto-derive the identical value from the household head / husband / father. |
 | `census_status_redundancy` | CSR001 | CSR001 — AST linter that flags a redundant explicit ``status=`` on a census ``member()``'s ``person()`` when the enclosing ``census_records(..., defaults=RecordDefaults(...))`` would apply the identical status by default. |
-| `civil_register` | ZGS001, ZGS002, ZGS003, ZGS004, ZGS005 | AST-based linter (ZGS001–ZGS005) for a book of the civil registry — `civil=True`. |
+| `civil_register` | ZGS001, ZGS002, ZGS003, ZGS004, ZGS005, ZGS006 | AST-based linter (ZGS001–ZGS006) for a book of the civil registry — `civil=True`. |
 | `deaths_burial_date` | DBD001, DBD002 | AST-based linter for the two dates of a `death()` record: death and burial. |
 | `deaths_relatives` | DRL001 | AST-based linter guarding the ONE-relative limit of `death()` records. |
 | `deaths_residence` | DRA001, DRA002 | AST-based linter that checks residence alignment between the deceased and the relative(s) named in a `death()` record. |
@@ -40,7 +40,7 @@ The baseline ratchet (`dsllint --baseline FILE`) keeps a row per advisory findin
 | `relationship_ref` | REL001, REL002 | AST-based linter to validate `relationship_ref` strings on `relative()` calls inside DSL records (birth/marriage/death) against a fixed allowlist. |
 | `relative_attachment` | RLA001, RLA002, RLA003 | RLA001–RLA003 — AST linter for how a ``relative()`` attaches to its subject inside a birth / marriage / death record. |
 | `residence_title` | RTV001, RTV002 | AST-based linter: a person's status against the village they live in. |
-| `retractions` | RET001, RET002, RET003 | AST-based linter (RET001–RET003) for an age retraction that retracts nothing. |
+| `retractions` | RET001, RET002, RET003, RET004 | AST-based linter (RET001–RET004) for an age retraction that retracts nothing. |
 | `reviewed_redundancy` | RVR001 | RVR001 — a ``reviewed=`` that restates the value it would already inherit. |
 | `shared_ast` | — | One parse and one walk of a DSL file, shared by every check that reads it. |
 | `single_line_calls` | SLC001, SLC002, SLC003, SLC004, SLC005 | Lint script to check that person() calls are on a single line, and that known status string constants are used instead of inline literals. |

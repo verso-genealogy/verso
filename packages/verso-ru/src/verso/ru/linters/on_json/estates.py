@@ -1,7 +1,7 @@
 """The rules that read the book and the corpus's estates (class `context`, needs `book`, `estates`): the estate a
 parent and a child, or the spouses, state (PSA001-PSA004), a status against the village a person lives in (RTV001,
 RTV002), a full patronymic of a low status (PAF001), a roll's two ages against the revision gap (CAI002) and the
-books of the civil registry (ZGS001-ZGS005).
+books of the civil registry (ZGS001-ZGS006).
 
 The book is a node of the document (`written` of a record set: its village, church, year, `civil`, `defaults`); the
 estates are those of the workspace the file is linted in (`lint_records(workspace=)`, owner decision Д2): its
@@ -67,6 +67,7 @@ from verso.ru.linters.on_json.walk import (
     status_name_or_none)
 from verso.ru.messages import t
 from verso.ru.naming import modernize_orthography
+from verso.ru.parent_age_text import FIELDS, ROLES, read_comment
 
 __all__ = ["RULES"]
 
@@ -760,7 +761,7 @@ def cai002(view: FileView) -> Iterator[Finding]:
                           diff=diff, year=year, gap=gap, previous_year=previous_year)
 
 
-# --- ZGS001-ZGS005: the books of the civil registry ---------------------------------------------------------
+# --- ZGS001-ZGS006: the books of the civil registry ---------------------------------------------------------
 
 _BOOKS = frozenset({"births", "deaths", "marriages"})        # `civil_register._SETS`: the record sets it reads
 
@@ -882,8 +883,21 @@ def zgs005(view: FileView) -> Iterator[Finding]:
                     break
 
 
+def zgs006(view: FileView) -> Iterator[Finding]:
+    """A civil birth's comment saying a parent's age whose field is empty (`civil_register._parent_ages_in_comment`)."""
+    for doc, record in view.records({"births"}):
+        if not _civil(doc) or record["kind"] != "birth":
+            continue
+        written = view.written("birth", record)
+        comment = as_text(written.get("comment"))
+        empty = tuple(role for role in ROLES if written.get(FIELDS[role]) is None)
+        reading = read_comment(comment, empty) if comment else None
+        for role in (reading.ages if reading else ()):
+            yield finding("ZGS006", role, record["id"], token="comment")
+
+
 RULES: dict[str, Rule] = {
     "PSA001": psa001, "PSA002": psa002, "PSA003": psa003, "PSA004": psa004, "RTV001": rtv001, "RTV002": rtv002,
     "PAF001": paf001, "CAI002": cai002, "ZGS001": zgs001, "ZGS002": zgs002, "ZGS003": zgs003, "ZGS004": zgs004,
-    "ZGS005": zgs005,
+    "ZGS005": zgs005, "ZGS006": zgs006,
 }

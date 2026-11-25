@@ -361,6 +361,21 @@
       "lag_note",
       "POSITIONAL_OR_KEYWORD",
       "None"
+     ],
+     [
+      "father_age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "mother_age",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
+     ],
+     [
+      "source_age_error",
+      "POSITIONAL_OR_KEYWORD",
+      "None"
      ]
     ]
    },

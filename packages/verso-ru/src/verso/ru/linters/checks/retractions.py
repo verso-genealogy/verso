@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AST-based linter (RET001–RET003) for an age retraction that retracts nothing.
+"""AST-based linter (RET001–RET004) for an age retraction that retracts nothing.
 
 `member(source_age_error=)`, `member(previous_age_error=)` and
 `death(source_age_error=)` withdraw an age the record states — the facts layer
@@ -15,6 +15,8 @@ wrong kwarg, or a figure the transcriber left out.
            a record that states no age at all.
   [RET003] `source_age_error=` and `previous_age_error=` on one roll line: the
            whole-line retraction already withdraws the previous figure.
+  [RET004] `source_age_error=` on a birth that states neither `father_age=` nor `mother_age=`:
+           it withdraws the parents' ages, and the record states none.
 
 Not-recorded ages (`None`, `""`, `"?"`, `"-"`) count as no age, as they do for
 `verso.ru.ages.format_age`. A roll line dated by a typed `birth_year=`/`birth_day=`
@@ -83,6 +85,13 @@ def _check_death(d: ast.Call) -> list[dict[str, object]]:
     return [_issue(kw[name], "RET002", "burial_" + name) for name in ("source_age_error", "namesake") if name in kw]
 
 
+def _check_birth(b: ast.Call) -> list[dict[str, object]]:
+    kw = _kwargs(b)
+    if "source_age_error" not in kw or any(_states(kw[k].value) for k in ("father_age", "mother_age") if k in kw):
+        return []
+    return [_issue(kw["source_age_error"], "RET004", "birth")]
+
+
 def _collect(tree: ast.AST) -> list[dict[str, object]]:
     issues: list[dict[str, object]] = []
     for node in shared_ast.walk(tree):
@@ -93,6 +102,8 @@ def _collect(tree: ast.AST) -> list[dict[str, object]]:
             issues.extend(_check_member(node))
         elif name == "death":
             issues.extend(_check_death(node))
+        elif name == "birth":
+            issues.extend(_check_birth(node))
     return sorted(issues, key=lambda i: (int(str(i["line"])), str(i["message"])))
 
 

@@ -1,10 +1,10 @@
 """The checks one record answers alone, and how a finding of theirs is said.
 
 `verso facts --check` asks a village; a record on its card is one entry, read before
-anyone has reviewed it and with no consolidation to say who its people are. Six
+anyone has reviewed it and with no consolidation to say who its people are. Seven
 of the checks need nothing more than that entry — a wedding on a day the Church
 did not marry, a name no saint near the birth supports, a christening or a
-burial too late, an age at the wedding the law cannot hold, two dates the
+burial too late, an age at the wedding the law cannot hold, a parent's age no birth can have, two dates the
 entry itself orders wrongly — and `signals_of` asks them of it: the same
 functions of `verso.ru.facts.checks`, the same thresholds, the entry read
 whether it is reviewed or not (a card is where it gets reviewed).
@@ -32,6 +32,7 @@ from verso.ru.church_calendar.svyatcy import Svyatcy, load_svyatcy
 from verso.ru.facts.checks.dates import WithinFinding, within_entry
 from verso.ru.facts.checks.lags import BAPTISM_DAYS, BURIAL_DAYS, BURIAL_HIGH_DAYS, LagFinding, baptism_lags, burial_lags
 from verso.ru.facts.checks.name_days import AFTER, BEFORE, NameDayFinding, name_day_findings
+from verso.ru.facts.checks.parent_ages import FATHER_MIN, MOTHER_MAX, MOTHER_MIN, ParentAgeFinding, parent_age_findings
 from verso.ru.facts.checks.wedding_ages import GAP_YEARS, WeddingAgeFinding, wedding_age_findings
 from verso.ru.facts.checks.wedding_calendar import WeddingFinding, wedding_calendar_findings, weekday_name
 from verso.ru.facts.extract.one import Extract, extractor_of
@@ -39,12 +40,13 @@ from verso.ru.facts.model import AssertionSet, Citation, FactDate
 from verso.ru.messages import PACKAGE, Message
 
 #: The checks a record answers alone, in the order a card lists them.
-CHECKS: tuple[str, ...] = ("wedding-calendar", "name-days", "baptism-lag", "burial-lag", "wedding-ages", "date-order")
+CHECKS: tuple[str, ...] = ("wedding-calendar", "name-days", "baptism-lag", "burial-lag", "wedding-ages", "parent-ages", "date-order")
 #: check → the key of the record's `written` that stands its findings down («так в подлиннике»).
 STAND_DOWN: dict[str, str] = {
     "wedding-calendar": "calendar_note", "name-days": "calendar_note",
     "baptism-lag": "lag_note", "burial-lag": "lag_note",
-    "wedding-ages": "age_note", "date-order": "source_date_error"}
+    "wedding-ages": "age_note", "parent-ages": "source_age_error",
+    "date-order": "source_date_error"}
 #: A check one record answers only in part, and the part it asks: the rest needs the people folded.
 IN_PART: dict[str, str] = {"date-order": "inside one entry"}
 #: The orderings `source_date_error=` answers: it withdraws a christening, a burial or the marriage an act of
@@ -53,7 +55,7 @@ DATE_ORDER_STOOD_DOWN = frozenset({"baptism_before_birth", "burial_before_death"
 #: The bans that move with Pascha: a reader checks them against the year's.
 _MOVABLE_BANS = frozenset({"cheesefare_week", "great_lent", "bright_week", "apostles_fast", "meatfare_sunday"})
 
-type Finding = WeddingFinding | NameDayFinding | LagFinding | WeddingAgeFinding | WithinFinding
+type Finding = WeddingFinding | NameDayFinding | LagFinding | WeddingAgeFinding | ParentAgeFinding | WithinFinding
 
 
 def _said(key: str, params: Mapping[str, str | int] | None = None) -> Message:
@@ -161,6 +163,13 @@ def _wedding_age(f: WeddingAgeFinding) -> tuple[str, str, Message, Message, tupl
     return "age_gap", "", said, _said(_key("wedding-ages", "age_gap_why"), {"gap": f"{GAP_YEARS:g}"}), ()
 
 
+def _parent_age(f: ParentAgeFinding) -> tuple[str, str, Message, Message, tuple[Message, ...]]:
+    said = _said(_key("parent-ages", f"out_of_range_{f.role}"), {"age": str(f.age)})
+    why = _said(_key("parent-ages", "out_of_range_why_mother" if f.role == "mother" else "out_of_range_why_father"),
+                {"minimum": MOTHER_MIN if f.role == "mother" else FATHER_MIN, "maximum": MOTHER_MAX})
+    return "out_of_range", f.role, said, why, ()
+
+
 def _within(f: WithinFinding) -> tuple[str, str, Message, Message, tuple[Message, ...]]:
     said = _said(_key("date-order", f.kind), {"left": _date(f.left.date), "right": _date(f.right.date)})
     return f.kind, f.left.cite.locator, said, _said(f"facts.date_order.hint.{f.kind}"), ()
@@ -176,8 +185,12 @@ def signal_of(finding: Finding, *, record: str = "") -> Signal:
         check, parts, cite = f"{finding.kind}-lag", _lag(finding), finding.cite
     elif isinstance(finding, WeddingAgeFinding):
         check, parts, cite = "wedding-ages", _wedding_age(finding), finding.cite
-    else:
+    elif isinstance(finding, ParentAgeFinding):
+        check, parts, cite = "parent-ages", _parent_age(finding), finding.cite
+    elif type(finding) is WithinFinding:
         check, parts, cite = "date-order", _within(finding), finding.left.cite
+    else:
+        raise TypeError(f"signal_of: no check says a {type(finding).__name__}")
     variant, locator, said, why, details = parts
     stood_down = check != "date-order" or variant in DATE_ORDER_STOOD_DOWN
     return Signal(check=check, variant=variant, confidence=getattr(finding, "confidence", "HIGH"), record=record,
@@ -220,6 +233,8 @@ def findings_of(facts: AssertionSet, check: str, *, svyatcy: Svyatcy | None = No
         return burial_lags(facts).findings
     if check == "wedding-ages":
         return wedding_age_findings(facts).findings
+    if check == "parent-ages":
+        return parent_age_findings(facts)
     return within_entry(facts)
 
 

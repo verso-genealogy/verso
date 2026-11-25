@@ -84,6 +84,22 @@
      "checks": true
     },
     {
+     "path": "father_age",
+     "type": "age",
+     "label": "ui.field.father_age"
+    },
+    {
+     "path": "mother_age",
+     "type": "age",
+     "label": "ui.field.mother_age"
+    },
+    {
+     "path": "source_age_error",
+     "type": "text",
+     "label": "ui.field.source_age_error_birth",
+     "checks": true
+    },
+    {
      "path": "civil",
      "type": "boolean",
      "hidden": true
@@ -118,12 +134,18 @@
     {
      "role": "father",
      "label": "ui.slot.father",
-     "gender": "male"
+     "gender": "male",
+     "row": [
+      "father_age"
+     ]
     },
     {
      "role": "mother",
      "label": "ui.slot.mother",
-     "gender": "female"
+     "gender": "female",
+     "row": [
+      "mother_age"
+     ]
     },
     {
      "role": "godparent",
@@ -319,6 +341,21 @@
     },
     {
      "path": "lag_note",
+     "type": "text",
+     "hidden": true
+    },
+    {
+     "path": "father_age",
+     "type": "age",
+     "hidden": true
+    },
+    {
+     "path": "mother_age",
+     "type": "age",
+     "hidden": true
+    },
+    {
+     "path": "source_age_error",
      "type": "text",
      "hidden": true
     },

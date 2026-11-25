@@ -43,11 +43,11 @@ LINTER_CODES: dict[str, tuple[str, ...]] = {
     "status_orthography": ("SOR001",),
     "relative_attachment": ("RLA001", "RLA002", "RLA003"),
     "reviewed_redundancy": ("RVR001",),
-    "retractions": ("RET001", "RET002", "RET003"),
+    "retractions": ("RET001", "RET002", "RET003", "RET004"),
     "witness_side": ("WSD001", "WSD002"),
     "witness_side_advisory": ("WSD003", "WSD004", "WSD005", "WSD006"),
     "civil_register": ("ZGS001", "ZGS002"),
-    "civil_register_advisory": ("ZGS003", "ZGS004", "ZGS005"),
+    "civil_register_advisory": ("ZGS003", "ZGS004", "ZGS005", "ZGS006"),
     "dsl_imports": ("IMP001",),
     "divorces": ("DVC001",),
     # Not a DSL check: the names layers' own (`checks/lexicon.py`), run over a layer's files.

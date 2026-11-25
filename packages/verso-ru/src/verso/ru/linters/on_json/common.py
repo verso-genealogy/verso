@@ -263,7 +263,7 @@ def rla001(view: FileView) -> Iterator[Finding]:
                                  record["id"])
 
 
-# --- RET001, RET002, RET003: an age retraction that retracts nothing ---------------------------------
+# --- RET001–RET004: an age retraction that retracts nothing ---------------------------------
 
 def _states(value: object) -> bool:
     """`retractions._states` of a written value: it states an age (or a date) unless it is none or a
@@ -276,6 +276,11 @@ def _states(value: object) -> bool:
 def _retractions(view: FileView) -> Iterator[Finding]:
     """`retractions._check_member` for each roll line and `_check_death` for each burial."""
     for _, record in view.records():
+        if record["kind"] == "birth":
+            written = view.written("birth", record)
+            if "source_age_error" in written and not any(_states(written.get(k)) for k in ("father_age", "mother_age")):
+                yield finding("RET004", "birth", record["id"])
+            continue
         if record["kind"] == "death":
             written = view.written("death", record)
             if not _states(written.get("age")):
@@ -310,6 +315,10 @@ def ret003(view: FileView) -> Iterator[Finding]:
     return only("RET003", _retractions(view))
 
 
+def ret004(view: FileView) -> Iterator[Finding]:
+    return only("RET004", _retractions(view))
+
+
 # --- DVC001: a divorce's marriage as text --------------------------------------------------------------
 
 def dvc001(view: FileView) -> Iterator[Finding]:
@@ -325,6 +334,6 @@ def dvc001(view: FileView) -> Iterator[Finding]:
 
 RULES: dict[str, Rule] = {
     "NAM005": nam005, "REL001": rel001, "REL002": rel002, "AGE001": age001, "AGE002": age002,
-    "MST001": mst001, "SOR001": sor001, "RLA001": rla001, "RET001": ret001, "RET002": ret002, "RET003": ret003,
+    "MST001": mst001, "SOR001": sor001, "RLA001": rla001, "RET001": ret001, "RET002": ret002, "RET003": ret003, "RET004": ret004,
     "DVC001": dvc001,
 }

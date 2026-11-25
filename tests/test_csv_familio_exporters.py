@@ -29,6 +29,38 @@ class TestBirthRecordsCsvFamilioExporter(unittest.TestCase):
             os.remove(os.path.join(self.temp_dir, file))
         os.rmdir(self.temp_dir)
 
+    def _civil_comment(self, **ages):
+        father = Person("Петръ", "Ивановъ", name_modern_orth="Петр", gender=Gender.MALE, comment="он же Пётр")
+        birth = Birth(record_num=1, gender=Gender.MALE, b_day=3, k_day=5, b_month=Month.JANUARY,
+                      k_month=Month.JANUARY, child=Person("Иванъ", name_modern_orth="Иван", gender=Gender.MALE),
+                      father=father, mother=None, god_parent1=None, god_parent2=None, page="1",
+                      comment=ages.pop("comment", "Гражданская регистрация (ЗАГС); заявитель — отец"), **ages)
+        records = BirthRecords(archive="ЦГА", fund="1", inventory="1", case="1", village="Горюхино",
+                               church="ЗАГС", year=1930, records=[birth])
+        records.civil = True
+        with open(BirthRecordsCsvFamilioExporter().export(records), encoding="utf-8") as f:
+            reader = csv.reader(f)
+            header = next(reader)
+            return next(reader)[header.index("Комментарий")]
+
+    def test_parents_ages_follow_the_record_comment(self):
+        comment = self._civil_comment(father_age=31, mother_age=30)
+        self.assertTrue(comment.startswith(
+            "Гражданская регистрация (ЗАГС); заявитель — отец; отцу 31, матери 30; он же Пётр; зарегистрировано"),
+            comment)
+
+    def test_one_parent_age_and_verbatim_strings(self):
+        self.assertIn("; матери 30?; ", self._civil_comment(mother_age="30?"))
+        self.assertIn("; отцу 31; ", self._civil_comment(father_age=31))
+
+    def test_without_ages_the_comment_is_as_before(self):
+        self.assertEqual("Гражданская регистрация (ЗАГС); заявитель — отец; он же Пётр; зарегистрировано 5.1.1930",
+                         self._civil_comment())
+
+    def test_ages_lead_when_there_is_no_record_comment(self):
+        self.assertTrue(self._civil_comment(comment=None, father_age=31, mother_age=30)
+                        .startswith("отцу 31, матери 30; он же Пётр"))
+
     def test_exporter_creates_file_with_correct_name(self):
         """Test that exporter creates a file with the correct naming convention."""
         birth_records = BirthRecords(

@@ -71,7 +71,7 @@ def test_every_code_has_a_scope():
     scope `source`, ZGS003 is a finding about a book, ULC001 reads one fact of the whole file, the LEX codes a names
     layer's files, and every other code is a record's."""
     table = hosted.readiness()
-    assert len(table) == 104
+    assert len(table) == 106
     assert {r.scope for r in table.values()} == {"record", "set", "file", "source", "layer"}
     assert {c for c, r in table.items() if r.scope == "layer"} == set(LINTER_CODES["lexicon"])
     assert {table[c].cls for c in LINTER_CODES["lexicon"]} == {"context"}

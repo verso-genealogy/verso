@@ -105,6 +105,7 @@ COMMANDS: dict[str, str] = {
     "find-person":                  "verso.ru.cli.find_person",
     "fix-combined-name-patronymic": "verso.ru.cli.fix_combined_name_patronymic",
     "fix-ich-patronymics":          "verso.ru.cli.fix_ich_patronymics",
+    "fix-parent-ages":              "verso.ru.cli.fix_parent_ages",
     "generate-familio-tf":          "verso.ru.cli.generate_familio_tf",
     "generate-tf":                  "verso.ru.cli.generate_tf",
     "generate-timeline":            "verso.ru.cli.generate_timeline",

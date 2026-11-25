@@ -110,10 +110,19 @@ def _facts_from_birth(birth: Any, village: str, source_file: str, entry: int,
 
     # The parents. ORDER MATTERS: the report's tie-break follows insertion
     # order, and the oracle walks father before mother.
+    #
+    # A civil act (ЗАГС) may state each parent's age. It is the age on the day
+    # the child was born, so it is dated by the birth this record states — and
+    # a record that states no month dates nothing, so it asserts no age. The
+    # author's «так в акте» (`source_age_error=`) withdraws both.
+    age_on = (None if bool(getattr(birth, "is_christening", False))
+              else fact_date(birth.b_day, birth.b_month, birth.year))
+    age_basis = stated_unless(getattr(birth, "source_age_error", None))
     parent_facts: list[ParentOf] = []
-    for locator, person, place_basis in (
-            ("father", birth.father, None),
-            ("mother", birth.mother, Stated(basis_unknown=True))):
+    for locator, person, place_basis, parent_age in (
+            ("father", birth.father, None, getattr(birth, "father_age", None)),
+            ("mother", birth.mother, Stated(basis_unknown=True),
+             getattr(birth, "mother_age", None))):
         if person is None:
             continue
         ref = e.claim(person, locator, residence_basis=place_basis)
@@ -122,6 +131,9 @@ def _facts_from_birth(birth: Any, village: str, source_file: str, entry: int,
                          basis=Stated())
             e.facts.append(f)
             parent_facts.append(f)
+        if parent_age is not None and age_on and age_on.month:
+            e.facts.append(AgedYears(subject=ref, cite=e.cite(locator), age=parent_age,
+                                     as_of=age_on, basis=age_basis))
 
     # Two people who are parents of one child were married — the inference the
     # translator makes by MINTING A RES_NAME (generator.py:2026) and then reads

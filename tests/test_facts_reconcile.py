@@ -20,7 +20,7 @@ from verso.ru.dsl.records.deaths import death, death_records
 from verso.ru.dsl.records.name_lists import listed_person, name_list_records
 from verso.ru.dsl.records.census import CensusRole, census_records, household, member
 from verso.ru.facts.checks.reconcile import (
-    RETIRED_BIRTH_APART, RETIRED_LIFE_APART, RETIRED_SAME_HOUSEHOLD, RETIRED_SAME_LIST, RETIRED_SEEN_BEFORE_BIRTH, RETIRED_TWO_BAPTISMS, VERDICT_AMBIGUOUS, VERDICT_CANDIDATE, VERDICT_NONE, AliasBook, Channel, Side, audit_folded, learned_aliases, match, reconcile)
+    RETIRED_BIRTH_APART, RETIRED_LIFE_APART, RETIRED_SAME_HOUSEHOLD, RETIRED_SAME_LIST, RETIRED_SEEN_BEFORE_BIRTH, RETIRED_TWO_BAPTISMS, VERDICT_AMBIGUOUS, VERDICT_CANDIDATE, VERDICT_NONE, AliasBook, Channel, PARENTS, Side, audit_folded, civil_parents, learned_aliases, match, reconcile)
 from verso.ru.facts.extract.census import facts_from_census
 from verso.ru.facts.extract.births import facts_from_births
 from verso.ru.facts.extract.deaths import facts_from_deaths
@@ -301,6 +301,100 @@ class TheMatcher(unittest.TestCase):
         self.assertEqual({}, book.aliases(excluding=("semen",)))
         self.assertEqual(learned_aliases(sides, excluding=("semen",)),
                          book.aliases(excluding=("semen",)))
+
+
+class TheParentsChannel(unittest.TestCase):
+    """«Who are the parents of a civil act?» — a parent of a ZAGS act, read
+    against the people the corpus already holds."""
+
+    SIDOROV = ("Петръ", "Ивановичъ", "Сидоровъ")
+
+    def _act(self, father_age: int | None = 31) -> Any:
+        """A 1924 act: Пётр Иванович Сидоров, father, aged `father_age`."""
+        return birth_records("A", "1", "1", "1", "Тестовка", "ЗАГС", 1924,
+                             birth(1, Gender.MALE, 5, 6, Month.MAY, Month.MAY,
+                                   child=person("Николай"), father=person(*self.SIDOROV),
+                                   father_age=father_age))
+
+    def _wedding(self, groom_age: int, num: int = 1) -> Any:
+        from verso.ru.dsl.records.marriages import marriage, marriage_records
+        book = marriage_records("A", "1", "1", "1", "Тестовка", "Ц", 1915,
+                                marriage(num, 7, Month.JANUARY,
+                                         groom=person("Петръ", "Ивановъ", "Сидоровъ"),
+                                         bride=person("Анна", "Ильина"),
+                                         groom_age=groom_age))
+        return book
+
+    def _facts(self, *extra: tuple[Any, str], father_age: int | None = 31) -> AssertionSet:
+        from verso.ru.facts.extract.marriages import facts_from_marriages
+        out: list[Assertion] = []
+        for book, name in ((self._act(father_age), "act.py"),) + extra:
+            if hasattr(book, "records") and book.records and hasattr(book.records[0], "groom"):
+                for rec in book.records:
+                    rec.year = book.year
+                out += facts_from_marriages([(r, name) for r in book.records], village="Т")
+            else:
+                out += _facts((book, name))
+        return AssertionSet(out)
+
+    def _run(self, facts: AssertionSet) -> list[Any]:
+        return match(facts, _identity(facts, {}), PARENTS)
+
+    def test_the_father_of_an_act_finds_the_groom_his_age_fits(self):
+        facts = self._facts((self._wedding(22), "w.py"))
+        [r] = self._run(facts)
+        self.assertEqual(("act.py:father",), r.target.key)
+        self.assertEqual(VERDICT_CANDIDATE, r.verdict)
+        self.assertEqual("HIGH", r.confidence)
+        self.assertEqual(("w.py:groom",), r.survivors[0].person.key)
+
+    def test_an_age_too_far_from_the_groom_retires_him(self):
+        facts = self._facts((self._wedding(40), "w.py"))
+        [r] = self._run(facts)
+        self.assertEqual(VERDICT_NONE, r.verdict)
+        self.assertEqual(RETIRED_BIRTH_APART, r.matches[0].retired)
+
+    def test_two_grooms_the_age_fits_are_ambiguous(self):
+        facts = self._facts((self._wedding(22), "w1.py"), (self._wedding(23), "w2.py"))
+        [r] = self._run(facts)
+        self.assertEqual(VERDICT_AMBIGUOUS, r.verdict)
+
+    def test_a_birth_in_the_church_books_is_found_by_name_and_father(self):
+        facts = self._facts((_born(1, 1893, child="Петръ", father=("Иванъ", "Семеновъ", "Сидоровъ"),
+                                   surname="Сидоровъ"), "mk.py"))
+        [r] = self._run(facts)
+        self.assertEqual(VERDICT_CANDIDATE, r.verdict)
+        self.assertEqual("HIGH", r.confidence)
+        self.assertEqual(("mk.py:child",), r.survivors[0].person.key)
+
+    def test_a_target_does_not_find_itself(self):
+        facts = self._facts()
+        [r] = self._run(facts)
+        self.assertEqual(VERDICT_NONE, r.verdict)
+        self.assertEqual((), r.matches)
+
+    def test_the_parent_of_another_act_is_not_a_candidate(self):
+        """«The same father in two acts» is `parent-age-drift`'s question."""
+        second = birth_records("A", "1", "1", "1", "Тестовка", "ЗАГС", 1926,
+                               birth(2, Gender.FEMALE, 5, 6, Month.MAY, Month.MAY,
+                                     child=person("Анна"), father=person(*self.SIDOROV),
+                                     father_age=33))
+        facts = self._facts((second, "act2.py"))
+        results = self._run(facts)
+        self.assertEqual(2, len(results))
+        self.assertTrue(all(r.verdict == VERDICT_NONE and not r.matches for r in results))
+
+    def test_who_is_a_civil_parent(self):
+        facts = self._facts((self._wedding(22), "w.py"))
+        from verso.ru.facts.checks.reconcile import _sides
+        sides = {s.key: s for s in _sides(facts, _identity(facts, {}))}
+        self.assertTrue(civil_parents(sides[("act.py:father",)]))
+        self.assertFalse(civil_parents(sides[("act.py:child",)]))
+        self.assertFalse(civil_parents(sides[("w.py:groom",)]))
+
+    def test_a_parent_without_an_age_is_no_target(self):
+        facts = self._facts(father_age=None)
+        self.assertEqual([], self._run(facts))
 
 
 class TheOracle(unittest.TestCase):

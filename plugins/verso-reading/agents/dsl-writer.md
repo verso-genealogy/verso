@@ -79,7 +79,8 @@ The library's rules of a record, for a project that has none of its own:
 - an age is an integer of years or a string of units (`"2 мес"`, `"1 г 6 мес"`, `"3 нед"`, `"4 дн"`);
 - dates as the book writes them, Julian until 1918; a christening in the next year needs `k_year=`;
 - part 1 runs two series of numbers, boys and girls: `(number, Gender)` says which «№ 4»;
-- a book of the civil registry is `civil=True`, its second date the day of registration.
+- a book of the civil registry is `civil=True`, its second date the day of registration; in a civil birth act the parents' ages go into
+  `father_age=` / `mother_age=` (the first reading), not into the comment — a doubt about one stays in the comment.
 
 ### Step 2: Parse Records
 

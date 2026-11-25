@@ -44,6 +44,9 @@ fields = [
   { path = "source_date_error", label = "ui.field.source_date_error", checks = true },
   { path = "calendar_note", label = "ui.field.calendar_note_birth", checks = true },
   { path = "lag_note", label = "ui.field.lag_note_birth", checks = true },
+  { path = "father_age", label = "ui.field.father_age" },
+  { path = "mother_age", label = "ui.field.mother_age" },
+  { path = "source_age_error", label = "ui.field.source_age_error_birth", checks = true },
 ]
 hidden = [
   "civil",
@@ -54,8 +57,8 @@ hidden = [
 ]
 slots = [
   { role = "child", label = "ui.slot.child", gender = "of_record" },
-  { role = "father", label = "ui.slot.father", gender = "male" },
-  { role = "mother", label = "ui.slot.mother", gender = "female" },
+  { role = "father", label = "ui.slot.father", gender = "male", row = ["father_age"] },
+  { role = "mother", label = "ui.slot.mother", gender = "female", row = ["mother_age"] },
   { role = "godparent", label = "ui.slot.godparent", quick = "ui.quick.godparent" },
   { role = "priest", label = "ui.slot.priest", gender = "male" },
   { role = "deacon", label = "ui.slot.deacon", gender = "male" },
@@ -109,6 +112,9 @@ hidden = [
   "reviewed",
   "source_date_error",
   "lag_note",
+  "father_age",
+  "mother_age",
+  "source_age_error",
   "birth.day",
   "birth.month",
   "baptism.year",

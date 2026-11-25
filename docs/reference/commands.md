@@ -46,6 +46,7 @@
 | `verso find-person` | `verso.ru.cli.find_person` | Search village.db by name fragment, with optional year/type filters. |
 | `verso fix-combined-name-patronymic` | `verso.ru.cli.fix_combined_name_patronymic` | Fix: split 'Name Patronymic' stored as one string into separate name_orig + patr_orig/patr_old fields. |
 | `verso fix-ich-patronymics` | `verso.ru.cli.fix_ich_patronymics` | Fix: remove explicit modern-form patronymic from deceased/child when father is specified. |
+| `verso fix-parent-ages` | `verso.ru.cli.fix_parent_ages` | fix-parent-ages: a civil birth's parents' ages, from the comment's prose into the fields. |
 | `verso generate-familio-tf` | `verso.ru.cli.generate_familio_tf` | Generate `familio_*.tf` for a village's blood-relatives. |
 | `verso generate-tf` | `verso.ru.cli.generate_tf` | Generate terraform `.tf` files for a village from its DSL Python records. |
 | `verso generate-timeline` | `verso.ru.cli.generate_timeline` | Render a village's blood-relatives as a genealogy timeline — one HTML page. |

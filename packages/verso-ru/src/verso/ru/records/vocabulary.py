@@ -57,8 +57,8 @@ _PERSON = _f("""name_orig:str name_modern:str='' patr_orig:str patr_old:str='' p
     occupation:str side:Side""")
 _CLERGY = "priest:person deacon:person dyachok:person sexton:person"
 _BIRTH = _f(f"""record_num:intstr reviewed:bool calendar_note:str source_date_error:str
-    lag_note:str gender:Gender b_day:int b_month:Month k_day:int k_month:Month year:int k_year:int
-    christening_age:int child:person father:person mother:person god_parent1:person
+    lag_note:str father_age:age mother_age:age source_age_error:str gender:Gender b_day:int b_month:Month
+    k_day:int k_month:Month year:int k_year:int christening_age:int child:person father:person mother:person god_parent1:person
     god_parent2:person god_parent3:person god_parent4:person {_CLERGY} page:str inventory:str
     case:str book:str comment:str civil:bool=False relatives:Relatives=[]""")
 _MARRIAGE = _f(f"""record_num:intstr reviewed:bool calendar_note:str source_kin_error:str

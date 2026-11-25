@@ -349,7 +349,8 @@ a birth has no godparents. The `--part` presets are cut for the church book's co
 leaf whole before trusting them: when they cut across the names, cut with `crops --x0/--x1`, or
 `strips` for one column; `headers` may find no part titles to look for. In the DSL the record set is
 `civil=True`, and its second date is the day of REGISTRATION (a birth's `k_day`, a death's `b_day`),
-never a christening or a burial. Patronymics are written whole there («Иванович», «Ивановна»), and many books already
+never a christening or a burial. A birth act states the parents' ages: they go into `father_age=` /
+`mother_age=` of `birth()`, not into the comment. Patronymics are written whole there («Иванович», «Ивановна»), and many books already
 follow the new orthography of 1918 — keep what is written, in either spelling.
 
 ## After the reading

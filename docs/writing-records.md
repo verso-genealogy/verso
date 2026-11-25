@@ -65,7 +65,7 @@ answers.
 | Field | Of | When | What it does |
 |---|---|---|---|
 | `source_date_error=` | `birth()`, `death()`, `divorce()` | a christening dated before the birth, a burial before the death, a divorce before the marriage its own act names | withdraws that date (of a divorce: the marriage's) |
-| `source_age_error=` | `death()`, `member()` | a stated age the source got wrong | withdraws the age |
+| `source_age_error=` | `birth()`, `death()`, `member()` | a stated age the source got wrong (of a birth: the parents' ages) | withdraws the age |
 | `previous_age_error=` | `member()` | the previous revision's age the roll carried over wrong | withdraws that figure alone |
 | `source_kin_error=` | `marriage()` | the entry's kinship contradicts itself | stands down the father check on it |
 | `namesake=` | `death()` | a burial whose age is right but belongs to another child of that name | stands down `death-age` |
@@ -88,6 +88,12 @@ read it too. See [the review ratchet](review-ratchet.md).
 A book of the civil registry (ЗАГС) is `civil=True` on its record set. It is a book per kind of record,
 not three parts of one; its second date is the day of registration (`k_day` of a birth, `b_day` of a
 death), never a christening or a burial. See [the DSL](dsl.md).
+
+An act of birth states the parents' ages: write them in `father_age=` and `mother_age=` of `birth()`, as the first
+reading, a number of years as everywhere (`mother_age=24`). A doubt about one stays in the `comment=` (the field
+takes the first reading); an age the source got wrong is `source_age_error=`. A file written before the fields kept
+the ages in the comment: `verso fix-parent-ages FILE… [--check]` moves them, and only when the records JSON stays
+the same but for the new fields and the `comment`.
 
 ## An example
 
