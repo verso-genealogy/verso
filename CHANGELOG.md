@@ -3,7 +3,11 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased (0.1.51.dev0)
+## 0.1.51 — 2026-11-25
+
+Only a site built by `verso site` moves; a corpus's CSVs, Terraform, records JSON, facts and reports do not. Every
+page gains a theme button and reads `assets/theme.js` in its head; `404.html` puts its `<base>` before its links (see
+**Added** and **Fixed**).
 
 ### Added
 
