@@ -13,6 +13,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   Without scripts the button stays hidden and the page follows the system, as before. Print is always light.
   Catalog keys `site.theme.auto|light|dark`. Only the site moves.
 
+### Fixed
+
+- verso-ru, the site: `404.html` names its `<base>` before its stylesheet, so a missing page at any depth is drawn
+  with the site's look (it was unstyled below the first level: the links resolved before the base).
+
 ## 0.1.50 — 2026-11-25
 
 Nothing a corpus already writes moves until a birth gains `father_age=` or `mother_age=`: its CSVs, Terraform, records
