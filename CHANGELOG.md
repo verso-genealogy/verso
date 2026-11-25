@@ -7,9 +7,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 Nothing a corpus already writes moves until a birth gains `father_age=` or `mother_age=`: its CSVs, Terraform, records
 JSON and facts stay as they are. What moves at once: every village's `facts_findings.tsv` gains two rows, the command
-list gains `fix-parent-ages` and `reconcile --parents`, the records catalog gains the three birth fields, and a corpus
-whose birth comments hold the parents' ages gets the advisory ZGS006 on each (a lint baseline will count them), which
-`verso fix-parent-ages` moves into the fields (see **Added**).
+list gains `fix-parent-ages`, `reconcile --parents` and the checks `parent-ages` and `parent-age-drift`, the records
+catalog gains the three birth fields, and a corpus whose birth comments hold the parents' ages gets the advisory ZGS006
+on each (a lint baseline will count them), which `verso fix-parent-ages` moves into the fields (see **Added**).
 
 ### Added
 
