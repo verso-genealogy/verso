@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ## Unreleased (0.1.53.dev0)
 
+### Changed
+
+- verso-ru, the `name-days` signal (a record's card, `verso facts --check name-days`) is said without «the window»
+  and its formula: «Евдокия: от срока имянаречения (14.01–27.01) до ближайшего дня ангела (01.03) — 34
+  дня.», was «Евдокия: ближайший святой имени 01.03 — 34 дн. за окном (р. 17.01.1904, кр. 18.01.1904).» The days of
+  the window are given as dates (params `start`, `end`), the distance as `count` with its plural forms; `born`,
+  `christened` and `outside` are gone from `facts.signal.name_days.far` and `.lookalike`, and `far_why` takes no
+  params (was `before`, `after`). `far_why`, `lookalike_why`, `lookalikes` and the report's head are reworded alike.
+  The keys and the variants do not change; the facts, their findings and a corpus's outputs do not move.
+
 ## 0.1.52 — 2026-11-26
 
 A site built by `verso site` moves: partial dates are written as the library writes them, and a day with no month says so. The site's self-check of its links is faster and case-exact, so a build can now report a link whose letter case differs (see **Fixed**). `verso stale-claims` (`claim-check`) loses a false finding on «Первоначальная запись». The interface schema refuses, when hints are built, a rule key or a rule table its kind does not read, so a plugin's hints with such a key now fail; verso-ru's own are clean and its `ui-v1.json` does not move. A corpus's CSVs, Terraform, records JSON and facts do not move.

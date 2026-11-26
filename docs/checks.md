@@ -60,11 +60,11 @@ the books rather than taken from it. On the toy example's births (`examples/`):
 
 ```text
 $ verso facts --village Степанчиково --check name-days
-name-days: 1 of 2 births — the name's saint more than 30 days from the window (HIGH 0, LOW 1)
-LOW — The window: birth −3 … max(christening, 8th day) +3 days. Most often the name was simply given out of the calendar.
+name-days: 1 of 2 births — the saint's day of the name more than 30 days from the naming days (HIGH 0, LOW 1)
+LOW — A child was usually named after a saint kept near its birth or christening. But a name was often chosen outside the calendar too: if the scan confirms the name, nothing is wrong.
 If the source says so, write calendar_note="…" in the record.
 
-[LOW] Прасковья: the nearest saint of the name is kept on 26.07, 93 days outside the window (born 14.04.1850, christened 16.04.1850).
+[LOW] Прасковья: 93 days from the naming days (11.04–24.04) to the nearest saint's day of the name (26.07).
     stepanchikovo_births_1850.py №1
 ```
 

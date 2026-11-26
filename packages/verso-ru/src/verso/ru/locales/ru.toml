@@ -1328,7 +1328,7 @@ told = " (год со слов)"
 [cli.facts.name_days]
 unknown = "; имени нет в святцах — {births} ({names})"
 ok = "name-days: OK — 0 findings {of_births}{tail}{noted}."
-head = "name-days: {count} {of_births} — святой имени дальше {far} дн. от окна (HIGH {high}, LOW {low}){tail}{noted}"
+head = "name-days: {count} {of_births} — день ангела дальше {far} дн. от срока имянаречения (HIGH {high}, LOW {low}){tail}{noted}"
 note = "Окно: рождение −{before} … max(крещение, 8-й день) +{after} дн. Чаще всего имя просто дано не по святцам; HIGH — в окне поминается похожее имя, с него и начинать сверку по скану. Имя верно — `birth(..., calendar_note=\"…\")`."
 finding = "[{confidence}] {name} ({gender}), р. {born}, кр. {christened} — ближайший святой имени {day:02d}.{month:02d}, {outside} дн. за окном"
 lookalikes = "    в окне поминается: {alts}"
@@ -1623,11 +1623,11 @@ other_months = "Тот же день в соседнем месяце разре
 other_days = "День рядом разрешён: {dates}."
 
 [facts.signal.name_days]
-far = "{name}: ближайший святой имени {nearest} — {outside} дн. за окном (р. {born}, кр. {christened})."
-far_why = "Окно: рождение −{before} … max(крещение, 8-й день) +{after} дн. Чаще всего имя просто дано не по святцам."
-lookalike = "{name}: ближайший святой имени {nearest} — {outside} дн. за окном (р. {born}, кр. {christened})."
-lookalike_why = "В окне поминается похожее имя: с него и начинать сверку по скану."
-lookalikes = "В окне поминается: {names}."
+far = { one = "{name}: от срока имянаречения ({start}–{end}) до ближайшего дня ангела ({nearest}) — {count} день.", few = "{name}: от срока имянаречения ({start}–{end}) до ближайшего дня ангела ({nearest}) — {count} дня.", many = "{name}: от срока имянаречения ({start}–{end}) до ближайшего дня ангела ({nearest}) — {count} дней.", other = "{name}: от срока имянаречения ({start}–{end}) до ближайшего дня ангела ({nearest}) — {count} дня." }
+far_why = "Обычно имя давали по святцам — в честь святого, которого поминают около дня рождения или крещения. Но нередко имя выбирали и не по святцам: если скан подтверждает имя, ошибки нет."
+lookalike = { one = "{name}: от срока имянаречения ({start}–{end}) до ближайшего дня ангела ({nearest}) — {count} день.", few = "{name}: от срока имянаречения ({start}–{end}) до ближайшего дня ангела ({nearest}) — {count} дня.", many = "{name}: от срока имянаречения ({start}–{end}) до ближайшего дня ангела ({nearest}) — {count} дней.", other = "{name}: от срока имянаречения ({start}–{end}) до ближайшего дня ангела ({nearest}) — {count} дня." }
+lookalike_why = "В эти дни поминают святого с похожим именем — возможно, имя прочитано неверно: сверьте его со сканом."
+lookalikes = "Похожие имена в эти дни: {names}."
 
 [facts.signal.baptism_lag]
 late = "Крещение {christened} — через {days} дн. после рождения {born}."
