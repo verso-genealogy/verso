@@ -3,7 +3,9 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased (0.1.52.dev0)
+## 0.1.52 — 2026-11-26
+
+A site built by `verso site` moves: partial dates are written as the library writes them, a day with no month says so, and the self-check of its links is faster and case-exact (see **Fixed**). `verso stale-claims` (`claim-check`) loses a false finding on «Первоначальная запись». The interface schema refuses a rule key or a rule table its kind does not read; verso-ru's `ui-v1.json` does not move. A corpus's CSVs, Terraform, records JSON and facts do not move.
 
 ### Fixed
 
