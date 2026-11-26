@@ -133,6 +133,7 @@ main { width: min(62rem, calc(100% - 2rem)); margin: 1.4rem auto 0; padding: 1.6
 .leaf { margin-left: auto; color: var(--faint); font: .72rem var(--font-mono); }
 .badge { display: inline-block; padding: .05rem .5rem; border-radius: var(--r-pill); background: var(--warn-bg); color: var(--warn);
   font: 600 .7rem/1.5 var(--font-mono); white-space: nowrap; }
+.doubt { color: var(--warn); font: 600 .8rem var(--font-mono); cursor: help; }   /* a reading in doubt */
 .events { margin: .25rem 0 .5rem; display: flex; flex-wrap: wrap; gap: .2rem 1.2rem; }
 .events .ev { display: inline-flex; gap: .4rem; align-items: baseline; }
 .people { margin: .3rem 0; }

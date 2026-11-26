@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import functools
 import json
 import re
+import unicodedata
 from dataclasses import replace
 from collections.abc import Callable
 from typing import Any
@@ -407,6 +409,79 @@ def test_a_name_nobody_could_read_indexes_nobody(changed: Change) -> None:
     assert pages.NAMELESS not in {page.key for page in pages.patronymic_pages(site)}
     assert pages.NAMELESS not in {page.key for page in pages.surname_pages(site)}
 
+
+
+def _surnames(node: dict[str, Any], names: tuple[str, ...]) -> None:
+    """The 1828 household's members (the site's first book) written with `names` as their surnames."""
+    household = next(d for d in node["documents"] if "/1828/" in d["id"])
+    members = household["pages"][0]["records"][0]["persons"]
+    for member, surname in zip(members, names, strict=False):
+        member["written"]["surname"] = {"original": surname}
+        member.setdefault("derived", {}).pop("surname", None)
+
+
+def test_a_reading_in_doubt_stands_on_its_sure_page_marked(changed: Any, ui: Ui, ctx: Context) -> None:
+    """«Сидоровъ?» beside a surely read «Сидоров» (folded as the search folds: the hard sign, the old letters) is
+    on the page of «Сидоров», marked — even read before any sure one (the household of 1828 comes first)."""
+    site = changed(functools.partial(_surnames, names=("Сидоровъ?", "Ѳедоровъ", "Федоров?")))
+    page = next(p for p in pages.surname_pages(site) if p.key == "Сидоров")
+    assert not page.unread and page.title == "Сидоров, Сидорова" and len(page.doubtful) == 1
+    old_letters = next(p for p in pages.surname_pages(site) if p.title == "Ѳедоровъ")      # sure in the old spelling
+    assert not old_letters.unread and len(old_letters.mentions) == 2 and len(old_letters.doubtful) == 1
+    doubtful = page.mentions[min(page.doubtful)]
+    assert doubtful.entry.book_id.endswith("/1828/household")
+    html_ = pages.name(page, pages.NAMES, site, ui, ctx)
+    assert html_.count('class="doubt"') == 1 and 'title="прочтение под вопросом"' in html_
+
+
+def test_a_reading_not_made_out_has_the_indexs_last_section(changed: Any, ctx: Context) -> None:
+    """A part of a name, a letter not made out, a name read surely nowhere: each its own page, in a last section
+    of the index — no «?» among the letters. One whose page's name a sure one takes keeps a directory of its own."""
+    site = changed(functools.partial(_surnames, names=("Сид?ров", "?Сидоров", "Выдуманъ?")))
+    found = pages.surname_pages(site)
+    unread = [p for p in found if p.unread]
+    assert sorted(p.title for p in unread) == ["?Сидоров", "Выдуманъ?", "Сид?ров"]
+    assert all("?" not in p.title for p in found if not p.unread)
+    assert len({p.key for p in found}) == len(found) and "Сидоров-" in {p.key for p in unread}
+    index = pages.names_index(site, ctx)
+    heads = re.findall(r'<h2 id="([^"]*)">([^<]*)</h2>', index)
+    assert heads[-1] == ("unread", "Неразобранные") and "?" not in [head for _, head in heads]
+    assert re.search(r'<a href="#unread">Неразобранные</a></nav>', index)
+    last = index[index.index('<h2 id="unread">'):]
+    assert all(title in last for title in ("Сид?ров", "Выдуманъ?"))
+
+
+def test_a_reading_in_doubt_prefers_its_very_spelling_then_its_kin(changed: Any) -> None:
+    """Of two sure spellings one folds to, the very one is its page («Фимкинъ?» on «Фимкинъ», not on
+    «Фимкин»); a masculine in doubt stands with a sure feminine («Выдуманов?» on «Выдуманова»)."""
+    site = changed(functools.partial(_surnames, names=("Фимкин", "Фимкинъ?", "Фимкинъ")))
+    found = {p.title: p for p in pages.surname_pages(site)}
+    assert len(found["Фимкинъ"].doubtful) == 1 and not found["Фимкин"].doubtful
+    site = changed(functools.partial(_surnames, names=("Выдуманова", "Выдуманов?")))
+    page = next(p for p in pages.surname_pages(site) if p.title == "Выдуманова")
+    assert len(page.mentions) == 2 and len(page.doubtful) == 1
+
+
+
+@pytest.mark.parametrize(("stem", "sure", "page"), [
+    ("Выдуманов", "выдуманова", "выдуманова"), ("Выдуманова", "выдуманов", "выдуманов"),
+    ("Выдуманская", "выдуманский", "выдуманский"), ("Выдуманский", "выдуманская", "выдуманская"),
+    ("Выдуманъ", "выдуман", "выдуман"), ("Сидоров", "петров", None),
+])
+def test_a_stem_in_doubt_finds_its_sure_kin(stem: str, sure: str, page: str | None) -> None:
+    assert pages._sure_page(stem, {sure}, {model.fold(sure): sure}) == page
+
+def test_an_unread_pages_address_is_its_own(site: model.Site) -> None:
+    """Whatever order its records come in, an unread reading keeps one address; never the page of the nameless
+    («-»); a name written in decomposed letters is addressed as composed."""
+    one, two = site.mentions[:2]
+    forward = {p.title: p.key for p in pages._name_pages([("Ев?", one), ("?ев", two)])}
+    backward = {p.title: p.key for p in pages._name_pages([("?ев", two), ("Ев?", one)])}
+    assert forward == backward and len(set(forward.values())) == 2
+    assert pages._name_pages([("?", one)])[0].key != pages.NAMELESS
+    decomposed = unicodedata.normalize("NFD", "Чуйкинъ?")
+    page = pages._name_pages([(decomposed, one)])[0]
+    assert page.title == unicodedata.normalize("NFC", decomposed) and page.key == "Чуйкинъ"
 
 def test_a_records_heading_stands_right_under_its_books(site: model.Site, ui: Ui, ctx: Context) -> None:
     page = pages.book(site.book(BIRTHS), ui, ctx)

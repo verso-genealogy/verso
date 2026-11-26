@@ -2074,6 +2074,9 @@ also = "Those written with no surname:"
 patronymics_what = "Those the source writes with no surname, by the patronymic in the form of the book."
 mentions = { one = "{count} mention", other = "{count} mentions" }
 unnamed = "(no name written)"
+doubtful = "a reading in doubt"
+unread = "Not made out"
+unread_what = "Readings in doubt not matched with a surely read name of this index: a letter or a part of the name not made out, or a name read surely nowhere else."
 
 [site.front]
 books = { one = "{count} book", other = "{count} books" }
