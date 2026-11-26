@@ -13,8 +13,11 @@ A person with no status whose comment holds a reserve wording («запасны�
 of its «quoted» parts, which `classify` places on SOLDIER) gets `status=SOLDIER`, the comment untouched.
 
 Reported, never rewritten: a military wording `classify` will not place (`military_status.unplaced`: a
-maiden's wording other than «солдатская девица», «солдатская внучка»), and whatever MIL001 would still flag after
-the rewrite — a constant the file defines for itself, a `RecordDefaults` status form.
+maiden's wording other than «солдатская девица», «солдатская внучка», a woman's or a kinsman's wording whose
+role word does not lead — «запасного рядового жена», «унтер-офицерша», «военная» —, and a rank in the
+genitive with no role before it, a dependant's or a servant's — «невеста запасного рядового», «дворовый
+человек отставного солдата»), and whatever MIL001 would still flag after the rewrite — a constant the file
+defines for itself, a `RecordDefaults` status form.
 
 Usage:
     python3 -m verso.ru.cli.migrate_soldier_statuses --village <village> [--village …] [--dry-run]
