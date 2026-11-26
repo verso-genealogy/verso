@@ -138,8 +138,9 @@ def test_the_check_names_what_a_reader_would_meet(tmp_path: Path) -> None:
 
 
 def test_the_check_reads_start_tags_as_the_html_parser_does() -> None:
-    """The check's one pattern finds what `html.parser` finds: names lowered, references resolved, an attribute
-    with no value told from an empty one, and nothing inside a comment, a declaration, a script or a style."""
+    """On the markup the builder writes and its near kin, the check's one pattern finds what `html.parser` finds:
+    names lowered, references resolved, an attribute with no value told from an empty one, and nothing inside a
+    comment, a declaration, a script or a style (check.py says where the two part)."""
     from html.parser import HTMLParser
 
     class Reference(HTMLParser):

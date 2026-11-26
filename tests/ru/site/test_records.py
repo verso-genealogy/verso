@@ -106,13 +106,13 @@ def test_a_civil_registers_second_date_is_a_registration(changed: Change, ui: Ui
 
 
 
-def test_an_event_with_a_day_and_no_month_draws_no_date(changed: Change, ui: Ui) -> None:
-    """A day alone is no date (the library writes a day only beside its month), and the year would be only the
-    book's: the birth's line is left out, the baptism's stays."""
+def test_an_event_with_a_day_and_no_month_says_so(changed: Change, ui: Ui) -> None:
+    """A day read with no month (a month left on the leaf before) is drawn and said to be one — not dropped, and
+    not as «3 1900»."""
     def no_month(node: dict[str, Any]) -> None:
         del node["documents"][0]["pages"][0]["records"][0]["written"]["birth"]["month"]
     text = _text(_drawn(changed(no_month), ui, BIRTHS, "m1"))
-    assert "рождение:" not in text and "крещение: 4 января 1900" in text
+    assert "рождение: 3-го числа 1900 (месяц не записан)" in text and "крещение: 4 января 1900" in text
 
 def test_the_text_of_a_record_is_escaped(changed: Change, ui: Ui) -> None:
     def hostile(node: dict[str, Any]) -> None:
@@ -207,10 +207,11 @@ def test_the_marriage_a_divorce_names_reads_in_either_form(changed: Change, ui: 
     ({"year_end": 1927, "date_range": "before"}, "до 1927"),
     ({"year_end": 1927, "circa_end": True}, "около 1927"),
     ({"circa": True}, ""),
-    # as the library writes a date (written_date): a day only beside its month, the month governed after a word
-    ({"year": 1915, "day": 5}, "1915"),
-    ({"day": 5}, ""),                                                # a day alone: no date to draw
-    ({"day": 5, "day_end": 9}, ""),
+    # as the library writes a date (written_date); a day with no month said to be one, not dropped
+    ({"year": 1915, "day": 5}, "5-го числа 1915 (месяц не записан)"),
+    ({"day": 5}, "5-го числа (месяц не записан)"),
+    ({"day": 5, "day_end": 9, "date_range": "between"},
+     "5-го числа (месяц не записан) — 9-го числа (месяц не записан)"),
     ({"year": 1915, "month": "may"}, "май 1915"),
     ({"month": "may", "day": 3}, "3 мая"),
     ({"year": 1915, "month": "may", "date_range": "before"}, "до мая 1915"),
@@ -221,7 +222,14 @@ def test_the_marriage_a_divorce_names_reads_in_either_form(changed: Change, ui: 
      "1914 — около мая 1915"),
     ({"year": 1914, "month": "june", "year_end": 1915, "month_end": "may", "date_range": "between"},
      "июнь 1914 — май 1915"),
-    ({"day": 5, "year": 1915, "circa": True}, "около 1915"),
+    ({"day": 5, "year": 1915, "circa": True}, "около 5-го числа 1915 (месяц не записан)"),
+    ({"year": 1914, "month": "may", "day": 3, "day_end": 10, "date_range": "between"},
+     "3 мая 1914 — 10 мая 1914"),                                     # an end's month and year: the start's
+    ({"year": 1914, "month": "november", "day": 21, "day_end": 23, "month_end": "december", "date_range": "between"},
+     "21 ноября 1914 — 23 декабря 1914"),
+    ({"year": 1914, "circa": True, "date_range": "before"}, "до 1914"),   # «до» takes no «около»
+    ({"year_end": 1927, "circa_end": True, "date_range": "before"}, "до 1927"),
+    ({"year": 1914, "month": "may", "circa": True, "date_range": "after"}, "после мая 1914"),
     ({"year_end": 1927, "circa": True}, "1927"),                     # «около» of a start not written
 ])
 def test_a_date_with_parts_missing_says_what_it_has(ui: Ui, written: dict[str, Any], shown: str) -> None:

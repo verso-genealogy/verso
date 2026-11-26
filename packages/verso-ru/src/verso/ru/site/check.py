@@ -2,9 +2,12 @@
 there and to an anchor that page holds, no page holds one id twice, and nothing is fetched from
 another host — a stylesheet, a script, an image.
 
-It reads the tree once and every page once: each page's start tags only (one pattern, as `html.parser` reads
-them: a comment, a declaration and the text of a script or a style hold none), every address against the set of
-the tree's files and directories, every anchor against a set of its page's ids. A site of thousands of pages and a
+It reads the tree once and every page once: each page's start tags only, every address against the set of the
+tree's files and directories, every anchor against a set of its page's ids. The start tags are found by one
+pattern, which reads the markup the builder writes as `html.parser` reads it (quoted attributes, prose from Markdown
+with no HTML of its own; a comment, a declaration and the text of a script or a style hold no tag) — not every
+markup a browser takes: an unquoted value with a quote in it, a `<title>` or a `<textarea>` holding a tag, a comment
+closed by `--!>`. The tree's links are its own: a directory linked in from elsewhere is not walked. A site of thousands of pages and a
 hundred thousand links is checked in a few seconds, its time the size of the site.
 """
 from __future__ import annotations

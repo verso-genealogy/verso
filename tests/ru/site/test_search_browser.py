@@ -16,6 +16,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 from collections.abc import Iterator
 from html import unescape
@@ -95,11 +96,13 @@ def _search(page: str, query: str, tmp_path: Path) -> tuple[str, list[tuple[str,
             pytest.fail("no Chrome on a CI runner: the search's browser test cannot run")
         pytest.skip("no Chrome here")
     assert chrome is not None
-    dom = subprocess.run(
+    profile = tempfile.mkdtemp(prefix="chrome-", dir=tmp_path)     # a profile a run: no lock left by the last
+    ran = subprocess.run(
         [chrome, "--headless=new", "--no-sandbox", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
-         f"--user-data-dir={tmp_path / 'chrome'}", "--virtual-time-budget=10000", "--dump-dom",
-         f"{page}?q={quote(query)}"],
-        capture_output=True, text=True, timeout=120, check=True).stdout
+         f"--user-data-dir={profile}", "--virtual-time-budget=10000", "--dump-dom", f"{page}?q={quote(query)}"],
+        capture_output=True, text=True, timeout=120, check=False)
+    assert ran.returncode == 0, f"Chrome exited {ran.returncode}: {ran.stderr[-2000:]}"
+    dom = ran.stdout
     status = re.search(r'<p id="status"[^>]*>(.*?)</p>', dom, re.S)
     found = re.search(r'<ol id="results"[^>]*>(.*?)</ol>', dom, re.S)
     assert status and found, dom[-2000:]

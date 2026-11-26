@@ -1960,6 +1960,8 @@ circa = "c. {date}"
 between = "{start} — {end}"
 before = "before {date}"
 after = "after {date}"
+day_alone = "day {day} (no month written)"
+day_alone_year = "day {day}, {year} (no month written)"
 
 [site.event]
 registration = "registered"
