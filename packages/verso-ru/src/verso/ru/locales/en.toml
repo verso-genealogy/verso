@@ -49,6 +49,10 @@ literal_words = "{kwarg}=\"{text}\" is not in modern orthography — classificat
 bound_constant = "{kwarg}={name} (= \"{text}\") is not in modern orthography — classification fields (status=, departure_reason=) are written modern so they can be parsed and standardized; names and the source's own words in comment= keep the scribe's spelling. Write the catalog constant {constant} (\"{modern}\")."
 bound_words = "{kwarg}={name} (= \"{text}\") is not in modern orthography — classification fields (status=, departure_reason=) are written modern so they can be parsed and standardized; names and the source's own words in comment= keep the scribe's spelling. Write \"{modern}\"."
 
+[MIL001]
+literal = "military status in free text: {kwarg}=\"{text}\" → {constant}, the scribe's words go in comment=\"{comment}\""
+bound = "military status in free text: {kwarg}={name} (= \"{text}\") → {constant}, the scribe's words go in comment=\"{comment}\""
+
 [VSR001]
 redundant = "redundant status={status} ({slot} status matches {verb} default {field})"
 

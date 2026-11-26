@@ -391,6 +391,18 @@ consonant into бес- — and names the catalog constant when the spelling is o
 «крестьянинъ собственникъ» among the commonest) were rewritten in the same
 wave, so Verso refuses a save that writes a new one.
 
+## `military_status` — MIL001
+
+A soldier's status written as free text: a `status=` (or its `RecordDefaults` forms) that is a string
+literal, or a constant the file defines itself, which `domain.military_status.classify` places on a catalog
+constant («запасный солдат» → SOLDIER, «жена запасного рядового» → SOLDIER_SPOUSE, «отставной рядовой» →
+RETIRED_SOLDIER). The status says who the person is; the scribe's wording belongs in the member's `comment=`
+(param `comment`: the text in modern spelling). The message states both halves and the finding has no `fix`:
+the edit is two keyword arguments, and the bulk fix is the codemod. A catalog text, an officer, a landlord's
+peasant, a cantonist and a `departure_reason=` are quiet. **Hard from birth** (2026-11-26): the corpus was
+migrated in the same wave, so Verso refuses a save that writes a new one. On records JSON the rule reads the
+same texts (`literal` only; `bound` is the source's).
+
 ## `census_age` — CAI001–CAI003
 
 - **CAI001**: lone `birth_day`/`birth_month` contradicting `age`.

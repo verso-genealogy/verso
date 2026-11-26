@@ -41,6 +41,7 @@ LINTER_CODES: dict[str, tuple[str, ...]] = {
     "marital_status": ("MST001",),
     "status_redundancy": ("VSR001",),
     "status_orthography": ("SOR001",),
+    "military_status": ("MIL001",),
     "relative_attachment": ("RLA001", "RLA002", "RLA003"),
     "reviewed_redundancy": ("RVR001",),
     "retractions": ("RET001", "RET002", "RET003", "RET004"),

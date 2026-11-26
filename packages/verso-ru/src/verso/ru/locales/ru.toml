@@ -371,6 +371,10 @@ like = "как у {role}"
 [CPL012]
 patronymic = "Член двора {number} ({name}): отчество «{patronymic}» не от имени «{father}», а {kw}={ref} называет отцом его. Сверьте отчество со сканом или исправьте {kw}."
 
+[MIL001]
+literal = "военный статус текстом: {kwarg}=\"{text}\" → {constant}, слова писца — в comment=\"{comment}\""
+bound = "военный статус текстом: {kwarg}={name} (= \"{text}\") → {constant}, слова писца — в comment=\"{comment}\""
+
 [RTV001]
 elsewhere = "{who} — «{words}»: {estate} жили в {villages}, а место жительства здесь — {village} ({source}). Проверьте статус или укажите residence=."
 

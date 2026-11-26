@@ -1,0 +1,17 @@
+# Invented: a soldier's status written as free text (MIL001: the catalog constant it means and the wording
+# the comment should hold); a catalog constant, an officer's peasant and a cantonist stay quiet.
+from verso.ru.dsl import Gender, RecordDefaults, birth, birth_records, person
+from verso.ru.dsl.statuses import PEASANT_MALE, SOLDIER
+
+births = birth_records(
+    "ГА Глуповской области", "10", "4", "4047", "Маниловка", "Церковь", 1851,
+    birth(1, Gender.MALE, 3, 5, child=person("Лука"),
+          father=person("Фома", "Лукин", "Примеров", status="запасный солдат"),
+          mother=person("Марья", status="жена запасного рядового")),
+    birth(2, Gender.FEMALE, 4, 6, child=person("Марья"),
+          father=person("Иван", "Петров", "Опискин", status=SOLDIER),
+          mother=person("Анфиса", status="солдатская вдова")),
+    birth(3, Gender.MALE, 5, 7, child=person("Петр"),
+          father=person("Семен", "Ильин", "Заманилов", status="крестьянин поручика Ноздрева"),
+          mother=person("Дарья", status="кантонист")),
+    defaults=RecordDefaults(status_male=PEASANT_MALE, status_mother="жена отставного рядового"))

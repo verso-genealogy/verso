@@ -27,6 +27,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   (`pages.surname_links`), `records.render` them by the persona's place among the record's `persons`, and a
   `model.Mention` carries that place. The guide's paragraph on «?» readings now says what the index does with them
   (a reading in doubt on its sure page, one not made out in the last section). Only the site moves.
+- verso-ru, `MIL001` (`military_status`): a soldier's `status=` written as free text — a string literal or a constant
+  the file defines — that `domain.military_status.classify` places on a catalog constant («запасный солдат» →
+  SOLDIER, «жена запасного рядового» → SOLDIER_SPOUSE) is refused, on the DSL and on records JSON. The message
+  names the constant and the wording the `comment=` should hold (params `kwarg`, `text`, `constant`, `comment`,
+  and `name` for a bound constant; variants `literal`, `bound`); the finding has no `fix`. Hard from birth
+  (`severity = "refuse"`).
 
 ### Changed
 

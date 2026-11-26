@@ -35,6 +35,7 @@ from verso.ru.linters.checks.marital_status import KNOWN_MARITAL
 from verso.ru.linters.checks.names import CYRILLIC_NAME_RE
 from verso.ru.linters.checks.relative_attachment import GODPARENT_REF, WITNESS_REF, Subject
 from verso.ru.linters.checks.retractions import NOT_RECORDED
+from verso.ru.domain.military_status import classify
 from verso.ru.linters.checks.status_orthography import FIELDS, HONORIFIC, PRE_REFORM, catalog, modern_spelling
 from verso.ru.linters.issue import says
 from verso.ru.linters.on_json.walk import (
@@ -177,6 +178,18 @@ def sor001(view: FileView) -> Iterator[Finding]:
         constant = catalog().get(modern)
         params = {"kwarg": kwarg, "text": text, "modern": modern, **({"constant": constant} if constant else {})}
         yield finding("SOR001", "literal_constant" if constant else "literal_words", where, token=text, **params)
+
+
+# --- MIL001: a soldier's status written as free text -------------------------------------------------
+
+def mil001(view: FileView) -> Iterator[Finding]:
+    """A status string `classify` places on a catalog constant (`military_status._collect`); a
+    departure reason is no status."""
+    for where, kwarg, text in _statuses(view):
+        if kwarg == "departure_reason" or (constant := classify(text)) is None:
+            continue
+        yield finding("MIL001", "literal", where, token=text, kwarg=kwarg, text=text, constant=constant,
+                      comment=modern_spelling(text))
 
 
 # --- RLA001: a relative that attaches to nobody -----------------------------------------------------
@@ -334,6 +347,6 @@ def dvc001(view: FileView) -> Iterator[Finding]:
 
 RULES: dict[str, Rule] = {
     "NAM005": nam005, "REL001": rel001, "REL002": rel002, "AGE001": age001, "AGE002": age002,
-    "MST001": mst001, "SOR001": sor001, "RLA001": rla001, "RET001": ret001, "RET002": ret002, "RET003": ret003, "RET004": ret004,
+    "MST001": mst001, "SOR001": sor001, "MIL001": mil001, "RLA001": rla001, "RET001": ret001, "RET002": ret002, "RET003": ret003, "RET004": ret004,
     "DVC001": dvc001,
 }
