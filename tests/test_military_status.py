@@ -38,6 +38,13 @@ from verso.ru.domain.military_status import UNPLACED, classify
     ("унтер-офицерская дочь", "SOLDIER_DAUGHTER"),
     ("унтер офицерская жена", "SOLDIER_SPOUSE"),  # pre-reform spelling is read as modern
     ("рядовой Глуповского уланского полка", "SOLDIER"),
+    # the owner's ruling of 2026-11-26: the wordings once left unplaced
+    *[(t, "SOLDIER_GIRL") for t in ("солдатская девица", "солдатская девица из однодворцев")],
+    *[(t, "UNTER_OFFICER") for t in (
+        "вахмистр Глуповского конного полка", "отставной вахмистр Глуповского гусарского полка",
+        "отпущенный по билету вахмистр")],
+    *[(t, "SOLDIER_SON") for t in ("кантонист", "кантонист Глуповского батальона")],
+    *[(t, "SOLDIER") for t in ("военный писарь в бессрочном отпуску", "военный писарь Глуповской команды")],
     ("улан Глуповского полка", "SOLDIER"),
 ])
 def test_classify_places_each_wording(text, constant):
@@ -52,8 +59,8 @@ def test_classify_places_each_wording(text, constant):
     "отставной канцелярист", "отставной ротмистр", "отставной корнет", "отставной офицер", "отставной фельдшер",
     "жена отставного коллежского регистратора", "дочь отставного ротмистра",
     "состоящий на службе в волостном правлении", "солдатская внучка",
-    "солдатская девица", "кантонист", "вахмистр Глуповского конного полка",
-    "военный писарь в бессрочном отпуску",  # unplaced
+    "писарь", "волостной писарь", "отставной писарь",  # a clerk with no «военный» is civil
+    "унтер-офицерская девица", "дочь запасного рядового девица",  # unplaced
     # a military root inside a name or a place is not the word
     "крестьянин деревни Кулановки", "сын крестьянина Туланова", "крестьянин Уланов", "из крестьян сельца Заполковья",
 ])
@@ -61,7 +68,6 @@ def test_classify_leaves_others(text):
     assert classify(text) is None
 
 
-@pytest.mark.parametrize("text", [
-    "солдатская девица", "кантонист", "вахмистр Глуповского конного полка", "военный писарь в бессрочном отпуску"])
+@pytest.mark.parametrize("text", ["унтер-офицерская девица", "дочь запасного рядового девица"])
 def test_unplaced_matches_what_classify_refuses(text):
     assert re.search(UNPLACED, text.lower())

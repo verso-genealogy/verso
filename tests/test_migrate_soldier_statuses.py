@@ -104,17 +104,24 @@ def test_a_statusless_comment_without_a_reserve_wording_is_left(comment: str):
 
 
 def test_unplaced_is_reported_not_rewritten():
-    src = HEAD + 'x = person("Марья", status="солдатская девица")\n'
+    src = HEAD + 'x = person("Марья", status="унтер-офицерская девица")\n'
     new, changes, left = mig.migrate_source(src)
     assert new == src
     assert changes == []
-    assert left == [(3, "солдатская девица")]
+    assert left == [(3, "унтер-офицерская девица")]
+
+
+def test_a_soldiers_maiden_is_soldier_girl_with_her_wording():
+    assert _call(HEAD + 'x = person("Марья", status="солдатская девица")\n') == \
+        'x = person("Марья", status=SOLDIER_GIRL, comment="солдатская девица")\n'
 
 
 @pytest.mark.parametrize("text, expected", [
-    ("солдатская девица", True), ("кантонист", True), ("вахмистр Глуповского конного полка", True),
-    ("военный писарь в бессрочном отпуску", True),
-    ("крестьянская девица помещика Собакевича", False), ("сельский писарь", False), ("запасный солдат", False),
+    ("унтер-офицерская девица", True), ("дочь запасного рядового девица", True), ("солдатская внучка", True),
+    ("солдатская девица", False), ("кантонист", False), ("вахмистр Глуповского конного полка", False),
+    ("военный писарь в бессрочном отпуску", False),  # placed since the owner's ruling of 2026-11-26
+    ("крестьянская девица помещика Собакевича", False), ("дочь отставного ротмистра девица", False),
+    ("сельский писарь", False), ("запасный солдат", False),
 ])
 def test_unplaced_is_a_military_wording_classify_refuses(text: str, expected: bool):
     assert unplaced(text) is expected
@@ -174,7 +181,7 @@ def test_bound_constants_and_defaults_are_reported_not_rewritten():
                                    (6, "status_male", "уволенный в запас армии", "SOLDIER", None)]
 
 
-VILLAGE_FILE = HEAD + 'x = person("Иванъ", status="запасный солдат")\ny = person("Марья", status="солдатская девица")\n'
+VILLAGE_FILE = HEAD + 'x = person("Иванъ", status="запасный солдат")\ny = person("Марья", status="унтер-офицерская девица")\n'
 
 
 def _village(tmp_path: Path) -> Path:
@@ -197,7 +204,7 @@ def test_the_cli_dry_run_writes_the_report_and_no_file(tmp_path: Path, capsys: p
     assert rows == [
         ["kind", "file", "line", "old", "constant", "comment_after"],
         ["rewrite", "Маниловка/1850/manilovka_births_1850.py", "3", "запасный солдат", "SOLDIER", "запасный солдат"],
-        ["unplaced", "Маниловка/1850/manilovka_births_1850.py", "4", "солдатская девица", "", ""],
+        ["unplaced", "Маниловка/1850/manilovka_births_1850.py", "4", "унтер-офицерская девица", "", ""],
     ]
 
 

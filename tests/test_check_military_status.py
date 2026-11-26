@@ -34,7 +34,7 @@ class TestMil001(unittest.TestCase):
         self.assertIn('comment="запасный рядовой"', msgs[0])
 
     def test_catalog_and_officer_texts_are_quiet(self):
-        for status in ('SOLDIER', '"солдат"', '"крестьянин поручика Ноздрева"', '"кантонист"'):
+        for status in ('SOLDIER', '"солдат"', '"крестьянин поручика Ноздрева"', '"унтер-офицерская девица"'):
             self.assertEqual(_msgs(f'person("Иван", status={status})\n'), [], status)
 
     def test_a_file_constant_is_pinned_at_its_definition(self):

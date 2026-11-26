@@ -40,9 +40,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   (compared in modern spelling, case-folded, «» stripped) or quotes the scribe's own words for the rank (a «quoted»
   part `classify` places, or a soldier constant's catalog text) — then only the status changes. A person with no status whose comment, or one of its
   «quoted» parts, is a reserve wording `classify` places on SOLDIER («запасный рядовой …») gets `status=SOLDIER`,
-  the comment untouched. A wording `classify` will not place (`domain.military_status.unplaced`: a soldier's maiden,
-  a cantonist, a vakhmistr, a military clerk), a constant the file defines and a `RecordDefaults` form are reported
-  in the TSV, never rewritten. `--dry-run` prints a unified diff and writes nothing.
+  the comment untouched. `classify` places «солдатская девица» as SOLDIER_GIRL, «вахмистр …» as UNTER_OFFICER, «кантонист» as
+  SOLDIER_SON and «военный писарь …» as SOLDIER (a «писарь» with no «военный» stays civil). A soldier's wording it
+  will not place (`domain.military_status.unplaced`: a maiden's other than «солдатская девица», «солдатская
+  внучка»), a constant the file defines and a `RecordDefaults` form are reported in the TSV, never rewritten. `--dry-run` prints a unified diff and writes nothing.
 
 ### Changed
 

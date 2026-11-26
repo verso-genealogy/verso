@@ -13,7 +13,7 @@ A person with no status whose comment holds a reserve wording («запасны�
 of its «quoted» parts, which `classify` places on SOLDIER) gets `status=SOLDIER`, the comment untouched.
 
 Reported, never rewritten: a military wording `classify` will not place (`military_status.unplaced`: a
-soldier's maiden, a cantonist, a vakhmistr, a military clerk), and whatever MIL001 would still flag after
+maiden's wording other than «солдатская девица», «солдатская внучка»), and whatever MIL001 would still flag after
 the rewrite — a constant the file defines for itself, a `RecordDefaults` status form.
 
 Usage:

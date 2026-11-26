@@ -1,5 +1,5 @@
 # Invented: a soldier's status written as free text (MIL001: the catalog constant it means and the wording
-# the comment should hold); a catalog constant, an officer's peasant and a cantonist stay quiet.
+# the comment should hold); a catalog constant, an officer's peasant and an unplaced maiden stay quiet.
 from verso.ru.dsl import Gender, RecordDefaults, birth, birth_records, person
 from verso.ru.dsl.statuses import PEASANT_MALE, SOLDIER
 
@@ -13,5 +13,5 @@ births = birth_records(
           mother=person("Анфиса", status="солдатская вдова")),
     birth(3, Gender.MALE, 5, 7, child=person("Петр"),
           father=person("Семен", "Ильин", "Заманилов", status="крестьянин поручика Ноздрева"),
-          mother=person("Дарья", status="кантонист")),
+          mother=person("Дарья", status="унтер-офицерская девица")),
     defaults=RecordDefaults(status_male=PEASANT_MALE, status_mother="жена отставного рядового"))
