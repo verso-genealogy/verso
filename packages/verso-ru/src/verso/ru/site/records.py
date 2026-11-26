@@ -48,6 +48,7 @@ _MEMBER_NOT_SHOWN = frozenset({"hidden"})
 _CARD_DATES = ("date", "birth_date", "draft_date", "casualty_date", "feat_date")
 _CARD_SOURCE = ("archive", "fund", "inventory", "case", "archive_location", "original_text", "bibliography")
 _DATE_PARTS = frozenset({"year", "month", "day", "year_end", "month_end", "day_end"})
+_SHOWN_PARTS = frozenset({"year", "month", "year_end", "month_end"})   # a day is drawn only beside its month
 _DATE_KEYS = _DATE_PARTS | {"date_range", "circa", "circa_end"}   # an EventDate, and nothing beside it
 
 
@@ -85,8 +86,8 @@ def value(node: Node, path: str, sides: Sequence[str] = ("written", "derived")) 
             found = found["text"]
         if found is None or found is False or (isinstance(found, (str, list, tuple, Mapping)) and not found):
             continue                         # nothing written — but 0 is a number the source wrote
-        if _is_date(found) and not any(found.get(part) for part in _DATE_PARTS):
-            continue                         # a date with no part of one: a range or «circa» of nothing
+        if _is_date(found) and not any(found.get(part) for part in _SHOWN_PARTS):
+            continue                         # a date with no part of one, or a day alone: nothing to draw
         return found, side[0]
     return None
 
@@ -120,20 +121,27 @@ def _span(text_: str, mark: str, cls: str = "") -> str:
     return f'<span class="{(cls + " " + mark).strip()}">{E(text_)}</span>'
 
 
-def date_text(day: object, month: object, year: object, ui: Ui) -> str:
-    """«3 мая 1915», «май 1915», «1915»: the month in the genitive beside a day."""
-    parts = [str(day)] if day else []
+def date_text(day: object, month: object, year: object, ui: Ui, *, governed: bool = False) -> str:
+    """«3 мая 1915», «май 1915», «1915» — as the library writes a date (`verso.ru.domain.event_date.written_date`):
+    a day only beside its month, as the books never date one alone; the month in the genitive beside a day, and
+    after «до», «около», «после» (`governed`) without one too («до мая 1915»)."""
+    parts: list[str] = []
     if month:
-        parts.append(ui.enum("month", month, "gen" if day else "nom"))
+        if day:
+            parts.append(str(day))
+        parts.append(ui.enum("month", month, "gen" if day or governed else "nom"))
     if year:
         parts.append(str(year))
     return " ".join(parts)
 
 
 def _card_date(found: Mapping[str, Any], ui: Ui) -> str:
-    start = date_text(found.get("day"), found.get("month"), found.get("year"), ui)
-    end = date_text(found.get("day_end"), found.get("month_end"), found.get("year_end"), ui)
-    if found.get("circa"):
+    bounded = found.get("date_range") in ("before", "after")
+    start = date_text(found.get("day"), found.get("month"), found.get("year"), ui,
+                      governed=bool(found.get("circa")) or bounded)
+    end = date_text(found.get("day_end"), found.get("month_end"), found.get("year_end"), ui,
+                    governed=bool(found.get("circa_end")) or (bounded and not start))
+    if found.get("circa") and start:
         start = str(t("site.date.circa", date=start))
     if found.get("circa_end") and end:
         end = str(t("site.date.circa", date=end))
@@ -320,7 +328,7 @@ def _events(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui) -> tuple[
         paths = [event.get(part) for part in ("day", "month", "year")]
         used.update(path for path in paths if path)
         day, month, year = (value(entry.node, path) if path else None for path in paths)
-        if day is None and month is None:
+        if month is None:                    # a day alone is no date, and the year would be only the book's
             continue
         own_year = year[0] if year else (value(entry.node, "year") or (book.year, "d"))[0]
         label = str(t("site.event.registration")) if book.civil and place == 1 else ui.label(event["label"])
