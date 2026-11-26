@@ -54,6 +54,7 @@
 | `verso lint-config` | `verso.ru.consolidation.lint_config` | Static linter for a village's generate_config_names.py. |
 | `verso lint-kin` | `verso.ru.familio.lint_kin` | Static linter for a village's ``familio_kin.py`` KIN registry. |
 | `verso merge-plan` | `verso.ru.consolidation.merge_plan` | The Geni-side work a consolidation apply needs, read off a saved plan. |
+| `verso migrate-soldier-statuses` | `verso.ru.cli.migrate_soldier_statuses` | Rewrite a soldier's free-text status into its catalog constant (DSL v1). |
 | `verso migrate-statuses` | `verso.ru.cli.migrate_statuses` | Migrate DSL files to use statuses constants. |
 | `verso moved-blocks` | `verso.ru.consolidation.moved_blocks` | Turn a plan's rename-induced destroy+create pairs into `moved {}` blocks. |
 | `verso name-variants` | `verso.ru.consolidation.name_variants` | Flag a loose record whose SURNAME the canonical of that name already carries. |

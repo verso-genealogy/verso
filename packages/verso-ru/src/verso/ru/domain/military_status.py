@@ -45,10 +45,14 @@ _ROLES = (
 _ADJ_ODD = re.compile(rf"{_ADJ}\w+")  # i18n: content — status words: vocabulary
 
 
+def _in_catalog(modern: str) -> bool:
+    return modern in {str(v) for v in statuses.catalog().values()}
+
+
 def classify(text: str) -> str | None:
     """The catalog constant's NAME a soldier's status means, or None (see the module's words)."""
     modern = modern_spelling(text)
-    if modern in {str(v) for v in statuses.catalog().values()}:
+    if _in_catalog(modern):
         return None
     low = modern.lower()
     if _NOT_SOLDIER.search(low) or (_LANDLORD.search(low) and not _SOLDIER_WORD.search(low)):
@@ -63,3 +67,15 @@ def classify(text: str) -> str | None:
     if _UNTER.search(low):
         return "UNTER_OFFICER"
     return "RETIRED_SOLDIER" if _RETIRED.search(low) else "SOLDIER"
+
+
+def unplaced(text: str) -> bool:
+    """A military wording `classify` will not place (`UNPLACED`): a soldier's maiden, a cantonist, a
+    vakhmistr, a military clerk — listed for a person to decide, never guessed. A maiden's word counts
+    only beside a military one («крестьянская девица» is no soldier's)."""
+    modern = modern_spelling(text)
+    low = modern.lower()
+    found = UNPLACED.search(low)
+    if found is None or _in_catalog(modern) or classify(text) is not None:
+        return False
+    return found.group() != "девиц" or _MILITARY.search(low) is not None  # i18n: content — status words: vocabulary

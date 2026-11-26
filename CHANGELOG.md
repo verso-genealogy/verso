@@ -33,6 +33,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   names the constant and the wording the `comment=` should hold (params `kwarg`, `text`, `constant`, `comment`,
   and `name` for a bound constant; variants `literal`, `bound`); the finding has no `fix`. Hard from birth
   (`severity = "refuse"`).
+- verso-ru, `verso migrate-soldier-statuses --village V [--village …] [--dry-run] [--report FILE.tsv]`
+  (`cli.migrate_soldier_statuses`): the bulk fix of MIL001. A `person(...)`'s `status=` literal that `classify`
+  places becomes its constant, imported in the file's own form, and the wording goes into `comment=`, bare and in
+  modern spelling — before an existing comment with «; », and not at all when that comment already holds it
+  (compared in modern spelling, case-folded, «» stripped). A person with no status whose comment, or one of its
+  «quoted» parts, is a reserve wording `classify` places on SOLDIER («запасный рядовой …») gets `status=SOLDIER`,
+  the comment untouched. A wording `classify` will not place (`domain.military_status.unplaced`: a soldier's maiden,
+  a cantonist, a vakhmistr, a military clerk), a constant the file defines and a `RecordDefaults` form are reported
+  in the TSV, never rewritten. `--dry-run` prints a unified diff and writes nothing.
 
 ### Changed
 
