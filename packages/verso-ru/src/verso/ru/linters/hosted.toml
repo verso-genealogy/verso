@@ -524,7 +524,7 @@ note = "a status in the old orthography or capitalised (its constant variant is 
 
 [MIL001]
 class = "written"
-severity = "refuse"
+severity = "warn"
 scope = "record"
 note = "a soldier's status written as free text (a catalog constant, the scribe's words in comment=)"
 

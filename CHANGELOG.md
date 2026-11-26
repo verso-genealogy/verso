@@ -27,15 +27,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   (`pages.surname_links`), `records.render` them by the persona's place among the record's `persons`, and a
   `model.Mention` carries that place. The guide's paragraph on «?» readings now says what the index does with them
   (a reading in doubt on its sure page, one not made out in the last section). Only the site moves.
-- verso-ru: **breaking, a soldier's status written as free text is refused.** `MIL001` (`military_status`) is hard
-  from birth (`severity = "refuse"`) and fires on texts a corpus already holds («запасный солдат», «уволенный в запас
-  армии», «жена запасного рядового»), so a corpus with them fails its lint and Verso refuses its saves after the
-  upgrade. The upgrade path, before bumping: run `verso migrate-soldier-statuses --village V --dry-run --report
-  FILE.tsv` with the new version, read the report (its `unplaced` rows are for a person to decide), then run it
-  without `--dry-run`.
+- verso-ru: **a soldier's status written as free text is flagged, as a warning.** `MIL001` (`military_status`) is
+  advisory (`severity = "warn"`) and fires on texts a corpus already holds («запасный солдат», «уволенный в запас
+  армии», «жена запасного рядового»). A corpus that gates advisory findings on a baseline records them (`verso
+  dsllint --baseline FILE --update-baseline --villages`) and migrates with `verso migrate-soldier-statuses`: run
+  `verso migrate-soldier-statuses --village V --dry-run --report FILE.tsv`, read the report (its `unplaced` rows are
+  for a person to decide), then run it without `--dry-run`. MIL001 becomes hard in a later release, once the
+  corpus it was written for reaches zero.
   A `status=` (or a `RecordDefaults` form) written as a string literal or as a constant the file defines, which
   `domain.military_status.classify` places on a catalog constant («запасный солдат» → SOLDIER, «жена запасного
-  рядового» → SOLDIER_SPOUSE), is refused on the DSL and on records JSON. The message names the constant and the
+  рядового» → SOLDIER_SPOUSE), is flagged on the DSL and on records JSON. The message names the constant and the
   wording the `comment=` should hold (params `kwarg`, `text`, `constant`, `comment`, and `name` for a bound
   constant; variants `literal`, `bound`); the finding has no `fix`. `classify` places «солдатская девица» as
   SOLDIER_GIRL, «вахмистр …» as UNTER_OFFICER, a leading «кантонист» as SOLDIER_SON and «военный писарь …» as

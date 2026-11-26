@@ -3,6 +3,7 @@ import unittest
 from typing import Any
 
 import verso.ru.linters.checks.military_status as check
+from verso.ru.linters import dsllint, hosted
 
 
 def _issues(src: str) -> list[dict[str, Any]]:
@@ -48,6 +49,13 @@ class TestMil001(unittest.TestCase):
 
     def test_departure_reason_is_not_a_status(self):
         self.assertEqual(_issues('member(1, person("Иван"), departure_reason="в солдаты")\n'), [])
+
+    def test_it_is_advisory_a_warning_everywhere(self):
+        linter = next(lt for lt in dsllint.LINTERS if lt.name == "military_status")
+        self.assertTrue(linter.advisory)
+        issues = _issues('person("Иван", status="запасный солдат")\n')
+        self.assertEqual([i["level"] for i in issues], ["warn"])
+        self.assertEqual(hosted.readiness()["MIL001"].severity, "warn")
 
 
 if __name__ == "__main__":

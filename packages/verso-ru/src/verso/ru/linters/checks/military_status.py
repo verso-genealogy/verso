@@ -66,7 +66,7 @@ def _collect(tree: ast.AST, lines: Sequence[str]) -> list[dict[str, Any]]:
                     "end_col": _char_col(lines, pin.lineno, pin.end_col_offset)}
         params: dict[str, Any] = {"kwarg": node.arg, "text": text, "constant": constant,
                                   "comment": modern_spelling(text), **({"name": bound} if bound else {})}
-        issues.append(as_dict(issue("MIL001", "bound" if bound else "literal", pin.lineno, level="error",
+        issues.append(as_dict(issue("MIL001", "bound" if bound else "literal", pin.lineno, level="warn",
                                     token=text, **span, **params)))
     issues.sort(key=lambda i: i["line"])
     return issues

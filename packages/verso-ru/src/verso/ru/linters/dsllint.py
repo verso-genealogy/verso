@@ -136,10 +136,11 @@ class Linter:
 # departure_reason= in pre-reform spelling (the maintainers' ruling — names keep the
 # scribe's spelling, classification fields are modern). Its 91 first findings
 # (Маниловка 77, Глуповы Горы 13, Заманиловка 1) were rewritten in the same wave.
-# military_status (MIL001) is hard from birth, 2026-11-26: a soldier's status written as free text
+# military_status (MIL001) is advisory for now (2026-11-26): a soldier's status written as free text
 # («запасный солдат», «жена запасного рядового») is a catalog constant (SOLDIER, SOLDIER_SPOUSE, …) with the
-# scribe's words in comment=. The corpus was migrated in the same wave (the codemod), so a new finding is a
-# regression caught while authoring.
+# scribe's words in comment=. It fires on texts a corpus already holds, so a corpus baselines its findings and
+# migrates with the codemod (`verso migrate-soldier-statuses`) village by village; it becomes hard in a later
+# release, once the corpus it was written for reaches zero.
 # status_redundancy (VSR001) is CSR001's rule for the three VITAL verbs and is
 # HARD, not advisory: unlike the census corpus it reached 0 in the same commit
 # that introduced it (five relative() fathers repeating their own village's
@@ -216,7 +217,7 @@ LINTERS: tuple[Linter, ...] = (
     Linter("marital_status", check_marital_status.check_file_structured, check_marital_status.check_file),
     Linter("status_redundancy", check_status_redundancy.check_file_structured, check_status_redundancy.check_file),
     Linter("status_orthography", check_status_orthography.check_file_structured, check_status_orthography.check_file),
-    Linter("military_status", check_military_status.check_file_structured, check_military_status.check_file),
+    Linter("military_status", check_military_status.check_file_structured, check_military_status.check_file, advisory=True),
     Linter("relative_attachment", check_relative_attachment.check_file_structured, check_relative_attachment.check_file, advisory=True),
     Linter("reviewed_redundancy", check_reviewed_redundancy.check_file_structured, check_reviewed_redundancy.check_file, advisory=True),
     Linter("retractions", check_retractions.check_file_structured, check_retractions.check_file),
