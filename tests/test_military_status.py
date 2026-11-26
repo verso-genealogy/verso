@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from verso.ru.domain.military_status import UNPLACED, classify
+from verso.ru.domain.military_status import UNPLACED, classify, unplaced
 
 
 @pytest.mark.parametrize("text, constant", [
@@ -17,7 +17,7 @@ from verso.ru.domain.military_status import UNPLACED, classify
         "отставной рядовой", "военный отставной солдат", "отставной солдат помещика Собакевича",
         "отставной сержант", "рядовой, уволенный с военной службы по болезни")],
     *[(t, "UNTER_OFFICER") for t in (
-        "запасный старший унтер-офицер", "лейб гвардии 10го финляндского полка инвалидный унтер офицер",
+        "запасный старший унтер-офицер", "лейб гвардии Глуповского полка инвалидный унтер офицер",
         "отставной унтер-офицер")],
     *[(t, "SOLDIER_SPOUSE") for t in (
         "жена запасного рядового", "унтер-офицерская жена", "солдатская жена из крестьян помещика Собакевича")],
@@ -71,3 +71,55 @@ def test_classify_leaves_others(text):
 @pytest.mark.parametrize("text", ["унтер-офицерская девица", "дочь запасного рядового девица"])
 def test_unplaced_matches_what_classify_refuses(text):
     assert re.search(UNPLACED, text.lower())
+
+
+# The whole-branch review's probes (2026-11-26).
+
+# C1: a woman's or a kinsman's wording whose role word does not lead is never a man's constant: unplaced.
+WOMEN_AND_KIN = [
+    "крестьянка, жена запасного рядового", "из крестьян жена запасного рядового", "запасного рядового жена",
+    "мать солдатка", "внучка солдата", "сестра солдата", "военная", "военная вдова", "фельдфебельская жена",
+    "солдатская", "отставного солдата жена", "отставная солдатка", "вахмистрова жена", "унтер-офицерша",
+    "унтер-офицерская", "крестьянин, сын запасного рядового", "бессрочноотпускного рядового сын",
+    "военного писаря сын", "сирота солдатский сын",
+    # M3: a relative's rank in a comment
+    "муж запасный рядовой", "отецъ — запасный рядовой",
+]
+
+
+@pytest.mark.parametrize("text", WOMEN_AND_KIN)
+def test_a_woman_or_kinsman_not_leading_is_unplaced(text):
+    assert classify(text) is None
+    assert unplaced(text)
+
+
+# C2: «отставной», «отпуск» alone are no soldier's words; medics, engineers, Cossacks and the police are none.
+# I1: a capitalised word after the first is a name or a place.
+@pytest.mark.parametrize("text", [
+    "отпускная девка", "отставной учитель", "отставной почтальон", "отставной сторож", "отставной полицейский",
+    "отставной городовой", "отставной урядник", "отставной лесник", "отставной писец", "отставной лекарь",
+    "отставной казак", "отставной матрос", "крестьянин, отставной", "жена отставного казака", "отпускной крестьянин",
+    "военный лекарь", "военный врач", "военный инженер", "полковой врач", "полковой лекарь",
+    "крестьянин деревни Солдатовки", "крестьянин села Полковое", "крестьянин села Гусаровка", "крестьянин села Рядово",
+    "мещанин Запасов", "мещанин города Военного", "сын крестьянина Солдатова", "крестьянка деревни Отставное",
+])
+def test_civil_names_and_places_are_no_soldiers(text):
+    assert classify(text) is None
+    assert not unplaced(text)
+
+
+@pytest.mark.parametrize("text, constant", [
+    # I2: a cantonist is a soldier's son only when the word leads
+    ("рядовой из кантонистов", "SOLDIER"), ("солдат из кантонистов", "SOLDIER"),
+    ("унтер-офицер из кантонистов", "UNTER_OFFICER"), ("военный писарь из кантонистов", "SOLDIER"),
+    # I1: the first word is kept whatever its case, and a word in capitals is no name
+    ("уланского полка Рядовой", "SOLDIER"), ("Глуповского Гусарского полка второго эскадрона рядовой", "SOLDIER"),
+    ("Вдова солдатка", "SOLDIER_WIDOW"), ("ВДОВА СОЛДАТКА", "SOLDIER_WIDOW"),
+    ("запасный рядовой Ноздрев", "SOLDIER"),
+    # C2: «отставной» still tells a soldier retired
+    ("отставной от военной службы", "RETIRED_SOLDIER"), ("отставной вахмистр", "UNTER_OFFICER"),
+    # «нижний чин» is the army's word for a private
+    ("отставной нижний чин", "RETIRED_SOLDIER"), ("нижний чин Глуповского полка", "SOLDIER"),
+])
+def test_the_review_keeps_these(text, constant):
+    assert classify(text) == constant
