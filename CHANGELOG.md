@@ -17,6 +17,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Fixed
 
+- verso-ru, the site (`verso site`): a reading with a «?» no longer opens a section of its own among the letters
+  of the indexes of surnames and patronymics. One with the «?» at its end whose form without it is read surely
+  elsewhere — compared as the search compares, the old letters and a final hard sign folded («Сидоровъ?» beside
+  «Сидоров») — stands on that page, its row marked «?» («прочтение под вопросом»). Any other — a part of a name, a
+  letter not made out, a name read surely nowhere — keeps a page of its own in the index's last section,
+  «Неразобранные», titled as written. New catalog keys `site.names.doubtful`, `site.names.unread`,
+  `site.names.unread_what`. Only the site moves.
 - verso-ru, the site (`verso site`), from a reader's review: no two books of a year read alike. A book that is a
   part of its case names it wherever the book is named — at its head, in a year's list, in the search's list of
   books and in the case column of the books' index — as a reader reads it («стр-34-35»; «part-2» as «часть 2»; a

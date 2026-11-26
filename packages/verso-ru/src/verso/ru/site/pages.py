@@ -12,7 +12,7 @@ import re
 import unicodedata
 from collections import Counter
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from verso.ru.messages import t
@@ -25,6 +25,7 @@ E = html.escape
 NAMES = "names"
 PATRONYMICS = "patronymics"
 NAMELESS = "-"          # the page of those written with neither a surname nor a patronymic
+UNREAD = "unread"       # the index's last section: the readings not made out
 SEARCH_LIMIT = 200
 
 
@@ -248,6 +249,8 @@ class NamePage:
     key: str                              # the directory's name
     title: str                            # «Сидоров, Сидорова»
     mentions: tuple[Mention, ...]
+    doubtful: frozenset[int] = frozenset()   # the places in `mentions` of a reading with «?» folded in here
+    unread: bool = False                  # a reading not made out («Ал?», «Ака?риева»): the index's last section
 
 
 def _key(text_: str) -> str:
@@ -275,23 +278,49 @@ def _fold_feminine(keys: Iterable[str]) -> dict[str, str]:
 
 
 def _name_pages(mentions: Iterable[tuple[str, Mention]]) -> list[NamePage]:
-    """The pages of an index of names; each lists its mentions in the site's order — by year, book, record."""
-    by_key: dict[str, list[tuple[int, str, Mention]]] = {}
-    for place, (name, mention) in enumerate(mentions):
-        by_key.setdefault(_key(name), []).append((place, name, mention))
+    """The pages of an index of names; each lists its mentions in the site's order — by year, book, record.
+
+    A reading with a «?» at its end whose form without it is read surely elsewhere («Алексеевна?» beside
+    «Алексеевна») stands on that form's page, marked; any other with a «?» — a part of a name, a letter not made
+    out, a name read nowhere surely — has a page of its own in the index's last section (`unread`)."""
+    entries = list(enumerate(mentions))
+    sure: dict[str, str] = {}                   # a surely read name folded as the search folds it: its key
+    for _, (name, _) in entries:
+        if "?" not in name:
+            sure.setdefault(model.fold(name), _key(name))
+    by_key: dict[str, list[tuple[int, str, Mention, bool]]] = {}
+    unread: dict[str, list[tuple[int, str, Mention, bool]]] = {}
+    for place, (name, mention) in entries:
+        if "?" not in name:
+            by_key.setdefault(_key(name), []).append((place, name, mention, False))
+        elif (stem := name.rstrip("?").strip()) and "?" not in stem and (key := sure.get(model.fold(stem))):
+            by_key.setdefault(key, []).append((place, key, mention, True))   # the page's own spelling: no new one
+        else:
+            unread.setdefault(_key(name), []).append((place, name, mention, True))
     base = _fold_feminine(by_key)
-    grouped: dict[str, list[tuple[int, str, Mention]]] = {}
+    grouped_: dict[str, list[tuple[int, str, Mention, bool]]] = {}
     for key in sorted(by_key):
         directory = _directory(base[key][:1].upper() + base[key][1:])
-        grouped.setdefault(directory, []).extend(by_key[key])     # two names one directory holds: one page
-    pages: list[NamePage] = []
-    for directory in sorted(grouped, key=_key):
-        found = sorted(grouped[directory], key=lambda each: each[0])
-        first = _key(directory)
-        spellings = sorted({_key(name) for _, name, _ in found}, key=lambda each: (each != first, each))
-        title = ", ".join(each[:1].upper() + each[1:] for each in spellings)
-        pages.append(NamePage(directory, title, tuple(mention for _, _, mention in found)))
+        grouped_.setdefault(directory, []).extend(by_key[key])    # two names one directory holds: one page
+    pages: list[NamePage] = [_name_page(directory, grouped_[directory]) for directory in sorted(grouped_, key=_key)]
+    taken = {_key(directory) for directory in grouped_}            # as a file system without case sees them
+    for key in sorted(unread, key=lambda each: _key(each.replace("?", ""))):
+        written = min(unread[key])[1]                               # as first written: «?Сидоров», not «?сидоров»
+        directory = _directory(written)
+        while _key(directory) in taken:                             # «?Сидоров» beside a surely read «Сидоров»
+            directory += "-"
+        taken.add(_key(directory))
+        pages.append(replace(_name_page(directory, unread[key]), title=written, unread=True))
     return pages
+
+
+def _name_page(directory: str, found_: list[tuple[int, str, Mention, bool]]) -> NamePage:
+    found = sorted(found_, key=lambda each: each[0])
+    first = _key(directory)
+    spellings = sorted({_key(name) for _, name, _, _ in found}, key=lambda each: (each != first, each))
+    title = ", ".join(each[:1].upper() + each[1:] for each in spellings)
+    return NamePage(directory, title, tuple(mention for _, _, mention, _ in found),
+                    frozenset(n for n, (_, _, _, doubt) in enumerate(found) if doubt))
 
 
 def surname_pages(site: Site) -> list[NamePage]:
@@ -329,15 +358,18 @@ def shown(mention: Mention) -> str:
     return mention.as_written or str(t("site.names.unnamed"))
 
 
-def _mention_rows(mentions: Sequence[Mention], site: Site, ui: Ui, up: str) -> str:
+def _mention_rows(mentions: Sequence[Mention], site: Site, ui: Ui, up: str,
+                  doubtful: frozenset[int] = frozenset()) -> str:
     books = {b.id: b for b in site.books}
     rows: list[str] = []
-    for mention in mentions:
+    for place, mention in enumerate(mentions):
         book_ = books[mention.entry.book_id]
         href = f"{up}{E(book_.path)}#{urls.fragment(mention.entry.anchor)}"
         modern = (f' <span class="modern d">{E(mention.modern)}</span>'
                   if mention.modern and model.fold(mention.modern) != model.fold(mention.as_written) else "")
         badge = f' <span class="badge">{E(str(t("site.unreviewed")))}</span>' if mention.entry.unreviewed else ""
+        if place in doubtful:
+            badge = f' <span class="doubt" title="{E(str(t("site.names.doubtful")))}">?</span>' + badge
         rows.append(f'<tr><td>{book_.year if book_.year is not None else ""}</td>'
                     f'<td><a href="{href}">{E(shown(mention))}</a>{modern}{badge}</td>'
                     f"<td>{E(role_label(mention, ui))}</td><td>{E(kind_title(book_, ui))}, {E(book_.village)}</td></tr>")
@@ -352,7 +384,7 @@ def name(page_: NamePage, section: str, site: Site, ui: Ui, ctx: Context) -> str
     back = t("site.nav.names") if section == NAMES else t("site.names.patronymics")
     body = (f'<p class="crumbs"><a href="../">{E(str(back))}</a></p><h1>{E(page_.title)}</h1>'
             f'<p class="k">{E(counted(t("site.names.mentions", count=len(page_.mentions)), len(page_.mentions)))}</p>'
-            + _mention_rows(page_.mentions, site, ui, up))
+            + _mention_rows(page_.mentions, site, ui, up, page_.doubtful))
     return shell.page(page_.title, body, ctx=ctx, path=path)
 
 
@@ -360,12 +392,20 @@ def _letters(pages_: Sequence[NamePage]) -> str:
     by_letter: dict[str, list[NamePage]] = {}
     for page_ in pages_:
         by_letter.setdefault(page_.title[:1].upper(), []).append(page_)
-    jump = " ".join(f'<a href="#{E(letter)}">{E(letter)}</a>' for letter in by_letter)
+    unread = [page_ for page_ in pages_ if page_.unread]
+    by_letter = {letter: [p for p in found if not p.unread] for letter, found in by_letter.items()}
+    by_letter = {letter: found for letter, found in by_letter.items() if found}
+    heads = [(letter, letter, found) for letter, found in by_letter.items()]
+    if unread:
+        heads.append((UNREAD, str(t("site.names.unread")), unread))
+    jump = " ".join(f'<a href="#{E(anchor)}">{E(head)}</a>' for anchor, head, _ in heads)
     blocks = "".join(
-        f'<h2 id="{E(letter)}">{E(letter)}</h2><ul class="names">' + "".join(
+        f'<h2 id="{E(anchor)}">{E(head)}</h2>'
+        + (f'<p class="k">{E(str(t("site.names.unread_what")))}</p>' if anchor == UNREAD else "")
+        + '<ul class="names">' + "".join(
             f'<li><a href="{E(page_.key)}/">{E(page_.title)}</a> <span class="n">{grouped(len(page_.mentions))}</span></li>'
             for page_ in found) + "</ul>"
-        for letter, found in by_letter.items())
+        for anchor, head, found in heads)
     return f'<nav class="letters">{jump}</nav>{blocks}'
 
 
