@@ -1877,6 +1877,8 @@ circa = "около {date}"
 between = "{start} — {end}"
 before = "до {date}"
 after = "после {date}"
+day_alone = "{day}-го числа (месяц не записан)"
+day_alone_year = "{day}-го числа {year} (месяц не записан)"
 
 [site.event]
 registration = "регистрация"

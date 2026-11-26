@@ -120,22 +120,37 @@ def _span(text_: str, mark: str, cls: str = "") -> str:
     return f'<span class="{(cls + " " + mark).strip()}">{E(text_)}</span>'
 
 
-def date_text(day: object, month: object, year: object, ui: Ui) -> str:
-    """«3 мая 1915», «май 1915», «1915»: the month in the genitive beside a day."""
-    parts = [str(day)] if day else []
+def date_text(day: object, month: object, year: object, ui: Ui, *, governed: bool = False) -> str:
+    """«3 мая 1915», «май 1915», «1915» — as the library writes a date (`verso.ru.domain.event_date.written_date`):
+    the month in the genitive beside a day, and after «до», «около», «после» (`governed`) without one too («до мая
+    1915»). A day with no month — which the books never write, and a reading may (a month left on the leaf before)
+    — is said to be one: «25-го числа 1906 (месяц не записан)», not dropped and not drawn as «25 1906»."""
+    if day and not month:
+        return str(t("site.date.day_alone_year", day=day, year=year) if year else t("site.date.day_alone", day=day))
+    parts: list[str] = []
     if month:
-        parts.append(ui.enum("month", month, "gen" if day else "nom"))
+        if day:
+            parts.append(str(day))
+        parts.append(ui.enum("month", month, "gen" if day or governed else "nom"))
     if year:
         parts.append(str(year))
     return " ".join(parts)
 
 
 def _card_date(found: Mapping[str, Any], ui: Ui) -> str:
-    start = date_text(found.get("day"), found.get("month"), found.get("year"), ui)
-    end = date_text(found.get("day_end"), found.get("month_end"), found.get("year_end"), ui)
-    if found.get("circa"):
+    """A date object as a card's text. As `written_date`: a «до» or «после» takes no «около», and an end that names a
+    day but no month or year of its own takes the start's («3 мая 1914 — 10 мая 1914»)."""
+    bounded = found.get("date_range") in ("before", "after")
+    day_end, month_end, year_end = found.get("day_end"), found.get("month_end"), found.get("year_end")
+    if day_end or month_end:
+        month_end = month_end or (found.get("month") if day_end else None)
+        year_end = year_end or found.get("year")
+    start = date_text(found.get("day"), found.get("month"), found.get("year"), ui,
+                      governed=bool(found.get("circa")) or bounded)
+    end = date_text(day_end, month_end, year_end, ui, governed=bool(found.get("circa_end")) or (bounded and not start))
+    if found.get("circa") and start and not bounded:
         start = str(t("site.date.circa", date=start))
-    if found.get("circa_end") and end:
+    if found.get("circa_end") and end and not bounded:
         end = str(t("site.date.circa", date=end))
     if not start:                                    # an end alone is what the source wrote
         start, end = end, ""

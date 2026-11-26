@@ -136,6 +136,53 @@ def test_the_check_names_what_a_reader_would_meet(tmp_path: Path) -> None:
                      ("index.html", "fetched", "//cdn.example.org/x.png")}
 
 
+
+def test_the_check_reads_start_tags_as_the_html_parser_does() -> None:
+    """On the markup the builder writes and its near kin, the check's one pattern finds what `html.parser` finds:
+    names lowered, references resolved, an attribute with no value told from an empty one, and nothing inside a
+    comment, a declaration, a script or a style (check.py says where the two part)."""
+    from html.parser import HTMLParser
+
+    class Reference(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__(convert_charrefs=True)
+            self.page = check._Page()
+
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            self.page.start(tag, attrs)
+
+    text = ('<!DOCTYPE html><!-- <a href="in-a-comment/"> --><A HREF="up/" ID="One">x</A>'
+            "<a href='single/?q=1&amp;r=2' id=bare>y</a><a href=unquoted/>z</a><form action=\"go/\" id=\"\">"
+            '<p id="a&quot;b" hidden data-x="1 > 0"></p><a href>no address</a><img src="i.png"/><link rel="canonical" href="//c/">'
+            '<script src="s.js">document.write(\'<a href="in-a-script/">\')</script>'
+            '<style>a[href="in-a-style/"] {}</style><SCRIPT>"<a href=\'shout/\'>"</SCRIPT><a href="after/">')
+    reference = Reference()
+    reference.feed(text)
+    reference.close()
+    found = check._scan(text)
+    assert found == reference.page
+    assert found.links == ["up/", "single/?q=1&r=2", "unquoted/", "go/", "after/"]
+    assert found.ids == ["One", "bare", 'a"b'] and found.fetched == ["i.png", "s.js"]
+
+
+def test_the_check_reads_the_tree_once_not_a_file_a_link(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every address is looked up in the set of the tree's files, not asked of the file system: a hundred thousand
+    links cost no more than reading their pages. A name in another case is another address (Pages tells them
+    apart), and so is one outside the tree."""
+    out = tmp_path / "site"
+    (out / "a").mkdir(parents=True)
+    (out / "a" / "index.html").write_text('<p id="x"></p>', encoding="utf-8")
+    (out / "index.html").write_text('<a href="a/#x">1</a><a href="a">2</a><a href="A/">3</a><a href="../site/">4</a>'
+                                    '<a href="/a/">5</a><a href="#top">6</a><p id="top"></p>', encoding="utf-8")
+
+    def asked(*_: object, **__: object) -> None:
+        raise AssertionError("a link asked of the file system")
+    with monkeypatch.context() as patched:
+        for name in ("is_file", "is_dir", "exists"):
+            patched.setattr(Path, name, asked)
+        found = {(p.what, p.detail) for p in check.verify(out)}
+    assert found == {("broken_link", "A/"), ("broken_link", "../site/"), ("broken_link", "/a/")}
+
 def test_two_books_of_one_address_stop_the_build(file_node: dict[str, Any], tmp_path: Path) -> None:
     doc = file_node["documents"][1]
     twins = []
