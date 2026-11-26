@@ -7,8 +7,8 @@ literal that `verso.ru.domain.military_status.classify` places («запасны
   - the scribe's wording goes into `comment=`, bare and in modern spelling — what MIL001 asks for. A
     comment the person has is kept and the wording put before it with «; », unless that comment already
     holds it (compared in modern spelling, case-folded, «» stripped) or quotes the scribe's own words for
-    the rank (a «quoted» part `classify` places, or a soldier constant's catalog text): then only the
-    status changes.
+    the rank (a «quoted» part `classify` places or lists as unplaced, or a soldier constant's catalog
+    text): then only the status changes.
 A person with no status whose comment holds a reserve wording («запасный рядовой …», the comment or one
 of its «quoted» parts, which `classify` places on SOLDIER) gets `status=SOLDIER`, the comment untouched.
 
@@ -26,6 +26,7 @@ import ast
 import difflib
 import re
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 from typing import NamedTuple
 
@@ -87,9 +88,11 @@ def _soldier_texts() -> frozenset[str]:
 
 
 def scribes_rank(quoted: str) -> bool:
-    """A «quoted» part that is the scribe's own word for a soldier's rank: `classify` places it, or
-    its modern spelling is a soldier constant's catalog text («отставной солдатъ»)."""
-    return classify(quoted) is not None or modern_spelling(quoted).strip().casefold() in _soldier_texts()
+    """A «quoted» part that is the scribe's own word for a soldier's rank: `classify` places it, it is a
+    soldier's wording `classify` leaves unplaced («унтеръ-офицерша»), or its modern spelling is a soldier
+    constant's catalog text («отставной солдатъ»)."""
+    return (classify(quoted) is not None or unplaced(quoted)
+            or modern_spelling(quoted).strip().casefold() in _soldier_texts())
 
 
 def comment_with(wording: str, before: str | None) -> str:
@@ -131,6 +134,14 @@ def _keyword(name: str, value: cst.BaseExpression) -> cst.Arg:
     return cst.Arg(value=value, keyword=cst.Name(name),
                    equal=cst.AssignEqual(whitespace_before=cst.SimpleWhitespace(""),
                                          whitespace_after=cst.SimpleWhitespace("")), comma=_SPACE)
+
+
+def _keyword_place(args: Sequence[cst.Arg], beside: int, before: bool) -> int:
+    """Where a new keyword goes beside the keyword argument `beside` (just before or after it); beside a
+    positional one, a keyword cannot stand, so it goes last — before a `**` argument if there is one."""
+    if args[beside].keyword is not None:
+        return beside if before else beside + 1
+    return next((k for k, a in enumerate(args) if a.star == "**"), len(args))
 
 
 def _with_value(call: cst.Call, i: int, value: cst.BaseExpression) -> cst.Call:
@@ -176,14 +187,16 @@ class _Migrator(cst.CSTTransformer):
                 if after != before:
                     call = _with_value(call, ci, _literal(after, comment.value))
             else:
-                call = call.with_changes(args=insert_arg(call.args, si + 1, _keyword("comment", _literal(after, None)),
+                at = _keyword_place(call.args, si, before=False)
+                call = call.with_changes(args=insert_arg(call.args, at, _keyword("comment", _literal(after, None)),
                                                          inline=True))
             self.used.add(constant)
             self.changes.append(Change(self._line(status.value), text, constant, before, after))
             return call
         if comment is not None and ci is not None and before is not None and reservist(before):
+            at = _keyword_place(updated_node.args, ci, before=True)
             call = updated_node.with_changes(
-                args=insert_arg(updated_node.args, ci, _keyword("status", cst.Name("SOLDIER")), inline=True))
+                args=insert_arg(updated_node.args, at, _keyword("status", cst.Name("SOLDIER")), inline=True))
             self.used.add("SOLDIER")
             self.changes.append(Change(self._line(comment.value), "", "SOLDIER", before, before))
             return call
@@ -250,13 +263,17 @@ def main(argv: list[str] | None = None) -> int:
     rows: list[list[object]] = []
     counts = {"rewrite": 0, "statusless": 0, "unplaced": 0, "left": 0}
     changed = 0
+    errored: list[str] = []
     for path in files:
         rel = path.relative_to(ws.root).as_posix()
         original = path.read_text(encoding="utf-8")
         try:
             new, changes, unplaced_rows = migrate_source(original)
-        except EditError as err:
-            print(f"{rel}: {err}", file=sys.stderr)
+            left_rows = left_as_is(new)
+        except (EditError, SyntaxError, cst.ParserSyntaxError, cst.CSTValidationError) as err:
+            # One file the codemod cannot edit is named and left as it is; the others go on.
+            print(f"{rel}: {type(err).__name__}: {err}", file=sys.stderr)
+            errored.append(rel)
             continue
         for c in changes:
             kind = "rewrite" if c.old else "statusless"
@@ -265,7 +282,7 @@ def main(argv: list[str] | None = None) -> int:
         for u in unplaced_rows:
             counts["unplaced"] += 1
             rows.append(["unplaced", rel, u.line, u.text, "", ""])
-        for left in left_as_is(new):
+        for left in left_rows:
             counts["left"] += 1
             rows.append([_left_kind(left), rel, left.line, left.text, left.constant, left.name])
         if new == original:
@@ -286,8 +303,10 @@ def main(argv: list[str] | None = None) -> int:
     action = "would change" if args.dry_run else "changed"
     print(f"\n{action} {changed} / {len(files)} files: {counts['rewrite']} statuses rewritten, "
           f"{counts['statusless']} statusless reservists, {counts['unplaced']} unplaced, "
-          f"{counts['left']} left as is", file=sys.stderr if args.dry_run else sys.stdout)
-    return 0
+          f"{counts['left']} left as is"
+          + (f", {len(errored)} files not edited (errors above)" if errored else ""),
+          file=sys.stderr if args.dry_run else sys.stdout)
+    return 1 if errored else 0
 
 
 if __name__ == "__main__":

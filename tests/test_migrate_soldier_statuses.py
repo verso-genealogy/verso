@@ -68,6 +68,18 @@ def test_a_quoted_soldier_catalog_text_holds_it():
     assert _call(src) == 'x = person("Иванъ", status=RETIRED_SOLDIER, comment="«отставной солдатъ»; Ноздревъ")\n'
 
 
+@pytest.mark.parametrize("status, comment", [
+    ("унтер-офицерская жена", "«унтеръ-офицерша»; Ноздревъ"),  # a soldier's wording classify leaves unplaced
+    ("жена военнослужащего", "«военнаго Петра Ноздрева жена»"),
+    ("отставной рядовой", "«отставной нижній чинъ»"),
+])
+def test_a_quoted_unplaced_soldier_wording_holds_it(status: str, comment: str):
+    src = HEAD + f'x = person("Анна", status="{status}", comment="{comment}")\n'
+    new, changes, _ = mig.migrate_source(src)
+    assert changes[0].comment_after == comment
+    assert f'comment="{comment}")' in new
+
+
 def test_a_quoted_civil_catalog_text_does_not_hold_it():
     src = HEAD + 'x = person("Иванъ", status="запасный солдат", comment="«крестьянинъ»; Ноздревъ")\n'
     assert _call(src) == 'x = person("Иванъ", status=SOLDIER, comment="запасный солдат; «крестьянинъ»; Ноздревъ")\n'
@@ -97,6 +109,8 @@ def test_statusless_reservist_gets_soldier():
     "«поступившій въ военную службу»",  # military, but no reserve
     "«изъ крестьянъ деревни Заманиловки»",
     "отчество читается неуверенно",
+    "муж запасный рядовой",  # a husband's rank: not hers
+    "отецъ — запасный рядовой",  # a father's rank: not his son's
 ])
 def test_a_statusless_comment_without_a_reserve_wording_is_left(comment: str):
     src = HEAD + f'x = person("Петръ", comment="{comment}")\n'
@@ -125,6 +139,16 @@ def test_a_soldiers_maiden_is_soldier_girl_with_her_wording():
 ])
 def test_unplaced_is_a_military_wording_classify_refuses(text: str, expected: bool):
     assert unplaced(text) is expected
+
+
+@pytest.mark.parametrize("args, expected", [
+    ('None, None, None, None, None, "Маниловка", "запасный солдат"',
+     'None, None, None, None, None, "Маниловка", SOLDIER, comment="запасный солдат"'),
+    ('None, None, None, None, None, "Маниловка", "запасный солдат", None',
+     'None, None, None, None, None, "Маниловка", SOLDIER, None, comment="запасный солдат"'),
+])
+def test_a_positional_status_gets_its_comment_last(args: str, expected: str):
+    assert _call(HEAD + f'x = person("Иванъ", {args})\n') == f'x = person("Иванъ", {expected})\n'
 
 
 def test_catalog_and_civil_texts_are_untouched():
@@ -213,3 +237,19 @@ def test_the_cli_writes_the_file(tmp_path: Path):
     with workspace.use(tmp_path):
         mig.main(["--village", "Маниловка"])
     assert 'x = person("Иванъ", status=SOLDIER, comment="запасный солдат")\n' in path.read_text(encoding="utf-8")
+
+
+def test_the_cli_names_a_file_it_cannot_edit_and_goes_on(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
+    path = _village(tmp_path)
+    broken = path.parent / "manilovka_deaths_1850.py"
+    broken.write_text("x = person(\n", encoding="utf-8")
+    old_dsl = path.parent / "manilovka_marriages_1850.py"
+    old_dsl.write_text('from geni.domain import person\n\nx = person("Иванъ", status="запасный солдат")\n',
+                       encoding="utf-8")
+    with workspace.use(tmp_path):
+        code = mig.main(["--village", "Маниловка"])
+    assert code == 1
+    err = capsys.readouterr().err
+    assert "manilovka_deaths_1850.py" in err and "manilovka_marriages_1850.py" in err
+    assert 'status=SOLDIER, comment="запасный солдат"' in path.read_text(encoding="utf-8")
+    assert broken.read_text(encoding="utf-8") == "x = person(\n"
