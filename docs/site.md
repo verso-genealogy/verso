@@ -85,6 +85,12 @@ modern and the written forms, folded — lower case, the letters the 1918 reform
 modern ones, no hard sign at a word's end — so «Феодор» finds «Ѳеодоръ». A result of an unread
 record carries the same mark as the record.
 
+The search page narrows what it finds by years (a book without a year — the cards — is left out of
+any bound), by source (metric books, civil registers, revisions and confession lists, other lists,
+the cards of external catalogs), by parish, and to the records read against their scans. It draws
+only the filters its site has a use for, and the address keeps them with the query
+(`?q=федор&from=1850&source=census`), so a narrowed search is a link to send.
+
 ## The settlement's prose
 
 `<village>/docs/*.md` (`--docs`) become pages: `README.md` is the contents (`about/`), every other

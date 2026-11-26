@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from tests.ru.site.conftest import BIRTHS, MARRIAGES
+from tests.ru.site.conftest import BIRTHS, DEATHS, HOUSEHOLDS, LISTED, MARRIAGES, WWI
 from verso.ru.messages import t
 from verso.ru.site import model, pages, prose
 from verso.ru.site.records import Ui
@@ -138,7 +138,7 @@ def test_a_part_of_a_case_names_its_book_wherever_the_book_is_named(changed: Any
     assert f"<h1>Рождения 1900 — Маниловка, {part.part}</h1>" in pages.book(part, ui, ctx)
     titles = re.findall(r'<li><a href="[^"]*">([^<]*)</a>', pages.year(1900, site, ui, ctx))
     assert "Рождения 1900 — Маниловка" in titles and f"Рождения 1900 — Маниловка, {part.part}" in titles
-    books = [name for _, name in json.loads(pages.search_index(site, ui))["books"]]
+    books = [book[1] for book in json.loads(pages.search_index(site, ui))["books"]]
     assert len(books) == len(set(books))
     assert re.findall(r"<tr><td>(755[^<]*)</td><td>1900</td><td><a[^>]*>Рождения</a>", pages.books_index(site, ui, ctx)) \
         == ["755", f"755, {part.part}"]
@@ -182,7 +182,7 @@ def test_two_books_of_one_year_and_kind_in_two_cases_are_told_apart_by_case(chan
     births = [pages.book_title(b, ui) for b in site.books if b.year == 1900 and b.kind == "birth"]
     assert sorted(births) == ["Рождения 1900 — Маниловка, Д. 755", "Рождения 1900 — Маниловка, Д. 756"]
     assert pages.book_title(site.book(MARRIAGES), ui) == "Браки 1900 — Маниловка"     # no twin, no case
-    books = [name for _, name in json.loads(pages.search_index(site, ui))["books"]]
+    books = [book[1] for book in json.loads(pages.search_index(site, ui))["books"]]
     assert len(books) == len(set(books))
 
 
@@ -286,7 +286,7 @@ def test_a_mention_with_no_name_written_says_so(changed: Any, ui: Ui) -> None:
 
 def test_a_page_links_within_the_site_by_relative_addresses(site: model.Site, ui: Ui, ctx: Context) -> None:
     made = [pages.front(site, ctx), pages.books_index(site, ui, ctx), pages.names_index(site, ctx),
-            pages.search(ctx), pages.book(site.book(BIRTHS), ui, ctx), pages.year(1900, site, ui, ctx)]
+            pages.search(site, ctx), pages.book(site.book(BIRTHS), ui, ctx), pages.year(1900, site, ui, ctx)]
     for page in made:
         assert '<html lang="ru">' in page
         assert not [h for h in _hrefs(page) if h.startswith(("/", "http", "//"))], page[:200]
@@ -343,11 +343,87 @@ def test_the_search_index_leads_each_mention_to_its_record(site: model.Site, ui:
     assert unread == {"m1": 0, "f2": 1, "f3": 1, "m4": 0, "m4а": 0}        # a held and a listed record alike
 
 
-def test_the_search_page_works_without_its_script(ctx: Context) -> None:
-    page = pages.search(ctx)
+def test_the_search_page_works_without_its_script(site: model.Site, ctx: Context) -> None:
+    page = pages.search(site, ctx)
     assert "<noscript>" in page and 'href="../names/"' in page
     assert 'data-found="Найдено: {count}."' in page and 'src="../assets/search.js"' in page
     assert 'data-unread="не вычитано"' in page
+
+
+def test_the_search_index_tells_each_book_what_its_filters_ask(changed: Change, ui: Ui) -> None:
+    """A book's year (none for the cards), its source and its parish, which the search's filters compare."""
+    def civil(node: dict[str, Any]) -> None:
+        node["documents"][0]["written"]["civil"] = True
+    site = changed(civil)
+    asked = {book[0]: book[2:] for book in json.loads(pages.search_index(site, ui))["books"]}
+    path = {book_.id: book_.path for book_ in site.books}
+    assert asked[path[BIRTHS]] == [1900, "civil", "Маниловка"]
+    assert asked[path[MARRIAGES]] == [1900, "metric", "Маниловка"]
+    assert asked[path[DEATHS]] == [1913, "metric", "Хлестаковка"]
+    assert asked[path[HOUSEHOLDS]] == [1828, "census", "Заманиловка"]
+    assert asked[path[LISTED]] == [1917, "list", "Горюхино"]
+    assert asked[path[WWI]] == [None, "cards", "Маниловка"]
+    assert asked[path["r1:Заманиловка/1605-59-59/1923/divorce"]] == [1923, "civil", "Заманиловка"]   # no flag needed
+
+
+def _filters(page: str) -> str:
+    found = re.search(r'<fieldset id="filters"[^>]*>.*?</fieldset>', page)
+    return found.group(0) if found else ""
+
+
+def _options(page: str, name: str) -> list[tuple[str, str]]:
+    select = re.search(rf'<select name="{name}" id="{name}">(.*?)</select>', page)
+    assert select, name
+    return re.findall(r'<option value="([^"]*)">([^<]*)</option>', select.group(1))
+
+
+def test_the_search_page_draws_its_filters_in_the_form_hidden_until_its_script(site: model.Site, ctx: Context) -> None:
+    """The filters stand in the search's form (Enter in a year searches), hidden — the script shows them; the years
+    bounded by the site's, the sources and the parishes those of its books, in order, a choice of any first."""
+    page = pages.search(site, ctx)
+    form = re.search(r'<form id="search".*?</form>', page)
+    assert form and _filters(page) and _filters(page) in form.group(0)
+    assert re.match(r'<form id="search"[^>]* novalidate>', form.group(0))     # a year out of the bounds is no stop
+    assert re.match(r'<fieldset id="filters" class="filters" aria-label="Отбор" hidden>', _filters(page))
+    for name in ("from", "to"):
+        assert re.search(rf'<input type="number" name="{name}" id="{name}" [^>]*min="1828" max="1923" step="1"', page)
+    assert 'placeholder="1828"' in page and 'placeholder="1923"' in page
+    assert re.search(r'id="to" aria-label="годы по"', page)                     # «по» alone says nothing
+    assert _options(page, "source") == [("", "любой"), ("metric", "метрические книги"), ("civil", "книги ЗАГС"),
+                                        ("census", "ревизии, росписи, переписи"), ("list", "другие списки"),
+                                        ("cards", "карточки внешних каталогов")]
+    assert _options(page, "village") == [("", "любой"), ("Горюхино", "Горюхино"), ("Заманиловка", "Заманиловка"),
+                                         ("Маниловка", "Маниловка"), ("Хлестаковка", "Хлестаковка")]
+    assert '<input type="checkbox" name="reviewed" id="reviewed" value="1"> только вычитанные' in page
+    assert 'data-found-of="Найдено: {count} из {total}."' in page
+    assert 'data-none-of="С этим отбором ничего не найдено, без него — {total}."' in page
+
+
+@pytest.mark.parametrize(("books", "drawn"), [
+    ((MARRIAGES,), set()),                                      # one year, source, parish; read through: none
+    ((MARRIAGES, BIRTHS), {"reviewed"}),                        # two records of the births unread
+    ((MARRIAGES, DEATHS), {"from", "to", "village"}),           # 1900 and 1913, two parishes
+    ((MARRIAGES, WWI), {"source"}),                             # a metric book and cards without a year
+    ((BIRTHS + "~unread",), set()),                             # all unread: «read only» would find nothing
+])
+def test_the_search_page_draws_only_the_filters_its_site_has_a_use_for(
+        site: model.Site, ctx: Context, books: tuple[str, ...], drawn: set[str]) -> None:
+    def book(each: str) -> model.Book:
+        if each.endswith("~unread"):
+            whole = site.book(each.removesuffix("~unread"))
+            return replace(whole, entries=tuple(entry for entry in whole.entries if entry.unreviewed))
+        return site.book(each)
+    page = pages.search(replace(site, books=tuple(book(each) for each in books)), ctx)
+    assert set(re.findall(r'id="(from|to|source|village|reviewed)"', page)) == drawn
+    assert bool(_filters(page)) == bool(drawn) and ('id="filters"' in page) == bool(drawn)
+
+
+def test_a_civil_register_is_a_source_of_its_own(changed: Change, ctx: Context) -> None:
+    def civil(node: dict[str, Any]) -> None:
+        node["documents"][0]["written"]["civil"] = True
+    site = changed(civil)
+    page = pages.search(replace(site, books=(site.book(BIRTHS), site.book(MARRIAGES))), ctx)
+    assert _options(page, "source") == [("", "любой"), ("metric", "метрические книги"), ("civil", "книги ЗАГС")]
 
 
 def test_a_mention_of_a_marriage_names_the_kinship(site: model.Site, ui: Ui) -> None:

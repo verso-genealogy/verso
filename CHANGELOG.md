@@ -5,6 +5,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ## Unreleased (0.1.53.dev0)
 
+### Added
+
+- verso-ru, the site (`verso site`), from a reader's review: the search page narrows what it finds — by years
+  (from, to, either way round; a book without a year, the cards, left out of any bound), by source, by parish, and
+  to the records read against their scans. The sources are metric books, civil registers (a book of divorces is
+  one), revisions and confession lists, other lists, and the cards of external catalogs. The page draws only the
+  filters its site has a use for: more than one year, source or parish; records both read and not. A year outside
+  the site's does not stop the form. The status says how many of the found are kept («Найдено: 3 из 12.»; «С этим
+  отбором ничего не найдено, без него — 12.»), and the address keeps the filters with the query
+  (`?q=…&from=1850&source=census`), so a narrowed search is a link to send. `search/index.json`'s books gain their
+  year, source and parish: `[path, title, year, source, parish]`. New catalog keys `site.search.found_of`,
+  `none_of`, `filters`, `any`, `year_from`, `year_to`, `year_to_whole`, `source`, `source_metric`, `source_civil`,
+  `source_census`, `source_list`, `source_cards`, `village`, `reviewed`. Only the site moves.
+
 ### Changed
 
 - verso-ru, the `name-days` signal (a record's card, `verso facts --check name-days`) is said without «the window»

@@ -458,30 +458,90 @@ def nameless_page(site: Site, ui: Ui, ctx: Context) -> str:
 
 # ---------------------------------------------------------------- search
 
+# What a book is as the search narrows it, in the order its filter lists them.
+SOURCES = ("metric", "civil", "census", "list", "cards")
+
+
+def source(book: Book) -> str:
+    """A book as the search's filter of sources names it: a metric book, a civil register (a book of divorces is
+    one whatever its header says: the DSL writes no `civil` of it, and a church kept none), a revision or a list of
+    souls (`census`), another list (a voters' one), the cards of an external catalog."""
+    if book.is_cards:
+        return "cards"
+    if book.set_kind == "census":
+        return "census"
+    if book.set_kind == "name_list":
+        return "list"
+    return "civil" if book.civil or book.set_kind == "divorces" else "metric"
+
+
+def _source_label(name: str) -> str:
+    labels = {"metric": t("site.search.source_metric"), "civil": t("site.search.source_civil"),
+              "census": t("site.search.source_census"), "list": t("site.search.source_list"),
+              "cards": t("site.search.source_cards")}
+    return str(labels[name])
+
+
 def search_index(site: Site, ui: Ui) -> str:
-    """`search/index.json`: the books and, for each mention, what a query is compared with (the modern
-    and the written forms folded), what is shown, where it leads, and 1 where its record is unread."""
+    """`search/index.json`: the books — where each is, its name, and what the filters ask of it: its year (none
+    for a book without one), its source, its parish — and, for each mention, what a query is compared with (the
+    modern and the written forms folded), what is shown, where it leads, and 1 where its record is unread."""
     place = {book_.id: n for n, book_ in enumerate(site.books)}
     rows = [[model.fold(f"{m.modern} {m.as_written}"), shown(m),
              m.modern if model.fold(m.modern) != model.fold(m.as_written) else "",
              place[m.entry.book_id], m.entry.anchor, role_label(m, ui), int(m.entry.unreviewed)]
             for m in site.mentions]
-    data = {"books": [[b.path, book_title(b, ui)] for b in site.books], "rows": rows}
+    data = {"books": [[b.path, book_title(b, ui), b.year, source(b), b.village] for b in site.books], "rows": rows}
     return json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n"
 
 
-def search(ctx: Context) -> str:
+def _choice(name: str, label: object, choices: Sequence[tuple[str, str]]) -> str:
+    options = "".join(f'<option value="{E(value)}">{E(text_)}</option>' for value, text_ in choices)
+    return (f'<label>{E(str(label))} <select name="{name}" id="{name}">'
+            f'<option value="">{E(str(t("site.search.any")))}</option>{options}</select></label>')
+
+
+def _filters(site: Site) -> str:
+    """What narrows a search, of what the site holds: the years where it has more than one, the sources and the
+    parishes where its books are of more than one, the records read against their scans where some are and some are
+    not. Hidden until the script wires them: without it they would do nothing. The form does not hold a year outside
+    the site's to its bounds (`novalidate`): a reader's 1800 is a bound like any other, not a search refused."""
+    parts: list[str] = []
+    years = site.years
+    if len(years) > 1:
+        bounds = f'min="{years[0]}" max="{years[-1]}" step="1" inputmode="numeric"'
+        parts.append(f'<label>{E(str(t("site.search.year_from")))} <input type="number" name="from" id="from" '
+                     f'{bounds} placeholder="{years[0]}"></label>'
+                     f'<label>{E(str(t("site.search.year_to")))} <input type="number" name="to" id="to" '
+                     f'aria-label="{E(str(t("site.search.year_to_whole")))}" {bounds} placeholder="{years[-1]}"></label>')
+    sources = [name for name in SOURCES if any(source(book_) == name for book_ in site.books)]
+    if len(sources) > 1:
+        parts.append(_choice("source", t("site.search.source"), [(name, _source_label(name)) for name in sources]))
+    villages = sorted({book_.village for book_ in site.books}, key=lambda each: (model.fold(each), each))
+    if len(villages) > 1:
+        parts.append(_choice("village", t("site.search.village"), [(each, each) for each in villages]))
+    if 0 < site.unreviewed < site.records:
+        parts.append(f'<label><input type="checkbox" name="reviewed" id="reviewed" value="1"> '
+                     f'{E(str(t("site.search.reviewed")))}</label>')
+    if not parts:
+        return ""
+    return f'<fieldset id="filters" class="filters" aria-label="{E(str(t("site.search.filters")))}" hidden>{"".join(parts)}</fieldset>'
+
+
+def search(site: Site, ctx: Context) -> str:
     path = "search/"
     body = (f'<h1>{E(str(t("site.nav.search")))}</h1>'
-            f'<form id="search" class="search wide" method="get" role="search">'
+            f'<form id="search" class="search wide" method="get" role="search" novalidate>'
             f'<input type="search" name="q" id="q" autofocus aria-label="{E(str(t("site.search.label")))}" '
             f'placeholder="{E(str(t("site.search.placeholder")))}">'
-            f'<button type="submit">{E(str(t("site.search.go")))}</button></form>'
+            f'<button type="submit">{E(str(t("site.search.go")))}</button>{_filters(site)}</form>'
             f'<p class="k">{E(str(t("site.search.hint")))}</p>'
             f'<noscript><p>{E(str(t("site.search.noscript")))} <a href="../{NAMES}/">{E(str(t("site.nav.names")))}</a>.</p></noscript>'
             f'<p id="status" role="status" data-loading="{E(str(t("site.search.loading")))}" '
             f'data-none="{E(str(t("site.search.none")))}" data-error="{E(str(t("site.search.error")))}" '
             f'data-found="{E(str(t("site.search.found", count="{count}")))}" data-group="{E(str(t("site.number.group")))}" '
+            f'data-found-of="{E(str(t("site.search.found_of", count="{count}", total="{total}")))}" '
+            f'data-none-of="{E(str(t("site.search.none_of", total="{total}")))}" '
             f'data-more="{E(str(t("site.search.more", limit="{limit}")))}" '
             f'data-unread="{E(str(t("site.unreviewed")))}" data-limit="{SEARCH_LIMIT}"></p><ol id="results" class="results"></ol>')
     return shell.page(str(t("site.nav.search")), body, ctx=ctx, path=path, scripts=(shell.SEARCH_JS,))

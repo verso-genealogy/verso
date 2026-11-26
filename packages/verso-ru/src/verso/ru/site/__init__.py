@@ -99,7 +99,7 @@ def _build(site: model.Site, out: Path, ctx: Context, docs: Path | None, workspa
             page(f"{pages.PATRONYMICS}/{found.key}/", pages.name(found, pages.PATRONYMICS, site, ui, ctx))
     if pages.nameless(site):
         page(f"{pages.PATRONYMICS}/{pages.NAMELESS}/", pages.nameless_page(site, ui, ctx))
-    page("search/", pages.search(ctx))
+    page("search/", pages.search(site, ctx))
     for prose_page in prose_pages:
         assert docs is not None
         page(prose_page.path, prose.render(prose_page, docs, site, ctx, workspace or docs.parent.parent))

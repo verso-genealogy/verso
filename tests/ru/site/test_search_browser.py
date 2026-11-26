@@ -22,7 +22,7 @@ from collections.abc import Iterator
 from html import unescape
 from pathlib import Path
 from typing import Any
-from urllib.parse import quote
+from urllib.parse import parse_qsl, quote, urlencode
 
 import pytest
 
@@ -30,8 +30,11 @@ from tests.ru.site.test_build import _build
 from verso.ru.site import model
 
 _MAC = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-BOOKS = [["books/manilovka/1-1-1/1900/birth/", "Рождения 1900 — Маниловка"],
-         ["books/manilovka/1-1-1/1901/death/", "Смерти 1901 — Маниловка"]]
+# (path, title, year, source, parish): the sources and the parishes are those the fixture's site draws as choices.
+BOOKS = [["books/manilovka/1-1-1/1900/birth/", "Рождения 1900 — Маниловка", 1900, "metric", "Маниловка"],
+         ["books/manilovka/1-1-1/1901/death/", "Смерти 1901 — Маниловка", 1901, "metric", "Маниловка"],
+         ["books/zamanilovka/2-2-2/1828/household/", "Ревизия 1828 — Заманиловка", 1828, "census", "Заманиловка"],
+         ["books/manilovka/card/wwi/", "Карточки: ПМВ", None, "cards", "Маниловка"]]
 # (written, modern, book, anchor, role, unread) — the index's row, its folded text the build's own.
 PEOPLE = [
     ("Насѣмовъ Ѳеодоръ", "Насемов Федор", 0, "m1", "Отец", 0),
@@ -39,6 +42,8 @@ PEOPLE = [
     ("Іоаннъ Ѵпаркинъ", "Иоанн Ипаркин", 1, "m4а", "Умерший", 1),
     ("Подъячевъ Ёлкинъ", "", 1, "m1~2", "Отец", 0),
     ("Марья", "", 0, "f3", "Мать", 0),
+    ("Ѳеодоръ Шкатулкинъ", "Федор Шкатулкин", 2, "h1", "Глава семьи", 0),
+    ("Шкатулкинъ Ѳеодоръ", "Шкатулкин Федор", 3, "c1", "Солдат", 1),
 ]
 
 
@@ -60,15 +65,82 @@ def _index() -> dict[str, Any]:
     return {"books": BOOKS, "rows": rows}
 
 
-def _expected(query: str) -> list[str]:
-    """What the search should list for `query`, worked out in Python: every word inside a row, those that begin a
-    word of it first."""
+def _year(text: str) -> int | None:
+    """A bound as the page takes it: a whole year, as a field of numbers holds it («1e3» is 1000), else none."""
+    try:
+        value = float(text)
+    except ValueError:
+        return None
+    return int(value) if value.is_integer() else None
+
+
+def _kept(book: list[Any], row: list[Any], narrow: dict[str, str]) -> bool:
+    """What the filters keep, worked out in Python: years either way round, a book without one out of any bound."""
+    low, high = (_year(narrow.get(key, "")) for key in ("from", "to"))
+    if low is not None and high is not None and low > high:
+        low, high = high, low
+    if (low is not None or high is not None) and book[2] is None:
+        return False
+    sources = {"metric", "civil", "census", "list", "cards"}                    # the choices the fixture's page draws
+    villages = {"Горюхино", "Заманиловка", "Маниловка", "Хлестаковка"}
+    return ((low is None or book[2] >= low) and (high is None or book[2] <= high)
+            and (narrow.get("source") not in sources or book[3] == narrow["source"])
+            and (narrow.get("village") not in villages or book[4] == narrow["village"])
+            and not (narrow.get("reviewed") == "1" and row[6]))
+
+
+def _matched(query: str) -> list[list[Any]]:
+    """The rows the search should list for `query`, worked out in Python: every word inside a row, those that begin
+    a word of it first."""
     words = model.fold(query).split()
     first, rest = [], []
     for row in _index()["rows"]:
         if all(word in row[0] for word in words):
-            (first if all(" " + word in " " + row[0] for word in words) else rest).append(row[1])
+            (first if all(" " + word in " " + row[0] for word in words) else rest).append(row)
     return first + rest
+
+
+def _expected(query: str, narrow: dict[str, str] | None = None) -> list[str]:
+    return [row[1] for row in _matched(query) if _kept(BOOKS[row[3]], row, narrow or {})]
+
+
+# A page of the same site that opens the search for «федор» (its source one the page does not offer) in a frame,
+# sets the source to the revisions there as a reader would, then a year before the site's, a parish, the read
+# records only and a new query, submitted; and writes down what the search said at each step, and its address.
+_DRIVER = """<!doctype html><meta charset="utf-8"><title>driver</title><pre id="out"></pre>
+<iframe id="page" src="search/?q=%D1%84%D0%B5%D0%B4%D0%BE%D1%80&source=no-such"></iframe>
+<script>
+var frame = document.getElementById("page");
+function later(then) { setTimeout(then, 400); }
+frame.addEventListener("load", function () {
+  var page = frame.contentDocument, seen = {};
+  function look(step) {
+    seen[step] = { status: page.getElementById("status").textContent,
+                   address: decodeURIComponent(frame.contentWindow.location.search),
+                   results: page.querySelectorAll("#results li").length };
+  }
+  later(function () {
+    look("loaded");
+    seen.loaded.source = page.getElementById("source").selectedIndex;
+    var source = page.getElementById("source");
+    source.value = "census";
+    source.dispatchEvent(new Event("change", { bubbles: true }));
+    later(function () {
+      look("changed");
+      page.getElementById("from").value = "1800";
+      page.getElementById("village").value = "Заманиловка";
+      page.getElementById("reviewed").checked = true;
+      page.getElementById("q").value = "шкатулкин";
+      page.getElementById("search").requestSubmit();
+      later(function () {
+        look("submitted");
+        document.getElementById("out").textContent = JSON.stringify(seen);
+      });
+    });
+  });
+});
+</script>
+"""
 
 
 @pytest.fixture(scope="module")
@@ -77,6 +149,7 @@ def served(tmp_path_factory: pytest.TempPathFactory, file_node: dict[str, Any]) 
     out = tmp_path_factory.mktemp("search") / "site"
     _build(file_node, out)
     (out / "search" / "index.json").write_text(json.dumps(_index(), ensure_ascii=False), encoding="utf-8")
+    (out / "driver.html").write_text(_DRIVER, encoding="utf-8")       # a page that sets a filter on the search's
     handler = functools.partial(_Quiet, directory=str(out))
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -93,8 +166,8 @@ class _Quiet(http.server.SimpleHTTPRequestHandler):
         pass
 
 
-def _search(page: str, query: str, tmp_path: Path) -> tuple[str, list[tuple[str, str]]]:
-    """The search page after the browser ran `query`: its status line and each result's (link, text)."""
+def _dom(address: str, tmp_path: Path) -> str:
+    """The page at `address` as the browser leaves it once its scripts ran."""
     chrome = _chrome()
     if chrome is None:
         if os.environ.get("CI"):
@@ -104,10 +177,17 @@ def _search(page: str, query: str, tmp_path: Path) -> tuple[str, list[tuple[str,
     profile = tempfile.mkdtemp(prefix="chrome-", dir=tmp_path)     # a profile a run: no lock left by the last
     ran = subprocess.run(
         [chrome, "--headless=new", "--no-sandbox", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
-         f"--user-data-dir={profile}", "--virtual-time-budget=10000", "--dump-dom", f"{page}?q={quote(query)}"],
+         f"--user-data-dir={profile}", "--virtual-time-budget=10000", "--dump-dom", address],
         capture_output=True, text=True, timeout=120, check=False)
     assert ran.returncode == 0, f"Chrome exited {ran.returncode}: {ran.stderr[-2000:]}"
-    dom = ran.stdout
+    return ran.stdout
+
+
+def _search(page: str, query: str, tmp_path: Path, narrow: dict[str, str] | None = None,
+            ) -> tuple[str, list[tuple[str, str]]]:
+    """The search page after the browser ran `query`, narrowed as the address asks: its status line and each
+    result's (link, text)."""
+    dom = _dom(f"{page}?{urlencode({'q': query, **(narrow or {})}, quote_via=quote)}", tmp_path)
     status = re.search(r'<p id="status"[^>]*>(.*?)</p>', dom, re.S)
     found = re.search(r'<ol id="results"[^>]*>(.*?)</ol>', dom, re.S)
     assert status and found, dom[-2000:]
@@ -146,3 +226,51 @@ def test_a_result_leads_to_its_record_and_says_what_it_is(served: str, tmp_path:
 def test_a_count_of_five_figures_is_grouped_as_the_pages_group_it(served: str, tmp_path: Path) -> None:
     status, items = _search(served, "многоим", tmp_path)
     assert status.startswith("Найдено: 10\u00a0234.") and len(items) == 200
+
+
+def _shown(items: list[tuple[str, str]]) -> list[str]:
+    return [next(row[1] for row in _index()["rows"] if text.startswith(row[1])) for _, text in items]
+
+
+@pytest.mark.parametrize("narrow", [
+    {"from": "1850"}, {"to": "1900"}, {"from": "1901", "to": "1828"}, {"from": "1900", "to": "1900"},
+    {"source": "census"}, {"source": "cards"}, {"source": "civil"}, {"source": "no-such"},
+    {"village": "Заманиловка"}, {"village": "Хлестаковка"}, {"reviewed": "1"}, {"reviewed": "0"},
+    {"from": "1828", "village": "Маниловка", "reviewed": "1"}, {"from": "год"}, {"from": "1e3"}, {"from": "1850.5"},
+    {"from": "1800"},
+])
+def test_the_filters_the_address_sets_narrow_what_is_found(served: str, narrow: dict[str, str], tmp_path: Path) -> None:
+    """The address's filters, set on the page, narrow the found as Python would: a year's bound leaves out the
+    cards, which have none; bounds either way round are one span; a choice the page does not offer and a year that
+    is no number narrow nothing. The status says how many of the found are kept."""
+    status, items = _search(served, "федор", tmp_path, narrow)
+    expected, total = _expected("федор", narrow), len(_matched("федор"))
+    assert total == 4 and _shown(items) == expected
+    if not expected:
+        assert status == f"С этим отбором ничего не найдено, без него — {total}."
+    elif len(expected) < total:
+        assert status == f"Найдено: {len(expected)} из {total}."
+    else:
+        assert status == f"Найдено: {total}."
+
+
+def test_the_filters_are_shown_by_the_script(served: str, tmp_path: Path) -> None:
+    dom = _dom(served, tmp_path)
+    fieldset = re.search(r'<fieldset id="filters"[^>]*>', dom)
+    assert fieldset and "hidden" not in fieldset.group(0)
+
+
+def test_a_filter_changed_searches_again_and_the_address_keeps_it(served: str, tmp_path: Path) -> None:
+    """A choice the page does not offer reads «any»; a filter set on the page searches again at once; a year outside
+    the site's does not stop the form; and the address names the query and every filter set: a search is a link to
+    send."""
+    dom = _dom(served.removesuffix("search/") + "driver.html", tmp_path)
+    out = re.search(r'<pre id="out">(.*?)</pre>', dom, re.S)
+    assert out and out.group(1), dom[-2000:]
+    seen = json.loads(unescape(out.group(1)))
+    assert seen["loaded"]["source"] == 0 and seen["loaded"]["status"] == "Найдено: 4."
+    assert seen["changed"]["status"] == "Найдено: 1 из 4." and seen["changed"]["results"] == 1
+    assert dict(parse_qsl(seen["changed"]["address"].removeprefix("?"))) == {"q": "федор", "source": "census"}
+    assert seen["submitted"]["status"] == "Найдено: 1 из 2." and seen["submitted"]["results"] == 1
+    assert dict(parse_qsl(seen["submitted"]["address"].removeprefix("?"))) == {
+        "q": "шкатулкин", "from": "1800", "source": "census", "village": "Заманиловка", "reviewed": "1"}

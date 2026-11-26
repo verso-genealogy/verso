@@ -88,10 +88,21 @@ code { font: .76rem var(--font-mono); color: var(--faint); overflow-wrap: anywhe
   color: var(--text); font: 550 .86rem/1.2 var(--font-body); }
 .top nav a:hover { border-color: var(--accent); text-decoration: none; }
 .search { display: flex; gap: .4rem; }
-.search input { font: inherit; padding: .4rem .7rem; min-width: 0; width: 15rem; color: var(--text); background: var(--panel);
+.search input:not([type="checkbox"]) { font: inherit; padding: .4rem .7rem; min-width: 0; width: 15rem; color: var(--text); background: var(--panel);
   border: 1px solid var(--field-line); border-radius: var(--r-card); }
-.search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.search.wide input { width: min(30rem, 100%); flex: 1; }
+.search input:not([type="checkbox"]):focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.search.wide { flex-wrap: wrap; }
+.search.wide > input { width: min(30rem, 100%); flex: 1; }
+/* the search page's filters: a row under the field, wrapped as narrow as needed */
+.filters { flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: center; gap: .45rem 1.1rem; margin: .35rem 0 0;
+  padding: 0; border: 0; color: var(--muted); font-size: .88rem; }
+.filters[hidden] { display: none; }
+.filters label { display: inline-flex; align-items: center; gap: .4rem; }
+.search .filters input[type="number"] { width: 5.6rem; padding: .3rem .5rem; }
+.search .filters input[type="checkbox"] { width: auto; margin: 0; accent-color: var(--accent); }
+.filters select { font: inherit; color: var(--text); background: var(--panel); padding: .3rem .5rem; max-width: 16rem;
+  border: 1px solid var(--field-line); border-radius: var(--r-card); }
+.filters select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .search button { font: 600 .88rem/1.2 var(--font-body); padding: .4rem 1rem; border: 1px solid var(--accent);
   border-radius: var(--r-pill); background: var(--accent); color: var(--accent-text); cursor: pointer; }
 /* the theme button: a round one at the bar's end, its mark the mode in force */
@@ -206,7 +217,7 @@ td a { font-weight: 500; }
   .top { width: 100%; margin: 0; border-radius: 0; border-width: 0 0 1px; }
   main { width: 100%; margin: 0; border-radius: 0; border-width: 0; padding: 1rem 1rem 2rem; box-shadow: none; }
   .p, .more { grid-template-columns: 1fr; }
-  .search input { width: 100%; } .search { flex: 1 1 100%; order: 1; }   /* the last row; the theme button by the menu */
+  .search > input { width: 100%; } .search { flex: 1 1 100%; order: 1; }   /* the last row; the theme button by the menu */
   h1 { font-size: 1.9rem; }
   body::before { display: none; }
 }
