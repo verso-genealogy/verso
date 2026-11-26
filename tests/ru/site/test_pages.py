@@ -3,6 +3,7 @@ from __future__ import annotations
 import functools
 import json
 import re
+import unicodedata
 from dataclasses import replace
 from collections.abc import Callable
 from typing import Any
@@ -448,6 +449,39 @@ def test_a_reading_not_made_out_has_the_indexs_last_section(changed: Any, ctx: C
     assert re.search(r'<a href="#unread">Неразобранные</a></nav>', index)
     last = index[index.index('<h2 id="unread">'):]
     assert all(title in last for title in ("Сид?ров", "Выдуманъ?"))
+
+
+def test_a_reading_in_doubt_prefers_its_very_spelling_then_its_kin(changed: Any) -> None:
+    """Of two sure spellings one folds to, the very one is its page («Фимкинъ?» on «Фимкинъ», not on
+    «Фимкин»); a masculine in doubt stands with a sure feminine («Выдуманов?» on «Выдуманова»)."""
+    site = changed(functools.partial(_surnames, names=("Фимкин", "Фимкинъ?", "Фимкинъ")))
+    found = {p.title: p for p in pages.surname_pages(site)}
+    assert len(found["Фимкинъ"].doubtful) == 1 and not found["Фимкин"].doubtful
+    site = changed(functools.partial(_surnames, names=("Выдуманова", "Выдуманов?")))
+    page = next(p for p in pages.surname_pages(site) if p.title == "Выдуманова")
+    assert len(page.mentions) == 2 and len(page.doubtful) == 1
+
+
+
+@pytest.mark.parametrize(("stem", "sure", "page"), [
+    ("Выдуманов", "выдуманова", "выдуманова"), ("Выдуманова", "выдуманов", "выдуманов"),
+    ("Выдуманская", "выдуманский", "выдуманский"), ("Выдуманский", "выдуманская", "выдуманская"),
+    ("Выдуманъ", "выдуман", "выдуман"), ("Сидоров", "петров", None),
+])
+def test_a_stem_in_doubt_finds_its_sure_kin(stem: str, sure: str, page: str | None) -> None:
+    assert pages._sure_page(stem, {sure}, {model.fold(sure): sure}) == page
+
+def test_an_unread_pages_address_is_its_own(site: model.Site) -> None:
+    """Whatever order its records come in, an unread reading keeps one address; never the page of the nameless
+    («-»); a name written in decomposed letters is addressed as composed."""
+    one, two = site.mentions[:2]
+    forward = {p.title: p.key for p in pages._name_pages([("Ев?", one), ("?ев", two)])}
+    backward = {p.title: p.key for p in pages._name_pages([("?ев", two), ("Ев?", one)])}
+    assert forward == backward and len(set(forward.values())) == 2
+    assert pages._name_pages([("?", one)])[0].key != pages.NAMELESS
+    decomposed = unicodedata.normalize("NFD", "Чуйкинъ?")
+    page = pages._name_pages([(decomposed, one)])[0]
+    assert page.title == unicodedata.normalize("NFC", decomposed) and page.key == "Чуйкинъ"
 
 def test_a_records_heading_stands_right_under_its_books(site: model.Site, ui: Ui, ctx: Context) -> None:
     page = pages.book(site.book(BIRTHS), ui, ctx)

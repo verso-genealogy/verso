@@ -280,20 +280,22 @@ def _fold_feminine(keys: Iterable[str]) -> dict[str, str]:
 def _name_pages(mentions: Iterable[tuple[str, Mention]]) -> list[NamePage]:
     """The pages of an index of names; each lists its mentions in the site's order — by year, book, record.
 
-    A reading with a «?» at its end whose form without it is read surely elsewhere («Алексеевна?» beside
-    «Алексеевна») stands on that form's page, marked; any other with a «?» — a part of a name, a letter not made
-    out, a name read nowhere surely — has a page of its own in the index's last section (`unread`)."""
+    A reading with a «?» at its end whose form without it is read surely in the same index («Алексеевна?» beside
+    «Алексеевна») stands on that form's page, marked: the very spelling first, else as the search folds it («Ѳ» as
+    «Ф», a final hard sign), else its masculine or feminine («Ионов?» beside «Ионова»). Any other with a «?» — a part
+    of a name, a letter not made out, a name read surely nowhere in the index — has a page of its own in the
+    index's last section (`unread`), its address the same whatever order the records come in."""
     entries = list(enumerate(mentions))
+    keys = {_key(name) for _, (name, _) in entries if "?" not in name}
     sure: dict[str, str] = {}                   # a surely read name folded as the search folds it: its key
-    for _, (name, _) in entries:
-        if "?" not in name:
-            sure.setdefault(model.fold(name), _key(name))
+    for key in sorted(keys):
+        sure.setdefault(model.fold(key), key)
     by_key: dict[str, list[tuple[int, str, Mention, bool]]] = {}
     unread: dict[str, list[tuple[int, str, Mention, bool]]] = {}
     for place, (name, mention) in entries:
         if "?" not in name:
             by_key.setdefault(_key(name), []).append((place, name, mention, False))
-        elif (stem := name.rstrip("?").strip()) and "?" not in stem and (key := sure.get(model.fold(stem))):
+        elif (stem := name.rstrip("?").strip()) and "?" not in stem and (key := _sure_page(stem, keys, sure)):
             by_key.setdefault(key, []).append((place, key, mention, True))   # the page's own spelling: no new one
         else:
             unread.setdefault(_key(name), []).append((place, name, mention, True))
@@ -303,15 +305,31 @@ def _name_pages(mentions: Iterable[tuple[str, Mention]]) -> list[NamePage]:
         directory = _directory(base[key][:1].upper() + base[key][1:])
         grouped_.setdefault(directory, []).extend(by_key[key])    # two names one directory holds: one page
     pages: list[NamePage] = [_name_page(directory, grouped_[directory]) for directory in sorted(grouped_, key=_key)]
-    taken = {_key(directory) for directory in grouped_}            # as a file system without case sees them
-    for key in sorted(unread, key=lambda each: _key(each.replace("?", ""))):
-        written = min(unread[key])[1]                               # as first written: «?Сидоров», not «?сидоров»
+    taken = {_key(directory) for directory in grouped_} | {NAMELESS}   # as a file system without case sees them
+    for key in sorted(unread, key=lambda each: (_key(each.replace("?", "")), each)):
+        written = unicodedata.normalize("NFC", min(unread[key])[1])   # as first written: «?Сидоров», not «?сидоров»
         directory = _directory(written)
         while _key(directory) in taken:                             # «?Сидоров» beside a surely read «Сидоров»
             directory += "-"
         taken.add(_key(directory))
         pages.append(replace(_name_page(directory, unread[key]), title=written, unread=True))
     return pages
+
+
+def _sure_page(stem: str, keys: set[str], sure: dict[str, str]) -> str | None:
+    """The key of the surely read name a doubtful reading's `stem` is: the very spelling, else as the search folds
+    it, else its masculine or feminine form so folded — or None."""
+    if (key := _key(stem)) in keys:
+        return key
+    folded = model.fold(stem)
+    kin = [folded, folded + "а"]  # i18n: content — the feminine of a masculine
+    if folded.endswith("а"):  # i18n: content
+        kin.append(folded[:-1])
+    if folded.endswith("ая"):  # i18n: content
+        kin += [folded[:-2] + end for end in ("ий", "ой", "ый")]  # i18n: content
+    if folded.endswith(("ий", "ой", "ый")):  # i18n: content
+        kin.append(folded[:-2] + "ая")  # i18n: content
+    return next((sure[each] for each in kin if each in sure), None)
 
 
 def _name_page(directory: str, found_: list[tuple[int, str, Mention, bool]]) -> NamePage:
