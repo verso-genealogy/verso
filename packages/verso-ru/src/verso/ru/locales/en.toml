@@ -1396,7 +1396,7 @@ told = " (the year as told)"
 [cli.facts.name_days]
 unknown = "; the name not in the calendar — {births} ({names})"
 ok = "name-days: OK — 0 findings {of_births}{tail}{noted}."
-head = "name-days: {count} {of_births} — the name's saint more than {far} days from the window (HIGH {high}, LOW {low}){tail}{noted}"
+head = "name-days: {count} {of_births} — the saint's day of the name more than {far} days from the naming days (HIGH {high}, LOW {low}){tail}{noted}"
 note = "The window: birth −{before} … max(christening, 8th day) +{after} days. Most often the name was simply given out of the calendar; HIGH — a look-alike name is kept in the window, the place to start checking the scan. The name is right — `birth(..., calendar_note=\"…\")`."
 finding = "[{confidence}] {name} ({gender}), b. {born}, chr. {christened} — the name's nearest saint {day:02d}.{month:02d}, {outside} days outside the window"
 lookalikes = "    kept in the window: {alts}"
@@ -1691,11 +1691,11 @@ other_months = "The same day a month either side is open: {dates}."
 other_days = "A day either side is open: {dates}."
 
 [facts.signal.name_days]
-far = "{name}: the nearest saint of the name is kept on {nearest}, {outside} days outside the window (born {born}, christened {christened})."
-far_why = "The window: birth −{before} … max(christening, 8th day) +{after} days. Most often the name was simply given out of the calendar."
-lookalike = "{name}: the nearest saint of the name is kept on {nearest}, {outside} days outside the window (born {born}, christened {christened})."
-lookalike_why = "A look-alike name is kept inside the window: start the re-reading of the scan with it."
-lookalikes = "Kept in the window: {names}."
+far = { one = "{name}: {count} day from the naming days ({start}–{end}) to the nearest saint's day of the name ({nearest}).", other = "{name}: {count} days from the naming days ({start}–{end}) to the nearest saint's day of the name ({nearest})." }
+far_why = "A child was usually named after a saint kept near its birth or christening. But a name was often chosen outside the calendar too: if the scan confirms the name, nothing is wrong."
+lookalike = { one = "{name}: {count} day from the naming days ({start}–{end}) to the nearest saint's day of the name ({nearest}).", other = "{name}: {count} days from the naming days ({start}–{end}) to the nearest saint's day of the name ({nearest})." }
+lookalike_why = "A saint with a similar name is kept on these days — the name may be misread: check it against the scan."
+lookalikes = "Similar names kept on these days: {names}."
 
 [facts.signal.baptism_lag]
 late = "Christened {christened}, {days} days after the birth on {born}."

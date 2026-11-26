@@ -26,12 +26,12 @@ from collections.abc import Collection, Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
-from verso.ru.church_calendar.julian import JulianDate
+from verso.ru.church_calendar.julian import JulianDate, from_jdn
 from verso.ru.church_calendar.paschalion import pascha
 from verso.ru.church_calendar.svyatcy import Svyatcy, load_svyatcy
 from verso.ru.facts.checks.dates import WithinFinding, within_entry
 from verso.ru.facts.checks.lags import BAPTISM_DAYS, BURIAL_DAYS, BURIAL_HIGH_DAYS, LagFinding, baptism_lags, burial_lags
-from verso.ru.facts.checks.name_days import AFTER, BEFORE, NameDayFinding, name_day_findings
+from verso.ru.facts.checks.name_days import NameDayFinding, name_day_findings, window
 from verso.ru.facts.checks.parent_ages import FATHER_MIN, MOTHER_MAX, MOTHER_MIN, ParentAgeFinding, parent_age_findings
 from verso.ru.facts.checks.wedding_ages import GAP_YEARS, WeddingAgeFinding, wedding_age_findings
 from verso.ru.facts.checks.wedding_calendar import WeddingFinding, wedding_calendar_findings, weekday_name
@@ -127,11 +127,13 @@ def _wedding(f: WeddingFinding) -> tuple[str, str, Message, Message, tuple[Messa
 
 def _name_day(f: NameDayFinding) -> tuple[str, str, Message, Message, tuple[Message, ...]]:
     variant = "lookalike" if f.lookalikes else "far"
+    anchor = f.christened or f.born
+    assert anchor is not None       # a finding is asked only of a dated birth
+    first, last = (from_jdn(n) for n in window(f.born, anchor))
     said = _said(_key("name-days", variant), {
-        "name": f.name, "born": _dmy(f.born), "christened": _dmy(f.christened),
-        "nearest": _dm(*f.nearest), "outside": f.outside})
-    why = (_said(_key("name-days", "lookalike_why")) if f.lookalikes
-           else _said(_key("name-days", "far_why"), {"before": BEFORE, "after": AFTER}))
+        "name": f.name, "nearest": _dm(*f.nearest), "count": f.outside,
+        "start": _dm(first[1], first[2]), "end": _dm(last[1], last[2])})
+    why = _said(_key("name-days", "lookalike_why" if f.lookalikes else "far_why"))
     details = (_said(_key("name-days", "lookalikes"), {"names": ", ".join(
         f"{n.name}{f' ({n.base})' if n.base != n.name else ''} {_dm(*n.day)}" for n in f.lookalikes)}),
                ) if f.lookalikes else ()

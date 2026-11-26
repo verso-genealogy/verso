@@ -129,9 +129,9 @@ class Findings(unittest.TestCase):
             Commemorated(gender=M, headword="Симеон", name="Симеон", dates=((9, 1),)),
         ]))
         text = signal_report("name-days", result)
-        self.assertIn("[HIGH] Симон: ближайший святой имени 10.05", text)
-        self.assertIn("(р. 28.08.1850, кр. 29.08.1850)", text)
-        self.assertIn("    В окне поминается: Симеон", text)
+        self.assertIn("[HIGH] Симон: от срока имянаречения (25.08–07.09) "
+                      "до ближайшего дня ангела (10.05) — 107 дней.", text)
+        self.assertIn("    Похожие имена в эти дни: Симеон", text)
         self.assertIn("b.py №7", text)
 
 
