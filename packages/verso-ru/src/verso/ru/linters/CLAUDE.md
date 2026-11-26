@@ -398,10 +398,15 @@ literal, or a constant the file defines itself, which `domain.military_status.cl
 constant («запасный солдат» → SOLDIER, «жена запасного рядового» → SOLDIER_SPOUSE, «отставной рядовой» →
 RETIRED_SOLDIER). The status says who the person is; the scribe's wording belongs in the member's `comment=`
 (param `comment`: the text in modern spelling). The message states both halves and the finding has no `fix`:
-the edit is two keyword arguments, and the bulk fix is the codemod. A catalog text, an officer, a landlord's
-peasant, a cantonist and a `departure_reason=` are quiet. **Hard from birth** (2026-11-26): the corpus was
-migrated in the same wave, so Verso refuses a save that writes a new one. On records JSON the rule reads the
-same texts (`literal` only; `bound` is the source's).
+the edit is two keyword arguments, and the bulk fix is the codemod (`verso migrate-soldier-statuses`). A
+catalog text, an officer, a landlord's peasant, a woman's or kinsman's wording whose role word does not lead
+(«запасного рядового жена»: unplaced, the codemod lists it) and a `departure_reason=` are quiet; a cantonist,
+a vakhmistr, «солдатская девица» and a military clerk are placed (the owner's ruling of 2026-11-26).
+**Hard from birth** (2026-11-26): the corpus was migrated in the same wave, so Verso refuses a save that
+writes a new one. On records JSON the rule reads the same texts (`literal` only; `bound` is the source's).
+A known gap, the same as SOR001's: a status written positionally (`person("Иван", None, …, "запасный
+солдат")`) is read by the JSON rule — the record holds it as `status` — but not by the DSL check, which reads
+keyword arguments only.
 
 ## `census_age` — CAI001–CAI003
 

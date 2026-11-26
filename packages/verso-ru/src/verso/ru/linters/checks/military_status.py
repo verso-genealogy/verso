@@ -9,7 +9,9 @@ MIL001 flags a `status=` (or a `RecordDefaults` form) that is a string literal, 
 defines itself, which `verso.ru.domain.military_status.classify` places on a catalog constant. The
 message names the constant and the wording the comment should hold (the text in modern spelling). It
 has no fix: the edit is two keyword arguments, so the bulk fix is the codemod. A catalog text, an
-officer, a landlord's peasant and a cantonist are quiet (`classify` answers None).
+officer, a landlord's peasant and a woman's or kinsman's wording whose role word does not lead are
+quiet (`classify` answers None; the codemod lists the last as unplaced). Since the owner's ruling of
+2026-11-26 a cantonist, a vakhmistr, a soldier's maiden and a military clerk are placed, so flagged.
 
 Path-independent: scopes on kwargs and module-level bindings only.
 
