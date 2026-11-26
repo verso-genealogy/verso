@@ -3,6 +3,8 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.53.dev0)
+
 ## 0.1.52 — 2026-11-26
 
 A site built by `verso site` moves: partial dates are written as the library writes them, and a day with no month says so. The site's self-check of its links is faster and case-exact, so a build can now report a link whose letter case differs (see **Fixed**). `verso stale-claims` (`claim-check`) loses a false finding on «Первоначальная запись». The interface schema refuses, when hints are built, a rule key or a rule table its kind does not read, so a plugin's hints with such a key now fail; verso-ru's own are clean and its `ui-v1.json` does not move. A corpus's CSVs, Terraform, records JSON and facts do not move.
