@@ -68,7 +68,7 @@ def test_statusless_reservist_gets_soldier():
 @pytest.mark.parametrize("comment", [
     "«солдатки Марѳы дочь»",  # a soldier's wife's daughter: not a reservist
     "«поступившій въ военную службу»",  # military, but no reserve
-    "«изъ крестьянъ деревни Полковой»",
+    "«изъ крестьянъ деревни Заманиловки»",
     "отчество читается неуверенно",
 ])
 def test_a_statusless_comment_without_a_reserve_wording_is_left(comment: str):
