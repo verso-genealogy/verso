@@ -5,12 +5,14 @@
 `None` for a catalog text, for a text that is not military, and for a military text it will not
 place (`unplaced` lists them): a maiden's wording other than «солдатская девица» (`UNPLACED`), and a
 woman's or a kinsman's wording whose role word does not lead («запасного рядового жена», «мать
-солдатка», «крестьянин, сын запасного рядового»), which must never fall through to a man's constant.
+солдатка», «крестьянин, сын запасного рядового»), which must never fall through to a man's constant —
+nor must a rank in the genitive with no role before it («невеста запасного рядового»): it is someone
+else's rank.
 
 The words are read in lower case, but a capitalised word after the first is a name or a place
-(«крестьянин деревни Солдатовки», «сын крестьянина Запасова») and is dropped before matching. «отставной»
-and «отпуск» are no military words on their own («отставной учитель», «отпускной крестьянин»): they only
-tell a soldier retired.
+(«крестьянин деревни Солдатовки», «сын крестьянина Запасова») and is dropped before matching, unless
+it is itself a rank word («крестьянин Отставной солдат»). «отставной» and «отпуск» are no military words
+on their own («отставной учитель», «отпускной крестьянин»): they only tell a soldier retired.
 
 The owner's ruling of 2026-11-26 placed the wordings once left out: «солдатская девица» → SOLDIER_GIRL,
 «вахмистр …» → UNTER_OFFICER, «кантонист» → SOLDIER_SON, «военный писарь …» → SOLDIER (a «писарь» with
@@ -68,8 +70,18 @@ _KIN = re.compile(  # i18n: content — status words: vocabulary
     r"|муж|от(?:ец|ц)|крестьянк|мещанк|однодворк)|офицерш")  # i18n: content — status words: vocabulary
 # A wording that ends on a feminine adjective («солдатская», «военная»): a woman's, unnamed.
 _FEMININE_END = re.compile(r"\w(?:ая|яя)$")  # i18n: content — status words: vocabulary
-# A name or a place: a capitalised word (not all capitals) after the first.
+# A rank in the genitive singular, when no role leads, is someone else's rank: a dependant's, a woman's or a
+# servant's wording («невеста запасного рядового», «дворовый человек отставного солдата»).
+_GENITIVE_RANK = re.compile(  # i18n: content — status words: vocabulary
+    r"(?<![а-яё])(?:солдата|солдатки|рядового|унтер[- ]?офицера|чина|вахмистра|ефрейтора|фельдфебеля"  # i18n: content — status words: vocabulary
+    r"|кантониста|бомбардира)(?![а-яё])")  # i18n: content — status words: vocabulary
+# A name or a place: a capitalised word (not all capitals) after the first…
 _PROPER = re.compile(r"\W*[А-ЯЁ][а-яё]")  # i18n: content — status words: vocabulary
+# …unless the word is itself a rank, whole («крестьянин Отставной солдат»; not «Солдатовки», «Рядово»).
+_RANK_WORD = re.compile(  # i18n: content — status words: vocabulary
+    r"\W*(?:солдат(?:а|у|ом|е|ы)?|рядов(?:ой|ого|ому|ым)|унтер[- ]?офицер(?:а|у|ом|е)?|отставн(?:ой|ого|ому|ым)"  # i18n: content — status words: vocabulary
+    r"|запасн(?:ый|ой|ого|ому|ым)|вахмистр(?:а|у|ом)?|ефрейтор(?:а|у|ом)?|фельдфебел(?:ь|я|ю|ем)|сержант(?:а|у|ом)?)"  # i18n: content — status words: vocabulary
+    r"\W*")  # i18n: content — status words: vocabulary
 
 
 def _in_catalog(modern: str) -> bool:
@@ -77,9 +89,10 @@ def _in_catalog(modern: str) -> bool:
 
 
 def _words(modern: str) -> str:
-    """`modern` in lower case, the names and places in it (a capitalised word after the first) dropped."""
+    """`modern` in lower case, the names and places in it (a capitalised word after the first that is no
+    rank word) dropped."""
     head, *rest = modern.split() or [""]
-    return " ".join([head, *(w for w in rest if not _PROPER.match(w))]).lower()
+    return " ".join([head, *(w for w in rest if not _PROPER.match(w) or _RANK_WORD.fullmatch(w.lower()))]).lower()
 
 
 def _verdict(text: str) -> tuple[str | None, bool]:
@@ -97,7 +110,7 @@ def _verdict(text: str) -> tuple[str | None, bool]:
     for pattern, constant in _ROLES:
         if pattern.match(low):
             return constant, False
-    if _ADJ_ODD.match(low) or _KIN.search(low) or _FEMININE_END.search(low):
+    if _ADJ_ODD.match(low) or _KIN.search(low) or _FEMININE_END.search(low) or _GENITIVE_RANK.search(low):
         return None, True
     if _CANTONIST.match(low):
         return "SOLDIER_SON", False

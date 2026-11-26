@@ -123,3 +123,35 @@ def test_civil_names_and_places_are_no_soldiers(text):
 ])
 def test_the_review_keeps_these(text, constant):
     assert classify(text) == constant
+
+
+# The re-review: when no role leads, a rank in the genitive singular is someone else's rank — a dependant's,
+# a woman's, a servant's wording — so it is listed, never a man's constant.
+DEPENDANTS = [
+    "невеста запасного рядового", "супруга запасного рядового", "падчерица солдата", "невестка рядового",
+    "племянница солдата", "воспитанница солдата", "свояченица солдата", "незаконнорожденная солдата",
+    "пасынок рядового", "воспитанник солдата", "работник запасного рядового", "крестьянин нижнего чина",
+    "супруга отставного солдата", "сноха отставного солдата", "работница отставного солдата",
+    "отставного солдата жонка", "зять отставного солдата", "племянник отставного солдата",
+    "приемыш отставного солдата", "дворовый человек отставного солдата",
+]
+
+
+@pytest.mark.parametrize("text", DEPENDANTS)
+def test_a_dependant_of_a_rank_is_unplaced(text):
+    assert classify(text) is None
+    assert unplaced(text)
+
+
+@pytest.mark.parametrize("text, constant", [
+    # a role that leads keeps its constant, whatever rank follows in the genitive
+    ("жена запасного рядового", "SOLDIER_SPOUSE"), ("сын унтер-офицера", "SOLDIER_SON"),
+    ("вдова отставного солдата", "SOLDIER_WIDOW"), ("дочь вахмистра", "SOLDIER_DAUGHTER"),
+    ("законная жена солдата помещика Собакевича", "SOLDIER_LEGAL_WIFE"),
+    # a capitalised rank word after the first is a rank, not a name: the rank reading wins over the peasant's,
+    # as in «казенный крестьянин отставной солдат»
+    ("крестьянин Отставной солдат", "RETIRED_SOLDIER"), ("крестьянин Унтер-офицер", "UNTER_OFFICER"),
+    ("бывший Солдат", "SOLDIER"), ("казенный крестьянин отставной солдат", "RETIRED_SOLDIER"),
+])
+def test_a_leading_role_and_a_capitalised_rank_are_kept(text, constant):
+    assert classify(text) == constant
