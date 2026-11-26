@@ -37,6 +37,8 @@ from verso.ru.domain.military_status import UNPLACED, classify
     ("унтер-офицерская вдова", "SOLDIER_WIDOW"),
     ("унтер-офицерская дочь", "SOLDIER_DAUGHTER"),
     ("унтер офицерская жена", "SOLDIER_SPOUSE"),  # pre-reform spelling is read as modern
+    ("рядовой Глуповского уланского полка", "SOLDIER"),
+    ("улан Глуповского полка", "SOLDIER"),
 ])
 def test_classify_places_each_wording(text, constant):
     assert classify(text) == constant
@@ -52,6 +54,8 @@ def test_classify_places_each_wording(text, constant):
     "состоящий на службе в волостном правлении", "солдатская внучка",
     "солдатская девица", "кантонист", "вахмистр Глуповского конного полка",
     "военный писарь в бессрочном отпуску",  # unplaced
+    # a military root inside a name or a place is not the word
+    "крестьянин деревни Кулановки", "сын крестьянина Туланова", "крестьянин Уланов", "из крестьян сельца Заполковья",
 ])
 def test_classify_leaves_others(text):
     assert classify(text) is None

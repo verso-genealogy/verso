@@ -21,9 +21,11 @@ _LANDLORD = re.compile(r"помещи|дворов")  # i18n: content — status
 _SOLDIER_WORD = re.compile(r"солдат")  # i18n: content — status words: vocabulary
 # Military wordings the catalog has no constant for.
 UNPLACED = re.compile(r"девиц|кантонист|вахмистр|военный писар")  # i18n: content — status words: vocabulary
-# «служб» alone is civil too: only the military service counts.
+# «служб» alone is civil too: only the military service counts. A regiment's word starts a word, and
+# «улан» is the noun or «уланский»: inside a name or a place (Туланов, Кулановка, Заполковье) it is no soldier.
 _MILITARY = re.compile(  # i18n: content — status words: vocabulary
-    r"солдат|рядов|запас|отпуск|бессрочн|билетн|военн|(?:действительн|действующ)\w* служб|гусар|улан|гренадер|полк"  # i18n: content — status words: vocabulary
+    r"солдат|рядов|запас|отпуск|бессрочн|билетн|военн|(?:действительн|действующ)\w* служб"  # i18n: content — status words: vocabulary
+    r"|\b(?:гусар|гренадер|полк)|\bулан(?:\b|ск)"  # i18n: content — status words: vocabulary
     r"|ефрейтор|фельдфебел|бомбардир|канонир|унтер|сержант|отставн|отданн")  # i18n: content — status words: vocabulary
 _UNTER = re.compile(r"унтер")  # i18n: content — status words: vocabulary
 _RETIRED = re.compile(r"отставн|уволен\w*\b.*\bс военной службы")  # i18n: content — status words: vocabulary

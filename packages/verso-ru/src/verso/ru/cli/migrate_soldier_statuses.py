@@ -6,7 +6,8 @@ literal that `verso.ru.domain.military_status.classify` places («запасны
   - the status becomes the constant, imported in the file's own form (`verso.ru.dsl.statuses`);
   - the scribe's wording goes into `comment=`, bare and in modern spelling — what MIL001 asks for. A
     comment the person has is kept and the wording put before it with «; », unless that comment already
-    holds it (compared in modern spelling, case-folded, «» stripped).
+    holds it (compared in modern spelling, case-folded, «» stripped) or quotes the scribe's own words for
+    the rank (a «quoted» part `classify` places): then only the status changes.
 A person with no status whose comment holds a reserve wording («запасный рядовой …», the comment or one
 of its «quoted» parts, which `classify` places on SOLDIER) gets `status=SOLDIER`, the comment untouched.
 
@@ -75,11 +76,12 @@ def _folded(text: str) -> str:
 
 
 def comment_with(wording: str, before: str | None) -> str:
-    """The comment that holds `wording`: `before` itself when it holds it already, else the
-    wording before it with «; »."""
+    """The comment that holds `wording`: `before` itself when it holds it already — the wording in it,
+    or a «quoted» part `classify` places (the scribe's own words for the rank, which the free-text
+    status only paraphrased) —, else the wording before it with «; »."""
     if before is None or not before.strip():
         return wording
-    if _folded(wording) in _folded(before):
+    if _folded(wording) in _folded(before) or any(classify(q) is not None for q in _QUOTED.findall(before)):
         return before
     return f"{wording}; {before}"
 

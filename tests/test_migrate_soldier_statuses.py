@@ -51,6 +51,22 @@ def test_wording_already_in_comment_is_not_copied():
     assert changes[0].comment_before == changes[0].comment_after
 
 
+def test_a_quoted_military_wording_in_the_comment_holds_it():
+    # The comment quotes the scribe's own words for the rank: the free-text status was the reader's
+    # paraphrase, so only the status changes.
+    src = HEAD + ('x = person("Иванъ", status="рядовой в бессрочном отпуске",'
+                  ' comment="«уволенный во временный отпускъ рядовой»; Ноздревъ")\n')
+    new, changes, _ = mig.migrate_source(src)
+    assert new.endswith('x = person("Иванъ", status=SOLDIER,'
+                        ' comment="«уволенный во временный отпускъ рядовой»; Ноздревъ")\n')
+    assert changes[0].comment_before == changes[0].comment_after
+
+
+def test_a_quoted_civil_wording_does_not_hold_it():
+    src = HEAD + 'x = person("Иванъ", status="запасный солдат", comment="«деревни Маниловки»")\n'
+    assert _call(src) == 'x = person("Иванъ", status=SOLDIER, comment="запасный солдат; «деревни Маниловки»")\n'
+
+
 def test_the_comparison_folds_case():
     src = HEAD + 'x = person("Иванъ", status="запасный солдат", comment="Запасный солдатъ, крестник")\n'
     assert _call(src) == 'x = person("Иванъ", status=SOLDIER, comment="Запасный солдатъ, крестник")\n'
