@@ -117,7 +117,8 @@ def test_the_site_speaks_the_language_it_is_built_in(file_node: dict[str, Any], 
 def test_the_search_index_is_the_sites_own_file(file_node: dict[str, Any], tmp_path: Path) -> None:
     _build(file_node, tmp_path / "site")
     data = json.loads((tmp_path / "site" / "search" / "index.json").read_text(encoding="utf-8"))
-    assert {tuple(book) for book in data["books"]} >= {("books/manilovka/47-9-755/1900/marriage/", "Браки 1900 — Маниловка")}
+    assert {tuple(book) for book in data["books"]} >= {
+        ("books/manilovka/47-9-755/1900/marriage/", "Браки 1900 — Маниловка", 1900, "metric", "Маниловка")}
 
 
 def test_the_check_names_what_a_reader_would_meet(tmp_path: Path) -> None:
