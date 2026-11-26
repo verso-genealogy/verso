@@ -7,6 +7,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Fixed
 
+- verso-ru, the site (`verso site`): a date is written as the library writes one (`written_date`) — a day only
+  beside its month, so a day with no month is no longer drawn as «5 1915» (a card's date shows the year, an event's
+  line is left out, as its year would be only the book's); after «до», «около», «после» a month alone is in the
+  genitive («до мая 1915», was «до май 1915»).
+- verso-ru, the site's self-check of its links reads each page's start tags with one pattern (as `html.parser` reads
+  them) and looks every address up in the set of the tree's files instead of asking the file system: a village of
+  2636 pages is checked in 2.3 s, was 12 s. An address in another letter case is now a broken link on any file
+  system, as GitHub Pages serves it. The search script has a browser test (headless Chrome, `CI` requires one).
 - verso-ru, `verso stale-claims` (`claim-check`): «первая запись» is the word «первый» in its own endings, no longer
   any word that begins with «перв» — a comment's «Первоначальная запись» (the act as first written, before a
   correction) claimed primacy and gave a false finding. Only that channel's report moves.
