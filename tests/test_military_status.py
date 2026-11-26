@@ -148,10 +148,21 @@ def test_a_dependant_of_a_rank_is_unplaced(text):
     ("жена запасного рядового", "SOLDIER_SPOUSE"), ("сын унтер-офицера", "SOLDIER_SON"),
     ("вдова отставного солдата", "SOLDIER_WIDOW"), ("дочь вахмистра", "SOLDIER_DAUGHTER"),
     ("законная жена солдата помещика Собакевича", "SOLDIER_LEGAL_WIFE"),
-    # a capitalised rank word after the first is a rank, not a name: the rank reading wins over the peasant's,
-    # as in «казенный крестьянин отставной солдат»
-    ("крестьянин Отставной солдат", "RETIRED_SOLDIER"), ("крестьянин Унтер-офицер", "UNTER_OFFICER"),
-    ("бывший Солдат", "SOLDIER"), ("казенный крестьянин отставной солдат", "RETIRED_SOLDIER"),
+    ("казенный крестьянин отставной солдат", "RETIRED_SOLDIER"),
+    # a capitalised word after the first is always a name or a place, even when spelled like a rank: a missed
+    # rewrite, never a wrong constant
+    ("крестьянин Отставной солдат", "SOLDIER"),
 ])
 def test_a_leading_role_and_a_capitalised_rank_are_kept(text, constant):
     assert classify(text) == constant
+
+
+@pytest.mark.parametrize("text", [
+    "крестьянин Унтер-офицер", "бывший Солдат",
+    "крестьянин деревни Запасной", "крестьянин деревни Рядовой",  # a place's genitive spelled like the rank
+    "сын крестьянина Солдата", "дочь крестьянина Рядового",  # a surname spelled like the rank
+    "крестьянин «Солдат»", "крестьянин (Солдат)",
+])
+def test_a_capitalised_word_spelled_like_a_rank_is_a_name(text):
+    assert classify(text) is None
+    assert not unplaced(text)

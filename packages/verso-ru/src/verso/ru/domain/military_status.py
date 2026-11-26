@@ -10,8 +10,8 @@ nor must a rank in the genitive with no role before it («невеста зап�
 else's rank.
 
 The words are read in lower case, but a capitalised word after the first is a name or a place
-(«крестьянин деревни Солдатовки», «сын крестьянина Запасова») and is dropped before matching, unless
-it is itself a rank word («крестьянин Отставной солдат»). «отставной» and «отпуск» are no military words
+(«крестьянин деревни Солдатовки», «сын крестьянина Запасова») and is dropped before matching, even
+one spelled like a rank («деревни Запасной»). «отставной» and «отпуск» are no military words
 on their own («отставной учитель», «отпускной крестьянин»): they only tell a soldier retired.
 
 The owner's ruling of 2026-11-26 placed the wordings once left out: «солдатская девица» → SOLDIER_GIRL,
@@ -75,13 +75,9 @@ _FEMININE_END = re.compile(r"\w(?:ая|яя)$")  # i18n: content — status word
 _GENITIVE_RANK = re.compile(  # i18n: content — status words: vocabulary
     r"(?<![а-яё])(?:солдата|солдатки|рядового|унтер[- ]?офицера|чина|вахмистра|ефрейтора|фельдфебеля"  # i18n: content — status words: vocabulary
     r"|кантониста|бомбардира)(?![а-яё])")  # i18n: content — status words: vocabulary
-# A name or a place: a capitalised word (not all capitals) after the first…
+# A name or a place: a capitalised word (not all capitals) after the first — always, even one spelled
+# like a rank («деревни Запасной», «крестьянина Солдата»): a missed rewrite, never a wrong constant.
 _PROPER = re.compile(r"\W*[А-ЯЁ][а-яё]")  # i18n: content — status words: vocabulary
-# …unless the word is itself a rank, whole («крестьянин Отставной солдат»; not «Солдатовки», «Рядово»).
-_RANK_WORD = re.compile(  # i18n: content — status words: vocabulary
-    r"\W*(?:солдат(?:а|у|ом|е|ы)?|рядов(?:ой|ого|ому|ым)|унтер[- ]?офицер(?:а|у|ом|е)?|отставн(?:ой|ого|ому|ым)"  # i18n: content — status words: vocabulary
-    r"|запасн(?:ый|ой|ого|ому|ым)|вахмистр(?:а|у|ом)?|ефрейтор(?:а|у|ом)?|фельдфебел(?:ь|я|ю|ем)|сержант(?:а|у|ом)?)"  # i18n: content — status words: vocabulary
-    r"\W*")  # i18n: content — status words: vocabulary
 
 
 def _in_catalog(modern: str) -> bool:
@@ -89,10 +85,9 @@ def _in_catalog(modern: str) -> bool:
 
 
 def _words(modern: str) -> str:
-    """`modern` in lower case, the names and places in it (a capitalised word after the first that is no
-    rank word) dropped."""
+    """`modern` in lower case, the names and places in it (a capitalised word after the first) dropped."""
     head, *rest = modern.split() or [""]
-    return " ".join([head, *(w for w in rest if not _PROPER.match(w) or _RANK_WORD.fullmatch(w.lower()))]).lower()
+    return " ".join([head, *(w for w in rest if not _PROPER.match(w))]).lower()
 
 
 def _verdict(text: str) -> tuple[str | None, bool]:
@@ -127,6 +122,8 @@ def classify(text: str) -> str | None:
 def unplaced(text: str) -> bool:
     """A soldier's wording `classify` will not place — a maiden's other than «солдатская девица»
     (`UNPLACED`), the adjective with a noun no constant spells («солдатская внучка»), a woman's or a
-    kinsman's wording whose role word does not lead («запасного рядового жена») — listed for a person
-    to decide, never guessed. An officer's, a clerk's or a peasant's maiden is no soldier's."""
+    kinsman's wording whose role word does not lead («запасного рядового жена»), a rank in the genitive
+    with no role before it, a dependant's or a servant's («невеста запасного рядового», «дворовый
+    человек отставного солдата») — listed for a person to decide, never guessed. An officer's, a
+    clerk's or a peasant's maiden is no soldier's."""
     return _verdict(text)[1]
