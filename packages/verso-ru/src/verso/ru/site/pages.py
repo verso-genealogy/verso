@@ -42,18 +42,46 @@ def kind_title(book: Book, ui: Ui) -> str:
     return str(t("site.book.civil", title=title)) if book.civil else title
 
 
+def part_label(book: Book) -> str:
+    """A book's part of its case as a reader reads it: «part-2» as «часть 2»; a Latin slug alone («zamanilovka») is
+    no part but a file's name for its village, which the book names already — nothing; any other as written
+    («стр-34-35», «Заманиловка», another case's shelfmark)."""
+    part = book.part or ""
+    if numbered := re.fullmatch(r"part-(\d+)", part):
+        return str(t("site.book.part", number=numbered.group(1)))
+    return "" if re.fullmatch(r"[A-Za-z]+(?:-[A-Za-z]+)*", part) else part
+
+
 def book_title(book: Book, ui: Ui) -> str:
-    """A book's name in a list and at its page's head: its kind, year and parish."""
+    """A book's name in a list and at its page's head: its kind, year and parish; its case where another book of
+    them stands in another case («Браки 1783 — Маниловка, Д. 14»); and its part of the case where it is one
+    («Исповедная роспись 1828 — Маниловка, стр-34-35»). Two books of a year never read alike."""
     year = f" {book.year}" if book.year is not None else ""
-    return f"{kind_title(book, ui)}{year} — {book.village}"
+    case = ", " + str(t("site.book.case", case=book.shelf["case"])) if book.twin else ""
+    part = f", {label}" if (label := part_label(book)) else ""
+    return f"{kind_title(book, ui)}{year} — {book.village}{case}{part}"
+
+
+def grouped(count: int) -> str:
+    """A number as a page prints it: from five figures on, its thousands set apart by a no-break space
+    («12 257», «1924») — the space the site's fonts draw (`site.number.group`)."""
+    if abs(count) < 10_000:
+        return str(count)
+    return f"{count:,}".replace(",", str(t("site.number.group")))
+
+
+def counted(message: object, count: int) -> str:
+    """A catalog's counted phrase, rendered for `count` (its plural form), with the number grouped («12 257
+    записей»)."""
+    return str(message).replace(str(count), grouped(count), 1)
 
 
 def _records(count: int) -> str:
-    return str(t("counted.records", count=count))
+    return counted(t("counted.records", count=count), count)
 
 
 def _unreviewed(count: int) -> str:
-    return f' <span class="badge">{E(str(t("site.unreviewed_count", count=count)))}</span>' if count else ""
+    return f' <span class="badge">{E(counted(t("site.unreviewed_count", count=count), count))}</span>' if count else ""
 
 
 # ---------------------------------------------------------------- a book
@@ -83,7 +111,10 @@ def book(book_: Book, ui: Ui, ctx: Context) -> str:
         if book_.civil:
             facts.append(E(str(t("site.book.civil_note"))))
     count = f"{E(_records(len(book_.entries)))}{_unreviewed(book_.unreviewed)}"
-    leaves = list(dict.fromkeys(entry.leaf for entry in book_.entries if entry.leaf and entry.leaf != "?"))
+    # The leaves by number («225об» before «229об»), not as the records run: a civil register lists its boys, then
+    # its girls, and a reading may go back to a leaf.
+    leaves = sorted(dict.fromkeys(entry.leaf for entry in book_.entries if entry.leaf and entry.leaf != "?"),
+                    key=_natural)
     toc = ""
     if len(leaves) > 1:
         first = {leaf: next(e for e in book_.entries if e.leaf == leaf) for leaf in leaves}
@@ -127,9 +158,9 @@ def books_index(site: Site, ui: Ui, ctx: Context) -> str:
             out.append(f"<h2>{E(name)}</h2>")
             archive = name
         rows = "".join(
-            f"<tr><td>{E(book_.shelf['case']) if not book_.is_cards else ''}</td>"
+            f"<tr><td>{E(book_.shelf['case'] + (', ' + part_label(book_) if part_label(book_) else '')) if not book_.is_cards else ''}</td>"
             f"<td>{book_.year if book_.year is not None else ''}</td><td>{_book_link(book_, ui, up, kind_title(book_, ui))}</td>"
-            f"<td>{E(book_.village)}</td><td class=\"n\">{len(book_.entries)}{_unreviewed(book_.unreviewed)}</td></tr>"
+            f"<td>{E(book_.village)}</td><td class=\"n\">{grouped(len(book_.entries))}{_unreviewed(book_.unreviewed)}</td></tr>"
             for book_ in sorted(found, key=lambda b: (_natural(b.shelf["case"]), b.year or 0,
                                                       site.books.index(b))))
         head = "".join(f"<th>{E(str(label))}</th>" for label in (
@@ -155,12 +186,15 @@ def home_parish(site: Site) -> str:
 
 def _year_labels(books: list[Book], home: set[str], ui: Ui) -> list[str]:
     """A year's books as its row names them: the kind; the village where it is another than the site's own
-    parish («Исповедная роспись — Заманиловка»); and the shelfmark, with its part, where two books of the year
-    would still read alike («Рождения — 47-9-755, стр-9»)."""
-    said = [[] if b.village in home else [b.village] for b in books]
+    parish («Исповедная роспись — Заманиловка») — and then every book's village, its own parish's too, so none
+    reads as the others' («Ревизия — Маниловка, Ревизия — Заманиловка»); and the shelfmark, with its part, where
+    two books of the year would still read alike («Рождения — 47-9-755, стр-9»)."""
+    named = len({b.village for b in books}) > 1 or any(b.village not in home for b in books)
+    said = [[b.village] if named else [] for b in books]
     first = [kind_title(b, ui) + "".join(f" — {q}" for q in q_) for b, q_ in zip(books, said, strict=True)]
     return [kind_title(b, ui) + " — " + ", ".join(
-                [*q_, b.shelfmark, *([b.part] if b.part and b.part not in q_ else [])]) if first.count(label) > 1
+                [*q_, b.shelfmark, *([part] if (part := part_label(b) or b.part or "") and part not in q_ else [])])
+            if first.count(label) > 1
             else label
             for b, q_, label in zip(books, said, first, strict=True)]
 
@@ -175,7 +209,7 @@ def years_index(site: Site, ui: Ui, ctx: Context) -> str:
         links = ", ".join(_book_link(b, ui, up, label) for b, label in zip(
             found, _year_labels(found, {home, site.village}, ui), strict=True))
         total = sum(len(b.entries) for b in found)
-        rows.append(f'<tr><td><a href="{year}/">{year}</a></td><td>{links}</td><td class="n">{total}</td></tr>')
+        rows.append(f'<tr><td><a href="{year}/">{year}</a></td><td>{links}</td><td class="n">{grouped(total)}</td></tr>')
     undated = [b for b in site.books if b.year is None]
     tail = ""
     if undated:
@@ -199,7 +233,7 @@ def year(year_: int, site: Site, ui: Ui, ctx: Context) -> str:
     if place + 1 < len(years):
         around.append(f'<a href="../{years[place + 1]}/">{years[place + 1]} →</a>')
     items = "".join(
-        f"<li>{_book_link(b, ui, up)} — {E(_shelf(b))}{E(', ' + b.part) if b.part else ''} · "
+        f"<li>{_book_link(b, ui, up)} — {E(_shelf(b))} · "
         f"{E(_records(len(b.entries)))}{_unreviewed(b.unreviewed)}</li>"
         for b in site.books if b.year == year_)
     body = (f'<p class="crumbs"><a href="../">{E(str(t("site.nav.years")))}</a></p><h1>{year_}</h1>'
@@ -289,6 +323,12 @@ def role_label(mention: Mention, ui: Ui) -> str:
     return mention.role
 
 
+def shown(mention: Mention) -> str:
+    """A mention as a link's text: its name as written, or that none was («(имя не записано)») — a link
+    must say where it leads."""
+    return mention.as_written or str(t("site.names.unnamed"))
+
+
 def _mention_rows(mentions: Sequence[Mention], site: Site, ui: Ui, up: str) -> str:
     books = {b.id: b for b in site.books}
     rows: list[str] = []
@@ -299,7 +339,7 @@ def _mention_rows(mentions: Sequence[Mention], site: Site, ui: Ui, up: str) -> s
                   if mention.modern and model.fold(mention.modern) != model.fold(mention.as_written) else "")
         badge = f' <span class="badge">{E(str(t("site.unreviewed")))}</span>' if mention.entry.unreviewed else ""
         rows.append(f'<tr><td>{book_.year if book_.year is not None else ""}</td>'
-                    f'<td><a href="{href}">{E(mention.as_written)}</a>{modern}{badge}</td>'
+                    f'<td><a href="{href}">{E(shown(mention))}</a>{modern}{badge}</td>'
                     f"<td>{E(role_label(mention, ui))}</td><td>{E(kind_title(book_, ui))}, {E(book_.village)}</td></tr>")
     head = "".join(f"<th>{E(str(label))}</th>" for label in (
         t("site.col.year"), t("site.col.name"), t("site.col.relation"), t("site.col.book")))
@@ -311,7 +351,7 @@ def name(page_: NamePage, section: str, site: Site, ui: Ui, ctx: Context) -> str
     up = shell.root(path)
     back = t("site.nav.names") if section == NAMES else t("site.names.patronymics")
     body = (f'<p class="crumbs"><a href="../">{E(str(back))}</a></p><h1>{E(page_.title)}</h1>'
-            f'<p class="k">{E(str(t("site.names.mentions", count=len(page_.mentions))))}</p>'
+            f'<p class="k">{E(counted(t("site.names.mentions", count=len(page_.mentions)), len(page_.mentions)))}</p>'
             + _mention_rows(page_.mentions, site, ui, up))
     return shell.page(page_.title, body, ctx=ctx, path=path)
 
@@ -323,7 +363,7 @@ def _letters(pages_: Sequence[NamePage]) -> str:
     jump = " ".join(f'<a href="#{E(letter)}">{E(letter)}</a>' for letter in by_letter)
     blocks = "".join(
         f'<h2 id="{E(letter)}">{E(letter)}</h2><ul class="names">' + "".join(
-            f'<li><a href="{E(page_.key)}/">{E(page_.title)}</a> <span class="n">{len(page_.mentions)}</span></li>'
+            f'<li><a href="{E(page_.key)}/">{E(page_.title)}</a> <span class="n">{grouped(len(page_.mentions))}</span></li>'
             for page_ in found) + "</ul>"
         for letter, found in by_letter.items())
     return f'<nav class="letters">{jump}</nav>{blocks}'
@@ -364,7 +404,7 @@ def search_index(site: Site, ui: Ui) -> str:
     """`search/index.json`: the books and, for each mention, what a query is compared with (the modern
     and the written forms folded), what is shown, where it leads, and 1 where its record is unread."""
     place = {book_.id: n for n, book_ in enumerate(site.books)}
-    rows = [[model.fold(f"{m.modern} {m.as_written}"), m.as_written,
+    rows = [[model.fold(f"{m.modern} {m.as_written}"), shown(m),
              m.modern if model.fold(m.modern) != model.fold(m.as_written) else "",
              place[m.entry.book_id], m.entry.anchor, role_label(m, ui), int(m.entry.unreviewed)]
             for m in site.mentions]
@@ -383,7 +423,7 @@ def search(ctx: Context) -> str:
             f'<noscript><p>{E(str(t("site.search.noscript")))} <a href="../{NAMES}/">{E(str(t("site.nav.names")))}</a>.</p></noscript>'
             f'<p id="status" role="status" data-loading="{E(str(t("site.search.loading")))}" '
             f'data-none="{E(str(t("site.search.none")))}" data-error="{E(str(t("site.search.error")))}" '
-            f'data-found="{E(str(t("site.search.found", count="{count}")))}" '
+            f'data-found="{E(str(t("site.search.found", count="{count}")))}" data-group="{E(str(t("site.number.group")))}" '
             f'data-more="{E(str(t("site.search.more", limit="{limit}")))}" '
             f'data-unread="{E(str(t("site.unreviewed")))}" data-limit="{SEARCH_LIMIT}"></p><ol id="results" class="results"></ol>')
     return shell.page(str(t("site.nav.search")), body, ctx=ctx, path=path, scripts=(shell.SEARCH_JS,))
@@ -394,13 +434,13 @@ def search(ctx: Context) -> str:
 def front(site: Site, ctx: Context) -> str:
     years = site.years
     span = f"{years[0]}–{years[-1]}" if len(years) > 1 else (str(years[0]) if years else "")
-    stats = [str(t("site.front.books", count=len(site.books))), _records(site.records),
-             str(t("site.front.mentions", count=len(site.mentions)))]
+    stats = [counted(t("site.front.books", count=len(site.books)), len(site.books)), _records(site.records),
+             counted(t("site.front.mentions", count=len(site.mentions)), len(site.mentions))]
     if span:
         stats.append(str(t("site.front.years", span=span)))
-    counted = "".join(f"<li>{E(each)}</li>" for each in stats)
+    listed = "".join(f"<li>{E(each)}</li>" for each in stats)
     if site.unreviewed:
-        counted += f'<li>{E(str(t("site.front.unreviewed", count=site.unreviewed)))}</li>'
+        listed += f'<li>{E(counted(t("site.front.unreviewed", count=site.unreviewed), site.unreviewed))}</li>'
     ways = [("years/", t("site.nav.years"), t("site.front.by_years")),
             ("books/", t("site.nav.books"), t("site.front.by_books")),
             (f"{NAMES}/", t("site.nav.names"), t("site.front.by_names")),
@@ -413,7 +453,7 @@ def front(site: Site, ctx: Context) -> str:
                  + "".join(f'<li><a href="{E(path)}">{E(title)}</a></li>' for path, title in ctx.prose) + "</ul>")
     summary = f'<p class="summary">{E(ctx.summary)}</p>' if ctx.summary else ""
     cite = f'<h2>{E(str(t("site.front.cite_title")))}</h2><p>{E(str(t("site.front.cite")))}</p>'
-    body = (f'<h1>{E(ctx.title)}</h1>{summary}<ul class="stats">{counted}</ul><ul class="ways">{cards}</ul>'
+    body = (f'<h1>{E(ctx.title)}</h1>{summary}<ul class="stats">{listed}</ul><ul class="ways">{cards}</ul>'
             f'{prose}<h2>{E(str(t("site.front.reading_title")))}</h2><p>{E(str(t("site.front.reading")))}</p>{cite}')
     return shell.page("", body, ctx=ctx, path="")
 

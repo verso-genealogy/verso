@@ -15,6 +15,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   params (was `before`, `after`). `far_why`, `lookalike_why`, `lookalikes` and the report's head are reworded alike.
   The keys and the variants do not change; the facts, their findings and a corpus's outputs do not move.
 
+### Fixed
+
+- verso-ru, the site (`verso site`), from a reader's review: no two books of a year read alike. A book that is a
+  part of its case names it wherever the book is named — at its head, in a year's list, in the search's list of
+  books and in the case column of the books' index — as a reader reads it («стр-34-35»; «part-2» as «часть 2»; a
+  Latin slug for the village the book names already, as «zamanilovka», not at all); a book whose twin of one village, year
+  and kind stands in another case names its case («Браки 1783 — Маниловка, Д. 14»). A year's row that holds books
+  of two villages names every book's village, its own parish's too. A book's leaves stand by number, not as its
+  records run (a civil register lists its boys, then its girls). A mention whose name was not written reads «(имя не
+  записано)» in the indexes and the search, not an empty link. From five figures on a count sets its thousands apart
+  with a no-break space («12 257 записей»), on the front page, in the indexes and in the search's status. New
+  catalog keys `site.number.group`, `site.names.unnamed`, `site.book.part`, `site.book.case`. Only the site moves.
+
 ## 0.1.52 — 2026-11-26
 
 A site built by `verso site` moves: partial dates are written as the library writes them, and a day with no month says so. The site's self-check of its links is faster and case-exact, so a build can now report a link whose letter case differs (see **Fixed**). `verso stale-claims` (`claim-check`) loses a false finding on «Первоначальная запись». The interface schema refuses, when hints are built, a rule key or a rule table its kind does not read, so a plugin's hints with such a key now fail; verso-ru's own are clean and its `ui-v1.json` does not move. A corpus's CSVs, Terraform, records JSON and facts do not move.

@@ -18,6 +18,13 @@
       .replace(/ъ(?![\p{L}\p{N}_])/gu, ""); // i18n: content
   }
 
+  // As verso.ru.site.pages.grouped: from five figures on, the thousands set apart («31 245»).
+  function grouped(count) {
+    var text = String(count);
+    if (count < 10000) { return text; }
+    return text.replace(/\B(?=(\d{3})+$)/g, status.dataset.group || " ");
+  }
+
   function load() {
     if (index) { return Promise.resolve(index); }
     status.textContent = status.dataset.loading;
@@ -70,7 +77,7 @@
       });
       list.appendChild(parts);
       if (!found.length) { status.textContent = status.dataset.none; return; }
-      status.textContent = status.dataset.found.replace("{count}", String(found.length)) +
+      status.textContent = status.dataset.found.replace("{count}", grouped(found.length)) +
         (found.length > limit ? " " + status.dataset.more.replace("{limit}", String(limit)) : "");
     }).catch(function () { if (mine === turn) { status.textContent = status.dataset.error; } });
   }
