@@ -6,7 +6,10 @@ from dataclasses import replace
 from collections.abc import Callable
 from typing import Any
 
+import pytest
+
 from tests.ru.site.conftest import BIRTHS, MARRIAGES
+from verso.ru.messages import t
 from verso.ru.site import model, pages, prose
 from verso.ru.site.records import Ui
 from verso.ru.site.shell import Context
@@ -122,6 +125,82 @@ def test_a_year_page_tells_two_parts_of_one_case_apart(changed: Any, ui: Ui, ctx
     assert len(lines) == len(set(lines)) and any("стр-9" in line for line in lines)
 
 
+
+def test_a_part_of_a_case_names_its_book_wherever_the_book_is_named(changed: Any, ui: Ui, ctx: Context) -> None:
+    """Two books of one case, year and kind — the case and a leaf of it filed apart — read apart at their heads,
+    in a year's list, in the search's list of books and in the case column of the books' index."""
+    def other_part(node: dict[str, Any]) -> None:
+        _twin(node, archive_suffix="47-9-755-стр-9")
+    site = changed(other_part)
+    part = next(b for b in site.books if b.part and b.year == 1900)
+    assert f"<h1>Рождения 1900 — Маниловка, {part.part}</h1>" in pages.book(part, ui, ctx)
+    titles = re.findall(r'<li><a href="[^"]*">([^<]*)</a>', pages.year(1900, site, ui, ctx))
+    assert "Рождения 1900 — Маниловка" in titles and f"Рождения 1900 — Маниловка, {part.part}" in titles
+    books = [name for _, name in json.loads(pages.search_index(site, ui))["books"]]
+    assert len(books) == len(set(books))
+    assert re.findall(r"<tr><td>(755[^<]*)</td><td>1900</td><td><a[^>]*>Рождения</a>", pages.books_index(site, ui, ctx)) \
+        == ["755", f"755, {part.part}"]
+
+
+def test_a_year_of_two_villages_names_each_books_village(changed: Any, ui: Ui, ctx: Context) -> None:
+    """Where a year holds a book of another village, its own parish's books are named too: «Рождения» beside
+    «Рождения — Тестовка» would read as nobody's."""
+    def neighbour(node: dict[str, Any]) -> None:
+        births = next(d for d in node["documents"] if d.get("kind") == "births")
+        moved = "r1:Тестовка/47-9-755/"
+        node["documents"].append({
+            **births, "id": births["id"].replace("r1:Маниловка/47-9-755/", moved), "variable": "neighbour",
+            "pages": [{**run, "records": [{**r, "id": r["id"].replace("r1:Маниловка/47-9-755/", moved)}
+                                          for r in run["records"]]} for run in births["pages"]]})
+    row = _row(pages.years_index(changed(neighbour), ui, ctx), 1900)
+    assert "Рождения — Маниловка" in row and "Рождения — Тестовка" in row and "Браки — Маниловка" in row
+
+
+
+@pytest.mark.parametrize(("part", "shown"), [
+    ("part-2", "часть 2"),
+    ("zamanilovka", ""), ("novaja-manilovka", ""),               # a file's slug for the village the book names already
+    ("стр-34-35", "стр-34-35"), ("Заманиловка", "Заманиловка"), ("1-2-345", "1-2-345"),
+    (None, ""),
+])
+def test_a_part_reads_as_a_reader_reads_it(site: model.Site, part: str | None, shown: str) -> None:
+    assert pages.part_label(replace(site.book(BIRTHS), part=part)) == shown
+
+
+def test_a_slug_for_a_part_stays_off_the_page(site: model.Site, ui: Ui, ctx: Context) -> None:
+    book = replace(site.book(BIRTHS), part="zamanilovka")
+    assert pages.book_title(book, ui) == "Рождения 1900 — Маниловка" and "zamanilovka" not in pages.book(book, ui, ctx)
+
+
+def test_two_books_of_one_year_and_kind_in_two_cases_are_told_apart_by_case(changed: Any, ui: Ui) -> None:
+    """«Браки 1783 — Маниловка» twice said nothing of which: a book whose twin stands in another case names its."""
+    def other_case(node: dict[str, Any]) -> None:
+        _twin(node, case="756")
+    site = changed(other_case)
+    births = [pages.book_title(b, ui) for b in site.books if b.year == 1900 and b.kind == "birth"]
+    assert sorted(births) == ["Рождения 1900 — Маниловка, Д. 755", "Рождения 1900 — Маниловка, Д. 756"]
+    assert pages.book_title(site.book(MARRIAGES), ui) == "Браки 1900 — Маниловка"     # no twin, no case
+    books = [name for _, name in json.loads(pages.search_index(site, ui))["books"]]
+    assert len(books) == len(set(books))
+
+
+def test_two_villages_of_the_sites_own_are_named_too(site: model.Site, ui: Ui) -> None:
+    """A site kept under one village and its parish's name (two «own» villages): a year holding a book of each
+    names both, or «Ревизия — 1-2-3, Ревизия — 1-2-4» would say nothing of whose."""
+    births = site.book(BIRTHS)
+    other = replace(births, id=births.id + "x", village="Тестовка", shelfmark="47-9-756")
+    labels = pages._year_labels([births, other], {"Маниловка", "Тестовка"}, ui)
+    assert labels == ["Рождения — Маниловка", "Рождения — Тестовка"]
+
+def test_a_books_leaves_run_by_number_not_as_its_records_do(changed: Any, ui: Ui, ctx: Context) -> None:
+    """A civil register lists its boys, then its girls: its leaves stand by number («3об» before «12»)."""
+    def leaves(node: dict[str, Any]) -> None:
+        records_ = [record for run in node["documents"][0]["pages"] for record in run["records"]]
+        for record, leaf in zip(records_, ["12", "3об", "12об", "3", "1"], strict=True):
+            record["written"]["page"] = leaf
+    toc = re.search(r'<nav class="leaves">(.*?)</nav>', pages.book(changed(leaves).book(BIRTHS), ui, ctx))
+    assert toc and re.findall(r">([^<]+)</a>", toc.group(1)) == ["1", "3", "3об", "12", "12об"]
+
 def test_every_page_but_the_one_of_no_address_leads_back_to_its_top(site: model.Site, ui: Ui, ctx: Context) -> None:
     """The head's id is no heading's: GitHub's slug drops the dot (a prose page's «Top» is `top`)."""
     year = pages.year(1900, site, ui, ctx)
@@ -154,6 +233,53 @@ def test_the_front_page_counts_what_the_site_holds(site: model.Site, ctx: Contex
     assert "9 книг" in text and "17 записей" in text and "годы 1828–1923" in text
     assert "2 записи ещё не вычитаны" in text
     assert "О селе" not in text                                      # no prose, no section of it
+
+
+
+def test_a_number_of_five_figures_has_its_thousands_set_apart() -> None:
+    assert [pages.grouped(n) for n in (0, 1924, 9999, 12257, 1_000_000)] == [
+        "0", "1924", "9999", "12\u00a0257", "1\u00a0000\u00a0000"]
+    assert pages.counted(t("counted.records", count=12257), 12257) == "12\u00a0257 записей"
+
+
+def test_the_front_page_groups_every_number_it_counts(site: model.Site, ctx: Context,
+                                                      monkeypatch: pytest.MonkeyPatch) -> None:
+    def marked(count: int) -> str:
+        return f"<{count}>"
+    monkeypatch.setattr(pages, "grouped", marked)
+    text = _text(pages.front(site, ctx)).replace("&lt;", "<").replace("&gt;", ">")
+    assert "<9> книг" in text and "<17> записей" in text and "<2> записи ещё не вычитаны" in text
+    assert re.search(r"<\d+> упоминан", text)
+
+
+
+def test_every_count_of_the_indexes_is_grouped(site: model.Site, ui: Ui, ctx: Context,
+                                               monkeypatch: pytest.MonkeyPatch) -> None:
+    def marked(count: int) -> str:
+        return f"[{count}]"
+    monkeypatch.setattr(pages, "grouped", marked)
+    assert re.search(r'<td class="n">\[\d+\]</td></tr>', pages.years_index(site, ui, ctx))
+    assert re.search(r'<td class="n">\[\d+\]', pages.books_index(site, ui, ctx))
+    assert re.search(r'<span class="n">\[\d+\]</span>', pages.names_index(site, ctx))
+    page = next(p for p in pages.surname_pages(site))
+    assert re.search(r'<p class="k">\[\d+\] ', pages.name(page, pages.NAMES, site, ui, ctx))
+
+
+def test_a_mention_with_no_name_written_says_so(changed: Any, ui: Ui) -> None:
+    """A link must say where it leads: a mention whose name was not written (a child the act leaves unnamed) is
+    shown as such in the indexes and in the search, not as an empty link."""
+    def unnamed(node: dict[str, Any]) -> None:
+        record = node["documents"][0]["pages"][0]["records"][0]
+        record["written"].pop("gender", None)          # no patronymic derived for a child of no stated sex
+        child = record["persons"][0]
+        child["written"], child["derived"] = {}, {}
+    site = changed(unnamed)
+    nobody = [m for m in site.mentions if not m.as_written]
+    assert nobody
+    rows = pages._mention_rows(nobody, site, ui, "")
+    assert "(имя не записано)" in rows and not re.search(r"<a [^>]*>\s*</a>", rows)
+    shown = {row[1] for row in json.loads(pages.search_index(site, ui))["rows"]}
+    assert "" not in shown and "(имя не записано)" in shown
 
 
 def test_a_page_links_within_the_site_by_relative_addresses(site: model.Site, ui: Ui, ctx: Context) -> None:

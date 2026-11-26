@@ -49,9 +49,14 @@ def _chrome() -> str | None:
     return _MAC if sys.platform == "darwin" and Path(_MAC).is_file() else None
 
 
+# Enough of one invented name for a count of five figures, which the status sets apart as the pages do.
+MANY = 10_234
+
+
 def _index() -> dict[str, Any]:
     rows = [[model.fold(f"{written} {modern}"), written, modern, book, anchor, role, unread]
             for written, modern, book, anchor, role, unread in PEOPLE]
+    rows += [["многоимъ", "Многоимъ", "", 0, f"m{n}", "Отец", 0] for n in range(MANY)]
     return {"books": BOOKS, "rows": rows}
 
 
@@ -136,3 +141,8 @@ def test_a_result_leads_to_its_record_and_says_what_it_is(served: str, tmp_path:
                       "Іоаннъ Ѵпаркинъ Иоанн Ипаркин не вычитано — Умерший, Смерти 1901 — Маниловка")]
     _, items = _search(served, "елкин", tmp_path)
     assert items[0][0] == "../books/manilovka/1-1-1/1901/death/#m1~2"
+
+
+def test_a_count_of_five_figures_is_grouped_as_the_pages_group_it(served: str, tmp_path: Path) -> None:
+    status, items = _search(served, "многоим", tmp_path)
+    assert status.startswith("Найдено: 10\u00a0234.") and len(items) == 200

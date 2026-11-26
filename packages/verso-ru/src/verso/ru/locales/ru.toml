@@ -1958,6 +1958,9 @@ auto = "Тема: как в системе"
 light = "Тема: светлая"
 dark = "Тема: тёмная"
 
+[site.number]
+group = " "
+
 [site.footer]
 top = "↑ Наверх"
 license = "Данные:"
@@ -1973,6 +1976,8 @@ parish = "приход: {village}"
 defaults = "Если в записи не сказано иначе:"
 leaves = "Листы"
 fund = "ф. {fund}, оп. {inventory}"
+part = "часть {number}"
+case = "Д. {case}"
 
 [site.years]
 undated = "Книги без года"
@@ -1985,6 +1990,7 @@ what = "Все упоминания фамилии в записях. Упоми
 also = "Записанные без фамилии:"
 patronymics_what = "Те, кого источник пишет без фамилии, — по отчеству в форме книги."
 mentions = { one = "{count} упоминание", few = "{count} упоминания", many = "{count} упоминаний", other = "{count} упоминания" }
+unnamed = "(имя не записано)"
 
 [site.front]
 books = { one = "{count} книга", few = "{count} книги", many = "{count} книг", other = "{count} книги" }

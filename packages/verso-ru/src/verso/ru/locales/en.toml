@@ -2041,6 +2041,9 @@ auto = "Theme: as the system's"
 light = "Theme: light"
 dark = "Theme: dark"
 
+[site.number]
+group = ","
+
 [site.footer]
 top = "↑ Top"
 license = "Data:"
@@ -2056,6 +2059,8 @@ parish = "parish of {village}"
 defaults = "Unless an entry says otherwise:"
 leaves = "Leaves"
 fund = "f. {fund}, inv. {inventory}"
+part = "part {number}"
+case = "file {case}"
 
 [site.years]
 undated = "Books with no year"
@@ -2068,6 +2073,7 @@ what = "Every mention of a surname in the records: a mention is one person of on
 also = "Those written with no surname:"
 patronymics_what = "Those the source writes with no surname, by the patronymic in the form of the book."
 mentions = { one = "{count} mention", other = "{count} mentions" }
+unnamed = "(no name written)"
 
 [site.front]
 books = { one = "{count} book", other = "{count} books" }

@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from verso.core.records import ids
@@ -76,6 +76,7 @@ class Book:
     kind: str
     docs: tuple[Node, ...]
     entries: tuple[Entry, ...]
+    twin: bool = False   # another book of its village, year, kind and part stands in another case
 
     @property
     def is_cards(self) -> bool:
@@ -258,6 +259,10 @@ def load(files: Iterable[Node], *, village: str) -> Site:
         books.append(Book(book_id, path, parsed.village, parsed.shelfmark, parsed.part, parsed.year, parsed.kind,
                           tuple(docs[book_id]), tuple(found)))
     books.sort(key=_order)
+    cases: dict[tuple[Any, ...], set[str]] = {}
+    for book in books:
+        cases.setdefault((book.village, book.year, book.kind, book.part), set()).add(book.shelfmark)
+    books = [replace(book, twin=len(cases[(book.village, book.year, book.kind, book.part)]) > 1) for book in books]
     mentions = tuple(_mention(entry, persona) for book in books for entry in book.entries
                      for persona in entry.node.get("persons", []) if not hidden(persona))
     return Site(village, tuple(books), mentions)
