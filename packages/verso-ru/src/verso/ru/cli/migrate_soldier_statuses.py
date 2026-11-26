@@ -7,7 +7,8 @@ literal that `verso.ru.domain.military_status.classify` places («запасны
   - the scribe's wording goes into `comment=`, bare and in modern spelling — what MIL001 asks for. A
     comment the person has is kept and the wording put before it with «; », unless that comment already
     holds it (compared in modern spelling, case-folded, «» stripped) or quotes the scribe's own words for
-    the rank (a «quoted» part `classify` places): then only the status changes.
+    the rank (a «quoted» part `classify` places, or a soldier constant's catalog text): then only the
+    status changes.
 A person with no status whose comment holds a reserve wording («запасный рядовой …», the comment or one
 of its «quoted» parts, which `classify` places on SOLDIER) gets `status=SOLDIER`, the comment untouched.
 
@@ -33,6 +34,7 @@ from libcst.metadata import CodeRange, MetadataWrapper, PositionProvider
 
 from verso.core import workspace
 from verso.ru.cli.migrate_statuses import add_import
+from verso.ru.domain import statuses
 from verso.ru.domain.military_status import classify, unplaced
 from verso.ru.domain.orthography import modern_spelling
 from verso.ru.dsl.source import EditError, find_arg, insert_arg
@@ -75,13 +77,28 @@ def _folded(text: str) -> str:
     return modern_spelling(text).casefold().translate(_QUOTES)
 
 
+# The soldier constants whose catalog text, quoted in a comment, is the scribe's word for the rank.
+_SOLDIER_CONSTANTS = frozenset({"SOLDIER", "RETIRED_SOLDIER", "PRIVATE_SOLDIER", "UNTER_OFFICER"})
+
+
+def _soldier_texts() -> frozenset[str]:
+    return frozenset(str(v).casefold() for k, v in statuses.catalog().items()
+                     if k in _SOLDIER_CONSTANTS or k.startswith("SOLDIER_"))
+
+
+def scribes_rank(quoted: str) -> bool:
+    """A «quoted» part that is the scribe's own word for a soldier's rank: `classify` places it, or
+    its modern spelling is a soldier constant's catalog text («отставной солдатъ»)."""
+    return classify(quoted) is not None or modern_spelling(quoted).strip().casefold() in _soldier_texts()
+
+
 def comment_with(wording: str, before: str | None) -> str:
     """The comment that holds `wording`: `before` itself when it holds it already — the wording in it,
-    or a «quoted» part `classify` places (the scribe's own words for the rank, which the free-text
-    status only paraphrased) —, else the wording before it with «; »."""
+    or a «quoted» part that is the scribe's own word for the rank (`scribes_rank`), which the free-text
+    status only paraphrased —, else the wording before it with «; »."""
     if before is None or not before.strip():
         return wording
-    if _folded(wording) in _folded(before) or any(classify(q) is not None for q in _QUOTED.findall(before)):
+    if _folded(wording) in _folded(before) or any(scribes_rank(q) for q in _QUOTED.findall(before)):
         return before
     return f"{wording}; {before}"
 

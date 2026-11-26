@@ -62,6 +62,17 @@ def test_a_quoted_military_wording_in_the_comment_holds_it():
     assert changes[0].comment_before == changes[0].comment_after
 
 
+def test_a_quoted_soldier_catalog_text_holds_it():
+    # «отставной солдатъ» is RETIRED_SOLDIER's own text: classify answers None for it, yet it is the scribe's word.
+    src = HEAD + 'x = person("Иванъ", status="отставной рядовой", comment="«отставной солдатъ»; Ноздревъ")\n'
+    assert _call(src) == 'x = person("Иванъ", status=RETIRED_SOLDIER, comment="«отставной солдатъ»; Ноздревъ")\n'
+
+
+def test_a_quoted_civil_catalog_text_does_not_hold_it():
+    src = HEAD + 'x = person("Иванъ", status="запасный солдат", comment="«крестьянинъ»; Ноздревъ")\n'
+    assert _call(src) == 'x = person("Иванъ", status=SOLDIER, comment="запасный солдат; «крестьянинъ»; Ноздревъ")\n'
+
+
 def test_a_quoted_civil_wording_does_not_hold_it():
     src = HEAD + 'x = person("Иванъ", status="запасный солдат", comment="«деревни Маниловки»")\n'
     assert _call(src) == 'x = person("Иванъ", status=SOLDIER, comment="запасный солдат; «деревни Маниловки»")\n'
