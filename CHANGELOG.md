@@ -58,9 +58,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   plain deaths CSV (`DeathRecordsCsvExporter`) adds the comments of the people its row shows (the deceased, the first
   relative, the witnesses) to `Комментарий`. A corpus's deaths
   CSVs move where a death or one of its people carries a comment; nothing else moves.
-
-### Fixed
-
 - verso-ru, `modernize_orthography`: a word's final ъ is dropped before the «?» of a doubtful reading too
   («Свиристеловъ?» → «Свиристелов?»), as before a space or a stop; the modern fields of such a name kept the ъ. A
   corpus moves where a name ends in «ъ?»: its modern forms in the records JSON and the CSVs, its Geni profile's
