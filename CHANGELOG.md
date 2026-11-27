@@ -5,10 +5,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ## Unreleased (0.1.54.dev0)
 
-## 0.1.53 — 2026-11-27
-
-A site built by `verso site` moves, from a reader's review: the search narrows what it finds by years, source, parish and to the records read against their scans, the filters kept in the address; a record's surnames lead to their page of the index of names; a reading with a «?» stands on its sure page, marked (its own page under `names/` gone), and one not made out in the indexes' last section; no two books of a year read alike, and a count from five figures on sets its thousands apart; the front page's tiles are their links whole, and the books' page opens with its archives and funds. `search/index.json`'s books gain their year, source and parish. `verso dsllint` and the checks of a record on records JSON (`linters.hosted`) gain an advisory rule, `MIL001`: a soldier's status written as free text that a catalog constant names is a warning, so a corpus that gates advisory findings on a baseline records the new ones (or migrates with the new `verso migrate-soldier-statuses`). The `name-days` signal is worded anew, its catalog params changed (see **Changed**). A corpus's CSVs, Terraform, records JSON and facts do not move.
-
 ### Added
 
 - verso-ru, **a blank revision list and a blank confession list** (`verso.ru.records.blank`): `BookSpec(kind="census")`
@@ -27,8 +23,8 @@ A site built by `verso site` moves, from a reader's review: the search narrows w
   gap, as CAI002: `gaps`, `prior_comment`). Each names the item fields it reads — `role`, `number`, `age`; `role`,
   `number`, `ref`; `age`, `previous`, `departure_year`, `departure_reason`, `hidden`, `comment` — and the build checks
   them as the group's. The library's answers are `verso.ru.records.household_hints`. New core keys
-  `records.ui.rule_bad_value` (a rule's key missing or of the wrong kind — was `rule_not_table`), `records.ui.bad_view`
-  (was `unknown_path`), `records.ui.bad_preset` (was `repeated`).
+  `records.ui.rule_bad_value` (a rule's key missing or of the wrong kind), `records.ui.bad_view`
+ , `records.ui.bad_preset`.
 - verso-ru, the facts check **`household-ages`** (`verso facts --check household-ages`): within one roll, a father under
   15 at his child's birth or a child older than him, read from the ages the roll states (`source_age_error=` stands it
   down). `signals.CHECKS` gains it, `HOUSEHOLD_CHECKS` names it as the one a household answers, and
@@ -36,6 +32,20 @@ A site built by `verso site` moves, from a reader's review: the search narrows w
   (`signals_on_json` passes the set it built); without the roll the check is `unanswered`. Its signal names the child
   (`facts.signal.household_ages.too_young`, `.child_older`, param `child`), the father by `locator` (`member<N>`). The
   facts snapshot gains a `household-ages` row.
+
+### Changed
+
+
+- ui-v1: a household's `draft.creatable` is `true` (its `slots` empty): a page may start a household. An App that draws
+  «+» between creatable cards offers «+ двор» on a census book.
+- verso-ru: CAI002's skip predicates moved to `linters.checks.census_age.link_age_pair`, which the linter on the JSON and
+  the page's `age_gap` both read; no finding moves.
+
+## 0.1.53 — 2026-11-27
+
+A site built by `verso site` moves, from a reader's review: the search narrows what it finds by years, source, parish and to the records read against their scans, the filters kept in the address; a record's surnames lead to their page of the index of names; a reading with a «?» stands on its sure page, marked (its own page under `names/` gone), and one not made out in the indexes' last section; no two books of a year read alike, and a count from five figures on sets its thousands apart; the front page's tiles are their links whole, and the books' page opens with its archives and funds. `search/index.json`'s books gain their year, source and parish. `verso dsllint` and the checks of a record on records JSON (`linters.hosted`) gain an advisory rule, `MIL001`: a soldier's status written as free text that a catalog constant names is a warning, so a corpus that gates advisory findings on a baseline records the new ones (or migrates with the new `verso migrate-soldier-statuses`). The `name-days` signal is worded anew, its catalog params changed (see **Changed**). A corpus's CSVs, Terraform, records JSON and facts do not move.
+
+### Added
 
 - verso-ru, the site (`verso site`), from a reader's review: the search page narrows what it finds — by years
   (from, to, either way round; a book without a year, the cards, left out of any bound), by source, by parish, and
@@ -95,11 +105,6 @@ A site built by `verso site` moves, from a reader's review: the search narrows w
   1. `--dry-run` prints a unified diff and writes nothing.
 
 ### Changed
-
-- ui-v1: a household's `draft.creatable` is `true` (its `slots` empty): a page may start a household. An App that draws
-  «+» between creatable cards offers «+ двор» on a census book.
-- verso-ru: CAI002's skip predicates moved to `linters.checks.census_age.link_age_pair`, which the linter on the JSON and
-  the page's `age_gap` both read; no finding moves.
 
 - verso-ru, the `name-days` signal (a record's card, `verso facts --check name-days`) is said without «the window»
   and its formula: «Евдокия: от срока имянаречения (14.01–27.01) до ближайшего дня ангела (01.03) — 34

@@ -48,7 +48,7 @@ of other acts are not in its pool.
 dissolved, each one's age that day and — where the act names it — the day they had married. That last is a later
 document's claim about a wedding, read from `marriage_date=EventDate(1926, Month.MARCH, 14)` — a point, a month, a
 year, «около», a range, as an external card's dates are; a text there (DSL v1's, deprecated: DVC001) asserts
-nothing, and no date is guessed from it. Two of the seven checks
+nothing, and no date is guessed from it. Two of the eight checks
 read it: `date-order` — the marriage the act names dated after the divorce itself, said once of the entry and
 answered by `divorce(source_date_error=)`, which withdraws the marriage's date and keeps the divorce's — and
 `wedding-calendar`, for a church wedding of 1917 or before, answered by `divorce(calendar_note=)`. The translator

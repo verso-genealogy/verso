@@ -473,6 +473,9 @@ class _Build:
                     raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="when"))
                 named.append(rule["when"].get("gender_of"))
             for path in named:
+                if not isinstance(path, str):
+                    raise UiError(t("records.ui.rule_bad_value", kind=code_, rule=name,
+                                    key="number" if path is named[0] and name == "renumber" else "refs"))
                 if path not in item:
                     raise unknown(path)
 
@@ -486,14 +489,19 @@ class _Build:
         def bad(key: str) -> UiError:
             return UiError(t("records.ui.rule_bad_value", kind=code_, rule=name, key=key))
 
-        if name == "ref_hint" and rule.get("path") not in item:
-            raise UiError(t("records.ui.unknown_path", kind=code_, path=rule.get("path")))
+        if name == "ref_hint":
+            if not isinstance(rule.get("path"), str):
+                raise bad("path")
+            if rule["path"] not in item:
+                raise UiError(t("records.ui.unknown_path", kind=code_, path=rule["path"]))
         if name == "patronymic_hint":
             self.person_path(code_, rule.get("path"), group["item"]["persons"])
         if name == "age_gap" and "gaps" not in rule:
             raise bad("gaps")
         for key in HINT_FIELDS[name]:
             if key not in rule:
+                raise bad(key)
+            if not isinstance(rule[key], str):          # a list or a table is no path (and unhashable)
                 raise bad(key)
             if rule[key] not in item:
                 raise UiError(t("records.ui.unknown_path", kind=code_, path=rule[key]))

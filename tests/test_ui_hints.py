@@ -304,13 +304,19 @@ def test_a_column_the_group_lacks_is_refused():
     ("patronymic_hint", {"of_role": 1}), ("patronymic_hint", {"from_role": None}), ("patronymic_hint", {"of_role": ""}),
     ("age_gap", {"prior_comment": 5}), ("ref_hint", {"spouse": ["wife"]}), ("ref_hint", {"children": "son"}),
     ("ref_hint", {"parents": [1]}), ("ref_hint", {"min_husband_age": 15.5}), ("ref_hint", {"max_wife_older": True}),
-    ("ref_hint", {"min_gap": None}),
+    ("ref_hint", {"min_gap": None}), ("ref_hint", {"role": ["role"]}), ("ref_hint", {"role": {"role": 1}}),
+    ("ref_hint", {"path": ["ref"]}),
 ])
 def test_a_hint_s_parameter_of_the_wrong_kind_is_refused(rule: str, edit: dict[str, Any]):
     """A role, a number, a pattern of the wrong kind is a wrong value — not «must be a table»."""
     (key,) = edit
     assert _refused("household", rule, edit) == ("records.ui.rule_bad_value",
                                                  {"kind": "household", "rule": rule, "key": key})
+
+
+def test_a_renumber_s_number_must_be_a_path_text():
+    assert _refused("household", "renumber", {"number": ["number"]}) == (
+        "records.ui.rule_bad_value", {"kind": "household", "rule": "renumber", "key": "number"})
 
 
 def _group_refused(edit: dict[str, Any], drop: tuple[str, ...] = ()) -> tuple[str, dict[str, object]]:
