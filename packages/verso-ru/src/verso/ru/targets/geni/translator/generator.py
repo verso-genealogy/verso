@@ -2108,8 +2108,10 @@ class TerraformGenerator:
             include_priest_in_mk = records.year == 1810
             priest_for_mk = b.priest if include_priest_in_mk else None
             relative_persons_for_mk = [r.person for r in b.relatives if r.person]
+            # The newborn's patronymic `Birth.__init__` derived from the father is no word of the book (В10).
+            child_for_mk = _shallow_person_without_patr(b.child) if b.child_patronymic_derived() else b.child
             names_in_mk = _names_in_mk(
-                b.child, b.father, b.mother,
+                child_for_mk, b.father, b.mother,
                 b.god_parent1, b.god_parent2,
                 b.god_parent3, b.god_parent4,
                 priest_for_mk,

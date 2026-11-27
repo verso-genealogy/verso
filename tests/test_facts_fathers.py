@@ -210,5 +210,21 @@ class ClaimsDisagree(unittest.TestCase):
         self.assertEqual("LOW", f.confidence)
 
 
+
+
+class NewbornPatronymic(unittest.TestCase):
+    """The patronymic `Birth.__init__` makes of the father (В10) is stated as derived and stands no witness
+    beside that father's own edge."""
+
+    def test_derived_not_stated_and_no_second_claim(self):
+        facts = _facts((_born("Иванъ", "Изотъ", "Петровъ"), "b1.py"))
+        record = next(iter(facts.records()))
+        child = [a for a in record.of(NameClaim) if a.cite.locator == "child"]
+        self.assertEqual([(type(a.basis).__name__, a.patronymic) for a in child],
+                         [("Stated", None), ("Derived", "Изотович")])
+        who = {("b1.py", "child"): "ivan"}
+        self.assertEqual(1, _claims(facts, who, "ivan"))          # the father's edge alone
+
+
 if __name__ == "__main__":
     unittest.main()

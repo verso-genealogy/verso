@@ -98,7 +98,8 @@ from verso.ru.facts.checks.neighbours import (
     INVERSE, Kin, ListEntry, Neighbourhood, fits_ages, kin_of_canonicals, list_entries)
 from verso.ru.facts.identity import Identity, IdentityKey, conclusions
 from verso.ru.facts.model import (
-    AgedYears, Assertion, AssertionSet, BornOn, Citation, Dated, EnumeratedIn, NameClaim, ParentOf, Persona, Record)
+    PATRONYMIC_FROM_FATHER, AgedYears, Assertion, AssertionSet, BornOn, Citation, Dated, Derived, EnumeratedIn, NameClaim,
+    ParentOf, Persona, Record)
 from verso.ru.facts.projection import canonical_name
 from verso.ru.gender import Gender
 from verso.ru.naming import father_name_for_patronymic, matching_base
@@ -147,6 +148,12 @@ class NameKeys:
     roots: frozenset[str]
 
 
+def _from_own_father(claim: NameClaim) -> bool:
+    """A patronymic the DSL made of the father the same record names (`PATRONYMIC_FROM_FATHER`): the record's
+    father stands for him (`stated_fathers`), and it is no second witness of him."""
+    return isinstance(claim.basis, Derived) and claim.basis.rationale == PATRONYMIC_FROM_FATHER
+
+
 def name_keys(claims: Iterable[Assertion],
               stated_fathers: dict[Persona, frozenset[str]] | None = None) -> NameKeys:
     held = tuple(claims)
@@ -162,7 +169,7 @@ def name_keys(claims: Iterable[Assertion],
             base = _fold(matching_base(c.given, c.gender))
             if base:
                 given.add(base)
-        if c.patronymic and "?" not in c.patronymic:
+        if c.patronymic and "?" not in c.patronymic and not _from_own_father(c):
             father = father_name_for_patronymic(c.patronymic)
             fathers.add(_fold(matching_base(father, Gender.MALE)) if father
                         else _fold(c.patronymic))

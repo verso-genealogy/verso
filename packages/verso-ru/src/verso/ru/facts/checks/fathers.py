@@ -43,7 +43,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
 from verso.ru.facts.identity import Identity
-from verso.ru.facts.model import AssertionSet, Citation, Derived, NameClaim, ParentOf
+from verso.ru.facts.model import PATRONYMIC_FROM_FATHER, AssertionSet, Citation, Derived, NameClaim, ParentOf
 from verso.ru.facts.projection import canonical_name
 from verso.ru.gender import Gender
 from verso.ru.naming.fathers import father_keys, fold, name_stem, patronymic_keys
@@ -136,6 +136,13 @@ def _given_names(facts: AssertionSet, identity: Identity) -> dict[str, set[str]]
     return out
 
 
+def _from_own_father(claim: NameClaim) -> bool:
+    """A patronymic the DSL made of the father the same record names: his edge (`ParentOf`, below) is that
+    record's claim, and the patronymic made of him is no second one — a newborn would stand witness to his
+    patronymic beside the father it was made from."""
+    return isinstance(claim.basis, Derived) and claim.basis.rationale == PATRONYMIC_FROM_FATHER
+
+
 def father_claims(facts: AssertionSet, identity: Identity) -> dict[str, list[FatherClaim]]:
     """Every father claim of every placed person, by canonical, record order."""
     names_of = _given_names(facts, identity)
@@ -144,7 +151,7 @@ def father_claims(facts: AssertionSet, identity: Identity) -> dict[str, list[Fat
         key_of = identity(record)
         for a in record.of(NameClaim):
             patronymic = a.patronymic
-            if not patronymic or "?" in patronymic:
+            if not patronymic or "?" in patronymic or _from_own_father(a):
                 continue
             who = canonical_name(key_of(a.subject))
             if who is None:

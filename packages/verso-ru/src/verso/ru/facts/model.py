@@ -303,6 +303,12 @@ class Derived:
     because: tuple[Assertion, ...] = ()
 
 
+#: The rationale of a patronymic the DSL made of the father the same record names — a deceased child's
+#: (`Death.__init__`), a newborn's (`Birth.__init__`, В10). It restates the record's own father, so it is no
+#: evidence of him beside that father (`checks.fathers`).
+PATRONYMIC_FROM_FATHER = "dsl.patronymic-from-father"
+
+
 @dataclass(frozen=True)
 class Retracted:
     """The author has re-read the source and declares the claim unusable —
