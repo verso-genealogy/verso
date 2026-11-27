@@ -3,6 +3,8 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.54.dev0)
+
 ## 0.1.53 — 2026-11-27
 
 A site built by `verso site` moves, from a reader's review: the search narrows what it finds by years, source, parish and to the records read against their scans, the filters kept in the address; a record's surnames lead to their page of the index of names; a reading with a «?» stands on its sure page, marked (its own page under `names/` gone), and one not made out in the indexes' last section; no two books of a year read alike, and a count from five figures on sets its thousands apart; the front page's tiles are their links whole, and the books' page opens with its archives and funds. `search/index.json`'s books gain their year, source and parish. `verso dsllint` and the checks of a record on records JSON (`linters.hosted`) gain an advisory rule, `MIL001`: a soldier's status written as free text that a catalog constant names is a warning, so a corpus that gates advisory findings on a baseline records the new ones (or migrates with the new `verso migrate-soldier-statuses`). The `name-days` signal is worded anew, its catalog params changed (see **Changed**). A corpus's CSVs, Terraform, records JSON and facts do not move.
