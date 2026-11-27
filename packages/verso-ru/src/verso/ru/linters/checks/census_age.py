@@ -57,7 +57,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, NamedTuple
 
-from verso.ru.ages import AGE_NUMBER, age_number
+from verso.ru.ages import age_number, has_fraction, split_age
 from verso.ru.census_revisions import PREVIOUS_AGE_REVISION_YEAR
 from verso.ru.linters.checks.census_redundancy import _char_col
 from verso.core.i18n import Message
@@ -67,7 +67,8 @@ from verso.ru.linters.checks import shared_ast
 
 # Year-unit tokens (mirror verso/ru/linters/checks/ages.py `_VALID_UNITS`).
 _YEAR_UNITS = frozenset({"г", "л", "лет", "год", "года", "годов"})  # i18n: content — the age units and comment words the DSL writes
-_AGE_TOKEN_RE = re.compile(rf"(\d+(?:[.,]\d+)?|{AGE_NUMBER})\s*([а-яё]+)\.?", re.IGNORECASE)  # i18n: content — the age units and comment words the DSL writes
+_AGE_TOKEN_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*([а-яё]+)\.?", re.IGNORECASE)
+_BARE_NUMBER_RE = re.compile(r"^\s*(\d+(?:[.,]\d+)?)\s*$")  # i18n: content — the age units and comment words the DSL writes
 # A bare numeric age string, e.g. "34.5" (a real Маниловка 1858 form).
 
 # CAI004/CAI005: departures that leave the member OUTSIDE the revision, so the
@@ -189,16 +190,23 @@ def _age_years(node: ast.expr | None) -> int | None:
 def age_years_str(s: str) -> int | None:
     """`_age_years` for a raw string: `"34.5"` → 34; `"43 года 11 мес"` → 43;
     `"6 мес"` → 0 (an infant); unparseable → None."""
-    bare = age_number(s)
-    if bare is not None:
-        return int(bare)
+    if has_fraction(s):
+        # A fraction is read whole or not at all: «20½» → 20, «2½ года» → 2, «2 ½ лет» → None.
+        years = split_age(s)[0]
+        number = age_number(years) if years else 0.0
+        if number is None or (years == s.strip() and age_number(s) is None):
+            return None
+        return int(number)
+    bare = _BARE_NUMBER_RE.match(s)
+    if bare:
+        return int(float(bare.group(1).replace(",", ".")))
     tokens = _AGE_TOKEN_RE.findall(s)
     if not tokens:
         return None
     years = 0
     for num, unit in tokens:
         if unit.lower() in _YEAR_UNITS:
-            years += int(age_number(num) or 0)
+            years += int(float(num.replace(",", ".")))
     return years
 
 

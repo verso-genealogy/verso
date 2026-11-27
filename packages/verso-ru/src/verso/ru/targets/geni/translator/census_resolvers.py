@@ -1,7 +1,7 @@
 """Census migration field resolvers (departure/arrival/age)."""
 from typing import TYPE_CHECKING
 
-from verso.ru.ages import DAYS_PER_MONTH, age_number, split_age
+from verso.ru.ages import DAYS_PER_MONTH, age_number, has_fraction, split_age
 
 if TYPE_CHECKING:
     from verso.ru.dsl.records.census import CensusMember
@@ -150,7 +150,19 @@ def _age_to_components(age) -> tuple[int, int, int, int] | None:
     # A bare numeric string (`"1.5"`, `"58.5"`, `"33"`) — the Маниловка/
     # Горюхино decimal style — parses like its number, not through the
     # unit-word tokenizer (which would drop it as unparseable).
-    # A bare fraction («20½») likewise.
+    try:
+        return _age_to_components(float(age.strip().replace(",", ".")))
+    except ValueError:
+        pass
+    if not has_fraction(age):
+        parts = []
+        for slot in split_age(age):
+            parts.append(int(slot) if slot and slot.isdigit() else None)
+        if all(p is None for p in parts):
+            return None
+        y, m, w, d = (p or 0 for p in parts)
+        return (y, m, w, d)
+    # A fraction, bare («20½») or of a unit.
     bare = age_number(age)
     if bare is not None:
         return _age_to_components(bare)

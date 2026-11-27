@@ -83,6 +83,26 @@ class TestCensus(unittest.TestCase):
     def test_linter_years(self):
         self.assertEqual(age_years_str("20½"), 20)
         self.assertEqual(age_years_str("2½ года"), 2)
+        self.assertEqual(age_years_str("6½ мес"), 0)
+
+    def test_linter_reads_a_fraction_whole_or_not_at_all(self):
+        for age in ("2 ½ лет", "2.5½ лет", "½½"):
+            with self.subTest(age=age):
+                self.assertIsNone(age_years_str(age))
+
+
+class TestNoFractionNoChange(unittest.TestCase):
+    """What the readers did with an age that writes no fraction, they still do."""
+
+    def test_float_paths(self):
+        self.assertEqual(age_bounds(-1), (-DAYS_PER_YEAR, 0.0))
+        self.assertEqual(age_bounds("1e1"), (10 * DAYS_PER_YEAR, 11 * DAYS_PER_YEAR))
+        self.assertIsNone(_age_years("34,5"))
+        self.assertAlmostEqual(some(_age_years("34.5")), 34.5)
+        self.assertEqual(_age_to_components("5."), (5, 0, 0, 0))
+        self.assertEqual(_age_to_components("2.5"), (2, 6, 0, 0))
+        self.assertEqual(_age_to_components("34,5"), (34, 6, 0, 0))
+        self.assertEqual(age_years_str("34,5"), 34)
 
 
 class TestLinters(unittest.TestCase):

@@ -51,6 +51,11 @@ _AGE_IDIOMS = {
 }
 
 
+def has_fraction(text) -> bool:
+    """Whether a text writes a fraction sign: the readers below take their old way where it does not."""
+    return any(ch in FRACTIONS for ch in str(text))
+
+
 def age_number(text) -> float | None:
     """The number a slot of an age writes: «2», «2½», «½», «2.5», «2,5» → 2, 2.5, 0.5, 2.5, 2.5; None for
     anything else («полгода», «2½x», «1/2»)."""
@@ -268,7 +273,7 @@ def format_age(age):
             return _render_slots(slots)
 
     slots = split_age(age)
-    if any(v and age_number(v) is not None and not v.isdigit() for v in slots):
+    if any(ch in FRACTIONS for v in slots for ch in v):
         # A fraction («5½ мес») is the book's own form: shown as it is written.
         return str(age).strip()
     return _render_slots(slots)
@@ -312,9 +317,12 @@ def age_bounds(age) -> tuple[float, float] | None:
     for value, factor in parts:
         if not value:
             continue
-        number = age_number(value)
-        if number is None:
-            return None
+        try:
+            number = float(str(value).replace(",", "."))
+        except ValueError:
+            number = age_number(value) if has_fraction(value) else None   # «2½»
+            if number is None:
+                return None
         total += number * factor
         # The last (smallest) unit written sets the width; a fraction in it
         # means the clerk was not truncating.
