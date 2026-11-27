@@ -34,6 +34,8 @@ def test_a_built_site_holds_no_dead_end(file_node: dict[str, Any], tmp_path: Pat
             "books/manilovka/47-9-755/1900/birth/index.html", "cards/manilovka/wwi/index.html",
             "names/Сидоров/index.html", "patronymics/Иванов/index.html", "patronymics/-/index.html"} <= made
     assert built.pages == sum(1 for name in made if name.endswith("index.html"))
+    births = (tmp_path / "site" / "books/manilovka/47-9-755/1900/birth/index.html").read_text(encoding="utf-8")
+    assert '<a class="surname" href="../../../../../names/Сидоров/">' in births      # a link the check above followed
 
 
 def test_the_site_draws_with_its_own_fonts_and_names_their_licences(file_node: dict[str, Any], tmp_path: Path) -> None:

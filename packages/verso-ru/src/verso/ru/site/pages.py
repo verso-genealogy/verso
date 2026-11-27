@@ -101,8 +101,13 @@ def _defaults(book: Book, ui: Ui) -> str:
     return "; ".join(dict.fromkeys(parts))
 
 
-def book(book_: Book, ui: Ui, ctx: Context) -> str:
+def book(book_: Book, ui: Ui, ctx: Context, surnames: Mapping[tuple[str, int], str] | None = None) -> str:
+    """A book's page, its records drawn whole; `surnames` (`surname_links`) — the page of the index of names each
+    persona's surname leads to."""
     up = shell.root(book_.path)
+    linked: dict[str, dict[int, str]] = {}
+    for (record, place), key in (surnames or {}).items():
+        linked.setdefault(record, {})[place] = f"{up}{NAMES}/{key}/"
     facts = [E(_shelf(book_))]
     if not book_.is_cards:
         church = book_.church
@@ -127,7 +132,7 @@ def book(book_: Book, ui: Ui, ctx: Context) -> str:
               + "</p>")
     body = (f'{crumbs}<h1>{E(book_title(book_, ui))}</h1><ul class="facts">'
             + "".join(f"<li>{fact}</li>" for fact in facts) + f"<li>{count}</li></ul>{toc}"
-            + "".join(records.render(entry, book_, ui) for entry in book_.entries))
+            + "".join(records.render(entry, book_, ui, linked.get(entry.id)) for entry in book_.entries))
     return shell.page(book_title(book_, ui), body, ctx=ctx, path=book_.path)
 
 
@@ -343,6 +348,22 @@ def _name_page(directory: str, found_: list[tuple[int, str, Mention, bool]]) -> 
 
 def surname_pages(site: Site) -> list[NamePage]:
     return _name_pages((m.surname, m) for m in site.mentions if m.surname)
+
+
+def surname_links(found: Iterable[NamePage]) -> dict[tuple[str, int], str]:
+    """The page of the index of surnames each mention stands on, by its record and its place among the record's
+    `persons` — what a record's card links its surname to (`model.drawn_surname`). A mention indexed by a surname the
+    card does not draw (a maiden name beside the surname written) has no link: it would say one name and open
+    another."""
+    out: dict[tuple[str, int], str] = {}
+    for page_ in found:
+        for mention in page_.mentions:
+            persona = mention.persona
+            drawn = model.drawn_surname(persona)
+            forms = {each[0] for form_ in ("modern", "original") if (each := model.form(persona, "surname", form_))}
+            if drawn is not None and (mention.surname == drawn[0] or mention.surname in forms):
+                out[(mention.entry.id, mention.place)] = page_.key
+    return out
 
 
 def patronymic_pages(site: Site) -> list[NamePage]:

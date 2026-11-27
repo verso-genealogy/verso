@@ -18,6 +18,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   year, source and parish: `[path, title, year, source, parish]`. New catalog keys `site.search.found_of`,
   `none_of`, `filters`, `any`, `year_from`, `year_to`, `year_to_whole`, `source`, `source_metric`, `source_civil`,
   `source_census`, `source_list`, `source_cards`, `village`, `reviewed`. Only the site moves.
+- verso-ru, the site, from the same review: a record's card links each surname to its page of the index of names
+  (`names/<surname>/`) — the surname as written, else, where the record writes none (a child under the father's,
+  a wife), the modern one beside the name; in a household's table too. A reading in doubt leads to the page it
+  stands on, marked; one not made out, to its own. Every mention a page of names lists links back to it from its
+  card, but one indexed by a surname the card does not show (a maiden name beside the surname written): that link
+  would say one name and open another. `pages.book` takes the links
+  (`pages.surname_links`), `records.render` them by the persona's place among the record's `persons`, and a
+  `model.Mention` carries that place. The guide's paragraph on «?» readings now says what the index does with them
+  (a reading in doubt on its sure page, one not made out in the last section). Only the site moves.
 
 ### Changed
 

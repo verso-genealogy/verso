@@ -563,3 +563,120 @@ def test_a_records_heading_stands_right_under_its_books(site: model.Site, ui: Ui
     page = pages.book(site.book(BIRTHS), ui, ctx)
     assert page.count("<h1>") == 1 and page.count("<h2>") == 5 and "<h3>" not in page
     assert '<nav aria-label="Разделы сайта">' in page
+
+
+def _linked(page: str) -> list[tuple[str, str]]:
+    """A page's surnames that lead to the index of names: each link's address and its text."""
+    return [(href, _text(body)) for href, body in re.findall(r'<a class="surname" href="([^"]*)">(.*?)</a>', page)]
+
+
+def _with_links(site: model.Site, book_id: str, ui: Ui, ctx: Context) -> str:
+    return pages.book(site.book(book_id), ui, ctx, pages.surname_links(pages.surname_pages(site)))
+
+
+def test_a_cards_surname_leads_to_its_page_of_names(site: model.Site, ui: Ui, ctx: Context) -> None:
+    """The surname as written is a link to its page of the index; where the record writes none, the modern one
+    beside the name is («→ Марья Петровна Сидорова»). The given name and the patronymic are no link."""
+    page = _with_links(site, BIRTHS, ui, ctx)
+    sidorov = "../../../../../names/Сидоров/"
+    assert _linked(page) == [(sidorov, "Сидоров"), (sidorov, "Сидоровъ"), (sidorov, "Сидорова"),   # the infant, his
+                             (sidorov, "Сидоров"), (sidorov, "Сидоровъ")]           # parents, a godfather, his father
+    assert re.search(r'<span class="modern d">Иван Петрович <a class="surname" href="[^"]*">Сидоров</a></span>', page)
+    assert '<span class="w">Петръ</span> <span class="w">Ивановъ</span> <a class="surname"' in page
+    assert 'class="surname"' not in pages.book(site.book(BIRTHS), ui, ctx)        # none asked: none drawn
+
+
+def test_every_mention_on_a_page_of_names_links_back_from_its_card(site: model.Site, ui: Ui, ctx: Context) -> None:
+    """Each mention a surname's page lists is a card whose surname leads to that page — the book of electors too."""
+    found = pages.surname_pages(site)
+    links = pages.surname_links(found)
+    assert links == {(m.entry.id, m.place): p.key for p in found for m in p.mentions}
+    listed = _linked(_with_links(site, LISTED, ui, ctx))
+    assert listed == [("../../../../../names/Сидоров/", "Сидоровъ")] * 2
+
+
+def test_a_members_surname_in_a_household_is_a_link(changed: Change, ui: Ui, ctx: Context) -> None:
+    """A member's surname in the table of a household leads to its page, a feminine form to the page it shares."""
+    site = changed(functools.partial(_surnames, names=("Выдуманов", "Выдуманова")))
+    page = _with_links(site, HOUSEHOLDS, ui, ctx)
+    table = re.search(r'<table class="members">.*?</table>', page, re.S)
+    assert table and _linked(table.group(0)) == [("../../../../../names/Выдуманов/", "Выдуманов"),
+                                                 ("../../../../../names/Выдуманов/", "Выдуманова")]
+
+
+def test_a_reading_in_doubt_or_not_made_out_leads_to_the_page_it_stands_on(changed: Change, ui: Ui,
+                                                                          ctx: Context) -> None:
+    site = changed(functools.partial(_surnames, names=("Сидоровъ?", "Сид?ров")))
+    unread = next(p for p in pages.surname_pages(site) if p.unread)
+    assert _linked(_with_links(site, HOUSEHOLDS, ui, ctx)) == [
+        ("../../../../../names/Сидоров/", "Сидоровъ?"), (f"../../../../../names/{unread.key}/", "Сид?ров")]
+
+
+def test_a_surname_not_read_leaves_the_link_to_the_modern_one(changed: Change, ui: Ui, ctx: Context) -> None:
+    def unread_surname(node: dict[str, Any]) -> None:
+        groom = node["documents"][1]["pages"][0]["records"][0]["persons"][0]
+        groom["written"]["surname"] = {"original": "?"}
+        groom.setdefault("derived", {})["surname"] = {"modern": "Выдуманов"}
+    page = _with_links(changed(unread_surname), MARRIAGES, ui, ctx)
+    assert _linked(page) == [("../../../../../names/Выдуманов/", "Выдуманов")]
+    assert re.search(r'<span class="name">[^?]*<span class="w">\?</span></span> <span class="modern d">', page)
+
+
+def test_a_mention_indexed_by_a_surname_the_card_does_not_draw_has_no_link(changed: Change, ui: Ui,
+                                                                         ctx: Context) -> None:
+    """A bride written by one surname and indexed by her maiden one: a link saying the first would open the page of
+    the second — so none."""
+    def maiden(node: dict[str, Any]) -> None:
+        bride = node["documents"][1]["pages"][0]["records"][0]["persons"][1]
+        bride["written"]["surname"] = {"original": "Выдуманская"}
+        bride.setdefault("derived", {}).pop("surname", None)
+        bride["derived"]["maiden_surname"] = {"modern": "Сидорова"}
+    site = changed(maiden)
+    bride = next(m for m in site.mentions if m.role == "bride")
+    assert bride.surname == "Сидорова" and bride in next(p for p in pages.surname_pages(site) if p.key == "Сидоров").mentions
+    assert (bride.entry.id, bride.place) not in pages.surname_links(pages.surname_pages(site))
+    assert "Выдуманская" in (page := _with_links(site, MARRIAGES, ui, ctx)) and _linked(page) == []
+
+
+def test_a_maiden_name_alone_is_the_surname_drawn_and_linked(changed: Change, ui: Ui, ctx: Context) -> None:
+    """A bride whose record writes no surname, the library deriving her maiden one: the modern line shows it, and it
+    leads to the page she is indexed on."""
+    def maiden(node: dict[str, Any]) -> None:
+        bride = node["documents"][1]["pages"][0]["records"][0]["persons"][1]
+        bride["written"].pop("surname", None)
+        bride.setdefault("derived", {}).pop("surname", None)
+        bride["derived"]["maiden_surname"] = {"modern": "Выдуманская"}
+    page = _with_links(changed(maiden), MARRIAGES, ui, ctx)
+    assert _linked(page) == [("../../../../../names/Выдуманская/", "Выдуманская")]
+
+
+def test_a_hidden_member_before_the_others_moves_no_link(changed: Change, ui: Ui, ctx: Context) -> None:
+    """A mention is found by its place among all of its record's `persons`, the hidden ones counted: a member
+    written for the kinship alone, standing first, takes no other member's link."""
+    def hidden_first(node: dict[str, Any]) -> None:
+        _surnames(node, ("Выдуманов", "Сочинёнова", "Небывалов"))
+        persons = next(d for d in node["documents"] if "/1828/" in d["id"])["pages"][0]["records"][0]["persons"]
+        hidden = next(p for p in persons if model.hidden(p))
+        persons.remove(hidden)
+        persons.insert(0, hidden)
+    site = changed(hidden_first)
+    links = pages.surname_links(pages.surname_pages(site))
+    shown = [(m.entry.id, m.place) for m in site.mentions if m.entry.book_id == HOUSEHOLDS]
+    assert [place for _, place in shown] == [1, 2, 3] and all(key in links for key in shown)
+    assert _linked(_with_links(site, HOUSEHOLDS, ui, ctx)) == [
+        (f"../../../../../names/{key}/", text) for key, text in (
+            ("Выдуманов", "Выдуманов"), ("Сочиненова", "Сочинёнова"), ("Небывалов", "Небывалов"))]
+
+
+def test_a_modern_surname_the_card_does_not_draw_is_no_link(changed: Change, ui: Ui, ctx: Context) -> None:
+    """A member written «Иванъ Петровъ» whose modern forms say the same (a modern surname, no modern patronymic):
+    the card draws no modern line, so no surname to link — and the mention, on its page, is no link's."""
+    def modern_alike(node: dict[str, Any]) -> None:
+        member = next(d for d in node["documents"] if "/1828/" in d["id"])["pages"][0]["records"][0]["persons"][0]
+        member["written"].pop("surname", None)
+        member["derived"] = {"given": {"modern": "Иван"}, "surname": {"modern": "Петров"}}
+    site = changed(modern_alike)
+    member = next(m for m in site.mentions if m.entry.book_id == HOUSEHOLDS and m.place == 0)
+    assert member.surname == "Петров" and not model.shows_modern(member.persona)
+    assert (member.entry.id, 0) not in pages.surname_links(pages.surname_pages(site))
+    assert 'class="surname"' not in _with_links(site, HOUSEHOLDS, ui, ctx)

@@ -167,15 +167,20 @@ def _card_date(found: Mapping[str, Any], ui: Ui) -> str:
 
 # ---------------------------------------------------------------- a person
 
-def name_html(persona: Node) -> str:
-    """The name as the source writes it, and the modern forms beside it where they differ."""
-    parts = model.name_parts(persona)
-    written = " ".join(_span(text_, mark) for text_, mark in parts)
-    modern = " ".join(text_ for text_, _ in model.modern_parts(persona))
-    as_written = " ".join(text_ for text_, _ in parts)
+def name_html(persona: Node, surname_href: str | None = None) -> str:
+    """The name as the source writes it, and the modern forms beside it where they differ; the surname a link to
+    its page of the index of names (`surname_href`), where it has one — the written one, else the modern."""
+    drawn = model.drawn_surname(persona) if surname_href else None
+    in_written = drawn is not None and drawn[1]
+    in_modern = drawn is not None and not drawn[1]
+
+    def link(part: str, body: str, here: bool) -> str:
+        return f'<a class="surname" href="{E(str(surname_href))}">{body}</a>' if here and part == "surname" else body
+    written = " ".join(link(part, _span(text_, mark), in_written) for part, text_, mark in model.named_parts(persona))
     out = f'<span class="name">{written}</span>'
-    if modern and model.fold(modern) != model.fold(as_written):
-        out += f' <span class="modern d">{E(modern)}</span>'
+    if model.shows_modern(persona):
+        out += ' <span class="modern d">' + " ".join(
+            link(part, E(text_), in_modern) for part, text_, _ in model.modern_named(persona)) + "</span>"
     return out
 
 
@@ -202,10 +207,10 @@ def _attributes(persona: Node, book: Book, ui: Ui) -> list[str]:
     return out
 
 
-def persona_html(persona: Node, book: Book, ui: Ui, extra: Iterable[str] = ()) -> str:
+def persona_html(persona: Node, book: Book, ui: Ui, extra: Iterable[str] = (), surname_href: str | None = None) -> str:
     attrs = [*extra, *_attributes(persona, book, ui)]
     tail = f' <span class="attrs">{"; ".join(attrs)}</span>' if attrs else ""
-    return name_html(persona) + tail
+    return name_html(persona, surname_href) + tail
 
 
 def _personas(node: Node, role: str) -> list[Node]:
@@ -230,7 +235,8 @@ def _labelled(node: Node, path: str, fields: Mapping[str, Mapping[str, Any]], ui
     return f'<span class="k">{E(label or ui.label(field.get("label")))}:</span> {_span(text(shown, field, ui), mark)}'
 
 
-def _people(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui) -> tuple[str, set[str]]:
+def _people(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui,
+            hrefs: Mapping[int, str]) -> tuple[str, set[str]]:
     """The slots of the kind in the schema's order and its lists of relatives; the record's paths drawn
     beside a person (an age beside the groom)."""
     node, fields, used, rows = entry.node, _fields(kind), set[str](), list[str]()
@@ -244,7 +250,7 @@ def _people(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui) -> tuple[
         for persona in personas:
             numbered = "slots" in slot and len(personas) > 1
             label = ui.label(slot["label"]) + (f" {persona['slot']}" if numbered else "")
-            rows.append(_row("" if lone else label, persona_html(persona, book, ui, beside)))
+            rows.append(_row("" if lone else label, persona_html(persona, book, ui, beside, hrefs.get(id(persona)))))
     for group in kind["groups"]:
         if group["name"] == "members":
             continue
@@ -256,7 +262,8 @@ def _people(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui) -> tuple[
             ref = value(link, "relationship_ref")
             extra = [found for path in item if path not in ("relationship", "relationship_ref")
                      if (found := _labelled(link, path, item, ui))]
-            rows.append(_row(label + (f" {ref[0]}" if ref else ""), persona_html(persona, book, ui, extra)))
+            rows.append(_row(label + (f" {ref[0]}" if ref else ""),
+                             persona_html(persona, book, ui, extra, hrefs.get(id(persona)))))
     return (f'<div class="people">{"".join(rows)}</div>' if rows else ""), used
 
 
@@ -298,7 +305,7 @@ def _cell(link: Node, fields: Sequence[Mapping[str, Any]], ui: Ui) -> str:
     return " ".join(parts)
 
 
-def _household(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui) -> str:
+def _household(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui, hrefs: Mapping[int, str]) -> str:
     group = next((g for g in kind["groups"] if g["name"] == "members"), None)
     if group is None:
         return ""
@@ -319,7 +326,8 @@ def _household(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui) -> str
         relation = text(role[0], fields["role"], ui) if role else ""
         if (ref := value(link, "ref_member")) is not None:
             relation += " " + str(t("site.member_of", number=ref[0]))
-        cells = [E(str(number[0])) if number else "", E(relation), persona_html(member, book, ui),
+        cells = [E(str(number[0])) if number else "", E(relation),
+                 persona_html(member, book, ui, surname_href=hrefs.get(id(member))),
                  *(_cell(link, found, ui) for _, found in columns)]
         body.append("<tr>" + "".join(f"<td>{cell}</td>" for cell in cells) + "</tr>")
     return (f'<div class="scroll"><table class="members"><thead><tr>{head}</tr></thead>'
@@ -440,12 +448,15 @@ def _head(entry: Entry, book: Book, kind: Mapping[str, Any], ui: Ui) -> str:
             f'{leaf}{badge}</header>')
 
 
-def render(entry: Entry, book: Book, ui: Ui) -> str:
-    """The record as an `<article>` whose id is its anchor."""
+def render(entry: Entry, book: Book, ui: Ui, surnames: Mapping[int, str] | None = None) -> str:
+    """The record as an `<article>` whose id is its anchor; `surnames` — the address of a surname's page by the
+    persona's place among the record's `persons`."""
     kind = ui.kind(str(entry.node.get("kind")))
+    persons = entry.node.get("persons", ())
+    hrefs = {id(persons[place]): href for place, href in (surnames or {}).items()}   # the drawers go by persona
     events, used = _events(entry, book, kind, ui)
-    people, beside = _people(entry, book, kind, ui)
+    people, beside = _people(entry, book, kind, ui, hrefs)
     classes = "rec" + (" held" if entry.unreviewed else "")
     return (f'<article class="{classes}" id="{E(entry.anchor)}">{_head(entry, book, kind, ui)}{events}{people}'
-            f'{_household(entry, book, kind, ui)}{_more(entry, kind, ui, used | beside)}'
+            f'{_household(entry, book, kind, ui, hrefs)}{_more(entry, kind, ui, used | beside)}'
             f'{_citation(entry, book)}</article>')
