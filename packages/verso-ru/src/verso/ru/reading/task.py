@@ -28,7 +28,12 @@ RECORD_FIELDS: Mapping[str, tuple[str, ...]] = {
 CARD_KEYS = ("village", "parish", "year", "kind", "folio", "part")
 _CARD_LABELS = {"village": "Село", "parish": "Приход", "year": "Год", "kind": "Вид записи", "folio": "Лист",
                 "part": "Часть книги"}
-_PERSON_FIELDS = ("number", "name", "patronymic", "surname", "status", "residence", "role", "age", "previous_age")
+_PERSON_FIELDS = ("number", "name", "patronymic", "surname", "status", "residence", "role", "of", "age",
+                  "previous_age", "departure_year", "departure_reason")
+#: The fields only a household member has: a metric book names no one's «whose» and no departure.
+_CENSUS_ONLY = ("previous_age", "role", "of", "departure_year", "departure_reason")
+#: The kind of a household's list, the word the context card's `kind` carries.
+CARD_KINDS: Mapping[str, str] = {"revision": "ревизская сказка", "confession": "исповедная роспись"}
 #: What a relative is to the person they hang off, as records v1 codes it (`written_relative.relationship`;
 #: a test keeps the two equal).
 RELATIONSHIPS = ("father", "mother", "husband", "wife", "son", "daughter", "father_in_law", "mother_in_law",
@@ -98,9 +103,9 @@ def output_schema(group: str) -> dict[str, Any]:
     record: dict[str, Any] = {f: {"type": ["string", "null"]} for f in RECORD_FIELDS[group]}
     if "gender" in record:
         record["gender"] = _nullable(type="string", enum=["male", "female"])
-    # a metric book states no previous revision's age and no census role, and the API takes 16 nullable fields at most
-    fields = _PERSON_FIELDS if group == "census" else tuple(
-        f for f in _PERSON_FIELDS if f not in ("previous_age", "role"))
+    # a metric book states no previous revision's age, role, «whose» or departure, and the API takes 16 nullable
+    # fields at most
+    fields = _PERSON_FIELDS if group == "census" else tuple(f for f in _PERSON_FIELDS if f not in _CENSUS_ONLY)
     person: dict[str, Any] = {"slot": {"type": "string", "enum": list(FAMILIES[group])},
                               **{f: {"type": ["string", "null"]} for f in fields}}
     if group == "census":

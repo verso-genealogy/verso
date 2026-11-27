@@ -19,7 +19,7 @@ from verso.ru.reading import marking, task
 GROUPS = ("births", "marriages", "deaths", "census")
 #: sha256 of the cleaned prompts and schemas. A change of a prompt or a schema changes what a model
 #: answers: change it on purpose, re-measure it, then update this.
-PROMPT_HASH = "b7d6e0a7172ac901ef0957d097692524380241bf8acfd1d2db2129678c67cbee"
+PROMPT_HASH = "4d67eff8bb99073fde4d0f90db252a493d9649f18b8244eb371969cbfde8b405"
 
 
 def test_prompts_present():
@@ -192,8 +192,54 @@ def test_census_person_has_no_relationship():
 def test_nullable_count_per_group():
     """Gemini takes 16 nullable fields at most (record + person): every group stays within it."""
     counts = {g: _nullable_count(g) for g in GROUPS}
-    assert counts == {"births": 16, "marriages": 16, "deaths": 16, "census": 10}
+    assert counts == {"births": 16, "marriages": 16, "deaths": 16, "census": 13}
     assert max(counts.values()) <= 16
+
+
+#: The metric groups' prompt and schema, hashed before the household's «whose» and departure were added.
+METRIC_HASHES = {
+    "births": "6514425d2ff2daed2620a707b9bd06b2f9f55b9c735f03d28eae87fd88649464",
+    "marriages": "de7b681c837d5f459ab0ab272173686cfe75ae2f45d673fa44757e0019cf9034",
+    "deaths": "a604d5568d1367f7f599454ec91c85dccdf60fe9f3eb6414b7a09fad9ae651f4",
+}
+CENSUS_PERSON = ("slot", "number", "name", "patronymic", "surname", "status", "residence", "role", "of", "age",
+                 "previous_age", "departure_year", "departure_reason")
+
+
+@pytest.mark.parametrize("group", sorted(METRIC_HASHES))
+def test_metric_schemas_unchanged(group):
+    h = hashlib.sha256()
+    h.update(task.system_prompt(group).encode())
+    h.update(json.dumps(task.output_schema(group), sort_keys=True).encode())
+    assert h.hexdigest() == METRIC_HASHES[group]
+
+
+def test_census_schema_has_of_and_departure():
+    persons = _persons("census")
+    assert tuple(persons) == CENSUS_PERSON
+    for f in ("of", "departure_year", "departure_reason"):
+        assert persons[f] == {"type": ["string", "null"]}
+    assert not {"of", "departure_year", "departure_reason"} & set(_persons("births"))
+
+
+def test_census_person_fits_gemini_limit():
+    persons = _persons("census")
+    nullable = [f for f, node in persons.items()
+                if node.get("type") == ["string", "null"] or {"type": "null"} in node.get("anyOf", ())]
+    assert len(nullable) == 12
+    assert len(nullable) <= 16
+
+
+def test_census_prompt_names_whose_and_departure():
+    text = task.system_prompt("census")
+    for word in ("`of`", "`departure_year`", "`departure_reason`", "`grandson`"):
+        assert word in text
+
+
+def test_card_kinds():
+    assert task.CARD_KINDS == {"revision": "ревизская сказка", "confession": "исповедная роспись"}
+    for label in task.CARD_KINDS.values():
+        assert task.card({"kind": label}) == f"Вид записи: {label}"
 
 
 def test_census_roles_are_the_dsls():
