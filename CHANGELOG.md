@@ -3,11 +3,17 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased (0.1.55.dev0)
+## 0.1.55 — 2026-11-27
 
-An age written with a fraction, as a clerk wrote it («2½», «17½», «5½ мес»), is read as the number it is. A corpus
-whose ages write no fraction does not move; one that does gains a census birth date for such an age (none was
-resolved), its intervals in the checks, and no AGE002 on it; the prose of its documents does not move.
+The reading task's prompt and schema gain `alternatives`, the other readings of a doubtful name, for the review page's
+hint under it (its test's `PROMPT_HASH` moves, with no re-measure of the reading benchmark); the schema requires the
+key, so a client that checks an answer against it refuses one written without it — the App does not. The plugin
+`verso-reading` writes a fraction into the DSL as the book writes it. An age written with a fraction, as a clerk wrote
+it («2½», «17½», «5½ мес»), is read as the number it is. A corpus whose ages write one gains a birth date for such an
+age (a census member's, the deceased's, a groom's or bride's, a card's; none was resolved), its intervals in the
+checks, no AGE002 on it and CAI002 comparing it; its Familio CSV puts a fraction of a unit in that unit's column («5½
+мес»: Месяцев «5½», where Лет held the whole string); the prose of its documents does not move. A corpus whose ages
+write no fraction does not move: its CSVs, Terraform, records JSON, facts and dsllint findings are as before.
 
 ### Added
 
@@ -23,10 +29,11 @@ resolved), its intervals in the checks, and no AGE002 on it; the prose of its do
 - verso-ru, `verso.ru.ages`: an age's number may carry ½ ¼ ¾ ⅓ ⅔, bare («2½», «½») or before a unit («5½ мес»,
   «1 г 2½ мес»). `split_age` puts it in its slot (`"5½ мес"` → months `"5½"`; a bare one stays in Лет as before); the
   new `age_number` reads a slot («2½» → 2.5, «2,5» → 2.5); `age_bounds` reads a fraction as exact; `format_age`
-  gives an age with a fraction back as written. The census resolvers carry a fraction down into whole units
-  («20½» → 20 years 6 months, «4½ мес» → 4 months 15 days); AGE002 (`is_valid_age_string`), the census-age linter
-  and the consolidation finder's ages read it too. New public names `FRACTIONS`, `AGE_NUMBER`, `age_number`, `has_fraction`; an age with no fraction
-  sign is read exactly as before.
+  gives an age with a fraction back as written. The birth date from an age (the census resolvers, which also date
+  deaths, marriages and cards) carries a fraction down into whole units («20½» → 20 years 6 months, «4½ мес» → 4
+  months 15 days); AGE002 (`is_valid_age_string`), the census-age linter and the consolidation finder's ages read it
+  too. New public names `FRACTIONS`, `AGE_NUMBER`, `age_number`, `has_fraction`; an age with no fraction sign is read
+  exactly as before.
 - The plugin `verso-reading` (`dsl-writer`, `metric-books`, `census`): a fraction the book writes goes into the DSL
   as written, `age="2½"`, never rounded, a decimal or a comment alone.
 
