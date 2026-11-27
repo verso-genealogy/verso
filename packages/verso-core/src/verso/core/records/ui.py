@@ -58,14 +58,24 @@ RULE_KEYS: dict[str, frozenset[str]] = {
     "renumber": frozenset({"rule", "group", "number", "refs"}),
     "ref_choices": frozenset({"rule", "group", "path", "party"}),
     "late": frozenset({"rule", "after", "event", "days", "stand_down", "stand_down_before"}),
+    # A group's household page: whose a row is (`path`: the field it fills), the patronymic a row may take from the
+    # head (`path`: the person's field), the age gap a revision implies (`gaps`: year → the previous revision's year).
+    "ref_hint": frozenset({"rule", "group", "path", "children", "parents", "spouse", "min_gap"}),
+    "patronymic_hint": frozenset({"rule", "group", "path"}),
+    "age_gap": frozenset({"rule", "group", "gaps"}),
 }
 RULES = frozenset(RULE_KEYS)
 #: A rule's keys that hold a table, and the keys each table takes: `follows`'s `advance` compares two days,
 #: `shown_when`'s `when` names the book's two readings and the item field its gender is of.
-RULE_TABLES: dict[tuple[str, str], frozenset[str]] = {
+#: A table whose keys are the book's own data (`age_gap`'s years) is open: its set is `None`, any key goes, its
+#: values are whole numbers.
+RULE_TABLES: dict[tuple[str, str], frozenset[str] | None] = {
     ("follows", "advance"): frozenset({"day_from", "day_to"}),
     ("shown_when", "when"): frozenset({"book", "women", "gender_of"}),
+    ("age_gap", "gaps"): None,
 }
+#: How a group's items are drawn: a table, a column per field (`columns`).
+VIEWS = frozenset({"table"})
 GENDERS = frozenset({"male", "female", "of_record"})
 WIDGETS = frozenset({"wide", "checkbox"})
 REF_TO = frozenset({"item", "slot"})   # another item of the field's own group, or a slot
@@ -89,6 +99,7 @@ FORMAT = (
     "orderable", "day", "month", "year", "late_days", "follows", "creatable", "code", "forms",
     "fills", "flags", "presets", "field", "fallback", "package", "of", "queue",
     "from", "advance", "after", "event", "number", "refs",          # the rules' keys
+    "children", "parents", "spouse", "min_gap", "gaps", "view", "columns",
     "group", "days", "when", "stand_down", "stand_down_before", "day_from", "day_to", "book", "women", "gender_of",
     "offer", "not_in",                                               # whom a «+» offers a field
     "text", "integer", "boolean", "age", *FLAGS,
@@ -327,6 +338,11 @@ class _Build:
                                      "item": {"role": self.voc.item_roles.get(name), "fields": item_fields,
                                               "persons": persons},
                                      "orderable": bool(item.get("orderable", False))}
+            if "view" in item or "columns" in item:
+                if item.get("view") not in VIEWS:
+                    raise UiError(t("records.ui.unknown_path", kind=where, path=item.get("view")))
+                group["view"] = item["view"]
+                group["columns"] = [self.column(where, p, item_fields, persons) for p in item.get("columns", ())]
             if "layout" in item:
                 item_paths = {f["path"] for f in item_fields}
                 for line in item["layout"]:
@@ -367,6 +383,21 @@ class _Build:
         return {"label": self.label(hint.get("label")), "fields": fields, "slots": slots, "groups": groups,
                 "events": events, "draft": draft, "rules": rules}
 
+    def person_path(self, where: str, path: object, persons: Sequence[str]) -> str:
+        """`<person field>.<the person's own path>`: a path of a person an item holds, as the persona's fields name it."""
+        fields = {f["path"] for f in self.hints.get("person", {}).get("fields", ())}
+        field, _, rest = path.partition(".") if isinstance(path, str) else ("", "", "")
+        if field not in persons or rest not in fields:
+            raise UiError(t("records.ui.unknown_path", kind=where, path=path))
+        return str(path)
+
+    def column(self, where: str, path: object, item_fields: Sequence[Mapping[str, Any]],
+               persons: Sequence[str]) -> str:
+        """A column of a group's table: a field of the item, or of one of its persons (`person.<path>`)."""
+        if isinstance(path, str) and path in {f["path"] for f in item_fields}:
+            return path
+        return self.person_path(where, path, persons)
+
     def check_rule(self, code_: str, rule: Mapping[str, Any], known: Callable[[object], str],
                    groups: Sequence[Mapping[str, Any]], events: Sequence[Mapping[str, Any]]) -> None:
         """Every path, group and event a rule names is the kind's: the page writes by them (a renumbering
@@ -382,6 +413,10 @@ class _Build:
             table = rule[key]
             if not isinstance(table, Mapping):
                 raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key=key))
+            if keys is None:                         # an open table: any key, whole numbers for values
+                if any(not isinstance(v, int) or isinstance(v, bool) for v in table.values()):
+                    raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key=key))
+                continue
             unread += [f"{key}.{inner}" for inner in table if inner not in keys]
         if unread:
             raise UiError(t("records.ui.unknown_rule_key", kind=code_, rule=name, key=unread[0]))
@@ -405,6 +440,23 @@ class _Build:
             if group is None:
                 raise unknown(rule.get("group"))
             item = {f["path"] for f in group["item"]["fields"]}
+            if name in ("patronymic_hint", "ref_hint", "age_gap"):
+                if name == "ref_hint":
+                    known_in_item = rule.get("path")
+                    if known_in_item not in item:
+                        raise unknown(known_in_item)
+                    for key in ("children", "parents"):
+                        if not isinstance(rule.get(key), list) or not all(isinstance(r, str) for r in rule[key]):
+                            raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key=key))
+                    if not isinstance(rule.get("spouse"), str):
+                        raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="spouse"))
+                    if not isinstance(rule.get("min_gap"), int) or isinstance(rule.get("min_gap"), bool):
+                        raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="min_gap"))
+                elif name == "patronymic_hint":
+                    self.person_path(code_, rule.get("path"), group["item"]["persons"])
+                elif "gaps" not in rule:
+                    raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="gaps"))
+                return
             named = [rule.get("path")] if name in ("ref_choices", "shown_when") else [rule.get("number"),
                                                                                     *rule.get("refs", ())]
             # The item's field a rule reads besides: the one a member's gender is of. (`ref_choices`' `party` is a field

@@ -319,6 +319,12 @@ fields = [
   { path = "previous_age_error", label = "ui.field.previous_age_error", checks = true },
 ]
 hidden = []
+# The roll's page draws the household as a table: the person's three names, then the columns a roll has.
+view = "table"
+columns = [
+  "number", "person.given.original", "person.patronymic.original", "person.surname.original", "role", "ref_member",
+  "age", "previous_age", "departure.year", "departure.reason",
+]
 layout = [
   ["number", "role", "ref_member"],
   ["previous_age", "age"],
@@ -680,3 +686,31 @@ rule = "renumber"
 group = "members"
 number = "number"
 refs = ["ref_member", "parent_member", "spouse_member", "secondary_ref_member"]
+
+# Whose a son, a daughter or a wife is written under: the roll writes the number of the man whose it is only where it
+# differs from the head's. A child goes to the nearest man above of the `parents` roles who has a wife in the household
+# and is at least `min_gap` years older (`FATHER_MIN`); a wife, to the nearest of them without one. The page only
+# suggests it (`verso.ru.records.household_hints.ref_hint`).
+[[kinds.household.rules]]
+rule = "ref_hint"
+group = "members"
+path = "ref_member"
+children = ["son", "daughter"]
+parents = ["son", "brother"]
+spouse = "wife"
+min_gap = 15
+
+# A brother of the head goes under the head's patronymic: the roll writes it for the head alone
+# (`verso.ru.records.household_hints.patronymic_hint`).
+[[kinds.household.rules]]
+rule = "patronymic_hint"
+group = "members"
+path = "person.patronymic.original"
+
+# A member's two ages are one revision apart: `age_gap` flags the pair off that gap by more than a year, as CAI002
+# does. The table is the revision chain — a roll's year and the revision its previous-age column counts from
+# (`verso.ru.census_revisions.PREVIOUS_AGE_REVISION_YEAR`; a test holds them equal).
+[[kinds.household.rules]]
+rule = "age_gap"
+group = "members"
+gaps = { "1721" = 1719, "1745" = 1719, "1762" = 1745, "1795" = 1782, "1811" = 1795, "1815" = 1811, "1816" = 1811, "1834" = 1816, "1850" = 1834, "1857" = 1850, "1858" = 1850 }

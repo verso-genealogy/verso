@@ -1170,6 +1170,19 @@
       ]
      },
      "orderable": true,
+     "view": "table",
+     "columns": [
+      "number",
+      "person.given.original",
+      "person.patronymic.original",
+      "person.surname.original",
+      "role",
+      "ref_member",
+      "age",
+      "previous_age",
+      "departure.year",
+      "departure.reason"
+     ],
      "layout": [
       [
        "number",
@@ -1219,6 +1232,43 @@
       "spouse_member",
       "secondary_ref_member"
      ]
+    },
+    {
+     "rule": "ref_hint",
+     "group": "members",
+     "path": "ref_member",
+     "children": [
+      "son",
+      "daughter"
+     ],
+     "parents": [
+      "son",
+      "brother"
+     ],
+     "spouse": "wife",
+     "min_gap": 15
+    },
+    {
+     "rule": "patronymic_hint",
+     "group": "members",
+     "path": "person.patronymic.original"
+    },
+    {
+     "rule": "age_gap",
+     "group": "members",
+     "gaps": {
+      "1721": 1719,
+      "1745": 1719,
+      "1762": 1745,
+      "1795": 1782,
+      "1811": 1795,
+      "1815": 1811,
+      "1816": 1811,
+      "1834": 1816,
+      "1850": 1834,
+      "1857": 1850,
+      "1858": 1850
+     }
     }
    ]
   },
