@@ -1393,6 +1393,10 @@ finding = "  [{confidence}] возраст {role} {first} и {second}: зазо�
 head = "parent-ages: {count} (HIGH {high} — возраст родителя вне границ: матери {mother_min}–{mother_max}, отцу от {father_min})"
 ok = "parent-ages: OK — 0 findings (ни одного возраста родителя вне границ: матери {mother_min}–{mother_max}, отцу от {father_min})."
 
+[cli.facts.household_ages]
+head = "household-ages: {count} (HIGH {high} — отцу при рождении ребёнка меньше {father_min} лет или ребёнок старше отца, по одной росписи)"
+ok = "household-ages: OK — 0 findings (ни одного отца моложе {father_min} лет при рождении ребёнка, ни одного ребёнка старше отца в росписях)."
+
 [cli.facts.basis]
 none = "фактов нет"
 total = "утверждений всего: {total}"
@@ -1660,6 +1664,12 @@ out_of_range_mother = "Матери «{age}» при рождении ребён
 out_of_range_father = "Отцу «{age}» при рождении ребёнка — сверьте чтение."
 out_of_range_why_mother = "Матери в книгах от {minimum} до {maximum} лет: возраст вне этих границ — вероятно, ошибка чтения."
 out_of_range_why_father = "Отцу в книгах не меньше {minimum} лет: возраст ниже — вероятно, ошибка чтения."
+
+[facts.signal.household_ages]
+too_young = "Отцу при рождении ребёнка {low}–{high} лет — сверьте возрасты в росписи."
+too_young_why = "Отцу в книгах не меньше {minimum} лет: разность возрастов отца и ребёнка меньше — вероятно, ошибка чтения."
+child_older = "Ребёнок старше отца — сверьте возрасты в росписи."
+child_older_why = "Ребёнок не бывает старше отца: один из двух возрастов прочитан неверно, или это не отец."
 
 [facts.signal.date_order]
 baptism_before_birth = "Крещение {left} раньше рождения {right}."

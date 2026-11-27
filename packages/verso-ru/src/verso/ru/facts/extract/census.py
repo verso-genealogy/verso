@@ -110,7 +110,7 @@ _STATED_ROLE = "роль в оригинале:"  # i18n: content — the commen
 
 def facts_from_census(items: Iterable[tuple[Any, str]], *, village: str,
                       slots: SlotIndex | None = None, drafts: bool = False,
-                      ids: RecordId | None = None) -> Iterator[Assertion]:
+                      ids: RecordId | None = None, only: Any = None) -> Iterator[Assertion]:
     """`items` are whole `CensusRecords`, not single records: a household takes
     its year, its dates and its previous revision from the roll around it.
 
@@ -125,8 +125,9 @@ def facts_from_census(items: Iterable[tuple[Any, str]], *, village: str,
                 # one here would put claims into the layer that the author has
                 # not yet stood behind.
                 continue
-            yield from _facts_from_household(records, household, display_id,
-                                             village, source_file, entry, slots, ids)
+            if only is None or household is only:
+                yield from _facts_from_household(records, household, display_id,
+                                                 village, source_file, entry, slots, ids)
             entry += 1
 
 

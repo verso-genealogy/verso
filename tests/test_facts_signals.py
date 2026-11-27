@@ -89,11 +89,12 @@ def test_a_wedding_in_the_nativity_fast_is_a_strict_signal():
 
 
 def test_the_checks_and_the_fields_that_stand_them_down():
-    assert CHECKS == ("wedding-calendar", "name-days", "baptism-lag", "burial-lag", "wedding-ages", "parent-ages", "date-order")
+    assert CHECKS == ("wedding-calendar", "name-days", "baptism-lag", "burial-lag", "wedding-ages", "parent-ages", "date-order",
+                      "household-ages")
     assert STAND_DOWN == {"wedding-calendar": "calendar_note", "name-days": "calendar_note",
                           "baptism-lag": "lag_note", "burial-lag": "lag_note",
                           "wedding-ages": "age_note", "parent-ages": "source_age_error",
-                          "date-order": "source_date_error"}
+                          "date-order": "source_date_error", "household-ages": "source_age_error"}
 
 
 def test_a_divorce_before_the_marriage_its_act_names_is_said_once():
@@ -428,6 +429,7 @@ SIGNAL_KEYS = {
     *(f"wedding_ages.{n}" for n in ("under_age_groom", "under_age_bride", "under_age_why", "age_gap", "age_gap_why")),
     *(f"parent_ages.{n}" for n in ("out_of_range_mother", "out_of_range_father", "out_of_range_why_mother",
                                    "out_of_range_why_father")),
+    *(f"household_ages.{n}" for n in ("too_young", "too_young_why", "child_older", "child_older_why")),
     *(f"date_order.{kind}" for _l, _r, kind, _e, _w in (*orderings(), *within_orderings())),
 }
 
@@ -441,6 +443,7 @@ def test_the_catalogs_hold_the_signals_messages_and_no_other():
     assert used <= SIGNAL_KEYS
     # what no sample above reaches: the nine orderings a metric record cannot break inside itself, a weekday's open days
     assert SIGNAL_KEYS - used - {"note_default"} <= {
+        *(f"household_ages.{n}" for n in ("too_young", "too_young_why", "child_older", "child_older_why")),
         "wedding_calendar.other_days", *(f"date_order.{k}" for _l, _r, k, _e, _w in orderings())}
 
 

@@ -31,6 +31,7 @@ from verso.ru.facts.checks.dates import date_order_findings, unplaced_within
 from verso.ru.facts.checks.deaths import death_claims
 from verso.ru.facts.checks.fathers import father_findings
 from verso.ru.facts.checks.lags import baptism_lags, burial_lags
+from verso.ru.facts.checks.household_ages import household_age_findings
 from verso.ru.facts.checks.parent_ages import parent_age_drift, parent_age_findings
 from verso.ru.facts.checks.parenthood import children_spans, posthumous_births
 from verso.ru.facts.checks.lives import Lives, households_of_canonicals, lives_of_canonicals
@@ -109,6 +110,7 @@ def findings_snapshot(village_dir: Path) -> str:
     spans = children_spans(believed, identity)
     wedding_ages = wedding_age_findings(believed).findings
     parent_ages = parent_age_findings(believed)
+    household_ages = household_age_findings(believed)
     parent_drift = parent_age_drift(believed, pair=kin_identity(), folded=identity)
 
     rows: list[tuple[str, int, int | None]] = [
@@ -125,6 +127,7 @@ def findings_snapshot(village_dir: Path) -> str:
         ("father-claims", len(fathers_across),
          sum(f.confidence == "HIGH" for f in fathers_across)),
         ("father-claims-within", sum(1 for f in fathers if f.within), None),
+        ("household-ages", len(household_ages), sum(f.confidence == "HIGH" for f in household_ages)),
         ("identity-minted-twice", reach.minted_twice, None),
         ("identity-refused-beyond-clergy", reach.refused_beyond_clergy, None),
         ("identity-surplus", reach.surplus, None),

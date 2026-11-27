@@ -24,12 +24,13 @@ from verso.core.records.encode import encode_namespace
 from verso.core.records.ids import Ids
 from verso.core.records.replay import Position, replay_file
 from verso.ru.dsl.records.births import BirthRecords
+from verso.ru.dsl.records.census import CensusRecords
 from verso.ru.dsl.records.deaths import DeathRecords
 from verso.ru.dsl.records.divorces import DivorceRecords
 from verso.ru.dsl.records.marriages import MarriageRecords
 from verso.ru.facts.extract.common import SlotIndex
 from verso.ru.facts.model import AssertionSet
-from verso.ru.facts.signals import CHECKS, Signals, findings_of, signal_of
+from verso.ru.facts.signals import CHECKS, HOUSEHOLD_CHECKS, Signals, findings_of, signal_of
 from verso.ru.pipeline.facts import assertions_of
 from verso.ru.pipeline.signals import signals_on_json, svyatcy_cached
 
@@ -70,14 +71,18 @@ def whole(data: dict[str, Any]) -> Counter[Key]:
     addressed to the record its claims were read in."""
     built = replay_file(copy.deepcopy(data), context=False)
     ids = {id(item.built): item.node["id"] for item in located(data, built)}
-    sources = [(name, records) for name, records in built.items() if isinstance(records, METRIC)]
+    sources = [(name, records) for name, records in built.items() if isinstance(records, (*METRIC, CensusRecords))]
     facts = AssertionSet(assertions_of(sources, village="Маниловка", slots=SlotIndex(), drafts=True,
                                        ids=lambda record: ids[id(record)]))
     record_of = {a.cite.record_id: a.subject.id.rsplit("/", 1)[0] for a in facts}
     believed = facts.believed()
     out: Counter[Key] = Counter()
+    rolled = AssertionSet(a for a in believed if a.cite.record_kind == "census")
     for check in CHECKS:
-        for finding in findings_of(believed, check, svyatcy=svyatcy_cached()):
+        # a roll answers `household-ages` and nothing else; a metric record never that one
+        said = findings_of(rolled if check in HOUSEHOLD_CHECKS else AssertionSet(a for a in believed if a not in rolled),
+                           check, svyatcy=svyatcy_cached())
+        for finding in said:
             signal = signal_of(finding)
             out[(signal.check, signal.variant, record_of[signal.cite.record_id], signal.confidence)] += 1
     return out
@@ -238,3 +243,25 @@ def test_checks_as_a_text_are_refused() -> None:
     item = next(iter(located(_book())))
     with pytest.raises(TypeError):
         signals_on_json(item.node, header=item.header, page=item.page, position=item.position, checks="name-days")
+
+
+HOUSEHOLDS = SAMPLE.with_name("SIG_household_ages.py.sample")
+
+
+def test_a_household_alone_gives_what_its_roll_gives() -> None:
+    """A двор on its card: the one check it answers, from the roll it was rebuilt in — the same signal the direct
+    reading of the whole roll gives it."""
+    from verso.ru.facts.signals import signals_of
+
+    data = _book(HOUSEHOLDS)
+    by_record, asked = alone(data)
+    assert asked == 5
+    assert Counter((check, variant, level) for check, variant, _id, level in by_record.elements()) == Counter({
+        ("household-ages", "too_young", "HIGH"): 1, ("household-ages", "child_older", "HIGH"): 1})
+    built = replay_file(copy.deepcopy(data), context=False)
+    roll: Any = next(iter(built.values()))
+    ids = {id(item.built): item.node["id"] for item in located(data, built)}
+    direct: Counter[Key] = Counter()
+    for dvor in roll.households:
+        direct.update(_key(s) for s in signals_of(dvor, record_id=ids[id(dvor)], record_set=roll).found)
+    assert direct == by_record

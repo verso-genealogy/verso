@@ -34,6 +34,7 @@ consolidated. `verso facts --village V --check CHECK` asks one of them of the vi
 | `wedding-ages` | an age at the wedding more than half a year under the minimum of its date (15 and 13 from the decree of 17 December 1774, 18 and 16 from that of 19 July 1830; nothing before); spouses more than 20 years apart (LOW) | `age_note=` |
 | `parent-ages` | a parent's age no birth can have: a mother under 13 or over 52, a father under 15 (the whole interval the age asserts, «14» is [14, 15)); an age that cannot be read asserts nothing | `source_age_error=` |
 | `date-order` | of one entry: a christening before the birth, a burial before the death, a divorce before the marriage its own act names | `source_date_error=` |
+| `household-ages` | of one roll's household (asked with its roll): a father under 15 at a child's birth — the whole interval of the two ages' difference lies under 15 — or a child older than its father (HIGH); a member gone before the roll is compared by the previous revision's ages; a wife is never asked | `source_age_error=` |
 
 **A parent's age** in a civil birth act is read from `father_age=` and `mother_age=` of `birth()`, and the fact is
 dated to the child's birth. `parent-ages` asks one act whether a birth can have such a parent (a mother from 13 to

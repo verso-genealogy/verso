@@ -41,6 +41,7 @@ from verso.ru.facts.checks.deaths import DeathFinding, death_claims
 from verso.ru.facts.checks.fathers import FatherClaim, FatherFinding, father_findings
 from verso.ru.facts.checks.lags import BAPTISM_DAYS, BURIAL_DAYS, Lags, baptism_lags, burial_lags
 from verso.ru.facts.checks.name_days import FAR_DAYS, NameDays, name_day_findings
+from verso.ru.facts.checks.household_ages import household_age_findings
 from verso.ru.facts.checks.parent_ages import (
     DRIFT_SLACK_YEARS, FATHER_MIN, MOTHER_MAX, MOTHER_MIN, DriftFinding, parent_age_drift, parent_age_findings)
 from verso.ru.facts.checks.parenthood import (
@@ -871,6 +872,23 @@ def parent_ages_report(village_dir: Path) -> tuple[str, int]:
     return parent_ages_text(believed), (1 if parent_age_findings(believed) else 0)
 
 
+def household_ages_text(facts: AssertionSet) -> str:
+    """The report of `household-ages` over assertions a reader may believe: its line of counts, its findings."""
+    found = household_age_findings(facts)
+    if not found:
+        return str(t("cli.facts.household_ages.ok", father_min=FATHER_MIN))
+    head = str(t("cli.facts.household_ages.head", count=len(found), high=sum(f.confidence == "HIGH" for f in found),
+                 father_min=FATHER_MIN))
+    return format_signals([signal_of(f) for f in found], head=head)
+
+
+def household_ages_report(village_dir: Path) -> tuple[str, int]:
+    """`verso facts --check household-ages`: the snapshot's loader."""
+    facts, _gen, _slots = consolidated_facts(village_dir)
+    believed = facts.believed()
+    return household_ages_text(believed), (1 if household_age_findings(believed) else 0)
+
+
 def parent_age_drift_text(found: list[DriftFinding]) -> str:
     """The report of `parent-age-drift`: its line of counts, then one group per couple, its rows in date order."""
     if not found:
@@ -1158,6 +1176,10 @@ def main(argv: list[str] | None = None) -> int:
         return code
     if args.check == "parent-ages":
         report, code = parent_ages_report(village_dir)
+        print(report)
+        return code
+    if args.check == "household-ages":
+        report, code = household_ages_report(village_dir)
         print(report)
         return code
     if args.check == "birth-claims":

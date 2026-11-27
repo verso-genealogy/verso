@@ -1461,6 +1461,10 @@ finding = "  [{confidence}] {role} age {first} and {second}: gap {years:g} years
 head = "parent-ages: {count} (HIGH {high} — a parent's age out of range: mothers {mother_min}–{mother_max}, fathers from {father_min})"
 ok = "parent-ages: OK — 0 findings (no parent's age out of range: mothers {mother_min}–{mother_max}, fathers from {father_min})."
 
+[cli.facts.household_ages]
+head = "household-ages: {count} (HIGH {high} — a father under {father_min} at the child's birth, or a child older than its father, within one roll)"
+ok = "household-ages: OK — 0 findings (no father under {father_min} at a child's birth, no child older than its father, in the rolls)."
+
 [cli.facts.basis]
 none = "no facts"
 total = "assertions in all: {total}"
@@ -1728,6 +1732,12 @@ out_of_range_mother = "The mother, «{age}», at the child's birth — read the 
 out_of_range_father = "The father, «{age}», at the child's birth — read the age again."
 out_of_range_why_mother = "The books' mothers are {minimum} to {maximum}: an age outside it is most likely a misreading."
 out_of_range_why_father = "The books' fathers are at least {minimum}: a younger age is most likely a misreading."
+
+[facts.signal.household_ages]
+too_young = "The father was {low}–{high} at the child's birth — read the ages in the roll again."
+too_young_why = "The books' fathers are at least {minimum}: a smaller difference between the father's and the child's age is most likely a misreading."
+child_older = "The child is older than the father — read the ages in the roll again."
+child_older_why = "A child is never older than its father: one of the two ages is misread, or he is not the father."
 
 [facts.signal.date_order]
 baptism_before_birth = "The christening {left} is before the birth {right}."
