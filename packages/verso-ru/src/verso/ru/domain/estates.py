@@ -45,19 +45,26 @@ _ESTATE_MARKERS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("merchant", ("купец", "купчих")),
 )
 
+def names_landlord(status: str | None) -> bool:
+    """Whether `status` has `estate_of`'s landlord phrase («помещика/помещицы <owner>»). No corpus data."""
+    return bool(status) and bool(_LANDLORD.search(" ".join(str(status).split())))
+
+
+def has_estate_marker(low: str) -> bool:
+    """Whether the lower-cased words `low` hold one of `estate_of`'s estate markers."""
+    return any(mk in low for _, markers in _ESTATE_MARKERS for mk in markers)
+
+
 def names_estate(status: str | None) -> bool:
     """Whether `status` names an estate for `estate_of`: a landlord's phrase or one of the markers.
 
     The same patterns as `estate_of`, but it reads no corpus data (no owner aliases): a caller that
-    only asks «is there an estate here?» — MIL001, the soldier codemod — needs no corpus.
+    only asks «is there an estate here?» needs no corpus. A caller that reads only some of the words
+    (MIL001 drops names and places) uses the two pieces itself.
     """
     if not status:
         return False
-    text = " ".join(str(status).split())
-    if _LANDLORD.search(text):
-        return True
-    low = text.lower()
-    return any(mk in low for _, markers in _ESTATE_MARKERS for mk in markers)
+    return names_landlord(status) or has_estate_marker(" ".join(str(status).split()).lower())
 
 
 def estate_of(status: str | None) -> str | None:

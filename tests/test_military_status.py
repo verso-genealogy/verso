@@ -186,6 +186,23 @@ def test_a_status_naming_an_estate_stays_as_written(text):
     assert unplaced(text) is False
 
 
+@pytest.mark.parametrize("text, constant", [
+    # a place or a name spelled like an estate marker is no estate
+    ("отставной солдат деревни Дворовой", "RETIRED_SOLDIER"),
+    ("запасный рядовой Купецкой слободы", "SOLDIER"),
+    ("запасный рядовой Казенной палаты", "SOLDIER"),
+])
+def test_a_place_spelled_like_an_estate_is_no_estate(text, constant):
+    assert classify(text) == constant
+
+
+def test_names_estate_agrees_with_estate_of():
+    from verso.ru.domain.estates import estate_of, names_estate
+    for t in (*ESTATE_TEXTS, "казенный крестьянин", "мещанская вдова", "купец Глуповский", "дворовый человек",
+              "запасный солдат", "крестьянин", "жена запасного рядового из крестьян", "", None):
+        assert names_estate(t) == (estate_of(t) is not None), t
+
+
 def test_a_status_with_no_estate_is_still_placed():
     assert classify("запасный солдат") == "SOLDIER"
     assert classify("жена запасного рядового") == "SOLDIER_SPOUSE"

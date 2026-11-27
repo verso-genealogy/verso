@@ -402,8 +402,9 @@ the edit is two keyword arguments, and the bulk fix is the codemod (`verso migra
 catalog text, an officer, a landlord's peasant, a woman's or kinsman's wording whose role word does not lead
 («запасного рядового жена»: unplaced, the codemod lists it) and a `departure_reason=` are quiet; a cantonist,
 a vakhmistr, «солдатская девица» and a military clerk are placed (the owner's ruling of 2026-11-26).
-A status that also names an estate (a landlord's peasant, «из однодворцев») is quiet and stays as written, the owner's
-ruling of 2026-11-27: a constant would drop the estate that `estate_of` and estate-conflicts read.
+A status that also names an estate — a landlord, or any estate `estate_of` reads (state or economic peasants, однодворцы,
+мещане, clergy, купцы, дворовые …) — is quiet and stays as written, the owner's ruling of 2026-11-27: a constant would
+drop the estate that `estate_of` and estate-conflicts read.
 **Advisory for now** (2026-11-26): a corpus baselines its findings and migrates with the codemod;
 Verso warns on a save that writes a new one. It becomes hard in a later release, once the corpus reaches zero. On records JSON the rule reads the same texts (`literal` only; `bound` is the source's).
 A known gap, the same as SOR001's: a status written positionally (`person("Иван", None, …, "запасный

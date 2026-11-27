@@ -14,8 +14,8 @@ The words are read in lower case, but a capitalised word after the first is a na
 one spelled like a rank («деревни Запасной»). «отставной» and «отпуск» are no military words
 on their own («отставной учитель», «отпускной крестьянин»): they only tell a soldier retired.
 
-A status that also names an estate (a landlord, «из однодворцев»: `estates.names_estate`) is left as
-written — the owner's ruling of 2026-11-27: a constant would drop the estate the corpus's estate checks
+A status that also names an estate — a landlord, or any estate `estate_of` reads (state or economic peasants,
+однодворцы, мещане, clergy, купцы, дворовые …) — is left as written — the owner's ruling of 2026-11-27: a constant would drop the estate the corpus's estate checks
 read — so it is neither placed nor unplaced.
 
 The owner's ruling of 2026-11-26 placed the wordings once left out: «солдатская девица» → SOLDIER_GIRL,
@@ -26,7 +26,7 @@ no «военный» is a civil clerk).
 import re
 
 from verso.ru.domain import statuses
-from verso.ru.domain.estates import names_estate
+from verso.ru.domain.estates import has_estate_marker, names_landlord
 from verso.ru.domain.orthography import modern_spelling
 
 # Officers, civil ranks, clerks and clergy are not soldiers (an «унтер-офицер» is one);
@@ -76,7 +76,7 @@ _KIN = re.compile(  # i18n: content — status words: vocabulary
 # A wording that ends on a feminine adjective («солдатская», «военная»): a woman's, unnamed.
 _FEMININE_END = re.compile(r"\w(?:ая|яя)$")  # i18n: content — status words: vocabulary
 # A rank in the genitive singular, when no role leads, is someone else's rank: a dependant's, a woman's or a
-# servant's wording («невеста запасного рядового», «дворовый человек отставного солдата»).
+# servant's wording («невеста запасного рядового», «работник запасного рядового»).
 _GENITIVE_RANK = re.compile(  # i18n: content — status words: vocabulary
     r"(?<![а-яё])(?:солдата|солдатки|рядового|унтер[- ]?офицера|чина|вахмистра|ефрейтора|фельдфебеля"  # i18n: content — status words: vocabulary
     r"|кантониста|бомбардира)(?![а-яё])")  # i18n: content — status words: vocabulary
@@ -100,9 +100,11 @@ def _verdict(text: str) -> tuple[str | None, bool]:
     modern = modern_spelling(text)
     if _in_catalog(modern):
         return None, False
-    if names_estate(modern):
-        return None, False
     low = _words(modern)
+    # An estate: the landlord's phrase is read on the whole text, a marker only in the words kept (a place or
+    # a name — «деревни Дворовой», «Казенной палаты» — is no estate).
+    if names_landlord(modern) or has_estate_marker(low):
+        return None, False
     if _NOT_SOLDIER.search(low) or (_LANDLORD.search(low) and not _SOLDIER_WORD.search(low)):
         return None, False
     if not _MILITARY.search(low):
@@ -130,7 +132,7 @@ def unplaced(text: str) -> bool:
     """A soldier's wording `classify` will not place — a maiden's other than «солдатская девица»
     (`UNPLACED`), the adjective with a noun no constant spells («солдатская внучка»), a woman's or a
     kinsman's wording whose role word does not lead («запасного рядового жена»), a rank in the genitive
-    with no role before it, a dependant's or a servant's («невеста запасного рядового», «дворовый
-    человек отставного солдата») — listed for a person to decide, never guessed. An officer's, a
+    with no role before it, a dependant's or a servant's («невеста запасного рядового», «работник
+    запасного рядового») — listed for a person to decide, never guessed. An officer's, a
     clerk's or a peasant's maiden is no soldier's."""
     return _verdict(text)[1]
