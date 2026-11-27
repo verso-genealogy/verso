@@ -193,7 +193,9 @@ StubOf = Callable[[Any], str | None] | None
 
 
 def _make_occ(p: Person | None, *, rec_type, record_num, role, year,
-              source_file, stub_of: StubOf = None) -> Occurrence | None:
+              source_file, stub_of: StubOf = None, minted: Person | None = None) -> Occurrence | None:
+    """`minted`: the record's own person when `p` is a view of it (a newborn as written, В10) — the profile
+    the translator minted is asked of that object."""
     # `person_key(None)` already returns None, so the explicit check below is
     # redundant at runtime — it just states the correlation the reads after it
     # depend on (a non-None key implies a non-None person).
@@ -208,7 +210,7 @@ def _make_occ(p: Person | None, *, rec_type, record_num, role, year,
         surname=_surname(p), gender=(g.value if isinstance(g, Gender) else g),
         rec_type=rec_type, record_num=record_num, role=role, year=year,
         source_file=source_file, residence=p.residence,
-        stub=stub_of(p) if stub_of is not None else None,
+        stub=stub_of(minted or p) if stub_of is not None else None,
     )
 
 
@@ -254,7 +256,7 @@ def extract_occurrences(records, source_file: str,
             ck = person_key(written_child)
             fk = person_key(b.father)
             mk = person_key(b.mother)
-            child = _make_occ(written_child, rec_type="birth", record_num=b.record_num,
+            child = _make_occ(written_child, minted=b.child, rec_type="birth", record_num=b.record_num,
                               role="child", year=year, source_file=source_file, stub_of=stub_of)
             if child:
                 if fk:
