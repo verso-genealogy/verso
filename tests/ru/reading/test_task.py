@@ -19,7 +19,7 @@ from verso.ru.reading import marking, task
 GROUPS = ("births", "marriages", "deaths", "census")
 #: sha256 of the cleaned prompts and schemas. A change of a prompt or a schema changes what a model
 #: answers: change it on purpose, re-measure it, then update this.
-PROMPT_HASH = "b7d6e0a7172ac901ef0957d097692524380241bf8acfd1d2db2129678c67cbee"
+PROMPT_HASH = "e321bd29986bbcbea6029c2944080b92747b91f3f702a98bd88bce5ab794a4c3"
 
 
 def test_prompts_present():
@@ -192,8 +192,57 @@ def test_census_person_has_no_relationship():
 def test_nullable_count_per_group():
     """Gemini takes 16 nullable fields at most (record + person): every group stays within it."""
     counts = {g: _nullable_count(g) for g in GROUPS}
-    assert counts == {"births": 16, "marriages": 16, "deaths": 16, "census": 10}
+    assert counts == {"births": 16, "marriages": 16, "deaths": 16, "census": 13}
     assert max(counts.values()) <= 16
+
+
+#: A standing pin per group: sha256 of the group's system prompt and answer schema. The metric groups are main's
+#: (0.1.55); census is the household reading as measured on the benchmark. A failure names the group that moved:
+#: change it on purpose, re-measure, then update the group's hash (and `PROMPT_HASH`).
+GROUP_HASHES = {
+    "births": "26b6e5d5585a84e47096e97c67033c2967a02e316bb5d68c38e726cfd9d59b07",
+    "marriages": "2424e4aa173394cb267a0766e1132030a2b19ae7a8b11fd12e52d9c8d4fc0256",
+    "deaths": "5773573aac8ed8553e6a0a193a7e25141db75a5f9fd2dcf35c20e472372e7ebf",
+    "census": "ebc8ab6b97527ecb21f948f3c2e13a7dd01f62f709e9d2b5849efb9a299132b6",
+}
+CENSUS_PERSON = ("slot", "number", "name", "patronymic", "surname", "status", "residence", "role", "of", "age",
+                 "previous_age", "departure_year", "departure_reason")
+
+
+@pytest.mark.parametrize("group", sorted(GROUP_HASHES))
+def test_group_prompts_pinned(group):
+    h = hashlib.sha256()
+    h.update(task.system_prompt(group).encode())
+    h.update(json.dumps(task.output_schema(group), sort_keys=True).encode())
+    assert h.hexdigest() == GROUP_HASHES[group]
+
+
+def test_census_schema_has_of_and_departure():
+    persons = _persons("census")
+    assert tuple(persons) == CENSUS_PERSON
+    for f in ("of", "departure_year", "departure_reason"):
+        assert persons[f] == {"type": ["string", "null"]}
+    assert not {"of", "departure_year", "departure_reason"} & set(_persons("births"))
+
+
+def test_census_person_fits_gemini_limit():
+    persons = _persons("census")
+    nullable = [f for f, node in persons.items()
+                if node.get("type") == ["string", "null"] or {"type": "null"} in node.get("anyOf", ())]
+    assert len(nullable) == 12
+    assert len(nullable) <= 16
+
+
+def test_census_prompt_names_whose_and_departure():
+    text = task.system_prompt("census")
+    for word in ("`of`", "`departure_year`", "`departure_reason`", "`grandson`"):
+        assert word in text
+
+
+def test_card_kinds():
+    assert task.CARD_KINDS == {"revision": "ревизская сказка", "confession": "исповедная роспись"}
+    for label in task.CARD_KINDS.values():
+        assert task.card({"kind": label}) == f"Вид записи: {label}"
 
 
 def test_census_roles_are_the_dsls():
@@ -230,3 +279,45 @@ def test_no_imports():
                 assert mod.split(".")[0] in allowed, f"{path.name} imports {mod}"
                 if mod.startswith("verso"):
                     assert mod.startswith("verso.ru.reading"), f"{path.name} imports {mod}"
+
+
+def _members(*rows):
+    return [dict(zip(("number", "role", "of"), row, strict=True)) for row in rows]
+
+
+def _targets(*rows):
+    return [(t.target, t.doubtful) for t in task.of_targets(_members(*rows))]
+
+
+def test_of_by_number():
+    # head 5, wife 6 under him (no `of`), son 7 of the wife, grandson 8 of the son
+    assert _targets(("5", "head", None), ("6", "wife", None), ("7", "son", "6"), ("8", "grandson", "7")) == [
+        (None, False), (None, False), (1, False), (2, False)]
+
+
+def test_of_by_place_when_no_numbers():
+    assert _targets((None, "head", None), (None, "son", "1"), (None, "wife", "2"), (None, "daughter", "2")) == [
+        (None, False), (None, False), (1, False), (1, False)]
+
+
+def test_of_naming_the_head_is_empty():
+    assert _targets(("1", "head", None), ("2", "son", "1"), ("3", "wife", "2")) == [
+        (None, False), (None, False), (1, False)]
+
+
+def test_of_naming_nobody_or_oneself_is_empty():
+    assert _targets(("1", "head", None), ("2", "son", "9"), ("3", "wife", "3"), ("4", "son", "x")) == [
+        (None, False)] * 4
+    assert _targets((None, "head", None), (None, "son", "7"), (None, "wife", "3")) == [(None, False)] * 3
+
+
+def test_of_in_a_household_numbered_in_part_is_by_number():
+    # the second member is unnumbered: «of» 2 names nobody (not the place), 5 names the numbered one
+    assert _targets(("5", "head", None), (None, "wife", None), ("6", "son", "2"), ("7", "grandson", "6")) == [
+        (None, False), (None, False), (None, False), (2, False)]
+
+
+def test_a_flagged_of_resolves_and_says_so():
+    assert _targets(("1", "head", None), ("2", "son", "1"), ("3", "wife", "2?")) == [
+        (None, False), (None, False), (1, True)]
+    assert _targets(("1", "head", None), ("2", "son", "7?")) == [(None, False), (None, True)]
