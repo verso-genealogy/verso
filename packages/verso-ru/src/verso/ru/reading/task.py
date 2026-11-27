@@ -110,5 +110,8 @@ def output_schema(group: str) -> dict[str, Any]:
         person["relationship"] = _nullable(type="string", enum=list(RELATIONSHIPS))
         if group in RELATIONSHIP_OF:
             person["relationship_of"] = _nullable(type="string", enum=relationship_of_choices(group))
+    # a name read two or three ways (П15): the likelier in its field with «?», the others by the field's path, as `doubtful` says it
+    alternative = closed({"path": {"type": "string"}, "readings": {"type": "array", "items": {"type": "string"}}})
     return closed({"record": closed(record), "persons": {"type": "array", "items": closed(person)},
-                   "doubtful": {"type": "array", "items": {"type": "string"}}})
+                   "doubtful": {"type": "array", "items": {"type": "string"}},
+                   "alternatives": {"type": "array", "items": alternative}})
