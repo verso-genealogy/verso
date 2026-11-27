@@ -9,7 +9,9 @@ import pytest
 
 from verso.ru.dsl import source
 
-BOOK = Path(__file__).resolve().parents[2] / "fixtures" / "mini" / "root" / "Маниловка" / "1900" / "manilovka_births_1900.py"
+ROOT = Path(__file__).resolve().parents[2] / "fixtures" / "mini" / "root" / "Маниловка"
+BOOK = ROOT / "1900" / "manilovka_births_1900.py"
+ROLL = ROOT / "1858" / "manilovka_census_1858.py"
 
 
 def _records(text: str) -> list[source.Record]:
@@ -59,3 +61,30 @@ def test_review_and_unreview_at_once_is_refused():
     ordinal = _reviewed(text).index(False)
     with pytest.raises(source.EditError):
         source.apply(text, ordinal, _records(text)[ordinal].sha, mark_reviewed=True, unreview=True)
+
+
+def _read_one(text: str) -> tuple[str, int]:
+    """`text` with its first household read (an explicit `reviewed=True` under the roll's `reviewed=False`)."""
+    ordinal = _reviewed(text).index(False)
+    return source.apply(text, ordinal, _records(text)[ordinal].sha, mark_reviewed=True), ordinal
+
+
+def test_unreview_under_a_held_roll_drops_the_records_own_flag():
+    """A household read under a roll that holds `reviewed=False` (a лист's `page(…, reviewed=False)` is held the same
+    way, `_holders`): unreviewed again, its own `True` goes — no redundant `reviewed=False` of its own (RVR001), the
+    roll holds it as before."""
+    text = ROLL.read_text(encoding="utf-8")
+    read, ordinal = _read_one(text)
+    assert _reviewed(read)[ordinal] and "reviewed=True" in read
+    out = source.apply(read, ordinal, _records(read)[ordinal].sha, unreview=True)
+    assert not _reviewed(out)[ordinal]
+    assert out == text                                     # back as it was: the roll's flag alone
+    assert _records(out)[ordinal].flag == "file"
+
+
+def test_ops_on_the_flag_with_unreview_are_refused():
+    text = BOOK.read_text(encoding="utf-8")
+    ordinal = _reviewed(text).index(True)
+    with pytest.raises(source.EditError):
+        source.apply(text, ordinal, _records(text)[ordinal].sha, [{"op": "delete", "path": ["reviewed"]}],
+                     unreview=True)

@@ -1072,8 +1072,16 @@ def _set_reviewed(call: cst.Call) -> cst.Call:
     return set_param(call, "reviewed", cst.Name("True"))
 
 
-def _set_unreviewed(call: cst.Call) -> cst.Call:
-    return set_param(call, "reviewed", cst.Name("False"))
+def _unreviewed(target: _Found) -> Callable[[cst.Call], cst.Call]:
+    """The rewrite that holds `target` unreviewed: its own flag dropped where a page or a file around it holds
+    `reviewed=False` already (an explicit `True` under it was what read it), else its own `reviewed=False`."""
+    inherited = next((v for h in _holders(target) if (v := _kw_bool(h, "reviewed")) is not None), None)
+
+    def rewrite(call: cst.Call) -> cst.Call:
+        if inherited is False:
+            return delete_param(call, "reviewed")
+        return set_param(call, "reviewed", cst.Name("False"))
+    return rewrite
 
 
 class _Rewriter(cst.CSTTransformer):
@@ -1091,8 +1099,9 @@ def apply(source: str, ordinal: int, expected_sha: str,
           on_geni: Iterable[str] | None = None, *, unreview: bool = False) -> str:
     """`source` with the record at `ordinal` edited by `ops` and, when asked,
     marked reviewed — or, with `unreview`, marked unreviewed again: the record's
-    own call writes `reviewed=False` (an edit someone other than the owner made
-    is the owner's to read again). `unreview` leaves a record that is unreviewed
+    own call writes `reviewed=False`, or drops its `reviewed=True` where a page or
+    a file around it holds `reviewed=False` (an edit someone other than the owner
+    made is the owner's to read again; `ops` may not touch the flag then). `unreview` leaves a record that is unreviewed
     already as it is, and touches no ratchet line: the caller decides where an
     unreviewed record may stand. Raises `Stale` when the record is not the one
     the caller saw, `EditError` when an edit cannot be written (both flags at
@@ -1111,6 +1120,8 @@ def apply(source: str, ordinal: int, expected_sha: str,
         raise Stale(t("source.stale"))
     if mark_reviewed and unreview:
         raise EditError(t("source.review_and_unreview"))
+    if unreview and any([str(p) for p in op.get("path", ())][:1] == ["reviewed"] for op in ops):
+        raise EditError(t("source.review_and_unreview"))      # the flag is `unreview`'s alone
     if on_geni is not None and ops and not mark_reviewed and struck(source, ordinal, on_geni):
         raise EditError(t("source.listed_needs_review"))
 
@@ -1126,7 +1137,7 @@ def apply(source: str, ordinal: int, expected_sha: str,
         for node, fn in _review_edits(found, target):
             edits.setdefault(id(node), []).append(fn)
     if unreview and not _state(target)[0]:
-        edits.setdefault(id(target.node), []).append(_set_unreviewed)
+        edits.setdefault(id(target.node), []).append(_unreviewed(target))
     if not edits:
         return source
     new = module.visit(_Rewriter(edits))
