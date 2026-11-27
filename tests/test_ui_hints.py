@@ -256,11 +256,40 @@ def test_the_page_rules_of_a_household_name_only_what_it_has():
                              ("patronymic_hint", {"path": "person.nowhere"}, "person.nowhere"),
                              ("age_gap", {"group": "nobody"}, "nobody")):
         assert _refused("household", rule, edit) == ("records.ui.unknown_path", {"kind": "household", "path": path})
-    assert _refused("household", "ref_hint", {"min_gap": "15"})[0] == "records.ui.rule_not_table"
-    assert _refused("household", "age_gap", {"gaps": {"1850": "1834"}})[0] == "records.ui.rule_not_table"
+    assert _refused("household", "ref_hint", {"min_gap": "15"}) == (
+        "records.ui.rule_bad_value", {"kind": "household", "rule": "ref_hint", "key": "min_gap"})
+    assert _refused("household", "age_gap", {"gaps": {"1850": "1834"}}) == (
+        "records.ui.rule_bad_value", {"kind": "household", "rule": "age_gap", "key": "gaps"})
     assert _refused("household", "age_gap", {"gaps": [1850]})[0] == "records.ui.rule_not_table"
     assert _refused("household", "ref_hint", {"gap": 15}) == (
         "records.ui.unknown_rule_key", {"kind": "household", "rule": "ref_hint", "key": "gap"})
+
+
+#: The item fields each household hint reads, by the rule's key: the page reads a member only through them.
+HINT_FIELDS = {"ref_hint": ("role", "number", "age"), "patronymic_hint": ("role", "number", "ref"),
+               "age_gap": ("age", "previous", "departure_year", "departure_reason", "hidden", "comment")}
+
+
+def test_the_household_hints_name_the_item_fields_they_read():
+    rules = {r["rule"]: r for r in _schema()["kinds"]["household"]["rules"]}
+    (members,) = _schema()["kinds"]["household"]["groups"]
+    item = {f["path"] for f in members["item"]["fields"]}
+    for rule, keys in HINT_FIELDS.items():
+        for key in keys:
+            assert rules[rule][key] in item, (rule, key)
+    assert rules["ref_hint"]["path"] in item
+
+
+@pytest.mark.parametrize("rule, key", [(rule, key) for rule, keys in HINT_FIELDS.items() for key in keys])
+def test_a_hint_s_item_field_the_group_lacks_is_refused(rule: str, key: str):
+    assert _refused("household", rule, {key: "nowhere"}) == (
+        "records.ui.unknown_path", {"kind": "household", "path": "nowhere"})
+    hints = copy.deepcopy(dict(plugins.ui()))
+    del next(r for r in hints["kinds"]["household"]["rules"] if r["rule"] == rule)[key]
+    with pytest.raises(UiError) as caught:
+        build_ui(V, hints)
+    assert (caught.value.key, dict(caught.value.params)) == (
+        "records.ui.rule_bad_value", {"kind": "household", "rule": rule, "key": key})
 
 
 def test_a_column_the_group_lacks_is_refused():
@@ -271,7 +300,49 @@ def test_a_column_the_group_lacks_is_refused():
     assert caught.value.key == "records.ui.unknown_path"
 
 
-def test_the_patronymic_and_age_rules_need_their_parameters():
-    assert _refused("household", "patronymic_hint", {"role": 1})[0] == "records.ui.rule_not_table"
-    assert _refused("household", "patronymic_hint", {"from_role": None})[0] == "records.ui.rule_not_table"
-    assert _refused("household", "age_gap", {"prior_comment": 5})[0] == "records.ui.rule_not_table"
+@pytest.mark.parametrize("rule, edit", [
+    ("patronymic_hint", {"of_role": 1}), ("patronymic_hint", {"from_role": None}), ("patronymic_hint", {"of_role": ""}),
+    ("age_gap", {"prior_comment": 5}), ("ref_hint", {"spouse": ["wife"]}), ("ref_hint", {"children": "son"}),
+    ("ref_hint", {"parents": [1]}), ("ref_hint", {"min_husband_age": 15.5}), ("ref_hint", {"max_wife_older": True}),
+    ("ref_hint", {"min_gap": None}),
+])
+def test_a_hint_s_parameter_of_the_wrong_kind_is_refused(rule: str, edit: dict[str, Any]):
+    """A role, a number, a pattern of the wrong kind is a wrong value — not «must be a table»."""
+    (key,) = edit
+    assert _refused("household", rule, edit) == ("records.ui.rule_bad_value",
+                                                 {"kind": "household", "rule": rule, "key": key})
+
+
+def _group_refused(edit: dict[str, Any], drop: tuple[str, ...] = ()) -> tuple[str, dict[str, object]]:
+    hints = copy.deepcopy(dict(plugins.ui()))
+    group = next(g for g in hints["kinds"]["household"]["groups"])
+    group.update(edit)
+    for key in drop:
+        del group[key]
+    with pytest.raises(UiError) as caught:
+        build_ui(V, hints)
+    return caught.value.key, dict(caught.value.params)
+
+
+def test_a_view_and_its_columns_go_together():
+    assert _group_refused({"view": "cards"}) == (
+        "records.ui.bad_view", {"kind": "household/members", "view": "cards", "views": "table"})
+    assert _group_refused({}, drop=("columns",))[0] == "records.ui.bad_view"
+    assert _group_refused({}, drop=("view",))[0] == "records.ui.bad_view"
+    assert _group_refused({"columns": []})[0] == "records.ui.bad_view"
+
+
+def test_a_preset_needs_a_name():
+    def refused(name: object) -> tuple[str, dict[str, object]]:
+        hints = copy.deepcopy(dict(plugins.ui()))
+        hints["books"]["census"]["presets"] = [{"name": name, "label": "ui.set.confessions"}]
+        with pytest.raises(UiError) as caught:
+            build_ui(V, hints)
+        return caught.value.key, dict(caught.value.params)
+    assert refused(5) == ("records.ui.bad_preset", {"kind": "census", "name": 5})
+    assert refused("")[0] == "records.ui.bad_preset"
+    hints = copy.deepcopy(dict(plugins.ui()))
+    hints["books"]["census"]["presets"] *= 2
+    with pytest.raises(UiError) as caught:
+        build_ui(V, hints)
+    assert caught.value.key == "records.ui.repeated"
