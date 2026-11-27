@@ -3,6 +3,8 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.56.dev0)
+
 ## 0.1.55 — 2026-11-27
 
 The reading task's prompt and schema gain `alternatives`, the other readings of a doubtful name, for the review page's
