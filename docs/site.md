@@ -65,6 +65,12 @@ names is named by the name itself. So an address moves when the id does — a co
 or shelfmark — and never with a rebuild: the same records make the same bytes. Two books whose ids
 make one path are refused, naming both.
 
+The books' page opens with its contents: each archive, and its funds beside it, leads to its heading
+below. The headings' anchors are made of the shelfmark, not of its words on the page, so a link to a fund
+holds in any language: the archive by the same transliteration, then fund and inventory (`books/#gato`,
+`books/#gato-1049-10`); `#unknown` for books of no archive, `#cards` for the cards. A second heading of one
+spelling takes a number (`-2`).
+
 Every link is relative, so the site is served the same from a project's path on a host and from a
 domain of its own; to read a built site on your own machine, serve its directory
 (`python -m http.server --directory _site`) — opened as files, a browser lists a directory where
