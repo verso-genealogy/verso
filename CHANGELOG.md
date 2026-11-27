@@ -46,8 +46,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 - verso-ru, `verso drift` (`verso.ru.consolidation.drift`, the data's `make tf-drift`): a plan with no drift block is
   read through its `resource_changes`, and every no-op there counted as DERIVED-NAME — thousands of resources where
-  nothing changed. No-ops are skipped, and so is a value the plan leaves to be computed (`after_unknown`); the header
-  says it lists planned changes then. CONTENT is any real difference — every name field (a maiden name, nicknames),
+  nothing changed. No-ops are skipped, and so is a value the plan leaves to be computed (`after_unknown`, a list's
+  element too), and an empty the provider writes either way (null, "", [], {}); the header says it lists planned
+  changes then, and a planned create or delete is listed apart (PLANNED-CREATE, PLANNED-DELETE), not as MERGE. CONTENT is any real difference — every name field (a maiden name, nicknames),
   an event's date or place, the unions, the rest — where it was the surname and the event dates alone; DERIVED-NAME
   is a difference in an event's name alone.
 

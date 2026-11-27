@@ -100,3 +100,30 @@ def test_main_skips_no_ops(monkeypatch, capsys):
     out = capsys.readouterr().out
     assert "planned changes: 1 resource(s)" in out
     assert "── CONTENT (1)" in out and "DERIVED-NAME" not in out
+
+
+def test_a_computed_list_element_is_no_difference():
+    before = {"id": "p", "guid": "g", "unions": ["union-1"]}
+    after = {"id": "p", "guid": "g", "unions": [None]}
+    assert classify(before, after, {"unions": [True]}) is None
+
+
+def test_the_providers_empties_are_one():
+    before = {"id": "p", "guid": "g", "about": "", "unions": [], "birth": {"date": {"year": 1827}, "location": None}}
+    after = {"id": "p", "guid": "g", "unions": None, "birth": {"date": {"year": 1827}}}
+    assert classify(before, after) is None
+
+
+def test_main_lists_planned_creates_and_deletes_apart(monkeypatch, capsys):
+    from verso.ru.consolidation import drift
+    new = {"id": None, "guid": None, "names": _names("Стужева"), "projects": ["a"]}
+    plan = {"resource_changes": [
+        {"address": "geni_profile.new", "change": {"actions": ["create"], "before": None, "after": new}},
+        {"address": "geni_profile.old", "change": {"actions": ["delete"], "before": new, "after": None}},
+    ]}
+    monkeypatch.setattr(drift, "_load_plan", lambda arg, plan_file: plan)
+    assert drift.main(["x"]) == 0
+    out = capsys.readouterr().out
+    assert "planned changes: 0 resource(s)" in out
+    assert "── PLANNED-CREATE (1)\n  geni_profile.new" in out and "── PLANNED-DELETE (1)\n  geni_profile.old" in out
+    assert "MERGE" not in out and "PROJECT-REPLACE" not in out

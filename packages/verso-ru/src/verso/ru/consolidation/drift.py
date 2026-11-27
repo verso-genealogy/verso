@@ -52,14 +52,31 @@ _IDENTITY = ("id", "guid", "projects")
 
 def _known(before: Any, after: Any, unknown: Any) -> Any:
     """`after` with each value the plan leaves unknown (`after_unknown`: computed on apply) taken from
-    `before`: a value yet to be computed is no difference."""
+    `before`: a value yet to be computed is no difference. `unknown` mirrors `after` — True at a value, a dict
+    for an object, a list for a list (a computed element of it)."""
     if unknown is True:
         return before
-    if isinstance(unknown, dict) and isinstance(after, dict):
+    if isinstance(unknown, dict):
+        a = after if isinstance(after, dict) else {}
         b = before if isinstance(before, dict) else {}
-        return {k: _known(b.get(k), v, unknown.get(k)) for k, v in after.items()} | {
-            k: b.get(k) for k, u in unknown.items() if u is True and k not in after}
+        if not unknown:
+            return after
+        return {k: _known(b.get(k), a.get(k), unknown.get(k)) for k in set(a) | set(unknown)
+                if k in a or unknown.get(k) is not None}
+    if isinstance(unknown, list) and isinstance(after, list):
+        b = before if isinstance(before, list) else []
+        return [_known(b[i] if i < len(b) else None, v, unknown[i] if i < len(unknown) else None)
+                for i, v in enumerate(after)]
     return after
+
+
+def _bare(value: Any) -> Any:
+    """A value with the empties the provider writes either way — null, "", [], {} — read as one."""
+    if isinstance(value, dict):
+        value = {k: v for k, v in ((k, _bare(v)) for k, v in value.items()) if v is not None}
+    elif isinstance(value, list):
+        value = [_bare(v) for v in value]
+    return None if value in ("", [], {}) else value
 
 
 def _event(ev: Any) -> Any:
@@ -81,7 +98,7 @@ def classify(before: dict[str, Any], after: dict[str, Any],
     """Return (category, detail) for one resource change/drift, None when nothing differs: a no-op of the
     plan, or a change whose every difference is a value yet to be computed (`unknown`, the plan's
     `after_unknown`)."""
-    after = _known(before, after, unknown or {})
+    before, after = _bare(before) or {}, _bare(_known(before, after, unknown or {})) or {}
     if before.get("id") != after.get("id") or before.get("guid") != after.get("guid"):
         return "MERGE", f"id {before.get('id')} → {after.get('id')}"
     if (before.get("projects") or []) != (after.get("projects") or []):
@@ -131,11 +148,15 @@ def main(argv: list[str] | None = None) -> int:
     # Drift (external Geni changes detected on refresh) is the authoritative view;
     # fall back to resource_changes when no drift block is present.
     buckets: dict[str, list[str]] = defaultdict(list)
+    planned: dict[str, list[str]] = defaultdict(list)
     # A no-op or a read of resource_changes changes nothing: without a drift block every resource of the
     # plan is listed there, and each no-op once counted as DERIVED-NAME (В18).
     for d in plan.get("resource_drift") or plan.get("resource_changes") or []:
         ch = d.get("change") or {}
         if ch.get("actions") in (["no-op"], ["read"]):
+            continue
+        if ch.get("actions") in (["create"], ["delete"]):  # a planned create or delete is no drift of a resource
+            planned[ch["actions"][0]].append(d["address"])
             continue
         before, after = ch.get("before") or {}, ch.get("after") or {}
         found = classify(before, after, ch.get("after_unknown"))
@@ -171,6 +192,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"\n── PLANNED-REPLACE ({len(replaces)}) — non-destructive (provider "
               f"re-adopts by guid); usually projects-forced (PROJECT-REPLACE)")
         print("\n".join(f"  {a}" for a in sorted(replaces)))
+    for action, label in (("create", "PLANNED-CREATE"), ("delete", "PLANNED-DELETE")):
+        if planned[action]:
+            print(f"\n── {label} ({len(planned[action])})")
+            print("\n".join(f"  {a}" for a in sorted(planned[action])))
     return 0
 
 
