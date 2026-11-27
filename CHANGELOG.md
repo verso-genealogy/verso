@@ -18,7 +18,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   is no link, never a guess, and `OfTarget.under_head` tells the head from oneself and nobody; an `of` written «2?» resolves as «2» and is reported `doubtful`. The census prompt and schema changed
   (the test's `PROMPT_HASH` moves); the metric groups' prompts and schemas did not. The census prompt equals the one
   measured on the reading benchmark apart from the shared «?»/`alternatives` lines main added in 0.1.55.
-||||||| parent of 1d49a03 (Changelog: the newborn's patronymic from the father)
 
 ### Changed
 
