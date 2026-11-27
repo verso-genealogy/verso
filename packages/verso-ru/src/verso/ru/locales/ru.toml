@@ -958,6 +958,7 @@ not_an_element_number = "не номер элемента: '{key}'"
 element_not_a_call = "{param}={key} — не вызов"
 empty_path = "пустой путь правки"
 reviewed_already = "запись уже вычитана"
+review_and_unreview = "запись нельзя одновременно вычитать и снять с неё вычитку"
 not_a_constant_name = "'{code}' — не имя константы"
 dsl_v0 = "DSL v0: verso upgrade-dsl <файл>"
 

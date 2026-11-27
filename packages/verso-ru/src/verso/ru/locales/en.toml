@@ -1029,6 +1029,7 @@ not_an_element_number = "not an element's number: '{key}'"
 element_not_a_call = "{param}={key} is no call"
 empty_path = "an empty path of an edit"
 reviewed_already = "the record is proofread already"
+review_and_unreview = "a record cannot be proofread and unproofread at once"
 not_a_constant_name = "'{code}' is no constant's name"
 dsl_v0 = "DSL v0: verso upgrade-dsl <file>"
 
