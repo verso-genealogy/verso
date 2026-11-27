@@ -9,8 +9,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 - verso-ru, the reading task (`verso.ru.reading.task`): a census household member is read with `of` — whose
   member they are, by the number of the person they belong to, or by the member's place where the list writes no
-  numbers — and with `departure_year` and `departure_reason`, the year and the reason of a «убыл». The card kinds
-  «ревизская сказка» and «исповедная роспись» are named in the census prompt. The census prompt and schema changed
+  numbers — and with `departure_year` and `departure_reason`, the year and the reason of a «убыл». `task.CARD_KINDS`
+  names the two card kinds, «ревизская сказка» and «исповедная роспись». `of`, `departure_year` and
+  `departure_reason` are required in the census person: a client that validates an answer against the schema rejects
+  one written to the 0.1.55 census schema. `task.of_targets(persons)` resolves each member's `of` to the index of
+  the member it names, one rule for every client: by the 1-based place in `persons` when no member has a written
+  `number`, else by `number`; an `of` naming the head, oneself or no member (also in a household numbered in part)
+  is no link, never a guess; an `of` written «2?» resolves as «2» and is reported `doubtful`. The census prompt and schema changed
   (the test's `PROMPT_HASH` moves); the metric groups' prompts and schemas did not. The census prompt equals the one
   measured on the reading benchmark apart from the shared «?»/`alternatives` lines main added in 0.1.55.
 

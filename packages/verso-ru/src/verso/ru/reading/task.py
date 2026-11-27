@@ -4,10 +4,17 @@ The prompt of a group is the common rules and the group's, the same for every mo
 is JSON under a closed schema; the record's field names are the DSL's, and a person is a slot
 family and the fields a scorer compares. A change of a prompt or a schema changes what a model
 answers: it is made on purpose, with a new measurement, and `tests/ru/reading` holds their hash.
+
+A household member's `of` («чей») is read by `of_targets`, by one rule: when no member has a written `number`,
+`of` is the 1-based place of the member in `persons`; otherwise it is a member's `number`. An `of` that names
+the head of the household, oneself or no member at all is no link (`None`) — never a guess; a household where only
+some members are numbered is read by numbers, so an `of` naming an unnumbered member names nobody. A «?» on the
+`of` («2?») is taken off and reported as `doubtful`.
 """
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from importlib import resources
 from typing import Any
 
@@ -120,3 +127,39 @@ def output_schema(group: str) -> dict[str, Any]:
     return closed({"record": closed(record), "persons": {"type": "array", "items": closed(person)},
                    "doubtful": {"type": "array", "items": {"type": "string"}},
                    "alternatives": {"type": "array", "items": alternative}})
+
+
+@dataclass(frozen=True)
+class OfTarget:
+    """Whose a member is, as `of_targets` resolves it: `target` is the 0-based index into `persons` of the
+    member this one is written under (`None`: none, the head, oneself or nobody named), `doubtful` is true when
+    the `of` was written with a «?»."""
+    target: int | None
+    doubtful: bool = False
+
+
+def _text(value: object) -> str | None:
+    text = "" if value is None else str(value).strip()
+    return text or None
+
+
+def of_targets(persons: Sequence[Mapping[str, Any]]) -> list[OfTarget]:
+    """For each member of an answer's `persons`, whose it is (see the module's rule): by place when no member
+    has a written `number`, by number otherwise; the head, oneself and a name no member carries give `None`."""
+    numbers = [(_text(p.get("number")) or "").replace("?", "").strip().rstrip(".") or None for p in persons]
+    by_place = not any(numbers)
+    index: dict[str, int] = {}
+    for i, number in enumerate(numbers):
+        key = str(i + 1) if by_place else number
+        if key is not None:
+            index.setdefault(key, i)
+    result: list[OfTarget] = []
+    for i, person in enumerate(persons):
+        said = _text(person.get("of"))
+        doubtful = said is not None and "?" in said
+        key = said.replace("?", "").strip().rstrip(".") if said is not None else ""
+        target = index.get(key) if key else None
+        if target == i or (target is not None and persons[target].get("role") == "head"):
+            target = None
+        result.append(OfTarget(target, doubtful))
+    return result
