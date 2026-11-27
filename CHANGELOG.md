@@ -51,6 +51,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   changes then, and a planned create or delete is listed apart (PLANNED-CREATE, PLANNED-DELETE), not as MERGE. CONTENT is any real difference — every name field (a maiden name, nicknames),
   an event's date or place, the unions, the rest — where it was the surname and the event dates alone; DERIVED-NAME
   is a difference in an event's name alone.
+- verso-ru, the deaths' Familio CSV (`DeathRecordsCsvFamilioExporter`, and so the Familio справочник's deaths):
+  `пометки` carries the record's `comment=` and each person's — the deceased, every relative, the witnesses, the
+  clergy — before the witnesses' names, as the births' and the marriages' CSVs carry theirs; neither was exported. A
+  status kept as a catalog constant leaves the scribe's words in the person's `comment=`, and no CSV had them. The
+  plain deaths CSV (`DeathRecordsCsvExporter`) adds the comments of the people its row shows (the deceased, the first
+  relative, the witnesses) to `Комментарий`. A corpus's deaths
+  CSVs move where a death or one of its people carries a comment; nothing else moves.
 
 ## 0.1.55 — 2026-11-27
 

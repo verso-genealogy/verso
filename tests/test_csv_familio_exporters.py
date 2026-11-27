@@ -1165,7 +1165,7 @@ class TestDeathRecordsCsvFamilioExporter(unittest.TestCase):
             for i in range(50, 62):
                 self.assertEqual(row[i], "")
             self.assertEqual(row[62], "")  # Burial location
-            self.assertEqual(row[63], "cвидетели: Федоръ Сидоровъ; Анна Иванова")  # пометки (witness names)
+            self.assertEqual(row[63], "Тестовый комментарий; cвидетели: Федоръ Сидоровъ; Анна Иванова")  # пометки
             # Имена в оригинале — surname included when last_name_in_book=True (default).
             self.assertEqual(row[64], "Имена в МК: Иванъ Петровъ Сидоров; Петръ Васильевъ Сидоров")
 
@@ -1935,6 +1935,40 @@ class TestDivorceRecordsCsvFamilioExporter(unittest.TestCase):
         self.assertEqual(len(rows), 2)
         self.assertEqual(rows[0][8], "6")
         self.assertEqual(rows[1][8], "12")
+
+
+
+
+class TestDeathCommentsInNotes(unittest.TestCase):
+    """The record's comment and its people's reach the deaths CSV's пометки (В15)."""
+
+    def _row(self, death):
+        records = DeathRecords(archive="ГАТО", fund="284", inventory="1", case="123", village="Заманиловка",
+                               church="Троицкая церковь", year=1804, records=[death])
+        return DeathRecordsCsvFamilioExporter().table(records).rows[0]
+
+    def test_record_and_people_comments_lead_the_notes(self):
+        death = Death(
+            record_num=1, gender=Gender.MALE, d_day=15, d_month=Month.JUNE, b_day=16, b_month=Month.JUNE,
+            deceased=Person("Иванъ", name_modern_orth="Иван", gender=Gender.MALE, comment="«запасный рядовой»"),
+            relatives=[
+                Relative(Person("Марія", name_modern_orth="Мария", gender=Gender.FEMALE, comment="солдатка"),
+                         Relationship.WIFE),
+                Relative(Person("Петръ", name_modern_orth="Петр", gender=Gender.MALE, comment="имя неясно"),
+                         Relationship.SON),
+            ],
+            witness1=Person("Федоръ", name_modern_orth="Федор", gender=Gender.MALE, comment="отставной"),
+            comment="умер от горячки",
+        )
+        notes = str(self._row(death)[63])
+        self.assertTrue(
+            notes.startswith("умер от горячки; «запасный рядовой»; солдатка; имя неясно; отставной; cвидетели: "),
+            notes)
+
+    def test_no_comment_leaves_the_notes_as_before(self):
+        death = Death(record_num=1, gender=Gender.MALE, d_day=15, d_month=Month.JUNE, b_day=16, b_month=Month.JUNE,
+                      deceased=Person("Иванъ", name_modern_orth="Иван", gender=Gender.MALE))
+        self.assertEqual(self._row(death)[63], "")
 
 
 if __name__ == '__main__':

@@ -927,5 +927,30 @@ class TestDeathReviewedFlag(unittest.TestCase):
         self.assertFalse(d.reviewed)
 
 
+
+
+class TestDeathCSVExportPersonComments(unittest.TestCase):
+    def test_csv_export_keeps_the_comments_of_the_row_s_people(self):
+        """The deceased's, the relative's and a witness's comment= reach the CSV's Комментарий (В15)."""
+        d = death(
+            1, Gender.MALE, 15, 16, 6, 6,
+            person("Иван", patr_orig="Петров", gender=Gender.MALE, comment="запасный рядовой"),
+            relatives=[relative(person("Мария", patr_orig="Иванова", gender=Gender.FEMALE, comment="солдатка"),
+                                Relationship.WIFE)],
+            witness1=person("Федор", patr_orig="Сидоров", gender=Gender.MALE, comment="отставной унтер-офицер"),
+            witness2=None,
+            comment="умер от горячки",
+        )
+        dr = death_records("ГАТО", "Ф. 181", "Оп. 1", "Д. 123", "Заманиловка", "Церковь", 1804, d)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            csv_file = DeathRecordsCsvExporter().export(dr, tmpdir)
+            with open(csv_file, encoding='utf-8') as f:
+                rows = list(csv.reader(f))
+
+        self.assertEqual(
+            rows[1][40], "умер от горячки. запасный рядовой. солдатка. отставной унтер-офицер")
+
+
 if __name__ == '__main__':
     unittest.main()

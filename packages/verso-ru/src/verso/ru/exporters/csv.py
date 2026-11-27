@@ -337,7 +337,11 @@ class DeathRecordsCsvExporter(RecordsExporter):
                     comments.append("Дата погребения не указана, взята дата смерти")
                 if r.comment:
                     comments.append(r.comment)
-                for p in [r.priest, r.deacon, r.dyachok, r.sexton]:
+                # A comment of each person the row shows: the deceased, the first relative, the witnesses,
+                # the clergy. A status the catalog keeps as a constant leaves the scribe's words in the person's
+                # comment= (В15), and they are the CSV's only place for them.
+                for p in [r.deceased, r.relative, r.witness1, r.witness2,
+                          r.priest, r.deacon, r.dyachok, r.sexton]:
                     if p and p.comment:
                         comments.append(p.comment)
                 final_comment = ". ".join(comments)
