@@ -30,7 +30,15 @@ _AGE_UNIT_TO_SLOT = {
     "д": 3, "дн": 3, "день": 3, "дня": 3, "дней": 3,
 }
 
-_AGE_TOKEN_RE = re.compile(r'(\d+)\s*([а-яё]+)\.?', re.IGNORECASE)
+#: The fractions a clerk writes in an age («2½», «5½ мѣс», «17¾»), and their values. The page types the first
+#: three; the parser reads them all.
+FRACTIONS = {"½": 1 / 2, "¼": 1 / 4, "¾": 3 / 4, "⅓": 1 / 3, "⅔": 2 / 3}
+
+#: A number as an age writes it before a unit: whole («5»), or whole with a fraction («5½», «½»).
+AGE_NUMBER = r'\d*[½¼¾⅓⅔]|\d+'
+
+_AGE_TOKEN_RE = re.compile(rf'({AGE_NUMBER})\s*([а-яё]+)\.?', re.IGNORECASE)
+_NUMBER_RE = re.compile(r'^(\d*)([½¼¾⅓⅔])$|^(\d+(?:[.,]\d+)?)$')
 
 # Common pre-formal Russian idioms used by old metric books — pre-expanded
 # so authors don't have to migrate, and `split_age` produces the same
@@ -43,6 +51,18 @@ _AGE_IDIOMS = {
 }
 
 
+def age_number(text) -> float | None:
+    """The number a slot of an age writes: «2», «2½», «½», «2.5», «2,5» → 2, 2.5, 0.5, 2.5, 2.5; None for
+    anything else («полгода», «2½x», «1/2»)."""
+    m = _NUMBER_RE.match(str(text).strip())
+    if not m:
+        return None
+    whole, fraction, decimal = m.groups()
+    if decimal is not None:
+        return float(decimal.replace(",", "."))
+    return int(whole or 0) + FRACTIONS[fraction]
+
+
 def split_age(age):
     """Split age into (Лет, Месяцев, Недель, Дней) tuple.
 
@@ -50,7 +70,8 @@ def split_age(age):
       - None → all empty
       - int / float → goes into Лет
       - bare digit string → goes into Лет
-      - compound string like "19 лет 6 мес", "6 м", "1 н" → parsed by unit
+      - compound string like "19 лет 6 мес", "6 м", "1 н" → parsed by unit; a number
+        may carry a fraction («5½ мес» → months «5½»), read by `age_number`
       - unparseable string → placed verbatim into Лет
     """
     if age is None:
@@ -145,7 +166,7 @@ def age_recorded(age) -> bool:
         age = age.strip()
     return age not in _AGE_ABSENT
 
-# A bare decimal age string, e.g. "2.5" / "34,5" (mirrors census_age._BARE_NUMBER_RE).
+# A bare decimal age string, e.g. "2.5" / "34,5" (census_age reads it through `age_number`).
 _DECIMAL_AGE_RE = re.compile(r'^(\d+[.,]\d+)$')
 
 # (one, few, many) per slot, in split_age order.
@@ -246,7 +267,11 @@ def format_age(age):
                      str(months) if months else "", "", "")
             return _render_slots(slots)
 
-    return _render_slots(split_age(age))
+    slots = split_age(age)
+    if any(v and age_number(v) is not None and not v.isdigit() for v in slots):
+        # A fraction («5½ мес») is the book's own form: shown as it is written.
+        return str(age).strip()
+    return _render_slots(slots)
 
 
 # Calendar-free conversions. The sources give ages in whole units a clerk
@@ -287,9 +312,8 @@ def age_bounds(age) -> tuple[float, float] | None:
     for value, factor in parts:
         if not value:
             continue
-        try:
-            number = float(str(value).replace(",", "."))
-        except ValueError:
+        number = age_number(value)
+        if number is None:
             return None
         total += number * factor
         # The last (smallest) unit written sets the width; a fraction in it

@@ -53,6 +53,21 @@ Revision and confession lists can be started blank (`BookSpec(kind="census")`, `
 - verso-ru: CAI002's skip predicates moved to `linters.checks.census_age.link_age_pair`, which the linter on the JSON and
   the page's `age_gap` both read; no finding moves.
 
+An age written with a fraction, as a clerk wrote it («2½», «17½», «5½ мес»), is read as the number it is. A corpus
+whose ages write no fraction does not move; one that does gains a census birth date for such an age (none was
+resolved), its intervals in the checks, and no AGE002 on it; the prose of its documents does not move.
+
+### Changed
+
+- verso-ru, `verso.ru.ages`: an age's number may carry ½ ¼ ¾ ⅓ ⅔, bare («2½», «½») or before a unit («5½ мес»,
+  «1 г 2½ мес»). `split_age` puts it in its slot (`"5½ мес"` → months `"5½"`; a bare one stays in Лет as before); the
+  new `age_number` reads a slot («2½» → 2.5, «2,5» → 2.5); `age_bounds` reads a fraction as exact; `format_age`
+  gives an age with a fraction back as written. The census resolvers carry a fraction down into whole units
+  («20½» → 20 years 6 months, «4½ мес» → 4 months 15 days); AGE002 (`is_valid_age_string`), the census-age linter
+  and the consolidation finder's ages read it too. New public names `FRACTIONS`, `AGE_NUMBER`, `age_number`.
+- The plugin `verso-reading` (`dsl-writer`, `metric-books`, `census`): a fraction the book writes goes into the DSL
+  as written, `age="2½"`, never rounded, a decimal or a comment alone.
+
 ## 0.1.53 — 2026-11-27
 
 A site built by `verso site` moves, from a reader's review: the search narrows what it finds by years, source, parish and to the records read against their scans, the filters kept in the address; a record's surnames lead to their page of the index of names; a reading with a «?» stands on its sure page, marked (its own page under `names/` gone), and one not made out in the indexes' last section; no two books of a year read alike, and a count from five figures on sets its thousands apart; the front page's tiles are their links whole, and the books' page opens with its archives and funds. `search/index.json`'s books gain their year, source and parish. `verso dsllint` and the checks of a record on records JSON (`linters.hosted`) gain an advisory rule, `MIL001`: a soldier's status written as free text that a catalog constant names is a warning, so a corpus that gates advisory findings on a baseline records the new ones (or migrates with the new `verso migrate-soldier-statuses`). The `name-days` signal is worded anew, its catalog params changed (see **Changed**). A corpus's CSVs, Terraform, records JSON and facts do not move.

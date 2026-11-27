@@ -347,6 +347,8 @@ Two rules specific to scan work:
 - **Mark the file `reviewed=False`** while any reading is open. `census_records(reviewed=False)`
   sets it for the whole file, `household(reviewed=…)` overrides per двор. An unreviewed
   household emits no profiles, document or union, so a half-read двор cannot reach Geni.
+- **A fraction is part of the age.** «20½» goes in as written, `age="20½"` (and `previous_age="20½"`),
+  not rounded and not as a decimal: the library reads ½ ¼ ¾ as the number they are.
 - **Never fill a gap from arithmetic.** If a figure is illegible, omit the age and say why in
   `comment=`. Back-computing it from the next revision turns a transcription into an
   assertion, and the next reader cannot tell which is which.

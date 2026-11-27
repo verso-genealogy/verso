@@ -57,6 +57,7 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, NamedTuple
 
+from verso.ru.ages import AGE_NUMBER, age_number
 from verso.ru.census_revisions import PREVIOUS_AGE_REVISION_YEAR
 from verso.ru.linters.checks.census_redundancy import _char_col
 from verso.core.i18n import Message
@@ -66,9 +67,8 @@ from verso.ru.linters.checks import shared_ast
 
 # Year-unit tokens (mirror verso/ru/linters/checks/ages.py `_VALID_UNITS`).
 _YEAR_UNITS = frozenset({"г", "л", "лет", "год", "года", "годов"})  # i18n: content — the age units and comment words the DSL writes
-_AGE_TOKEN_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*([а-яё]+)\.?", re.IGNORECASE)  # i18n: content — the age units and comment words the DSL writes
+_AGE_TOKEN_RE = re.compile(rf"(\d+(?:[.,]\d+)?|{AGE_NUMBER})\s*([а-яё]+)\.?", re.IGNORECASE)  # i18n: content — the age units and comment words the DSL writes
 # A bare numeric age string, e.g. "34.5" (a real Маниловка 1858 form).
-_BARE_NUMBER_RE = re.compile(r"^\s*(\d+(?:[.,]\d+)?)\s*$")
 
 # CAI004/CAI005: departures that leave the member OUTSIDE the revision, so the
 # «лета по нынешней ревизии» column is blank for them.
@@ -189,16 +189,16 @@ def _age_years(node: ast.expr | None) -> int | None:
 def age_years_str(s: str) -> int | None:
     """`_age_years` for a raw string: `"34.5"` → 34; `"43 года 11 мес"` → 43;
     `"6 мес"` → 0 (an infant); unparseable → None."""
-    bare = _BARE_NUMBER_RE.match(s)
-    if bare:
-        return int(float(bare.group(1).replace(",", ".")))
+    bare = age_number(s)
+    if bare is not None:
+        return int(bare)
     tokens = _AGE_TOKEN_RE.findall(s)
     if not tokens:
         return None
     years = 0
     for num, unit in tokens:
         if unit.lower() in _YEAR_UNITS:
-            years += int(float(num.replace(",", ".")))
+            years += int(age_number(num) or 0)
     return years
 
 

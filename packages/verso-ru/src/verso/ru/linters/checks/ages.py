@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 from typing import NamedTuple
 
-from verso.ru.ages import AGE_CALLS, AGE_KWARGS, whole_years
+from verso.ru.ages import AGE_CALLS, AGE_KWARGS, AGE_NUMBER, whole_years
 from verso.ru.linters.checks.census_redundancy import _char_col
 from verso.ru.linters.issue import as_dict, issue as finding, line_text, says
 from verso.ru.linters.checks import shared_ast
@@ -46,7 +46,7 @@ _VALID_UNITS = frozenset({
     "д", "дн", "день", "дня", "дней",  # i18n: content — the age units the sources write
 })
 
-_TOKEN_RE = re.compile(r'(\d+)\s*([а-яё]+)\.?', re.IGNORECASE)  # i18n: content — the age units the sources write
+_TOKEN_RE = re.compile(rf'({AGE_NUMBER})\s*([а-яё]+)\.?', re.IGNORECASE)  # i18n: content — the age units the sources write
 _AGE_KWARGS = AGE_KWARGS
 _RECORD_FUNCS = AGE_CALLS
 # The ages a call may pass positionally: `death(record_num, gender, d_day, b_day,
@@ -73,7 +73,7 @@ def is_valid_age_string(s: str) -> bool:
     s = s.strip()
     if not s:
         return False
-    if s.isdigit():
+    if s.isdigit() or re.fullmatch(AGE_NUMBER, s):   # «2», «2½», «½»
         return True
     if s.lower() in _VALID_IDIOMS:
         return True
