@@ -133,9 +133,11 @@ def output_schema(group: str) -> dict[str, Any]:
 class OfTarget:
     """Whose a member is, as `of_targets` resolves it: `target` is the 0-based index into `persons` of the
     member this one is written under (`None`: none, the head, oneself or nobody named), `doubtful` is true when
-    the `of` was written with a «?»."""
+    the `of` was written with a «?», and `under_head` is true when the `of` named the head: the default, empty and
+    right, told apart from oneself and nobody, which are reading errors."""
     target: int | None
     doubtful: bool = False
+    under_head: bool = False
 
 
 def _text(value: object) -> str | None:
@@ -145,7 +147,8 @@ def _text(value: object) -> str | None:
 
 def of_targets(persons: Sequence[Mapping[str, Any]]) -> list[OfTarget]:
     """For each member of an answer's `persons`, whose it is (see the module's rule): by place when no member
-    has a written `number`, by number otherwise; the head, oneself and a name no member carries give `None`."""
+    has a written `number`, by number otherwise; the head, oneself and a name no member carries give `None`, the head
+    told apart from the other two by `under_head`."""
     numbers = [(_text(p.get("number")) or "").replace("?", "").strip().rstrip(".") or None for p in persons]
     by_place = not any(numbers)
     index: dict[str, int] = {}
@@ -159,7 +162,8 @@ def of_targets(persons: Sequence[Mapping[str, Any]]) -> list[OfTarget]:
         doubtful = said is not None and "?" in said
         key = said.replace("?", "").strip().rstrip(".") if said is not None else ""
         target = index.get(key) if key else None
-        if target == i or (target is not None and persons[target].get("role") == "head"):
+        under_head = target is not None and target != i and persons[target].get("role") == "head"
+        if target == i or under_head:
             target = None
-        result.append(OfTarget(target, doubtful))
+        result.append(OfTarget(target, doubtful, under_head))
     return result

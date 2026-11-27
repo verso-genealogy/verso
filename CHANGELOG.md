@@ -15,7 +15,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   one written to the 0.1.55 census schema. `task.of_targets(persons)` resolves each member's `of` to the index of
   the member it names, one rule for every client: by the 1-based place in `persons` when no member has a written
   `number`, else by `number`; an `of` naming the head, oneself or no member (also in a household numbered in part)
-  is no link, never a guess; an `of` written «2?» resolves as «2» and is reported `doubtful`. The census prompt and schema changed
+  is no link, never a guess, and `OfTarget.under_head` tells the head from oneself and nobody; an `of` written «2?» resolves as «2» and is reported `doubtful`. The census prompt and schema changed
   (the test's `PROMPT_HASH` moves); the metric groups' prompts and schemas did not. The census prompt equals the one
   measured on the reading benchmark apart from the shared «?»/`alternatives` lines main added in 0.1.55.
 
