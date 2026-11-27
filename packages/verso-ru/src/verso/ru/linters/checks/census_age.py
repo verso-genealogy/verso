@@ -67,9 +67,9 @@ from verso.ru.linters.checks import shared_ast
 
 # Year-unit tokens (mirror verso/ru/linters/checks/ages.py `_VALID_UNITS`).
 _YEAR_UNITS = frozenset({"г", "л", "лет", "год", "года", "годов"})  # i18n: content — the age units and comment words the DSL writes
-_AGE_TOKEN_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*([а-яё]+)\.?", re.IGNORECASE)
-_BARE_NUMBER_RE = re.compile(r"^\s*(\d+(?:[.,]\d+)?)\s*$")  # i18n: content — the age units and comment words the DSL writes
+_AGE_TOKEN_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*([а-яё]+)\.?", re.IGNORECASE)  # i18n: content — the age units and comment words the DSL writes
 # A bare numeric age string, e.g. "34.5" (a real Маниловка 1858 form).
+_BARE_NUMBER_RE = re.compile(r"^\s*(\d+(?:[.,]\d+)?)\s*$")
 
 # CAI004/CAI005: departures that leave the member OUTSIDE the revision, so the
 # «лета по нынешней ревизии» column is blank for them.
