@@ -18,6 +18,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   is no link, never a guess, and `OfTarget.under_head` tells the head from oneself and nobody; an `of` written «2?» resolves as «2» and is reported `doubtful`. The census prompt and schema changed
   (the test's `PROMPT_HASH` moves); the metric groups' prompts and schemas did not. The census prompt equals the one
   measured on the reading benchmark apart from the shared «?»/`alternatives` lines main added in 0.1.55.
+||||||| parent of 1d49a03 (Changelog: the newborn's patronymic from the father)
+
+### Changed
+
+- verso-ru, `Birth.__init__`: a newborn whose record writes no patronymic takes the father's name as one, both forms
+  (`patr_old`, `patr_modern`), as `Death.__init__` gives a deceased child; `Birth.child_patronymic_derived()` says
+  so (by what the `person()` call wrote), `Birth.written_child()` gives the child without it. Every output that
+  already derived it (`derive_child_patronymic`: the Geni translator, the CSVs) is unchanged — «Имена в МК» keeps the
+  book's word (`_shallow_person_without_patr`, as for a deceased child). The records JSON gains it under the child's
+  `derived`; measured on a corpus of six villages, 14 734 newborns, and nothing else moves there; its Terraform, CSVs,
+  familio and timeline do not move.
+- verso-ru, the facts layer: the newborn's Stated name claim carries no patronymic, as before; the derived one is
+  restated `Derived(PATRONYMIC_FROM_FATHER)` (new in `verso.ru.facts.model`), and neither `father-claims` nor
+  `reconcile` counts it — it restates the record's own father. `father-claims` drops the deceased child's Derived
+  twin too (its Stated claim says the same). The facts snapshot does not move.
+- verso-ru, the consolidation channels (`candidates`, `sibling-spacing`/`death-age`, `stale-claims`), the people's
+  lives (`verso.ru.persons.lives`) and a record's label read the newborn as written (`written_child`): a patronymic
+  made of the father is no key, and two spellings of his name («Иванъ», «Іоаннъ») would part a child from his own
+  burial. Their reports do not move.
+- verso-ru, the site: a newborn with no surname is listed under the derived patronymic in the index of patronymics,
+  as a deceased child already is, where it was on the page of those written by a name alone; `infant_patronymic`,
+  for an export made before this release, derives both forms too.
+- Tests: the golden files `tests/golden/records/fixture.json` and `tests/golden/ui/value-at.json` gain the
+  newborns' derived patronymic (verso-app keeps a copy of the second).
 
 ## 0.1.55 — 2026-11-27
 
