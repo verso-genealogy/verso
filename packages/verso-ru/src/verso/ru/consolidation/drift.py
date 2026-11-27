@@ -10,10 +10,13 @@ printing the fix recipe per class:
   PROJECT-REPLACE  projects delta forces a replace   → pin via additional_info if the
                    membership is an explicit link, else it's a co-author location-association
                    (apply "access denied") → needs lifecycle ignore_changes / accept replace
-  CONTENT          a real names/birth/death/baptism value differs → preserve via
-                   additional_info (last_name / GeniEvent), or update the DSL
-  DERIVED-NAME     only a birth/death event *name* recomputed (dates identical) → cosmetic
-                   Geni-derived churn, safe to leave
+  CONTENT          a real value differs — a name field, an event's date or place, unions, about … →
+                   preserve via additional_info (last_name / GeniEvent), or update the DSL
+  DERIVED-NAME     only an event's *name* recomputed («Birth of …», the rest of it identical) →
+                   cosmetic Geni-derived churn, safe to leave
+
+Without a drift block (no refresh, or nothing changed on Geni) the plan's resource_changes are read
+instead: its no-ops are skipped, and so is a value the plan leaves to be computed (`after_unknown`).
 
 Usage:
     python -m verso.ru.consolidation.drift <village>/terraform/geni [--plan .plan]
@@ -40,34 +43,84 @@ def _load_plan(arg: str, plan_file: str) -> dict[str, Any]:
     return json.loads(out.stdout)
 
 
-def _date(ev: dict[str, Any] | None) -> tuple[Any, ...] | None:
-    d = (ev or {}).get("date") if ev else None
-    if not d:
-        return None
-    return (d.get("day"), d.get("month"), d.get("year"), d.get("range"))
+# A profile's events: Geni recomputes an event's `name` («Birth of …») from the profile's names, so a
+# difference in it alone is derived churn; every other field of the event is a real value.
+_EVENTS = ("birth", "baptism", "death", "burial")
+# Compared on their own (MERGE, PROJECT-REPLACE) before the content is.
+_IDENTITY = ("id", "guid", "projects")
 
 
-def _last_name(names: dict[str, Any] | None) -> str:
-    return (((names or {}).get("ru") or {}).get("last_name")) or ""
+def _known(before: Any, after: Any, unknown: Any) -> Any:
+    """`after` with each value the plan leaves unknown (`after_unknown`: computed on apply) taken from
+    `before`: a value yet to be computed is no difference. `unknown` mirrors `after` — True at a value, a dict
+    for an object, a list for a list (a computed element of it)."""
+    if unknown is True:
+        return before
+    if isinstance(unknown, dict):
+        a = after if isinstance(after, dict) else {}
+        b = before if isinstance(before, dict) else {}
+        if not unknown:
+            return after
+        return {k: _known(b.get(k), a.get(k), unknown.get(k)) for k in set(a) | set(unknown)
+                if k in a or unknown.get(k) is not None}
+    if isinstance(unknown, list) and isinstance(after, list):
+        b = before if isinstance(before, list) else []
+        return [_known(b[i] if i < len(b) else None, v, unknown[i] if i < len(unknown) else None)
+                for i, v in enumerate(after)]
+    return after
 
 
-def classify(before: dict[str, Any], after: dict[str, Any]) -> tuple[str, str]:
-    """Return (category, detail) for one resource change/drift."""
+def _bare(value: Any) -> Any:
+    """A value with the empties the provider writes either way — null, "", [], {} — read as one."""
+    if isinstance(value, dict):
+        value = {k: v for k, v in ((k, _bare(v)) for k, v in value.items()) if v is not None}
+    elif isinstance(value, list):
+        value = [_bare(v) for v in value]
+    return None if value in ("", [], {}) else value
+
+
+def _event(ev: Any) -> Any:
+    return {k: v for k, v in ev.items() if k != "name"} if isinstance(ev, dict) else ev
+
+
+def _names_diff(before: Any, after: Any) -> list[str]:
+    """The name fields that differ, `ru.last_name`-style, over every locale."""
+    b, a = before or {}, after or {}
+    out = []
+    for loc in sorted(set(b) | set(a)):
+        bl, al = b.get(loc) or {}, a.get(loc) or {}
+        out += [f"{loc}.{f}" for f in sorted(set(bl) | set(al)) if bl.get(f) != al.get(f)]
+    return out
+
+
+def classify(before: dict[str, Any], after: dict[str, Any],
+             unknown: dict[str, Any] | None = None) -> tuple[str, str] | None:
+    """Return (category, detail) for one resource change/drift, None when nothing differs: a no-op of the
+    plan, or a change whose every difference is a value yet to be computed (`unknown`, the plan's
+    `after_unknown`)."""
+    before, after = _bare(before) or {}, _bare(_known(before, after, unknown or {})) or {}
     if before.get("id") != after.get("id") or before.get("guid") != after.get("guid"):
         return "MERGE", f"id {before.get('id')} → {after.get('id')}"
     if (before.get("projects") or []) != (after.get("projects") or []):
         b, a = set(before.get("projects") or []), set(after.get("projects") or [])
         return "PROJECT-REPLACE", f"+{sorted(b - a) or sorted(a - b)}"
     # real content vs derived-name-only
-    real = []
-    if _last_name(before.get("names")) != _last_name(after.get("names")):
-        real.append("last_name")
-    for f in ("birth", "baptism", "death"):
-        if _date(before.get(f)) != _date(after.get(f)):
-            real.append(f)
+    real, derived = [], []
+    for key in sorted(set(before) | set(after)):
+        b, a = before.get(key), after.get(key)
+        if key in _IDENTITY or b == a:
+            continue
+        if key == "names":
+            real += _names_diff(b, a)
+        elif key in _EVENTS:
+            (real if _event(b) != _event(a) else derived).append(key)
+        else:
+            real.append(key)
     if real:
         return "CONTENT", ",".join(real)
-    return "DERIVED-NAME", "event name recompute only"
+    if derived:
+        return "DERIVED-NAME", "event name recompute only"
+    return None
 
 
 _RECIPE = {
@@ -95,15 +148,29 @@ def main(argv: list[str] | None = None) -> int:
     # Drift (external Geni changes detected on refresh) is the authoritative view;
     # fall back to resource_changes when no drift block is present.
     buckets: dict[str, list[str]] = defaultdict(list)
+    planned: dict[str, list[str]] = defaultdict(list)
+    # A no-op or a read of resource_changes changes nothing: without a drift block every resource of the
+    # plan is listed there, and each no-op once counted as DERIVED-NAME (В18).
     for d in plan.get("resource_drift") or plan.get("resource_changes") or []:
         ch = d.get("change") or {}
+        if ch.get("actions") in (["no-op"], ["read"]):
+            continue
+        if ch.get("actions") in (["create"], ["delete"]):  # a planned create or delete is no drift of a resource
+            planned[ch["actions"][0]].append(d["address"])
+            continue
         before, after = ch.get("before") or {}, ch.get("after") or {}
-        cat, detail = classify(before, after)
+        found = classify(before, after, ch.get("after_unknown"))
+        if found is None:
+            continue
+        cat, detail = found
         buckets[cat].append(f"  {d['address']}  ({detail})")
 
     order = ["MERGE", "PROJECT-REPLACE", "CONTENT", "DERIVED-NAME"]
     total = sum(len(v) for v in buckets.values())
-    print(f"External drift: {total} resource(s)\n")
+    if plan.get("resource_drift"):
+        print(f"External drift: {total} resource(s)\n")
+    else:
+        print(f"External drift: none in the plan; planned changes: {total} resource(s)\n")
     for cat in order:
         rows = buckets.get(cat, [])
         if not rows:
@@ -125,6 +192,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"\n── PLANNED-REPLACE ({len(replaces)}) — non-destructive (provider "
               f"re-adopts by guid); usually projects-forced (PROJECT-REPLACE)")
         print("\n".join(f"  {a}" for a in sorted(replaces)))
+    for action, label in (("create", "PLANNED-CREATE"), ("delete", "PLANNED-DELETE")):
+        if planned[action]:
+            print(f"\n── {label} ({len(planned[action])})")
+            print("\n".join(f"  {a}" for a in sorted(planned[action])))
     return 0
 
 
