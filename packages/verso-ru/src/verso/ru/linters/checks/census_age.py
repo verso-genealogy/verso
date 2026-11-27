@@ -191,7 +191,7 @@ def age_years_str(s: str) -> int | None:
     """`_age_years` for a raw string: `"34.5"` → 34; `"43 года 11 мес"` → 43;
     `"6 мес"` → 0 (an infant); unparseable → None."""
     if has_fraction(s):
-        # A fraction is read whole or not at all: «20½» → 20, «2½ года» → 2, «2 ½ лет» → None.
+        # A fraction is read whole or not at all: "20½" is 20, "2½" before a year unit 2, a "½" apart from its number nothing.
         years = split_age(s)[0]
         number = age_number(years) if years else 0.0
         if number is None or (years == s.strip() and age_number(s) is None):
