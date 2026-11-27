@@ -1831,13 +1831,15 @@ walk_diverges = "{code}, folios {lo}-{hi}: the walk does not converge ({hits} sc
 nothing_matched = "{code}: no scan matched to a folio — check the file names with `notes`."
 
 [records.blank]
-kind = "no blank book of the kind «{kind}»: births, marriages or deaths"
+kind = "no blank book of the kind «{kind}»: there are births, marriages, deaths and census (a revision list; a confession list is its preset)"
 year = "the year {year} is outside 1700–1930"
 shelfmark = "a book needs its fund, inventory and case: «{fund}», «{inventory}», «{case}»"
 path = "«{value}» cannot be part of a book's path: no «/», «\\» or «..», no padding spaces or control characters, and a locality is not empty, «.» or «..»"
 parish = "a book needs the parish it is kept in"
 defaults = "the book's defaults are not accepted: {error}"
 roll_field = "«{field}» does not apply to this book"
+roll_value = "«{field}» cannot be {value}: a year is a whole number, a mark is true or false, a name is a text"
+prev_revision = "the previous revision {previous} is not before the book's year {year}"
 
 [records.cite]
 no_sex = "{kind} № {number}{sheet}: no sex — a birth's and a death's number is written with the sex (m{number}, f{number})"
