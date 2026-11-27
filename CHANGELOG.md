@@ -27,6 +27,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   (`pages.surname_links`), `records.render` them by the persona's place among the record's `persons`, and a
   `model.Mention` carries that place. The guide's paragraph on «?» readings now says what the index does with them
   (a reading in doubt on its sure page, one not made out in the last section). Only the site moves.
+- verso-ru, the site, from the same review: a tile of the front page is its link whole — its title and what it
+  leads to — not the title alone. The books' page (`books/`) opens with its contents: each archive and its funds
+  beside it, linked to their headings, which gain anchors of the shelfmark, not of its words, so a link holds in
+  any language (`#gato`, `#gato-1049-10`, `#unknown`, `#cards`; a second of one spelling numbered). A page of one
+  archive's one fund has none. Books of no archive stand under one heading, «шифр не установлен.» said once, not
+  twice. New catalog key `site.books.toc`. Only the site moves.
 - verso-ru: **a soldier's status written as free text is flagged, as a warning.** `MIL001` (`military_status`) is
   advisory (`severity = "warn"`) and fires on texts a corpus already holds («запасный солдат», «уволенный в запас
   армии», «жена запасного рядового»). A corpus that gates advisory findings on a baseline records them (`verso

@@ -56,8 +56,8 @@ def test_the_books_stand_by_archive_fund_and_file(changed: Change, ui: Ui, ctx: 
     def unknown(node: dict[str, Any]) -> None:
         node["documents"][1]["written"] |= {"fund": "?", "inventory": "?", "case": "?"}
     page = pages.books_index(changed(unknown), ui, ctx)
-    assert re.findall(r"<h2>([^<]*)</h2>", page) == ["ГАПО", "ГАРО", "ГАТО", "ЦГА", "Карточки внешних каталогов"]
-    assert "<h3>ф. 47, оп. 9</h3>" in page and "<h3>шифр не установлен.</h3>" in page
+    assert re.findall(r"<h2[^>]*>([^<]*)</h2>", page) == ["ГАПО", "ГАРО", "ГАТО", "ЦГА", "Карточки внешних каталогов"]
+    assert re.search(r"<h3[^>]*>ф\. 47, оп\. 9</h3>", page) and re.search(r"<h3[^>]*>шифр не установлен\.</h3>", page)
     assert 'href="../books/manilovka/47-9-755/1900/birth/"' in page and "не вычитано: 2" in page
 
 
@@ -469,7 +469,92 @@ def test_the_funds_of_an_archive_stand_by_their_numbers(changed: Change, ui: Ui,
     def one_archive(node: dict[str, Any]) -> None:
         node["documents"][5]["written"]["archive"] = "ЦГА"           # the list of fund 1978 beside fund 47
     page = pages.books_index(changed(one_archive), ui, ctx)
-    assert re.findall(r"<h3>(ф\. \d+)", page)[-2:] == ["ф. 47", "ф. 1978"]
+    assert re.findall(r"<h3[^>]*>(ф\. \d+)", page)[-2:] == ["ф. 47", "ф. 1978"]
+    assert re.search(r'<h2 id="[a-z]+">ЦГА</h2>', page)                # an archive of two funds: one anchor, unnumbered
+
+
+def _toc(page: str) -> list[tuple[str, list[tuple[str, str]]]]:
+    """The contents atop the books' page: each archive's (anchor, name), then its funds'."""
+    found = re.search(r'<nav class="toc" aria-label="Архивы и фонды"><ul>(.*?)</ul></nav>', page)
+    assert found, page
+    rows = []
+    for row in re.findall(r"<li>(.*?)</li>", found.group(1)):
+        links = re.findall(r'<a(?: class="(archive)")? href="#([^"]*)">([^<]*)</a>', row)
+        assert links[0][0] == "archive" and all(not cls for cls, _, _ in links[1:])
+        rows.append(((links[0][1], links[0][2]), [(anchor, text_) for _, anchor, text_ in links[1:]]))
+    return rows
+
+
+def test_the_books_page_opens_with_its_archives_and_funds(changed: Change, ui: Ui, ctx: Context) -> None:
+    """Atop the page, each archive and its funds lead to their headings below, in the order the page stands in."""
+    def unknown(node: dict[str, Any]) -> None:
+        node["documents"][1]["written"] |= {"fund": "?", "inventory": "?", "case": "?"}
+    page = pages.books_index(changed(unknown), ui, ctx)
+    toc = _toc(page)
+    headings = re.findall(r'<h([23]) id="([^"]*)">([^<]*)</h\1>', page)
+    assert [(anchor, text_) for level, anchor, text_ in headings if level == "2"] == [archive for archive, _ in toc]
+    assert [(anchor, text_) for level, anchor, text_ in headings if level == "3"] == [
+        fund for _, funds in toc for fund in funds]
+    assert page.index('<nav class="toc"') < page.index("<h2")
+    anchors = [anchor for _, anchor, _ in headings]
+    assert len(set(anchors)) == len(anchors) and all(re.fullmatch(r"[a-z0-9-]+", anchor) for anchor in anchors)
+    assert toc[0] == (("gapo", "ГАПО"), [("gapo-1605-59", "ф. 1605, оп. 59")])
+    assert all(anchor.startswith(archive + "-") for (archive, _), funds in toc for anchor, _ in funds)
+    assert toc[-1] == (("cards", "Карточки внешних каталогов"), [])                # cards: no fund
+    assert '<a class="archive" href="#cards">Карточки внешних каталогов</a></li>' in page
+
+
+def test_a_books_page_of_one_fund_has_no_contents(site: model.Site, ui: Ui, ctx: Context) -> None:
+    page = pages.books_index(replace(site, books=(site.book(BIRTHS),)), ui, ctx)
+    assert '<nav class="toc"' not in page and re.search(r'<h2 id="[a-z]+">ЦГА</h2>', page)
+
+
+def test_two_headings_of_one_spelling_have_anchors_of_their_own() -> None:
+    anchors = pages._anchors([(("ГАТО", "ф. 1, оп. 2"), ("gato", "1-2")), (("ГАТО-1", "ф. 2, оп. 3"), ("gato-1", "2-3")),
+                              (("ГАТО", "ф. 1, оп. 2, д."), ("gato", "1-2")), (("Гато", "ф. 2"), ("gato", "2"))])
+    assert anchors == {"ГАТО": "gato", "ГАТО-1": "gato-1", "Гато": "gato-2", ("ГАТО", "ф. 1, оп. 2"): "gato-1-2",
+                       ("ГАТО-1", "ф. 2, оп. 3"): "gato-1-2-3", ("ГАТО", "ф. 1, оп. 2, д."): "gato-1-2-2",
+                       ("Гато", "ф. 2"): "gato-2-2"}
+
+
+def test_the_anchors_are_the_shelfmarks_not_their_words(changed: Change, ui: Ui, ctx: Context,
+                                                         monkeypatch: pytest.MonkeyPatch) -> None:
+    """A fund's anchor is its numbers, an unknown one's or the cards' a word of their own: a catalog reworded, or a
+    site in another language, moves no link."""
+    def unknown(node: dict[str, Any]) -> None:
+        node["documents"][1]["written"] |= {"archive": "?", "fund": "?", "inventory": "?", "case": "?"}
+        node["documents"][2]["written"] |= {"fund": "?"}
+    site = changed(unknown)
+    page = pages.books_index(site, ui, ctx)
+    real = pages.t
+
+    def reworded_t(key: str, **kw: Any) -> str:
+        return f"«{real(key, **kw)}»"
+    monkeypatch.setattr(pages, "t", reworded_t)
+    reworded = pages.books_index(site, ui, ctx)
+    ids = re.findall(r'<h[23] id="([^"]*)"', page)
+    assert sorted(ids) == sorted(re.findall(r'<h[23] id="([^"]*)"', reworded))      # the order is the words'
+    assert "unknown" in ids and "cards" in ids and any(i.endswith("-unknown") for i in ids)
+    assert len(re.findall(r">шифр не установлен\.</h[23]>", page)) == 2    # an unknown fund of a known archive; no archive
+
+
+def test_an_archive_is_headed_as_written_and_anchored_even_with_no_letter(changed: Change, ui: Ui, ctx: Context) -> None:
+    def odd(node: dict[str, Any]) -> None:
+        node["documents"][0]["written"]["archive"] = "ЦГА?"         # in doubt, its shelfmark whole: beside ЦГА
+        node["documents"][5]["written"]["archive"] = "—"            # nothing a transliteration keeps
+    page = pages.books_index(changed(odd), ui, ctx)
+    assert re.search(r'<h2 id="tsga-2">ЦГА\?</h2>', page) and re.search(r'<h2 id="archive">—</h2>', page)
+
+
+def test_a_way_on_the_front_page_is_its_tile_whole(site: model.Site, ctx: Context) -> None:
+    """A tile of the front page is one link that holds both its title and what it leads to."""
+    ways = re.search(r'<ul class="ways">(.*?)</ul>', pages.front(site, ctx))
+    assert ways
+    tiles = re.findall(r"<li>(.*?)</li>", ways.group(1))
+    whole = [re.fullmatch(r'<a href="([^"]*)"><span class="way">([^<]*)</span> <span>[^<]+</span></a>', tile)
+             for tile in tiles]
+    assert [found.groups() if found else tile for found, tile in zip(whole, tiles, strict=True)] == [
+        ("years/", "Годы"), ("books/", "Книги"), ("names/", "Имена"), ("search/", "Поиск")]
 
 
 def test_a_name_nobody_could_read_indexes_nobody(changed: Change) -> None:

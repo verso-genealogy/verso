@@ -147,21 +147,34 @@ def books_index(site: Site, ui: Ui, ctx: Context) -> str:
     path = f"{urls.BOOKS}/"
     up = shell.root(path)
     groups: dict[tuple[str, str], list[Book]] = {}
+    # Each heading's anchor, of the shelfmark and not of its words in the site's language: a link to a fund holds
+    # whatever the catalog says.
+    bases: dict[tuple[str, str], tuple[str, str]] = {}
+    unknown = str(t("site.cite.unknown"))
     for book_ in site.books:
         shelf = book_.shelf
+        archive_ = shelf["archive"].replace("?", "")
         if book_.is_cards:
-            key = (str(t("site.book.cards_source")), "")
+            key, base = (str(t("site.book.cards_source")), ""), (urls.CARDS, "")
+        elif not archive_:                          # no archive, no fund of it: one heading, said once
+            key, base = (unknown, ""), (urls.UNKNOWN, "")
         elif any(part in ("", "?") for part in shelf.values()):
-            key = (shelf["archive"].replace("?", "") or str(t("site.cite.unknown")), str(t("site.cite.unknown")))
+            key, base = (archive_, unknown), (_slug(archive_, "archive"), urls.UNKNOWN)
         else:
             key = (shelf["archive"], str(t("site.book.fund", fund=shelf["fund"], inventory=shelf["inventory"])))
+            base = (_slug(shelf["archive"], "archive"), _slug(f"{shelf['fund']}-{shelf['inventory']}", "fund"))
         groups.setdefault(key, []).append(book_)
-    out = [f'<h1>{E(str(t("site.nav.books")))}</h1>']
-    archive = None
+        bases[key] = base
     # Archive by archive, a fund's number as a number («ф. 47» before «ф. 1978»), the cards last.
-    for (name, fund), found in sorted(groups.items(), key=lambda kv: (kv[1][0].is_cards, kv[0][0], _natural(kv[0][1]))):
+    ordered = sorted(groups.items(), key=lambda kv: (kv[1][0].is_cards, kv[0][0], _natural(kv[0][1])))
+    anchors = _anchors([(key, bases[key]) for key, _ in ordered])
+    out = [f'<h1>{E(str(t("site.nav.books")))}</h1>']
+    if len(ordered) > 1:
+        out.append(_toc(ordered, anchors))
+    archive = None
+    for (name, fund), found in ordered:
         if name != archive:
-            out.append(f"<h2>{E(name)}</h2>")
+            out.append(f'<h2 id="{anchors[name]}">{E(name)}</h2>')
             archive = name
         rows = "".join(
             f"<tr><td>{E(book_.shelf['case'] + (', ' + part_label(book_) if part_label(book_) else '')) if not book_.is_cards else ''}</td>"
@@ -171,9 +184,52 @@ def books_index(site: Site, ui: Ui, ctx: Context) -> str:
                                                       site.books.index(b))))
         head = "".join(f"<th>{E(str(label))}</th>" for label in (
             t("site.col.case"), t("site.col.year"), t("site.col.kind"), t("site.col.parish"), t("site.col.records")))
-        out.append((f"<h3>{E(fund)}</h3>" if fund else "") +
+        out.append((f'<h3 id="{anchors[(name, fund)]}">{E(fund)}</h3>' if fund else "") +
                    f'<div class="scroll"><table><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>')
     return shell.page(str(t("site.nav.books")), "".join(out), ctx=ctx, path=path)
+
+
+def _anchors(groups: Sequence[tuple[tuple[str, str], tuple[str, str]]]) -> dict[str | tuple[str, str], str]:
+    """An anchor for each archive's heading and each fund's, Latin as the site's paths are (`#gato`,
+    `#gato-1049-10`): each group's (archive, fund) and the bases of their anchors; a second of one spelling told
+    apart by a number."""
+    out: dict[str | tuple[str, str], str] = {}
+    taken: set[str] = set()
+
+    def claim(key: str | tuple[str, str], base: str) -> None:
+        found, count = base, 1
+        while found in taken:
+            count += 1
+            found = f"{base}-{count}"
+        taken.add(found)
+        out[key] = found
+
+    for (name, _), (archive, _) in groups:
+        if name not in out:
+            claim(name, archive)
+    for (name, fund), (_, base) in groups:
+        if fund:
+            claim((name, fund), f"{out[name]}-{base}")
+    return out
+
+
+def _slug(text_: str, otherwise: str) -> str:
+    try:
+        return urls.slug(text_)
+    except urls.BadAddress:
+        return otherwise
+
+
+def _toc(ordered: Sequence[tuple[tuple[str, str], list[Book]]], anchors: Mapping[str | tuple[str, str], str]) -> str:
+    """The page's contents at its top: each archive, its funds beside it."""
+    funds: dict[str, list[str]] = {}
+    for (name, fund), _ in ordered:
+        funds.setdefault(name, [])
+        if fund:
+            funds[name].append(f'<a href="#{anchors[(name, fund)]}">{E(fund)}</a>')
+    rows = "".join(f'<li><a class="archive" href="#{anchors[name]}">{E(name)}</a>{"".join(" " + each for each in found)}</li>'
+                   for name, found in funds.items())
+    return f'<nav class="toc" aria-label="{E(str(t("site.books.toc")))}"><ul>{rows}</ul></nav>'
 
 
 def _natural(text_: str) -> list[Any]:
@@ -584,7 +640,8 @@ def front(site: Site, ctx: Context) -> str:
             ("books/", t("site.nav.books"), t("site.front.by_books")),
             (f"{NAMES}/", t("site.nav.names"), t("site.front.by_names")),
             ("search/", t("site.nav.search"), t("site.front.by_search"))]
-    cards = "".join(f'<li><a href="{href}">{E(str(title))}</a><span>{E(str(what))}</span></li>'
+    # The card is its link whole, not its title alone: a reader aims at the tile, not at a word on it.
+    cards = "".join(f'<li><a href="{href}"><span class="way">{E(str(title))}</span> <span>{E(str(what))}</span></a></li>'
                     for href, title, what in ways)
     prose = ""
     if ctx.prose:

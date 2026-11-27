@@ -2081,6 +2081,9 @@ fund = "f. {fund}, inv. {inventory}"
 part = "part {number}"
 case = "file {case}"
 
+[site.books]
+toc = "Archives and funds"
+
 [site.years]
 undated = "Books with no year"
 

@@ -1998,6 +1998,9 @@ fund = "ф. {fund}, оп. {inventory}"
 part = "часть {number}"
 case = "Д. {case}"
 
+[site.books]
+toc = "Архивы и фонды"
+
 [site.years]
 undated = "Книги без года"
 

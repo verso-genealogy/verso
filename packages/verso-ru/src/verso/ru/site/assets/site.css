@@ -192,14 +192,22 @@ td a { font-weight: 500; }
 .leaves a { display: inline-block; margin-right: .2rem; padding: 0 .45rem; border-radius: var(--r-pill); background: var(--chip);
   font: .72rem/1.7 var(--font-mono); color: var(--muted); }
 .leaves a:hover { color: var(--accent); text-decoration: none; }
+/* the books' contents: an archive a line, its funds as chips beside it */
+.toc ul { list-style: none; padding: 0; margin: .4rem 0 1.4rem; }
+.toc li { padding: .3rem 0; border-bottom: 1px solid var(--line); line-height: 2; }
+.toc a { display: inline-block; margin-right: .25rem; padding: 0 .6rem; border-radius: var(--r-pill); background: var(--chip);
+  color: var(--muted); font-size: .82rem; line-height: 1.7; white-space: nowrap; }
+.toc a.archive { margin-right: .6rem; padding: 0; background: none; color: var(--text); font: 650 .95rem var(--font-body); white-space: normal; }
+.toc a:hover { color: var(--accent); text-decoration: none; }
 .stats { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; color: var(--muted); font-size: 1.02rem; }
 .summary { font: 1.05rem/1.6 var(--font-body); max-width: 44rem; color: var(--muted); }
 .ways { display: grid; grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr)); gap: .8rem; margin: 1.4rem 0; }
-.ways li { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-card); padding: .85rem 1rem;
-  transition: border-color .15s, box-shadow .15s; }
-.ways li:hover { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.ways a { display: block; font: italic 600 1.45rem/1.2 var(--font-display); color: var(--text); }
-.ways span { color: var(--muted); font-size: .86rem; }
+.ways a { display: flex; flex-direction: column; gap: .15rem; height: 100%; padding: .85rem 1rem;
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-card); color: var(--muted); font-size: .86rem;
+  transition: border-color .15s, box-shadow .15s; }   /* the tile is the link */
+.ways a:hover, .ways a:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); text-decoration: none; }
+.ways a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ways .way { font: italic 600 1.45rem/1.2 var(--font-display); color: var(--text); }
 .books li { padding: .45rem 0; border-bottom: 1px solid var(--line); }
 .letters { display: flex; flex-wrap: wrap; gap: .3rem; }
 .letters a { display: inline-grid; place-items: center; min-width: 2rem; height: 2rem; border: 1px solid var(--line);
@@ -224,7 +232,7 @@ td a { font-weight: 500; }
   body::before { display: none; }
 }
 @media print {
-  .top nav, .search, .theme, .bottom, .leaves, .crumbs { display: none; }
+  .top nav, .search, .theme, .bottom, .leaves, .toc, .crumbs { display: none; }
   :root { color-scheme: light; } body { background: #fff; } body::before { display: none; }
   main { border: 0; box-shadow: none; }
   .rec { break-inside: avoid; }
