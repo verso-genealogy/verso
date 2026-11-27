@@ -283,6 +283,9 @@ hidden = [
 ]
 slots = []
 
+[kinds.household.draft]
+creatable = true
+
 [[kinds.household.groups]]
 name = "members"
 label = "ui.group.members"
@@ -551,6 +554,10 @@ flags = [
 fills = [
   { field = "status_male", label = "ui.default.status_male", gender = "male" },
   { field = "status_female", label = "ui.default.status_female", gender = "female" },
+]
+# What a new book of this set can be made as: the confession list's vocabulary on the same factory.
+presets = [
+  { name = "confessions", label = "ui.set.confessions" },
 ]
 
 [books.name_list]

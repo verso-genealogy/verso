@@ -10,7 +10,7 @@ the plugin's hints (`Plugin.ui`, a TOML file of its package; the Russian books' 
      "kinds":  {<record kind>: {"label", "fields", "slots", "groups", "events", "draft", "rules"}},
      "persona": {"fields"},  # a person's fields, wherever a person stands
      "enums":  {<enum>: [{"code", "label", "gender"}]},
-     "books":  {<record set>: {"label", "fields", "fills", "flags", "queue"}}}
+     "books":  {<record set>: {"label", "fields", "fills", "flags", "presets", "queue"}}}
 
 A field's `type` is the vocabulary's, never the hints': `str` → `text`, `int` → `integer`, `bool`
 → `boolean`, `age` and `intstr` → `age` (a number or a scribe's «17 л 2 мес»), an enum class →
@@ -87,7 +87,7 @@ FORMAT = (
     "events", "draft", "rules", "rule", "path", "type", "enum", "catalog", "widget", "hidden", "ref",
     "to", "choices", "role", "gender", "party", "row", "quick", "name", "item", "persons", "layout",
     "orderable", "day", "month", "year", "late_days", "follows", "creatable", "code", "forms",
-    "fills", "flags", "field", "fallback", "package", "of", "queue",
+    "fills", "flags", "presets", "field", "fallback", "package", "of", "queue",
     "from", "advance", "after", "event", "number", "refs",          # the rules' keys
     "group", "days", "when", "stand_down", "stand_down_before", "day_from", "day_to", "book", "women", "gender_of",
     "offer", "not_in",                                               # whom a «+» offers a field
@@ -431,6 +431,12 @@ class _Build:
                 raise UiError(t("records.ui.repeated", kind=code_, path=path))
             taken.add(path)
             flags.append({"field": path, "label": self.label(item.get("label"))})
+        presets: list[dict[str, Any]] = []
+        for item in hint.get("presets", ()):
+            name = item.get("name")
+            if not isinstance(name, str) or not name or any(p["name"] == name for p in presets):
+                raise UiError(t("records.ui.repeated", kind=code_, path=name))
+            presets.append({"name": name, "label": self.label(item.get("label"))})
         fields = self.placed(cls, code_, hint, taken=taken)
         known = {f.name: f for value in self._value_classes(cls) for f in self.voc.specs[value].fields}
         defaults: list[dict[str, Any]] = []
@@ -452,7 +458,7 @@ class _Build:
                 default["fallback"] = item["fallback"]
             defaults.append(default)
         return {**self.labelled(hint.get("label"), hint.get("forms", ())), "fields": fields, "fills": defaults,
-                "flags": flags, "queue": bool(hint.get("queue", False))}
+                "flags": flags, "presets": presets, "queue": bool(hint.get("queue", False))}
 
     def _value_classes(self, cls: type) -> list[type]:
         return [value for (owner, _), value in self.voc.written_only.items()

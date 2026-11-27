@@ -950,6 +950,9 @@ title = "Household"
 word = "household"
 plural = "rolls"
 
+[ui.set]
+confessions = "Confession list"
+
 [ui.book]
 civil = "civil registry book (the second date is the registration)"
 female_previous_age = "women's age at the previous revision"
@@ -1824,6 +1827,7 @@ shelfmark = "a book needs its fund, inventory and case: «{fund}», «{inventory
 path = "«{value}» cannot be part of a book's path: no «/», «\\» or «..», no padding spaces or control characters, and a locality is not empty, «.» or «..»"
 parish = "a book needs the parish it is kept in"
 defaults = "the book's defaults are not accepted: {error}"
+roll_field = "«{field}» does not apply to this book"
 
 [records.cite]
 no_sex = "{kind} № {number}{sheet}: no sex — a birth's and a death's number is written with the sex (m{number}, f{number})"

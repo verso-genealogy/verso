@@ -1195,7 +1195,7 @@
    ],
    "events": [],
    "draft": {
-    "creatable": false,
+    "creatable": true,
     "slots": []
    },
    "rules": [
@@ -2155,6 +2155,7 @@
      "label": "ui.book.civil"
     }
    ],
+   "presets": [],
    "queue": true
   },
   "marriages": {
@@ -2250,6 +2251,7 @@
      "label": "ui.book.civil"
     }
    ],
+   "presets": [],
    "queue": true
   },
   "deaths": {
@@ -2336,6 +2338,7 @@
      "label": "ui.book.civil"
     }
    ],
+   "presets": [],
    "queue": true
   },
   "census": {
@@ -2480,6 +2483,12 @@
      "label": "ui.book.female_previous_age"
     }
    ],
+   "presets": [
+    {
+     "name": "confessions",
+     "label": "ui.set.confessions"
+    }
+   ],
    "queue": true
   },
   "name_list": {
@@ -2578,6 +2587,7 @@
    ],
    "fills": [],
    "flags": [],
+   "presets": [],
    "queue": true
   },
   "divorces": {
@@ -2631,6 +2641,7 @@
    ],
    "fills": [],
    "flags": [],
+   "presets": [],
    "queue": false
   },
   "external_sources": {
@@ -2649,6 +2660,7 @@
    ],
    "fills": [],
    "flags": [],
+   "presets": [],
    "queue": false
   }
  }

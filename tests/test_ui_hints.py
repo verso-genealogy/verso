@@ -149,7 +149,8 @@ def test_the_page_s_tables_are_in_the_hints():
                         "advance": {"day_from": "birth.day", "day_to": "baptism.day"}}]
     assert {r["rule"] for r in schema["kinds"]["household"]["rules"]} == {"shown_when", "renumber"}
     assert {k: v["draft"]["slots"] for k, v in schema["kinds"].items() if v["draft"]["creatable"]} == {
-        "birth": ["child", "father", "mother"], "marriage": ["groom", "bride"], "death": ["deceased"]}
+        "birth": ["child", "father", "mother"], "marriage": ["groom", "bride"], "death": ["deceased"],
+        "household": []}
     (members,) = schema["kinds"]["household"]["groups"]
     assert members["layout"][0] == ["number", "role", "ref_member"]
     refs = {f["path"]: f["ref"]["to"] for f in members["item"]["fields"] if "ref" in f}
