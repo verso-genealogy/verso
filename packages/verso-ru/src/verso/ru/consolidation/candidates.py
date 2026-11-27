@@ -73,7 +73,7 @@ from verso.ru.gender import Gender
 from verso.ru.naming import feminize_surname, degenitivize_surname, modernize_orthography
 from verso.ru.naming.transliteration import generate_res_name
 from verso.ru.ages import split_age as _split_age
-from verso.ru.ages import age_bounds
+from verso.ru.ages import age_bounds, age_number, has_fraction
 from verso.ru.facts.checks.stated_age import (
     DEFAULT_TOLERANCE_DAYS, DEFAULT_TOLERANCE_FRACTION)
 
@@ -945,7 +945,7 @@ def _age_years(age) -> float | None:
         try:
             return float(x) if x else 0.0
         except ValueError:
-            return None
+            return age_number(x) if has_fraction(x) else None   # «2½»
 
     yv = num(y)
     if yv is None:  # verbatim / unparseable

@@ -1,7 +1,7 @@
 """Census migration field resolvers (departure/arrival/age)."""
 from typing import TYPE_CHECKING
 
-from verso.ru.ages import split_age
+from verso.ru.ages import DAYS_PER_MONTH, age_number, has_fraction, split_age
 
 if TYPE_CHECKING:
     from verso.ru.dsl.records.census import CensusMember
@@ -154,13 +154,27 @@ def _age_to_components(age) -> tuple[int, int, int, int] | None:
         return _age_to_components(float(age.strip().replace(",", ".")))
     except ValueError:
         pass
-    parts = []
-    for slot in split_age(age):
-        parts.append(int(slot) if slot and slot.isdigit() else None)
-    if all(p is None for p in parts):
+    if not has_fraction(age):
+        parts = []
+        for slot in split_age(age):
+            parts.append(int(slot) if slot and slot.isdigit() else None)
+        if all(p is None for p in parts):
+            return None
+        y, m, w, d = (p or 0 for p in parts)
+        return (y, m, w, d)
+    # A fraction, bare («20½») or of a unit.
+    bare = age_number(age)
+    if bare is not None:
+        return _age_to_components(bare)
+    numbers = [age_number(slot) if slot else None for slot in split_age(age)]
+    if all(n is None for n in numbers):
         return None
-    y, m, w, d = (p or 0 for p in parts)
-    return (y, m, w, d)
+    y, m, w, d = (n or 0.0 for n in numbers)
+    # A fraction of a unit is carried down in whole units of the next: «2¾ лет» → 2 years 9 months,
+    # «4½ мес» → 4 months 15 days.
+    months = m + round((y - int(y)) * 12)
+    days = d + round((m - int(m)) * DAYS_PER_MONTH) + round((w - int(w)) * 7)
+    return (int(y), int(months), int(w), int(days))
 
 
 def _age_to_years(age) -> float | None:

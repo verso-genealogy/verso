@@ -334,6 +334,9 @@ show it, and let the person who knows the hand read it.
 - **An age in ч. 3 is a per-дело convention, and it can change between years of one дело.**
   One дело means years by a bare number in its later years — and months by one in an earlier year. Never carry
   the rule across a year without a check.
+- **A fraction is part of the age.** «2½», «17½», «4¾ мѣс» go into the DSL as written, with the
+  sign ½ ¼ ¾ (`age="2½"`, `groom_age="17½"`, `age="4¾ мес"`): the library reads them as the number
+  they are. Rounding «17½» to `17`, or writing the fraction in `comment=` alone, loses it.
 - **Cross-check the year against itself and against what is already read.** A child born and
   buried inside one book proves the age convention; an age in a later year points at a birth
   to look for. `verso death-age --village X` does this over the whole corpus after the year is
