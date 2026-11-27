@@ -19,7 +19,7 @@ from verso.ru.reading import marking, task
 GROUPS = ("births", "marriages", "deaths", "census")
 #: sha256 of the cleaned prompts and schemas. A change of a prompt or a schema changes what a model
 #: answers: change it on purpose, re-measure it, then update this.
-PROMPT_HASH = "6bdd41c2fe0bedf986d923349fe31add13a0afd8aa68f18eb42a992da9f5f63f"
+PROMPT_HASH = "b7d6e0a7172ac901ef0957d097692524380241bf8acfd1d2db2129678c67cbee"
 
 
 def test_prompts_present():
@@ -57,6 +57,23 @@ def test_schema_closed(group):
     assert ("previous_age" in persons) == (group == "census")
     assert ("role" in persons) == (group == "census")
 
+
+
+@pytest.mark.parametrize("group", GROUPS)
+def test_alternatives_schema(group):
+    """A name read two or three ways: the likelier in the field, the others by the field's path (П15)."""
+    schema = task.output_schema(group)
+    alternatives = schema["properties"]["alternatives"]
+    assert alternatives["type"] == "array"
+    item = alternatives["items"]
+    assert item["properties"] == {"path": {"type": "string"}, "readings": {"type": "array", "items": {"type": "string"}}}
+    assert list(schema["properties"]) == ["record", "persons", "doubtful", "alternatives"]
+
+
+def test_prompt_asks_for_alternatives():
+    text = task.prompt_text("common.md")
+    assert "`alternatives`" in text
+    assert "persons[2].name" in text
 
 def test_marking_schema_converts():
     schema = marking.output_schema()
