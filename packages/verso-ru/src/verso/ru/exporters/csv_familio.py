@@ -644,11 +644,15 @@ class DeathRecordsCsvFamilioExporter(FamilioCsvExporter):
 
         rows: list[list[object]] = []
         for r in records:
-            # Build comment with auto-comment logic
+            # The record's comment and each person's: a status the catalog keeps as a constant leaves the
+            # scribe's words in the person's comment= (В15), and пометки is the CSV's only place for them.
             comments = []
             if r.comment:
                 comments.append(r.comment)
-            ". ".join(comments)
+            for p in [r.deceased, *(rel.person for rel in r.relatives), r.witness1, r.witness2,
+                      r.priest, r.deacon, r.dyachok, r.sexton]:
+                if p and p.comment:
+                    comments.append(p.comment)
 
             orig_names = []
             if r.deceased:
@@ -747,7 +751,7 @@ class DeathRecordsCsvFamilioExporter(FamilioCsvExporter):
                 r.dyachok.status if r.dyachok else "",  # 61. статус псаломщика
                 r.dyachok.get_fio() if r.dyachok else "",  # 62. ФИО псаломщика
                 "",  # 63. Burial location
-                "; ".join(filter(None, [witness_names_str] + extra_rel_strs + [registered])),  # 64. пометки
+                "; ".join(filter(None, comments + [witness_names_str] + extra_rel_strs + [registered])),  # 64. пометки
                 orig_names_str  # 65. авторский комментарий
             ]
             rows.append(row)
