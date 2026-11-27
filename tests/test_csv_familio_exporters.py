@@ -1960,7 +1960,7 @@ class TestDeathCommentsInNotes(unittest.TestCase):
             witness1=Person("Федоръ", name_modern_orth="Федор", gender=Gender.MALE, comment="отставной"),
             comment="умер от горячки",
         )
-        notes = self._row(death)[63]
+        notes = str(self._row(death)[63])
         self.assertTrue(
             notes.startswith("умер от горячки; «запасный рядовой»; солдатка; имя неясно; отставной; cвидетели: "),
             notes)
