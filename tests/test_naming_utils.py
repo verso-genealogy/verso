@@ -577,8 +577,6 @@ class TestFeminizeSurname(unittest.TestCase):
         self.assertEqual(feminize_surname(None), None)
 
 
-if __name__ == '__main__':
-    unittest.main()
 
 
 class TestDoubtfulReadingModernized(unittest.TestCase):
@@ -588,3 +586,7 @@ class TestDoubtfulReadingModernized(unittest.TestCase):
         p = Person("Ѳедоръ", patr_orig="Петровъ", last_name="Свиристеловъ?", gender=Gender.MALE)
         self.assertEqual(p.last_name_modern, "Свиристелов?")
         self.assertEqual(p.name_modern, "Федор")
+
+
+if __name__ == '__main__':
+    unittest.main()
