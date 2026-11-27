@@ -19,15 +19,12 @@ from collections.abc import Collection, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from verso.ru.dsl.records.census import CensusRole
 from verso.ru.linters.checks.census_age import CAI002_TOLERANCE, json_age_years, link_age_pair
 
 __all__ = ["AgeGap", "age_gap", "patronymic_hint", "ref_hint"]
 
 type Member = Mapping[str, Any]
 
-_HEAD = CensusRole.HEAD.name.lower()
-_BROTHER = CensusRole.BROTHER.name.lower()
 
 
 @dataclass(frozen=True)
@@ -96,24 +93,20 @@ def ref_hint(members: Sequence[Member], index: int, *, children: Collection[str]
 
 def _patronymic(member: Member) -> str | None:
     written = member.get("written", {}).get("patronymic")
-    if not isinstance(written, Mapping):
-        return None
-    for key in ("original", "old"):
-        value = written.get(key)
-        if isinstance(value, str) and value:
-            return value
-    return None
+    value = written.get("original") if isinstance(written, Mapping) else None
+    return value if isinstance(value, str) and value else None
 
 
-def patronymic_hint(members: Sequence[Member], index: int) -> str | None:
-    """A brother of the head written with no patronymic takes the head's, as the roll writes it."""
-    if _role(members[index]) != _BROTHER or _patronymic(members[index]) is not None:
+def patronymic_hint(members: Sequence[Member], index: int, *, role: str, from_role: str) -> str | None:
+    """A member of `role` (a brother of the head) written with no patronymic takes the written one of the member of
+    `from_role` (the head)."""
+    if _role(members[index]) != role or _patronymic(members[index]) is not None:
         return None
-    head = next((m for m in members if _role(m) == _HEAD), None)
+    head = next((m for m in members if _role(m) == from_role), None)
     return _patronymic(head) if head is not None else None
 
 
-def age_gap(member: Member, book_year: int, gaps: Mapping[str, int]) -> AgeGap | None:
+def age_gap(member: Member, book_year: int, *, gaps: Mapping[str, int]) -> AgeGap | None:
     """The member's two ages, where they are off the revision gap by more than a year (CAI002's finding); else None.
 
     `gaps` is the schema's table: a book's year → the year of the revision its previous-age column counts from."""

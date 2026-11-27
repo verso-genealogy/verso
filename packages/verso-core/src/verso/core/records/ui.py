@@ -61,8 +61,8 @@ RULE_KEYS: dict[str, frozenset[str]] = {
     # A group's household page: whose a row is (`path`: the field it fills), the patronymic a row may take from the
     # head (`path`: the person's field), the age gap a revision implies (`gaps`: year → the previous revision's year).
     "ref_hint": frozenset({"rule", "group", "path", "children", "parents", "spouse", "min_gap"}),
-    "patronymic_hint": frozenset({"rule", "group", "path"}),
-    "age_gap": frozenset({"rule", "group", "gaps"}),
+    "patronymic_hint": frozenset({"rule", "group", "path", "role", "from_role"}),
+    "age_gap": frozenset({"rule", "group", "gaps", "prior_comment"}),
 }
 RULES = frozenset(RULE_KEYS)
 #: A rule's keys that hold a table, and the keys each table takes: `follows`'s `advance` compares two days,
@@ -99,7 +99,7 @@ FORMAT = (
     "orderable", "day", "month", "year", "late_days", "follows", "creatable", "code", "forms",
     "fills", "flags", "presets", "field", "fallback", "package", "of", "queue",
     "from", "advance", "after", "event", "number", "refs",          # the rules' keys
-    "children", "parents", "spouse", "min_gap", "gaps", "view", "columns",
+    "children", "parents", "spouse", "min_gap", "gaps", "from_role", "prior_comment", "view", "columns",
     "group", "days", "when", "stand_down", "stand_down_before", "day_from", "day_to", "book", "women", "gender_of",
     "offer", "not_in",                                               # whom a «+» offers a field
     "text", "integer", "boolean", "age", *FLAGS,
@@ -454,8 +454,14 @@ class _Build:
                         raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="min_gap"))
                 elif name == "patronymic_hint":
                     self.person_path(code_, rule.get("path"), group["item"]["persons"])
-                elif "gaps" not in rule:
-                    raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="gaps"))
+                    for key in ("role", "from_role"):
+                        if not isinstance(rule.get(key), str):
+                            raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key=key))
+                else:
+                    if "gaps" not in rule:
+                        raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="gaps"))
+                    if not isinstance(rule.get("prior_comment"), str):
+                        raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="prior_comment"))
                 return
             named = [rule.get("path")] if name in ("ref_choices", "shown_when") else [rule.get("number"),
                                                                                     *rule.get("refs", ())]

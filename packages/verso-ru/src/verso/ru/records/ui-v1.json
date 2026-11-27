@@ -1251,11 +1251,14 @@
     {
      "rule": "patronymic_hint",
      "group": "members",
-     "path": "person.patronymic.original"
+     "path": "person.patronymic.original",
+     "role": "brother",
+     "from_role": "head"
     },
     {
      "rule": "age_gap",
      "group": "members",
+     "prior_comment": "прошлая РС:\\s*([^,;]+)",
      "gaps": {
       "1721": 1719,
       "1745": 1719,

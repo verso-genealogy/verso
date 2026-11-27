@@ -269,3 +269,9 @@ def test_a_column_the_group_lacks_is_refused():
     with pytest.raises(UiError) as caught:
         build_ui(V, hints)
     assert caught.value.key == "records.ui.unknown_path"
+
+
+def test_the_patronymic_and_age_rules_need_their_parameters():
+    assert _refused("household", "patronymic_hint", {"role": 1})[0] == "records.ui.rule_not_table"
+    assert _refused("household", "patronymic_hint", {"from_role": None})[0] == "records.ui.rule_not_table"
+    assert _refused("household", "age_gap", {"prior_comment": 5})[0] == "records.ui.rule_not_table"

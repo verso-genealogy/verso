@@ -706,6 +706,8 @@ min_gap = 15
 rule = "patronymic_hint"
 group = "members"
 path = "person.patronymic.original"
+role = "brother"
+from_role = "head"
 
 # A member's two ages are one revision apart: `age_gap` flags the pair off that gap by more than a year, as CAI002
 # does. The table is the revision chain — a roll's year and the revision its previous-age column counts from
@@ -713,4 +715,6 @@ path = "person.patronymic.original"
 [[kinds.household.rules]]
 rule = "age_gap"
 group = "members"
+# Where `previous_age` is not written, the previous age is the marker's group in the comment (CAI002 reads it so).
+prior_comment = "прошлая РС:\\s*([^,;]+)"
 gaps = { "1721" = 1719, "1745" = 1719, "1762" = 1745, "1795" = 1782, "1811" = 1795, "1815" = 1811, "1816" = 1811, "1834" = 1816, "1850" = 1834, "1857" = 1850, "1858" = 1850 }
