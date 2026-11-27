@@ -34,6 +34,10 @@ class TestMil001(unittest.TestCase):
         msgs = _msgs('person("Иванъ", status="запасный рядовой")\n')
         self.assertIn('comment="запасный рядовой"', msgs[0])
 
+    def test_a_status_naming_an_estate_is_quiet(self):
+        src = 'person("Анна", status="солдатская жена из крестьян помещика Михаила Семёновича Собакевича")\n'
+        self.assertEqual(_msgs(src), [])
+
     def test_catalog_and_officer_texts_are_quiet(self):
         for status in ('SOLDIER', '"солдат"', '"крестьянин поручика Ноздрева"', '"унтер-офицерская девица"'):
             self.assertEqual(_msgs(f'person("Иван", status={status})\n'), [], status)

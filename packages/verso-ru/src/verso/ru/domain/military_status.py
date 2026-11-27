@@ -14,6 +14,10 @@ The words are read in lower case, but a capitalised word after the first is a na
 one spelled like a rank («деревни Запасной»). «отставной» and «отпуск» are no military words
 on their own («отставной учитель», «отпускной крестьянин»): they only tell a soldier retired.
 
+A status that also names an estate (a landlord, «из однодворцев»: `estates.names_estate`) is left as
+written — the owner's ruling of 2026-11-27: a constant would drop the estate the corpus's estate checks
+read — so it is neither placed nor unplaced.
+
 The owner's ruling of 2026-11-26 placed the wordings once left out: «солдатская девица» → SOLDIER_GIRL,
 «вахмистр …» → UNTER_OFFICER, «кантонист» → SOLDIER_SON, «военный писарь …» → SOLDIER (a «писарь» with
 no «военный» is a civil clerk).
@@ -22,6 +26,7 @@ no «военный» is a civil clerk).
 import re
 
 from verso.ru.domain import statuses
+from verso.ru.domain.estates import names_estate
 from verso.ru.domain.orthography import modern_spelling
 
 # Officers, civil ranks, clerks and clergy are not soldiers (an «унтер-офицер» is one);
@@ -94,6 +99,8 @@ def _verdict(text: str) -> tuple[str | None, bool]:
     """(the constant's NAME, or None; whether the text is a soldier's wording left unplaced)."""
     modern = modern_spelling(text)
     if _in_catalog(modern):
+        return None, False
+    if names_estate(modern):
         return None, False
     low = _words(modern)
     if _NOT_SOLDIER.search(low) or (_LANDLORD.search(low) and not _SOLDIER_WORD.search(low)):

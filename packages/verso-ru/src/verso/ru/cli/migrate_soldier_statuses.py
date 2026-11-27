@@ -12,6 +12,9 @@ literal that `verso.ru.domain.military_status.classify` places («запасны
 A person with no status whose comment holds a reserve wording («запасный рядовой …», the comment or one
 of its «quoted» parts, which `classify` places on SOLDIER) gets `status=SOLDIER`, the comment untouched.
 
+Left alone, not even reported: a status that also names an estate (a landlord's peasant, «из однодворцев») —
+the owner's ruling of 2026-11-27, a constant would drop the estate.
+
 Reported, never rewritten: a military wording `classify` will not place (`military_status.unplaced`: a
 maiden's wording other than «солдатская девица», «солдатская внучка», a woman's or a kinsman's wording whose
 role word does not lead — «запасного рядового жена», «унтер-офицерша», «военная» —, and a rank in the

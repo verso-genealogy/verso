@@ -43,7 +43,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   SOLDIER. It answers None for an officer, a clerk, a medic, a Cossack or a policeman, for «отставной» or «отпуск»
   with no soldier's word («отставной учитель»), for a capitalised name or place («деревни Солдатовки»), and for a
   woman's or kinsman's wording whose role word does not lead («запасного рядового жена»), or a rank in the genitive
-  with no role before it, a dependant's or a servant's («невеста запасного рядового»).
+  with no role before it, a dependant's or a servant's («невеста запасного рядового»), and for a status that also names
+  an estate — a landlord's or «из однодворцев» (`estates.names_estate`): left as written, the owner's ruling of
+  2026-11-27, since a constant would drop the estate.
 - verso-ru, `verso migrate-soldier-statuses --village V [--village …] [--dry-run] [--report FILE.tsv]`
   (`cli.migrate_soldier_statuses`): the bulk fix of MIL001. A `person(...)`'s `status=` literal that `classify`
   places becomes its constant, imported in the file's own form, and the wording goes into `comment=`, bare and in

@@ -45,6 +45,21 @@ _ESTATE_MARKERS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("merchant", ("купец", "купчих")),
 )
 
+def names_estate(status: str | None) -> bool:
+    """Whether `status` names an estate for `estate_of`: a landlord's phrase or one of the markers.
+
+    The same patterns as `estate_of`, but it reads no corpus data (no owner aliases): a caller that
+    only asks «is there an estate here?» — MIL001, the soldier codemod — needs no corpus.
+    """
+    if not status:
+        return False
+    text = " ".join(str(status).split())
+    if _LANDLORD.search(text):
+        return True
+    low = text.lower()
+    return any(mk in low for _, markers in _ESTATE_MARKERS for mk in markers)
+
+
 def estate_of(status: str | None) -> str | None:
     """The estate axis of `status`, or None when it carries no estate.
 

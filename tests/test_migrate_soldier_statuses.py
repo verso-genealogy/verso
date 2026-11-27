@@ -174,7 +174,7 @@ records = birth_records(
     # лист 3, правая сторона
     birth(1, father=person("Иванъ",   "Петровъ", residence="Маниловка",
                            status="запасный рядовой"),
-          mother=person("Анна", status="солдатская жена из крестьян помещика Собакевича" ,
+          mother=person("Анна", status="солдатская жена из крестьян" ,
                         comment="тож Ноздрева")),  # хвост
 )
 '''
@@ -191,7 +191,7 @@ records = birth_records(
     birth(1, father=person("Иванъ",   "Петровъ", residence="Маниловка",
                            status=SOLDIER, comment="запасный рядовой"),
           mother=person("Анна", status=SOLDIER_SPOUSE ,
-                        comment="солдатская жена из крестьян помещика Собакевича; тож Ноздрева")),  # хвост
+                        comment="солдатская жена из крестьян; тож Ноздрева")),  # хвост
 )
 '''
 
@@ -253,3 +253,15 @@ def test_the_cli_names_a_file_it_cannot_edit_and_goes_on(tmp_path: Path, capsys:
     assert "manilovka_deaths_1850.py" in err and "manilovka_marriages_1850.py" in err
     assert 'status=SOLDIER, comment="запасный солдат"' in path.read_text(encoding="utf-8")
     assert broken.read_text(encoding="utf-8") == "x = person(\n"
+
+
+@pytest.mark.parametrize("status", [
+    "солдатская жена из крестьян помещика Михаила Семёновича Собакевича",
+    "солдатка из однодворцев",
+])
+def test_a_status_naming_an_estate_is_neither_rewritten_nor_reported(status):
+    src = HEAD + f'x = person("Анна", status="{status}")\n'
+    new, changes, left = mig.migrate_source(src)
+    assert new == src
+    assert changes == []
+    assert left == []
