@@ -42,6 +42,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - Tests: the golden files `tests/golden/records/fixture.json` and `tests/golden/ui/value-at.json` gain the
   newborns' derived patronymic (verso-app keeps a copy of the second).
 
+### Fixed
+
+- verso-ru, `verso drift` (`verso.ru.consolidation.drift`, the data's `make tf-drift`): a plan with no drift block is
+  read through its `resource_changes`, and every no-op there counted as DERIVED-NAME — thousands of resources where
+  nothing changed. No-ops are skipped, and so is a value the plan leaves to be computed (`after_unknown`); the header
+  says it lists planned changes then. CONTENT is any real difference — every name field (a maiden name, nicknames),
+  an event's date or place, the unions, the rest — where it was the surname and the event dates alone; DERIVED-NAME
+  is a difference in an event's name alone.
+
 ## 0.1.55 — 2026-11-27
 
 The reading task's prompt and schema gain `alternatives`, the other readings of a doubtful name, for the review page's
