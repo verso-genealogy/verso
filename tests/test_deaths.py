@@ -927,8 +927,6 @@ class TestDeathReviewedFlag(unittest.TestCase):
         self.assertFalse(d.reviewed)
 
 
-if __name__ == '__main__':
-    unittest.main()
 
 
 class TestDeathCSVExportPersonComments(unittest.TestCase):
@@ -952,3 +950,7 @@ class TestDeathCSVExportPersonComments(unittest.TestCase):
 
         self.assertEqual(
             rows[1][40], "умер от горячки. запасный рядовой. солдатка. отставной унтер-офицер")
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1937,8 +1937,6 @@ class TestDivorceRecordsCsvFamilioExporter(unittest.TestCase):
         self.assertEqual(rows[1][8], "12")
 
 
-if __name__ == '__main__':
-    unittest.main()
 
 
 class TestDeathCommentsInNotes(unittest.TestCase):
@@ -1971,3 +1969,7 @@ class TestDeathCommentsInNotes(unittest.TestCase):
         death = Death(record_num=1, gender=Gender.MALE, d_day=15, d_month=Month.JUNE, b_day=16, b_month=Month.JUNE,
                       deceased=Person("Иванъ", name_modern_orth="Иван", gender=Gender.MALE))
         self.assertEqual(self._row(death)[63], "")
+
+
+if __name__ == '__main__':
+    unittest.main()
