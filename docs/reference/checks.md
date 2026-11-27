@@ -23,6 +23,7 @@
 | `wedding-ages` | yes | `age_note=` |
 | `parent-ages` | yes | `source_age_error=` |
 | `parent-age-drift` | — | — |
+| `household-ages` | a household, with its roll | `source_age_error=` |
 
 ## Thresholds
 

@@ -950,6 +950,9 @@ title = "Household"
 word = "household"
 plural = "rolls"
 
+[ui.set]
+confessions = "Confession list"
+
 [ui.book]
 civil = "civil registry book (the second date is the registration)"
 female_previous_age = "women's age at the previous revision"
@@ -1458,6 +1461,10 @@ finding = "  [{confidence}] {role} age {first} and {second}: gap {years:g} years
 head = "parent-ages: {count} (HIGH {high} — a parent's age out of range: mothers {mother_min}–{mother_max}, fathers from {father_min})"
 ok = "parent-ages: OK — 0 findings (no parent's age out of range: mothers {mother_min}–{mother_max}, fathers from {father_min})."
 
+[cli.facts.household_ages]
+head = "household-ages: {count} (HIGH {high} — a father under {father_min} at the child's birth, or a child older than its father, within one roll)"
+ok = "household-ages: OK — 0 findings (no father under {father_min} at a child's birth, no child older than its father, in the rolls)."
+
 [cli.facts.basis]
 none = "no facts"
 total = "assertions in all: {total}"
@@ -1726,6 +1733,12 @@ out_of_range_father = "The father, «{age}», at the child's birth — read the 
 out_of_range_why_mother = "The books' mothers are {minimum} to {maximum}: an age outside it is most likely a misreading."
 out_of_range_why_father = "The books' fathers are at least {minimum}: a younger age is most likely a misreading."
 
+[facts.signal.household_ages]
+too_young = "The father was {low}–{high} at the birth of № {child} — read the ages in the roll again."
+too_young_why = "The books' fathers are at least {minimum}: a smaller difference between the father's and the child's age is most likely a misreading."
+child_older = "The child № {child} is older than the father — read the ages in the roll again."
+child_older_why = "A child is never older than its father: one of the two ages is misread, or he is not the father."
+
 [facts.signal.date_order]
 baptism_before_birth = "The christening {left} is before the birth {right}."
 death_before_birth = "The death {left} is before the birth {right}."
@@ -1818,12 +1831,15 @@ walk_diverges = "{code}, folios {lo}-{hi}: the walk does not converge ({hits} sc
 nothing_matched = "{code}: no scan matched to a folio — check the file names with `notes`."
 
 [records.blank]
-kind = "no blank book of the kind «{kind}»: births, marriages or deaths"
+kind = "no blank book of the kind «{kind}»: there are births, marriages, deaths and census (a revision list; a confession list is its preset)"
 year = "the year {year} is outside 1700–1930"
 shelfmark = "a book needs its fund, inventory and case: «{fund}», «{inventory}», «{case}»"
 path = "«{value}» cannot be part of a book's path: no «/», «\\» or «..», no padding spaces or control characters, and a locality is not empty, «.» or «..»"
 parish = "a book needs the parish it is kept in"
 defaults = "the book's defaults are not accepted: {error}"
+roll_field = "«{field}» does not apply to this book"
+roll_value = "«{field}» cannot be {value}: a year is a whole number, a mark is true or false, a name is a text"
+prev_revision = "the previous revision {previous} is not before the book's year {year}"
 
 [records.cite]
 no_sex = "{kind} № {number}{sheet}: no sex — a birth's and a death's number is written with the sex (m{number}, f{number})"

@@ -85,7 +85,7 @@ def signals_on_json(node: Mapping[str, Any], *, header: Mapping[str, Any], page:
                 raise
             return Signals((), tuple(wanted))
         ask = [c for c in wanted if c != _NEEDS_NAMES or names_table_present()]
-        got = signals_of(record, record_id=str(node.get("id", "")), book_year=getattr(built, "year", None), checks=ask,
+        got = signals_of(record, record_id=str(node.get("id", "")), book_year=getattr(built, "year", None), record_set=built, checks=ask,
                          svyatcy=svyatcy_cached() if _NEEDS_NAMES in ask else None)
         unanswered = {*got.unanswered, *(set(wanted) - set(ask))}
         return Signals(got.found, tuple(c for c in wanted if c in unanswered))

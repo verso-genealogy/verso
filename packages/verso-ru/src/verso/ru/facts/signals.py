@@ -30,32 +30,37 @@ from verso.ru.church_calendar.julian import JulianDate, from_jdn
 from verso.ru.church_calendar.paschalion import pascha
 from verso.ru.church_calendar.svyatcy import Svyatcy, load_svyatcy
 from verso.ru.facts.checks.dates import WithinFinding, within_entry
+from verso.ru.facts.checks.household_ages import HouseholdAgeFinding, household_age_findings
 from verso.ru.facts.checks.lags import BAPTISM_DAYS, BURIAL_DAYS, BURIAL_HIGH_DAYS, LagFinding, baptism_lags, burial_lags
 from verso.ru.facts.checks.name_days import NameDayFinding, name_day_findings, window
 from verso.ru.facts.checks.parent_ages import FATHER_MIN, MOTHER_MAX, MOTHER_MIN, ParentAgeFinding, parent_age_findings
 from verso.ru.facts.checks.wedding_ages import GAP_YEARS, WeddingAgeFinding, wedding_age_findings
 from verso.ru.facts.checks.wedding_calendar import WeddingFinding, wedding_calendar_findings, weekday_name
-from verso.ru.facts.extract.one import Extract, extractor_of
+from verso.ru.facts.extract.one import Extract, extractor_of, is_household
 from verso.ru.facts.model import AssertionSet, Citation, FactDate
 from verso.ru.messages import PACKAGE, Message
 
 #: The checks a record answers alone, in the order a card lists them.
-CHECKS: tuple[str, ...] = ("wedding-calendar", "name-days", "baptism-lag", "burial-lag", "wedding-ages", "parent-ages", "date-order")
+CHECKS: tuple[str, ...] = ("wedding-calendar", "name-days", "baptism-lag", "burial-lag", "wedding-ages", "parent-ages", "date-order",
+                           "household-ages")
 #: check → the key of the record's `written` that stands its findings down («так в подлиннике»).
 STAND_DOWN: dict[str, str] = {
     "wedding-calendar": "calendar_note", "name-days": "calendar_note",
     "baptism-lag": "lag_note", "burial-lag": "lag_note",
     "wedding-ages": "age_note", "parent-ages": "source_age_error",
-    "date-order": "source_date_error"}
+    "date-order": "source_date_error", "household-ages": "source_age_error"}
+#: The checks a household answers — with the roll it stands in, and nothing else: no other kind of record asks them,
+#: and a household asks no other.
+HOUSEHOLD_CHECKS: tuple[str, ...] = ("household-ages",)
 #: A check one record answers only in part, and the part it asks: the rest needs the people folded.
-IN_PART: dict[str, str] = {"date-order": "inside one entry"}
+IN_PART: dict[str, str] = {"date-order": "inside one entry", "household-ages": "a household, with its roll"}
 #: The orderings `source_date_error=` answers: it withdraws a christening, a burial or the marriage an act of
 #: divorce names, and nothing else.
 DATE_ORDER_STOOD_DOWN = frozenset({"baptism_before_birth", "burial_before_death", "divorce_before_marriage"})
 #: The bans that move with Pascha: a reader checks them against the year's.
 _MOVABLE_BANS = frozenset({"cheesefare_week", "great_lent", "bright_week", "apostles_fast", "meatfare_sunday"})
 
-type Finding = WeddingFinding | NameDayFinding | LagFinding | WeddingAgeFinding | ParentAgeFinding | WithinFinding
+type Finding = WeddingFinding | NameDayFinding | LagFinding | WeddingAgeFinding | ParentAgeFinding | WithinFinding | HouseholdAgeFinding
 
 
 def _said(key: str, params: Mapping[str, str | int] | None = None) -> Message:
@@ -177,6 +182,17 @@ def _within(f: WithinFinding) -> tuple[str, str, Message, Message, tuple[Message
     return f.kind, f.left.cite.locator, said, _said(f"facts.date_order.hint.{f.kind}"), ()
 
 
+def _household_age(f: HouseholdAgeFinding) -> tuple[str, str, Message, Message, tuple[Message, ...]]:
+    # The child by its number in the household (its locator is `member<N>`): two sons of one age are two lines.
+    child = f.child_cite.locator.removeprefix("member")
+    if f.kind == "child_older":
+        return (f.kind, f.cite.locator, _said(_key("household-ages", "child_older"), {"child": child}),
+                _said(_key("household-ages", "child_older_why")), ())
+    said = _said(_key("household-ages", "too_young"), {"low": f"{max(f.gap_low, 0):.1f}".removesuffix(".0"),
+                                                       "high": f"{f.gap_high:.1f}".removesuffix(".0"), "child": child})
+    return f.kind, f.cite.locator, said, _said(_key("household-ages", "too_young_why"), {"minimum": FATHER_MIN}), ()
+
+
 def signal_of(finding: Finding, *, record: str = "") -> Signal:
     """What a check found, as it is said — the one translation, for a card and for a report alike."""
     if isinstance(finding, WeddingFinding):
@@ -189,6 +205,8 @@ def signal_of(finding: Finding, *, record: str = "") -> Signal:
         check, parts, cite = "wedding-ages", _wedding_age(finding), finding.cite
     elif isinstance(finding, ParentAgeFinding):
         check, parts, cite = "parent-ages", _parent_age(finding), finding.cite
+    elif isinstance(finding, HouseholdAgeFinding):
+        check, parts, cite = "household-ages", _household_age(finding), finding.cite
     elif type(finding) is WithinFinding:
         check, parts, cite = "date-order", _within(finding), finding.left.cite
     else:
@@ -204,7 +222,7 @@ def _assertions(record: Any, extract: Extract, record_id: str, village: str, boo
     """The record's assertions, read whether it is reviewed or not. A record that writes no year is dated by its
     book — as every reader of a book dates it — on a COPY: the caller's record is never changed, not even while it
     is read (an adapter may be writing the same object out)."""
-    if getattr(record, "year", None) is None and book_year is not None:
+    if getattr(record, "year", None) is None and book_year is not None and not is_household(record):
         record = copy.copy(record)
         record.year = book_year
 
@@ -237,17 +255,22 @@ def findings_of(facts: AssertionSet, check: str, *, svyatcy: Svyatcy | None = No
         return wedding_age_findings(facts).findings
     if check == "parent-ages":
         return parent_age_findings(facts)
+    if check == "household-ages":
+        return household_age_findings(facts)
     return within_entry(facts)
 
 
 def signals_of(record: object, *, record_id: str, village: str = "", book_year: int | None = None,
-               checks: Collection[str] = CHECKS, svyatcy: Svyatcy | None = None) -> Signals:
+               record_set: object | None = None, checks: Collection[str] = CHECKS,
+               svyatcy: Svyatcy | None = None) -> Signals:
     """The signals of one record: `checks` asked of what it alone asserts.
 
-    `record` is a built DSL record — a birth, a wedding, a death, a divorce;
-    anything else (a household, a card, a line of a list) answers none of
-    these checks. A divorce answers two: its own two dates (`date-order`) and
-    the church wedding its act names (`wedding-calendar`).
+    `record` is a built DSL record — a birth, a wedding, a death, a divorce — or a household (a двор) of a
+    revision tale or a confession list; anything else (a card, a line of a list) answers none of these
+    checks. A divorce answers two: its own two dates (`date-order`) and the church wedding its act names
+    (`wedding-calendar`). A household answers only `household-ages`, and only with `record_set`, the roll it
+    stands in: its year, its dates and its previous revision are the roll's. Without it the check cannot be
+    asked and is in `unanswered`; no other kind answers `household-ages`.
     `record_id` names it in every signal; `book_year` dates a record that
     writes no year of its own. `svyatcy` is the table `name-days` reads (the
     package's, when none is given). A check that could not be asked — the
@@ -257,7 +280,11 @@ def signals_of(record: object, *, record_id: str, village: str = "", book_year: 
     from verso.core.workspace import LexiconNotConfigured
 
     wanted = asked(checks)
-    extract = extractor_of(record)
+    household = is_household(record)
+    wanted = [c for c in wanted if (c in HOUSEHOLD_CHECKS) == household]
+    extract = extractor_of(record, record_set=record_set) if household else extractor_of(record)
+    if household and extract is None:
+        return Signals((), tuple(wanted))            # no roll: no year, no dates — the check could not be asked
     if extract is None or not wanted:
         return Signals((), ())
     believed = _assertions(record, extract, record_id, village, book_year).believed()

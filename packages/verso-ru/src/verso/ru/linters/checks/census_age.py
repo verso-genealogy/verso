@@ -55,7 +55,7 @@ import re
 import sys
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 from verso.ru.census_revisions import PREVIOUS_AGE_REVISION_YEAR
 from verso.ru.linters.checks.census_redundancy import _char_col
@@ -468,6 +468,64 @@ def _check_member_cai002(m: ast.Call, census_year: int | None,
     return _found("CAI002", "gap", m.lineno, _kwarg_range(m, "age", lines), who=_member_who(m),
                   age=_source_repr(age_node), previous=pa_repr, diff=diff, year=census_year, gap=gap,
                   previous_year=prev_year)
+
+
+class AgePair(NamedTuple):
+    """What CAI002 compares on a member written as JSON: the two ages in whole years, the revision the previous one
+    counts from, and the previous age as the finding shows it."""
+    age: int
+    previous: int
+    previous_year: int
+    shown: str
+
+
+def json_age_years(value: object) -> int | None:
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return int(value)
+    return age_years_str(value) if isinstance(value, str) else None
+
+
+def link_age_pair(link: Mapping[str, Any], year: int) -> AgePair | None:
+    """The pair CAI002 checks for a member whose `written` link is `link` (keys by the factory's parameters) in a roll
+    of `year` — or None where it skips the member: no revision before `year`, a departed or hidden member, no age,
+    a copied-forward pair (both columns written the same), no previous age (nor the «прошлая РС» marker in the
+    comment), or an age that does not parse. The linter on the JSON and the page's `age_gap` both read it here."""
+    previous_year = _PREV_REVISION_YEAR.get(year)
+    if previous_year is None:
+        return None
+    if "departure_year" in link or "departure_reason" in link or link.get("hidden") is True:
+        return None
+    age = link.get("age")
+    if age is None:
+        return None
+    if "previous_age" in link:
+        previous = link["previous_age"]
+        age_text = _literal_source_str_of(age)
+        if age_text is not None and age_text == _literal_source_str_of(previous):
+            return None
+        previous_years, shown = json_age_years(previous), _json_source_repr(previous)
+    else:
+        comment = link.get("comment")
+        found = PREV_AGE_COMMENT_RE.search(comment) if isinstance(comment, str) and comment else None
+        if found is None:
+            return None
+        payload = found.group(1).strip()
+        previous_years, shown = age_years_str(payload), f"{payload!r} (from comment)"
+    years = json_age_years(age)
+    if years is None or previous_years is None:
+        return None
+    return AgePair(years, previous_years, previous_year, shown)
+
+
+def _literal_source_str_of(value: object) -> str | None:
+    """`_literal_source_str` for a value, not a node: the text of a number or a string as the source wrote it."""
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        return None
+    return str(value)
+
+
+def _json_source_repr(value: object) -> str:
+    return repr(value) if isinstance(value, str) else str(_literal_source_str_of(value))
 
 
 def check_file(path: Path) -> list[str]:

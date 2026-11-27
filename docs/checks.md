@@ -22,7 +22,7 @@ numbers each check holds are in [the reference](reference/checks.md).
 
 ## One record
 
-Seven checks need one record and nothing else, so they speak on a fresh workspace, before anything is
+Eight checks need one record and nothing else (a household, its roll), so they speak on a fresh workspace, before anything is
 consolidated. `verso facts --village V --check CHECK` asks one of them of the village.
 
 | Check | It asks | Answered by |
@@ -34,6 +34,7 @@ consolidated. `verso facts --village V --check CHECK` asks one of them of the vi
 | `wedding-ages` | an age at the wedding more than half a year under the minimum of its date (15 and 13 from the decree of 17 December 1774, 18 and 16 from that of 19 July 1830; nothing before); spouses more than 20 years apart (LOW) | `age_note=` |
 | `parent-ages` | a parent's age no birth can have: a mother under 13 or over 52, a father under 15 (the whole interval the age asserts, «14» is [14, 15)); an age that cannot be read asserts nothing | `source_age_error=` |
 | `date-order` | of one entry: a christening before the birth, a burial before the death, a divorce before the marriage its own act names | `source_date_error=` |
+| `household-ages` | of one roll's household (asked with its roll): a father under 15 at a child's birth — the whole interval of the two ages' difference lies under 15 — or a child older than its father (HIGH); a member gone before the roll is compared by the previous revision's ages; a wife is never asked | `source_age_error=` |
 
 **A parent's age** in a civil birth act is read from `father_age=` and `mother_age=` of `birth()`, and the fact is
 dated to the child's birth. `parent-ages` asks one act whether a birth can have such a parent (a mother from 13 to
@@ -47,7 +48,7 @@ of other acts are not in its pool.
 dissolved, each one's age that day and — where the act names it — the day they had married. That last is a later
 document's claim about a wedding, read from `marriage_date=EventDate(1926, Month.MARCH, 14)` — a point, a month, a
 year, «около», a range, as an external card's dates are; a text there (DSL v1's, deprecated: DVC001) asserts
-nothing, and no date is guessed from it. Two of the seven checks
+nothing, and no date is guessed from it. Two of the eight checks
 read it: `date-order` — the marriage the act names dated after the divorce itself, said once of the entry and
 answered by `divorce(source_date_error=)`, which withdraws the marriage's date and keeps the divorce's — and
 `wedding-calendar`, for a church wedding of 1917 or before, answered by `divorce(calendar_note=)`. The translator

@@ -167,3 +167,43 @@ def test_an_unnumbered_record_is_said_so_not_none():
     report = signal_report("burial-lag", burial_lags(_deaths(_died(None, 3, 1, Month.APRIL))))   # type: ignore[arg-type]
     assert "№none" not in report
     assert f"deaths_1850.py {i18n.render(cli.t('cli.facts.unnumbered'), 'ru')}" in report
+
+
+def test_household_ages_report_is_the_signals_of_every_household(tmp_path):
+    """`verso facts --check household-ages` on the tests' invented village says what `signals_of` says of each
+    household with its roll: the same findings, one for one."""
+    import village_fixture
+    from verso.ru.cli.facts import household_ages_report
+    from verso.ru.dsl.records.census import CensusRecords
+    from verso.ru.facts.signals import signals_of
+    from verso.ru.pipeline.translate import translate_village
+
+    village = village_fixture.root(tmp_path) / "Маниловка"
+    (village / "1858" / "manilovka_census_1858b.py").write_text(
+        "from verso.ru.dsl import CensusRole, census_records, household, member, page, person\n"
+        'census = census_records("ГА Глуповской области", "10", "4", "4045", "Маниловка", 1858,\n'
+        '    *page("3", household("11", member(1, person("Иванъ", "Петровъ"), CensusRole.HEAD, age=23),\n'
+        '                         member(2, person("Петръ"), CensusRole.SON, ref_member=1, age=12)),\n'
+        '          household("12", member(1, person("Сидоръ", "Косьминъ"), CensusRole.HEAD, age=30),\n'
+        '                         member(2, person("Карпъ"), CensusRole.SON, ref_member=1, age=31)),\n'
+        '          household("13", member(1, person("Андрей", "Ивановъ"), CensusRole.HEAD, age=40))))\n',
+        encoding="utf-8")
+    report, code = household_ages_report(village)
+    assert code == 1
+    gen, _ = translate_village(village)
+    said = {(s.variant, s.cite.record_num, s.confidence) for _name, rolls in gen.fed_sources
+            if isinstance(rolls, CensusRecords) and rolls.households and rolls.households[0].family_id in ("11", "12", "13")
+            for dvor in rolls.households for s in signals_of(dvor, record_id="x", record_set=rolls).found}
+    assert said == {("too_young", "11", "HIGH"), ("child_older", "12", "HIGH")}
+    assert report.count("[HIGH]") == len(said)
+    assert "№11" in report and "№12" in report and "№13" not in report
+
+
+def test_the_snapshot_holds_a_row_for_household_ages(tmp_path):
+    """The data repo's ratchet only gets one new row: `household-ages`, between the father-claims and the identity ones."""
+    import village_fixture
+    from verso.ru.cli.facts_snapshot import findings_snapshot
+
+    rows = [line.split("\t")[0] for line in findings_snapshot(village_fixture.root(tmp_path) / "Маниловка").splitlines()
+            if "\t" in line and not line.startswith(("check", "#"))]
+    assert rows == sorted(rows) and "household-ages" in rows

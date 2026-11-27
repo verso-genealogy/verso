@@ -283,6 +283,9 @@ hidden = [
 ]
 slots = []
 
+[kinds.household.draft]
+creatable = true
+
 [[kinds.household.groups]]
 name = "members"
 label = "ui.group.members"
@@ -316,6 +319,12 @@ fields = [
   { path = "previous_age_error", label = "ui.field.previous_age_error", checks = true },
 ]
 hidden = []
+# The roll's page draws the household as a table: the person's three names, then the columns a roll has.
+view = "table"
+columns = [
+  "number", "person.given.original", "person.patronymic.original", "person.surname.original", "role", "ref_member",
+  "age", "previous_age", "departure.year", "departure.reason",
+]
 layout = [
   ["number", "role", "ref_member"],
   ["previous_age", "age"],
@@ -552,6 +561,10 @@ fills = [
   { field = "status_male", label = "ui.default.status_male", gender = "male" },
   { field = "status_female", label = "ui.default.status_female", gender = "female" },
 ]
+# What a new book of this set can be made as: the confession list's vocabulary on the same factory.
+presets = [
+  { name = "confessions", label = "ui.set.confessions" },
+]
 
 [books.name_list]
 label = "ui.set.name_list"
@@ -673,3 +686,53 @@ rule = "renumber"
 group = "members"
 number = "number"
 refs = ["ref_member", "parent_member", "spouse_member", "secondary_ref_member"]
+
+# Whose a son, a daughter or a wife is written under: the roll writes the number of the man whose it is only where it
+# differs from the head's. A child goes to the nearest man above of the `parents` roles who has a wife in the household
+# and is at least `min_gap` years older (`FATHER_MIN`); a wife, to the nearest of them without one who is at least
+# `min_husband_age` and not more than `max_wife_older` years her junior — both ages written, or no hint (the roll lays
+# its men first: the nearest unmarried man above a wife is most often a boy). The page only suggests it
+# (`verso.ru.records.household_hints.ref_hint`). `role`, `number` and `age` are the member's fields it reads.
+[[kinds.household.rules]]
+rule = "ref_hint"
+group = "members"
+path = "ref_member"
+children = ["son", "daughter"]
+parents = ["son", "brother"]
+spouse = "wife"
+min_gap = 15
+min_husband_age = 15
+max_wife_older = 2
+role = "role"
+number = "number"
+age = "age"
+
+# A brother goes under the patronymic of the member he is written under (`ref`), the head's where none is written: the
+# roll writes it for that member alone (`verso.ru.records.household_hints.patronymic_hint`). `role`, `number` and
+# `ref` are the member's fields it reads.
+[[kinds.household.rules]]
+rule = "patronymic_hint"
+group = "members"
+path = "person.patronymic.original"
+of_role = "brother"
+from_role = "head"
+role = "role"
+number = "number"
+ref = "ref_member"
+
+# A member's two ages are one revision apart: `age_gap` flags the pair off that gap by more than a year, as CAI002
+# does. The table is the revision chain — a roll's year and the revision its previous-age column counts from
+# (`verso.ru.census_revisions.PREVIOUS_AGE_REVISION_YEAR`; a test holds them equal). A member departed (either of the
+# departure's two fields written) or hidden is not asked.
+[[kinds.household.rules]]
+rule = "age_gap"
+group = "members"
+# Where `previous_age` is not written, the previous age is the marker's group in the comment (CAI002 reads it so).
+prior_comment = "прошлая РС:\\s*([^,;]+)"
+gaps = { "1721" = 1719, "1745" = 1719, "1762" = 1745, "1795" = 1782, "1811" = 1795, "1815" = 1811, "1816" = 1811, "1834" = 1816, "1850" = 1834, "1857" = 1850, "1858" = 1850 }
+age = "age"
+previous = "previous_age"
+departure_year = "departure.year"
+departure_reason = "departure.reason"
+hidden = "hidden"
+comment = "comment"

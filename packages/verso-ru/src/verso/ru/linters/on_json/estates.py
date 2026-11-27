@@ -54,14 +54,13 @@ from typing import Any, NamedTuple, cast
 from verso.core.i18n import Message
 from verso.core.records.fields import split_context, vocabulary
 from verso.ru import corpus_data
-from verso.ru.census_revisions import PREVIOUS_AGE_REVISION_YEAR
 from verso.ru.domain.estates import estate_of
 from verso.ru.domain.statuses import child_status_for
 from verso.ru.gender import Gender
 from verso.ru.linters.checks import census_age, civil_register, parent_status, patronymic_form, residence_title
 from verso.ru.linters.checks.status_words import (
     DAT, GEN, NAME_PARAMS, NOM, Default, counterpart, default_for, estate_words, offer, role_word, split_role, tables)
-from verso.ru.linters.on_json.census import Household, Member, age_years
+from verso.ru.linters.on_json.census import Household, Member
 from verso.ru.linters.on_json.walk import (
     FileView, Finding, Rule, as_int, as_text, finding, gender_from_name, member_gender, only, personas, slot_of,
     status_name_or_none)
@@ -711,15 +710,9 @@ def paf001(view: FileView) -> Iterator[Finding]:
 
 # --- CAI002: the two ages of a roll member against the revision gap ----------------------------------------------
 
-def _source_text(value: object) -> str | None:
-    """`census_age._literal_source_str`: the text of a number or a string, the way the source wrote it."""
-    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
-        return None
-    return str(value)
-
-
 def _source_repr(value: object) -> str:
-    return repr(value) if isinstance(value, str) else str(_source_text(value))
+    """`census_age._source_repr` of a value: a string quoted, a number as written."""
+    return census_age._json_source_repr(value)
 
 
 def cai002(view: FileView) -> Iterator[Finding]:
@@ -728,37 +721,16 @@ def cai002(view: FileView) -> Iterator[Finding]:
         year = doc["written"].get("year")
         if not isinstance(year, int) or isinstance(year, bool):
             continue
-        previous_year = PREVIOUS_AGE_REVISION_YEAR.get(year)
-        if previous_year is None:
-            continue
         for m in Household(view, record).every:
-            link = m.link
-            if "departure_year" in link or "departure_reason" in link or m.hidden:
+            pair = census_age.link_age_pair(m.link, year)
+            if pair is None:
                 continue
-            age = link.get("age")
-            if age is None:
-                continue
-            if "previous_age" in link:
-                previous = link["previous_age"]
-                age_text = _source_text(age)
-                if age_text is not None and age_text == _source_text(previous):
-                    continue
-                previous_years, shown = age_years(previous), _source_repr(previous)
-            else:
-                comment = m.comment
-                found = census_age.PREV_AGE_COMMENT_RE.search(comment) if comment else None
-                if found is None:
-                    continue
-                payload = found.group(1).strip()
-                previous_years, shown = census_age.age_years_str(payload), f"{payload!r} (from comment)"
-            years = age_years(age)
-            if years is None or previous_years is None:
-                continue
-            gap, diff = year - previous_year, years - previous_years
+            age = m.link["age"]
+            gap, diff = year - pair.previous_year, pair.age - pair.previous
             if abs(diff - gap) <= census_age.CAI002_TOLERANCE:
                 continue
-            yield finding("CAI002", "gap", record["id"], who=m.who, age=_source_repr(age), previous=shown,
-                          diff=diff, year=year, gap=gap, previous_year=previous_year)
+            yield finding("CAI002", "gap", record["id"], who=m.who, age=_source_repr(age), previous=pair.shown,
+                          diff=diff, year=year, gap=gap, previous_year=pair.previous_year)
 
 
 # --- ZGS001-ZGS006: the books of the civil registry ---------------------------------------------------------

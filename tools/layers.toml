@@ -89,6 +89,9 @@ packages = ["verso.ru.cli", "verso.ru.plugin", "verso.ru.scans.cli"]
 [overrides]
 # Модуль не в слое своего пакета: инструмент репо, а не линтер DSL (переехал до 0.1.0).
 "verso.ru.linters.dead_code" = "ru.entry"
+# The household page's hints read the pair CAI002 checks (`linters.checks.census_age`) — the page and the linter must
+# not hold two readings of it — so the module stands a tier above the linters, though it lives with the records.
+"verso.ru.records.household_hints" = "ru.analysis"
 
 # The corpus's package. The library and the App do not import it (LAY005) — they
 # read the corpus's data through the workspace. The DSL imports it (`corpus.statuses`).

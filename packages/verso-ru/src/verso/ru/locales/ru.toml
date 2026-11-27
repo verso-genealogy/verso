@@ -879,6 +879,9 @@ title = "Двор"
 word = "двор"
 plural = "переписи"
 
+[ui.set]
+confessions = "Исповедная роспись"
+
 [ui.book]
 civil = "книга ЗАГС (вторая дата — регистрация)"
 female_previous_age = "возраст прошл. ревизии у женщин"
@@ -1390,6 +1393,10 @@ finding = "  [{confidence}] возраст {role} {first} и {second}: зазо�
 head = "parent-ages: {count} (HIGH {high} — возраст родителя вне границ: матери {mother_min}–{mother_max}, отцу от {father_min})"
 ok = "parent-ages: OK — 0 findings (ни одного возраста родителя вне границ: матери {mother_min}–{mother_max}, отцу от {father_min})."
 
+[cli.facts.household_ages]
+head = "household-ages: {count} (HIGH {high} — отцу при рождении ребёнка меньше {father_min} лет или ребёнок старше отца, по одной росписи)"
+ok = "household-ages: OK — 0 findings (ни одного отца моложе {father_min} лет при рождении ребёнка, ни одного ребёнка старше отца в росписях)."
+
 [cli.facts.basis]
 none = "фактов нет"
 total = "утверждений всего: {total}"
@@ -1658,6 +1665,12 @@ out_of_range_father = "Отцу «{age}» при рождении ребёнка
 out_of_range_why_mother = "Матери в книгах от {minimum} до {maximum} лет: возраст вне этих границ — вероятно, ошибка чтения."
 out_of_range_why_father = "Отцу в книгах не меньше {minimum} лет: возраст ниже — вероятно, ошибка чтения."
 
+[facts.signal.household_ages]
+too_young = "Отцу при рождении ребёнка № {child} {low}–{high} лет — сверьте возрасты в росписи."
+too_young_why = "Отцу в книгах не меньше {minimum} лет: разность возрастов отца и ребёнка меньше — вероятно, ошибка чтения."
+child_older = "Ребёнок № {child} старше отца — сверьте возрасты в росписи."
+child_older_why = "Ребёнок не бывает старше отца: один из двух возрастов прочитан неверно, или это не отец."
+
 [facts.signal.date_order]
 baptism_before_birth = "Крещение {left} раньше рождения {right}."
 death_before_birth = "Смерть {left} раньше рождения {right}."
@@ -1750,12 +1763,15 @@ walk_diverges = "{code}, листы {lo}-{hi}: обход не сходится 
 nothing_matched = "{code}: ни один скан не сопоставлен листам — проверьте имена файлов через `notes`."
 
 [records.blank]
-kind = "пустой книги вида «{kind}» нет: рождения, браки или смерти"
+kind = "пустой книги вида «{kind}» нет: бывают births, marriages, deaths и census (ревизская сказка; исповедная роспись — её заготовка)"
 year = "год {year} вне 1700–1930"
 shelfmark = "книге нужны фонд, опись и дело: «{fund}», «{inventory}», «{case}»"
 path = "«{value}» не может стоять в пути книги: ни «/», ни «\\», ни «..», ни пробелов по краям и управляющих символов, а пункт не пуст и не «.» или «..»"
 parish = "книге нужен приход, в котором она ведётся"
 defaults = "умолчания книги не приняты: {error}"
+roll_field = "«{field}» этой книге не подходит"
+roll_value = "«{field}» не может быть {value}: год — целое число, отметка — да или нет, название — текст"
+prev_revision = "прошлая ревизия {previous} не раньше года книги {year}"
 
 [records.cite]
 no_sex = "{kind} № {number}{sheet}: пол не указан — номер рождения и смерти пишется с полом (m{number}, f{number})"

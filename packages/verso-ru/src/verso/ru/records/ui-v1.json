@@ -1170,6 +1170,19 @@
       ]
      },
      "orderable": true,
+     "view": "table",
+     "columns": [
+      "number",
+      "person.given.original",
+      "person.patronymic.original",
+      "person.surname.original",
+      "role",
+      "ref_member",
+      "age",
+      "previous_age",
+      "departure.year",
+      "departure.reason"
+     ],
      "layout": [
       [
        "number",
@@ -1195,7 +1208,7 @@
    ],
    "events": [],
    "draft": {
-    "creatable": false,
+    "creatable": true,
     "slots": []
    },
    "rules": [
@@ -1219,6 +1232,60 @@
       "spouse_member",
       "secondary_ref_member"
      ]
+    },
+    {
+     "rule": "ref_hint",
+     "group": "members",
+     "path": "ref_member",
+     "children": [
+      "son",
+      "daughter"
+     ],
+     "parents": [
+      "son",
+      "brother"
+     ],
+     "spouse": "wife",
+     "min_gap": 15,
+     "min_husband_age": 15,
+     "max_wife_older": 2,
+     "role": "role",
+     "number": "number",
+     "age": "age"
+    },
+    {
+     "rule": "patronymic_hint",
+     "group": "members",
+     "path": "person.patronymic.original",
+     "of_role": "brother",
+     "from_role": "head",
+     "role": "role",
+     "number": "number",
+     "ref": "ref_member"
+    },
+    {
+     "rule": "age_gap",
+     "group": "members",
+     "prior_comment": "прошлая РС:\\s*([^,;]+)",
+     "gaps": {
+      "1721": 1719,
+      "1745": 1719,
+      "1762": 1745,
+      "1795": 1782,
+      "1811": 1795,
+      "1815": 1811,
+      "1816": 1811,
+      "1834": 1816,
+      "1850": 1834,
+      "1857": 1850,
+      "1858": 1850
+     },
+     "age": "age",
+     "previous": "previous_age",
+     "departure_year": "departure.year",
+     "departure_reason": "departure.reason",
+     "hidden": "hidden",
+     "comment": "comment"
     }
    ]
   },
@@ -2155,6 +2222,7 @@
      "label": "ui.book.civil"
     }
    ],
+   "presets": [],
    "queue": true
   },
   "marriages": {
@@ -2250,6 +2318,7 @@
      "label": "ui.book.civil"
     }
    ],
+   "presets": [],
    "queue": true
   },
   "deaths": {
@@ -2336,6 +2405,7 @@
      "label": "ui.book.civil"
     }
    ],
+   "presets": [],
    "queue": true
   },
   "census": {
@@ -2480,6 +2550,12 @@
      "label": "ui.book.female_previous_age"
     }
    ],
+   "presets": [
+    {
+     "name": "confessions",
+     "label": "ui.set.confessions"
+    }
+   ],
    "queue": true
   },
   "name_list": {
@@ -2578,6 +2654,7 @@
    ],
    "fills": [],
    "flags": [],
+   "presets": [],
    "queue": true
   },
   "divorces": {
@@ -2631,6 +2708,7 @@
    ],
    "fills": [],
    "flags": [],
+   "presets": [],
    "queue": false
   },
   "external_sources": {
@@ -2649,6 +2727,7 @@
    ],
    "fills": [],
    "flags": [],
+   "presets": [],
    "queue": false
   }
  }

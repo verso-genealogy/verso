@@ -10,7 +10,7 @@ the plugin's hints (`Plugin.ui`, a TOML file of its package; the Russian books' 
      "kinds":  {<record kind>: {"label", "fields", "slots", "groups", "events", "draft", "rules"}},
      "persona": {"fields"},  # a person's fields, wherever a person stands
      "enums":  {<enum>: [{"code", "label", "gender"}]},
-     "books":  {<record set>: {"label", "fields", "fills", "flags", "queue"}}}
+     "books":  {<record set>: {"label", "fields", "fills", "flags", "presets", "queue"}}}
 
 A field's `type` is the vocabulary's, never the hints': `str` → `text`, `int` → `integer`, `bool`
 → `boolean`, `age` and `intstr` → `age` (a number or a scribe's «17 л 2 мес»), an enum class →
@@ -58,14 +58,42 @@ RULE_KEYS: dict[str, frozenset[str]] = {
     "renumber": frozenset({"rule", "group", "number", "refs"}),
     "ref_choices": frozenset({"rule", "group", "path", "party"}),
     "late": frozenset({"rule", "after", "event", "days", "stand_down", "stand_down_before"}),
+    # A group's household page: whose a row is (`path`: the field it fills), the patronymic a row may take from the
+    # head (`path`: the person's field), the age gap a revision implies (`gaps`: year → the previous revision's year).
+    # Each names the item fields it reads besides (`HINT_FIELDS`): a page reads a member through them alone.
+    "ref_hint": frozenset({"rule", "group", "path", "children", "parents", "spouse", "min_gap", "min_husband_age",
+                           "max_wife_older", "role", "number", "age"}),
+    "patronymic_hint": frozenset({"rule", "group", "path", "of_role", "from_role", "role", "number", "ref"}),
+    "age_gap": frozenset({"rule", "group", "gaps", "prior_comment", "age", "previous", "departure_year",
+                          "departure_reason", "hidden", "comment"}),
 }
 RULES = frozenset(RULE_KEYS)
+#: The household hints' keys that each name an item field of the rule's group — the fields it reads, every one of them
+#: required: the role, the number, the reference and the ages a hint goes by.
+HINT_FIELDS: dict[str, tuple[str, ...]] = {
+    "ref_hint": ("role", "number", "age"),
+    "patronymic_hint": ("role", "number", "ref"),
+    "age_gap": ("age", "previous", "departure_year", "departure_reason", "hidden", "comment"),
+}
+#: The household hints' other keys, by the kind of value each holds: a list of codes, a code (or a pattern), a whole
+#: number.
+HINT_VALUES: dict[str, dict[str, str]] = {
+    "ref_hint": {"children": "codes", "parents": "codes", "spouse": "code", "min_gap": "whole",
+                 "min_husband_age": "whole", "max_wife_older": "whole"},
+    "patronymic_hint": {"of_role": "code", "from_role": "code"},
+    "age_gap": {"prior_comment": "code"},
+}
 #: A rule's keys that hold a table, and the keys each table takes: `follows`'s `advance` compares two days,
 #: `shown_when`'s `when` names the book's two readings and the item field its gender is of.
-RULE_TABLES: dict[tuple[str, str], frozenset[str]] = {
+#: A table whose keys are the book's own data (`age_gap`'s years) is open: its set is `None`, any key goes, its
+#: values are whole numbers.
+RULE_TABLES: dict[tuple[str, str], frozenset[str] | None] = {
     ("follows", "advance"): frozenset({"day_from", "day_to"}),
     ("shown_when", "when"): frozenset({"book", "women", "gender_of"}),
+    ("age_gap", "gaps"): None,
 }
+#: How a group's items are drawn: a table, a column per field (`columns`).
+VIEWS = frozenset({"table"})
 GENDERS = frozenset({"male", "female", "of_record"})
 WIDGETS = frozenset({"wide", "checkbox"})
 REF_TO = frozenset({"item", "slot"})   # another item of the field's own group, or a slot
@@ -87,8 +115,10 @@ FORMAT = (
     "events", "draft", "rules", "rule", "path", "type", "enum", "catalog", "widget", "hidden", "ref",
     "to", "choices", "role", "gender", "party", "row", "quick", "name", "item", "persons", "layout",
     "orderable", "day", "month", "year", "late_days", "follows", "creatable", "code", "forms",
-    "fills", "flags", "field", "fallback", "package", "of", "queue",
+    "fills", "flags", "presets", "field", "fallback", "package", "of", "queue",
     "from", "advance", "after", "event", "number", "refs",          # the rules' keys
+    "children", "parents", "spouse", "min_gap", "gaps", "from_role", "prior_comment", "view", "columns",
+    "min_husband_age", "max_wife_older", "of_role", "previous", "departure_year", "departure_reason", "comment",
     "group", "days", "when", "stand_down", "stand_down_before", "day_from", "day_to", "book", "women", "gender_of",
     "offer", "not_in",                                               # whom a «+» offers a field
     "text", "integer", "boolean", "age", *FLAGS,
@@ -327,6 +357,13 @@ class _Build:
                                      "item": {"role": self.voc.item_roles.get(name), "fields": item_fields,
                                               "persons": persons},
                                      "orderable": bool(item.get("orderable", False))}
+            if "view" in item or "columns" in item:
+                # A group drawn otherwise than item by item: its view and its columns, the two together.
+                view, columns = item.get("view"), item.get("columns")
+                if view not in VIEWS or not isinstance(columns, list) or not columns:
+                    raise UiError(t("records.ui.bad_view", kind=where, view=view, views=", ".join(sorted(VIEWS))))
+                group["view"] = view
+                group["columns"] = [self.column(where, p, item_fields, persons) for p in columns]
             if "layout" in item:
                 item_paths = {f["path"] for f in item_fields}
                 for line in item["layout"]:
@@ -367,6 +404,21 @@ class _Build:
         return {"label": self.label(hint.get("label")), "fields": fields, "slots": slots, "groups": groups,
                 "events": events, "draft": draft, "rules": rules}
 
+    def person_path(self, where: str, path: object, persons: Sequence[str]) -> str:
+        """`<person field>.<the person's own path>`: a path of a person an item holds, as the persona's fields name it."""
+        fields = {f["path"] for f in self.hints.get("person", {}).get("fields", ())}
+        field, _, rest = path.partition(".") if isinstance(path, str) else ("", "", "")
+        if field not in persons or rest not in fields:
+            raise UiError(t("records.ui.unknown_path", kind=where, path=path))
+        return str(path)
+
+    def column(self, where: str, path: object, item_fields: Sequence[Mapping[str, Any]],
+               persons: Sequence[str]) -> str:
+        """A column of a group's table: a field of the item, or of one of its persons (`person.<path>`)."""
+        if isinstance(path, str) and path in {f["path"] for f in item_fields}:
+            return path
+        return self.person_path(where, path, persons)
+
     def check_rule(self, code_: str, rule: Mapping[str, Any], known: Callable[[object], str],
                    groups: Sequence[Mapping[str, Any]], events: Sequence[Mapping[str, Any]]) -> None:
         """Every path, group and event a rule names is the kind's: the page writes by them (a renumbering
@@ -382,6 +434,10 @@ class _Build:
             table = rule[key]
             if not isinstance(table, Mapping):
                 raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key=key))
+            if keys is None:                         # an open table: any key, whole numbers for values
+                if any(not isinstance(v, int) or isinstance(v, bool) for v in table.values()):
+                    raise UiError(t("records.ui.rule_bad_value", kind=code_, rule=name, key=key))
+                continue
             unread += [f"{key}.{inner}" for inner in table if inner not in keys]
         if unread:
             raise UiError(t("records.ui.unknown_rule_key", kind=code_, rule=name, key=unread[0]))
@@ -400,11 +456,14 @@ class _Build:
             for key in ("stand_down", "stand_down_before"):
                 if key in rule:
                     known(rule[key])
-        else:   # a group's: ref_choices, shown_when, renumber
+        else:   # a group's: ref_choices, shown_when, renumber, and the household hints
             group = next((g for g in groups if g["name"] == rule.get("group")), None)
             if group is None:
                 raise unknown(rule.get("group"))
             item = {f["path"] for f in group["item"]["fields"]}
+            if name in HINT_FIELDS:
+                self.check_hint(code_, rule, group, item)
+                return
             named = [rule.get("path")] if name in ("ref_choices", "shown_when") else [rule.get("number"),
                                                                                     *rule.get("refs", ())]
             # The item's field a rule reads besides: the one a member's gender is of. (`ref_choices`' `party` is a field
@@ -414,8 +473,48 @@ class _Build:
                     raise UiError(t("records.ui.rule_not_table", kind=code_, rule=name, key="when"))
                 named.append(rule["when"].get("gender_of"))
             for path in named:
+                if not isinstance(path, str):
+                    raise UiError(t("records.ui.rule_bad_value", kind=code_, rule=name,
+                                    key="number" if path is named[0] and name == "renumber" else "refs"))
                 if path not in item:
                     raise unknown(path)
+
+    def check_hint(self, code_: str, rule: Mapping[str, Any], group: Mapping[str, Any], item: set[str]) -> None:
+        """A household hint: the field it fills is the group's — an item field (`ref_hint`), a field of the item's
+        person (`patronymic_hint`) — and so is every field it reads (`HINT_FIELDS`); its other keys hold values of
+        their kind (`HINT_VALUES`), and `age_gap` has its table. A key missing is a wrong value: the page reads them
+        all."""
+        name = rule["rule"]
+
+        def bad(key: str) -> UiError:
+            return UiError(t("records.ui.rule_bad_value", kind=code_, rule=name, key=key))
+
+        if name == "ref_hint":
+            if not isinstance(rule.get("path"), str):
+                raise bad("path")
+            if rule["path"] not in item:
+                raise UiError(t("records.ui.unknown_path", kind=code_, path=rule["path"]))
+        if name == "patronymic_hint":
+            self.person_path(code_, rule.get("path"), group["item"]["persons"])
+        if name == "age_gap" and "gaps" not in rule:
+            raise bad("gaps")
+        for key in HINT_FIELDS[name]:
+            if key not in rule:
+                raise bad(key)
+            if not isinstance(rule[key], str):          # a list or a table is no path (and unhashable)
+                raise bad(key)
+            if rule[key] not in item:
+                raise UiError(t("records.ui.unknown_path", kind=code_, path=rule[key]))
+        for key, kind in HINT_VALUES[name].items():
+            value = rule.get(key)
+            if kind == "codes":
+                fits = isinstance(value, list) and bool(value) and all(isinstance(v, str) and v for v in value)
+            elif kind == "code":
+                fits = isinstance(value, str) and bool(value)
+            else:
+                fits = isinstance(value, int) and not isinstance(value, bool)
+            if not fits:
+                raise bad(key)
 
     def book(self, code_: str, cls: type, hint: Mapping[str, Any]) -> dict[str, Any]:
         spec = self.voc.specs[cls]
@@ -431,6 +530,14 @@ class _Build:
                 raise UiError(t("records.ui.repeated", kind=code_, path=path))
             taken.add(path)
             flags.append({"field": path, "label": self.label(item.get("label"))})
+        presets: list[dict[str, Any]] = []
+        for item in hint.get("presets", ()):
+            name = item.get("name")
+            if not isinstance(name, str) or not name:
+                raise UiError(t("records.ui.bad_preset", kind=code_, name=name))
+            if any(p["name"] == name for p in presets):
+                raise UiError(t("records.ui.repeated", kind=code_, path=name))
+            presets.append({"name": name, "label": self.label(item.get("label"))})
         fields = self.placed(cls, code_, hint, taken=taken)
         known = {f.name: f for value in self._value_classes(cls) for f in self.voc.specs[value].fields}
         defaults: list[dict[str, Any]] = []
@@ -452,7 +559,7 @@ class _Build:
                 default["fallback"] = item["fallback"]
             defaults.append(default)
         return {**self.labelled(hint.get("label"), hint.get("forms", ())), "fields": fields, "fills": defaults,
-                "flags": flags, "queue": bool(hint.get("queue", False))}
+                "flags": flags, "presets": presets, "queue": bool(hint.get("queue", False))}
 
     def _value_classes(self, cls: type) -> list[type]:
         return [value for (owner, _), value in self.voc.written_only.items()

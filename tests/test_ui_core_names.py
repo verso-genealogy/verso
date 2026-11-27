@@ -36,4 +36,5 @@ def test_the_core_names_no_record_kind():
     # FORMAT holds the format's words and nothing a plugin names that the format does not.
     assert set(ui.FORMAT) & _ru_words() <= {"person", "gender", "side", "role", "year", "day", "month",
                                             "number", "hidden", "age", "catalog", "page", "label", "labels",
-                                            "records", "book"}     # `book`: a `shown_when` rule's `when`
+                                            "records", "book", "children", "comment"}
+    # `book`: a `shown_when` rule's `when`; `children`: `ref_hint`'s roles; `comment`: the item field `age_gap` reads

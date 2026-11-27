@@ -1,6 +1,7 @@
 """`verso.ru.records.blank`: an empty metric book built from a record set's factory."""
 from __future__ import annotations
 
+import dataclasses
 import json
 from pathlib import Path
 from typing import Any
@@ -15,7 +16,9 @@ from verso.core.records.encode import encode_namespace
 from verso.core.records.graph import first_difference
 from verso.core.records.ids import Ids
 from verso.core.records.replay import replay_file
+from verso.core.records.ui import load_ui
 from verso.ru.dsl import birth_records
+from verso.ru.dsl.records.census import CONFESSION_LIST, census_records
 from verso.ru.dsl.statuses import PEASANT_FEMALE, PEASANT_MALE, PEASANT_WIFE
 from verso.ru.records.blank import BlankError, BookSpec, blank_book, book_path
 
@@ -74,7 +77,7 @@ def test_blank_book_then_record_equals_dsl(tmp_path: Path) -> None:
     ({"fund": " "}, "records.blank.shelfmark"), ({"case": ""}, "records.blank.shelfmark"),
     ({"inventory": ""}, "records.blank.shelfmark"),
     ({"locality": "а/б"}, "records.blank.path"), ({"case": "..\\x"}, "records.blank.path"),
-    ({"part": "a..b"}, "records.blank.path"), ({"kind": "census"}, "records.blank.kind"),
+    ({"part": "a..b"}, "records.blank.path"),
     ({"fund": " 755"}, "records.blank.path"), ({"case": "170 "}, "records.blank.path"),
     ({"locality": " Маниловка"}, "records.blank.path"), ({"part": "2 "}, "records.blank.path"),
     ({"fund": "75\n5"}, "records.blank.path"), ({"inventory": "47\x003"}, "records.blank.path"),
@@ -136,3 +139,121 @@ def test_part_is_in_the_file_variable_and_path_not_the_id() -> None:
     assert doc["variable"] == "births_755_473_170_2"
     assert doc["id"] == blank_book(plain)["documents"][0]["id"]
     assert book_path(parted) == "Маниловка/1901/births_755-473-170_2.json" != book_path(plain)
+
+
+SPEC_CENSUS = BookSpec(kind="census", locality="Маниловка", year=1850, archive="ГАМО", fund="1", inventory="2",
+                       case="345", part=None, church="", parish="Маниловка", defaults=None,
+                       prev_revision_year=1834, female_previous_age=None, district=None, volost=None,
+                       archive_suffix=None)
+
+
+def _header(doc: dict[str, Any]) -> dict[str, Any]:
+    return doc["documents"][0]["written"]
+
+
+def _replayed(doc: dict[str, Any]) -> Any:
+    (record_set,) = replay_file(doc).values()
+    return record_set
+
+
+def _cite_key(doc: dict[str, Any]) -> str:
+    return doc["documents"][0]["id"]
+
+
+def test_blank_census_replays_to_the_factory() -> None:
+    doc = blank_book(SPEC_CENSUS)
+    assert book_path(SPEC_CENSUS) == "Маниловка/1850/census_1-2-345.json"
+    assert first_difference(_replayed(doc), census_records("ГАМО", "1", "2", "345", "Маниловка", 1850,
+                                                           prev_revision_year=1834)) is None
+
+
+def test_blank_confessions_takes_the_preset() -> None:
+    spec = dataclasses.replace(SPEC_CENSUS, preset="confessions", prev_revision_year=None)
+    doc = blank_book(spec)
+    assert book_path(spec) == "Маниловка/1850/confessions_1-2-345.json"
+    assert _header(doc)["record_type"] == "исповедная роспись" and _header(doc)["single_age_column"] is True
+    assert first_difference(_replayed(doc), census_records("ГАМО", "1", "2", "345", "Маниловка", 1850,
+                                                           **CONFESSION_LIST)) is None
+
+
+def test_two_parts_of_one_case_get_two_paths() -> None:
+    a, b = (dataclasses.replace(SPEC_CENSUS, archive_suffix=x) for x in ("1", "2"))
+    assert book_path(a) != book_path(b) and _cite_key(blank_book(a)) != _cite_key(blank_book(b))
+
+
+@pytest.mark.parametrize("change, field", [
+    ({"preset": "confessions", "prev_revision_year": 1834}, "prev_revision_year"),
+    ({"preset": "confessions", "prev_revision_year": None, "female_previous_age": True}, "female_previous_age"),
+    ({"part": "2"}, "part"),
+    ({"kind": "births", "prev_revision_year": None, "volost": "Глуповская"}, "volost")])
+def test_roll_fields_refused_where_they_mean_nothing(change: dict[str, Any], field: str) -> None:
+    with pytest.raises(BlankError) as e:
+        blank_book(dataclasses.replace(SPEC_CENSUS, **change))
+    assert e.value.key == "records.blank.roll_field" and e.value.params == {"field": field}
+
+
+def test_census_book_offers_the_confessions_preset() -> None:
+    assert [p["name"] for p in load_ui()["books"]["census"]["presets"]] == ["confessions"]
+
+
+def test_household_draft_is_creatable() -> None:
+    assert load_ui()["kinds"]["household"]["draft"]["creatable"] is True
+
+
+@pytest.mark.parametrize("change, field", [
+    ({"prev_revision_year": "1834"}, "prev_revision_year"), ({"prev_revision_year": True}, "prev_revision_year"),
+    ({"female_previous_age": "yes"}, "female_previous_age"), ({"female_previous_age": 1}, "female_previous_age"),
+    ({"district": 5}, "district"), ({"volost": ["Глуповская"]}, "volost"), ({"archive_suffix": 2}, "archive_suffix"),
+    ({"preset": "metric"}, "preset"),
+])
+def test_a_roll_field_of_the_wrong_kind_is_a_blank_error(change: dict[str, Any], field: str) -> None:
+    """Refused as a BlankError with its key, never a factory's FormatError the caller cannot say."""
+    with pytest.raises(BlankError) as e:
+        blank_book(dataclasses.replace(SPEC_CENSUS, **change))
+    assert e.value.key == "records.blank.roll_value" and e.value.params == {"field": field,
+                                                                          "value": repr(change[field])}
+    with pytest.raises(BlankError):
+        book_path(dataclasses.replace(SPEC_CENSUS, **change))
+
+
+@pytest.mark.parametrize("previous", [1850, 1900])
+def test_the_previous_revision_is_before_the_book(previous: int) -> None:
+    with pytest.raises(BlankError) as e:
+        blank_book(dataclasses.replace(SPEC_CENSUS, prev_revision_year=previous))
+    assert e.value.key == "records.blank.prev_revision" and e.value.params == {"previous": previous, "year": 1850}
+
+
+@pytest.mark.parametrize("field", ["district", "volost", "archive_suffix"])
+def test_an_empty_roll_text_is_no_text(field: str) -> None:
+    """`""` is «not given»: the path, the header and the replay are those of `None`."""
+    empty = dataclasses.replace(SPEC_CENSUS, **{field: ""})
+    assert book_path(empty) == book_path(SPEC_CENSUS)
+    assert blank_book(empty) == blank_book(SPEC_CENSUS)
+    assert field not in _header(blank_book(empty))
+
+
+def test_a_metric_book_takes_an_empty_roll_text() -> None:
+    assert blank_book(_spec(district="", volost="", archive_suffix="")) == blank_book(_spec())
+
+
+def test_blank_census_with_district_volost_and_part_replays_to_the_factory() -> None:
+    spec = dataclasses.replace(SPEC_CENSUS, district="Глуповский", volost="Маниловская", archive_suffix="2",
+                               female_previous_age=True)
+    doc = blank_book(spec)
+    assert book_path(spec) == "Маниловка/1850/census_1-2-345_2.json"
+    header = _header(doc)
+    assert (header["district"], header["volost"], header["archive_suffix"]) == ("Глуповский", "Маниловская", "2")
+    assert first_difference(_replayed(doc), census_records(
+        "ГАМО", "1", "2", "345", "Маниловка", 1850, prev_revision_year=1834, female_previous_age=True,
+        district="Глуповский", volost="Маниловская", archive_suffix="2")) is None
+
+
+def test_the_kind_s_refusal_names_the_rolls() -> None:
+    from verso.core import i18n
+    from verso.ru.messages import t
+    with pytest.raises(BlankError) as e:
+        blank_book(_spec(kind="divorces"))
+    assert e.value.key == "records.blank.kind" and e.value.params == {"kind": "divorces"}
+    said = t("records.blank.kind", kind="divorces")
+    assert "revision" in i18n.render(said, "en") and "confession" in i18n.render(said, "en")
+    assert "ревизск" in i18n.render(said, "ru") and "исповедн" in i18n.render(said, "ru")

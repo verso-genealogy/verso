@@ -22,6 +22,7 @@ report prints is the CLI's or the consolidation module's.
     parenthood   a child after the parent's death; a mother's children too far apart
                  (`posthumous-birth`, `children-span`)
     wedding_ages under the age of marriage; spouses far apart     (`wedding-ages`)
+    household_ages  a father too young at a child's birth, a child older than the father, within one roll (`household-ages`)
     parent_ages  a parent's age no birth can have; one couple's ages across two acts (`parent-ages`, `parent-age-drift`)
 
 A check may also ask the Church's calendar (`verso.ru.church_calendar`): Julian
@@ -35,4 +36,4 @@ loads and hands in — a check still reads no file.
 FACTS_CHECKS: tuple[str, ...] = (
     "identity", "date-order", "birth-claims", "father-claims", "death-claims", "name-days", "wedding-calendar",
     "baptism-lag", "burial-lag", "posthumous-birth", "children-span", "wedding-ages",
-    "parent-ages", "parent-age-drift")
+    "parent-ages", "parent-age-drift", "household-ages")
