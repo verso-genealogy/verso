@@ -5,6 +5,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ## Unreleased (0.1.55.dev0)
 
+### Added
+
+- verso-ru, the reading task (`verso.ru.reading.task`): an answer's `alternatives` — for a given name, patronymic
+  or surname read two or three ways, the likelier in its field with «?» and listed in `doubtful`, the others
+  (at most three) as `{"path": "persons[2].name", "readings": [...]}` by the field's path. The schema requires the
+  key (an empty array where nothing is in two minds); `common.md` asks for it. For the review page's hint under a
+  doubtful name (verso-app, П15). `PROMPT_HASH` is updated without a re-measure of the reading benchmark, by the
+  owner's decision (27.11.2026): the field is new and optional to fill.
+
 ## 0.1.54 — 2026-11-27
 
 Revision and confession lists can be started blank (`BookSpec(kind="census")`, `preset="confessions"`), and the interface schema (ui-v1) draws a household as a table with three hints a page runs as it is typed (whose a child or a wife is, a brother's patronymic, two ages off the revision gap); a household's draft is creatable, and every book gains `presets`. A new facts check, `household-ages` (a father under 15 at his child's birth, or a child older than him, within one roll), joins `verso facts`, the signals of one record (a household, asked with its roll) and the facts snapshot, so every village's `facts_findings.tsv` gains a `household-ages` row — `0 0` where nothing is found, a village with no rolls too — and `verso facts-snapshot --check` fails until it is rewritten. CAI002's skip predicates move to a module of their own; no finding moves. A corpus's CSVs, Terraform, records JSON and facts do not move.
@@ -43,12 +52,6 @@ Revision and confession lists can be started blank (`BookSpec(kind="census")`, `
   «+» between creatable cards offers «+ двор» on a census book.
 - verso-ru: CAI002's skip predicates moved to `linters.checks.census_age.link_age_pair`, which the linter on the JSON and
   the page's `age_gap` both read; no finding moves.
-- verso-ru, the reading task (`verso.ru.reading.task`): an answer's `alternatives` — for a given name, patronymic
-  or surname read two or three ways, the likelier in its field with «?» and listed in `doubtful`, the others
-  (at most three) as `{"path": "persons[2].name", "readings": [...]}` by the field's path. The schema requires the
-  key (an empty array where nothing is in two minds); `common.md` asks for it. For the review page's hint under a
-  doubtful name (verso-app, П15). `PROMPT_HASH` is updated without a re-measure of the reading benchmark, by the
-  owner's decision (27.11.2026): the field is new and optional to fill.
 
 ## 0.1.53 — 2026-11-27
 
