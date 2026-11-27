@@ -27,6 +27,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   (`pages.surname_links`), `records.render` them by the persona's place among the record's `persons`, and a
   `model.Mention` carries that place. The guide's paragraph on «?» readings now says what the index does with them
   (a reading in doubt on its sure page, one not made out in the last section). Only the site moves.
+- verso-ru: **a soldier's status written as free text is flagged, as a warning.** `MIL001` (`military_status`) is
+  advisory (`severity = "warn"`) and fires on texts a corpus already holds («запасный солдат», «уволенный в запас
+  армии», «жена запасного рядового»). A corpus that gates advisory findings on a baseline records them (`verso
+  dsllint --baseline FILE --update-baseline --villages`) and migrates with `verso migrate-soldier-statuses`: run
+  `verso migrate-soldier-statuses --village V --dry-run --report FILE.tsv`, read the report (its `unplaced` rows are
+  for a person to decide), then run it without `--dry-run`. MIL001 becomes hard in a later release, once the
+  corpus it was written for reaches zero.
+  A `status=` (or a `RecordDefaults` form) written as a string literal or as a constant the file defines, which
+  `domain.military_status.classify` places on a catalog constant («запасный солдат» → SOLDIER, «жена запасного
+  рядового» → SOLDIER_SPOUSE), is flagged on the DSL and on records JSON. The message names the constant and the
+  wording the `comment=` should hold (params `kwarg`, `text`, `constant`, `comment`, and `name` for a bound
+  constant; variants `literal`, `bound`); the finding has no `fix`. `classify` places «солдатская девица» as
+  SOLDIER_GIRL, «вахмистр …» as UNTER_OFFICER, a leading «кантонист» as SOLDIER_SON and «военный писарь …» as
+  SOLDIER. It answers None for an officer, a clerk, a medic, a Cossack or a policeman, for «отставной» or «отпуск»
+  with no soldier's word («отставной учитель»), for a capitalised name or place («деревни Солдатовки»), and for a
+  woman's or kinsman's wording whose role word does not lead («запасного рядового жена»), or a rank in the genitive
+  with no role before it, a dependant's or a servant's («невеста запасного рядового»), and for a status that also names
+  an estate — a landlord, or any estate `estate_of` reads (state or economic peasants, однодворцы, мещане, clergy,
+  купцы, дворовые …): left as written, the owner's ruling of 2026-11-27 (a constant would drop the estate).
+- verso-ru, `verso migrate-soldier-statuses --village V [--village …] [--dry-run] [--report FILE.tsv]`
+  (`cli.migrate_soldier_statuses`): the bulk fix of MIL001. A `person(...)`'s `status=` literal that `classify`
+  places becomes its constant, imported in the file's own form, and the wording goes into `comment=`, bare and in
+  modern spelling, before an existing comment with «; ». Only the status changes when that comment already holds
+  the wording (compared in modern spelling, case-folded, «» stripped) or quotes the scribe's own words for the rank
+  (a «quoted» part `classify` places or `unplaced` lists, or a soldier constant's catalog text). A person with no
+  status whose comment, or one of its «quoted» parts, is a reserve wording `classify` places on SOLDIER
+  («запасный рядовой …») gets `status=SOLDIER`, the comment untouched. A soldier's wording `classify` will not
+  place (`domain.military_status.unplaced`), a constant the file defines and a `RecordDefaults` form are reported
+  in the TSV, never rewritten. A file it cannot edit is named and left as it is, the others go on, and the command exits
+  1. `--dry-run` prints a unified diff and writes nothing.
 
 ### Changed
 

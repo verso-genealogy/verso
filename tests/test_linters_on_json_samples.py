@@ -53,7 +53,7 @@ SAMPLE_DIRS = (DATA / "linter_samples", DATA / "on_json_samples")
 Key = tuple[str, str, str, str | None]
 
 # A ratchet: how many samples load today. Raise it when samples are added, never lower it.
-LOADED = 155
+LOADED = 156
 # DVC001's sample writes a divorce's marriage as text on purpose: the warning DSL v1 gives for it is expected here.
 pytestmark = pytest.mark.filterwarnings(r"ignore:divorce\(marriage_date=:DeprecationWarning")
 
@@ -156,6 +156,7 @@ class SourceForm:
 # argument by its parameter, so hosted.toml's `as` and `forms` fold them (`hosted.fold`), for this oracle and the corpus's.
 SOURCE_ONLY: dict[str, tuple[SourceForm, ...]] = {
     "SOR001": (SourceForm("bound_", "literal_", frozenset({"name"})),),
+    "MIL001": (SourceForm("bound", "literal", frozenset({"name"})),),
     "RVR001": (SourceForm("inner_page_", None), SourceForm("page_", None),
                SourceForm("inner_records_", None, when="in_page"),
                SourceForm("inner_records_", None, when="flagged_run")),
@@ -413,13 +414,13 @@ def test_samples_agree_in_another_dictionary(code: str, dictionaries: dict[str, 
 # and 28 more with Иван, Анна turned over (Иванов, Иванова; one sample `census_parent_link` used to crash on, the
 # CPL012 guard now answers it and the walk refuses it like its neighbours), 43 more with Фома, Анфиса turned over and
 # Семен lost (Фомин, Фомич, Семенов). DVC001's sample adds one comparison each to the three that lose or turn over
-# Иван or Анна (2026-11-24): its replay needs the names. ZGS006's sample adds five to each (2026-11-24).
+# Иван or Анна (2026-11-24): its replay needs the names. ZGS006's sample adds five to each (2026-11-24), MIL001's five more (2026-11-26).
 SKIPPED: dict[str, tuple[int, int]] = {
-    "without Лука, Фома, Анфиса": (0, 214),
-    "without Иван, Петр, Анна": (0, 440),
-    "Иван, Анна turned over": (0, 359),
-    "Мария, Петр, Лука turned over": (0, 328),
-    "Фома, Анфиса turned over, Семен lost": (0, 166),
+    "without Лука, Фома, Анфиса": (0, 219),
+    "without Иван, Петр, Анна": (0, 445),
+    "Иван, Анна turned over": (0, 364),
+    "Мария, Петр, Лука turned over": (0, 333),
+    "Фома, Анфиса turned over, Семен lost": (0, 171),
 }
 
 

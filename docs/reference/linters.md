@@ -30,6 +30,7 @@ The baseline ratchet (`dsllint --baseline FILE`) keeps a row per advisory findin
 | `lexicon` | LEX001, LEX002, LEX003, LEX004, LEX005, LEX006, LEX007, LEX008, LEX009, LEX010 | The names layers' own check, not a DSL one — a layer's three TSV files read in the sum of the layers under it. |
 | `marital_status` | MST001 | AST-based linter (MST001) for the `marital_status=` (семейное положение) field on census members and WWI/WWII external-source records. |
 | `marriage_residence` | MRA001 | AST-based linter (MRA001) for residence alignment inside a marriage record. |
+| `military_status` | MIL001 | AST-based linter (MIL001): a soldier's status written as free text. |
 | `name_gender_agreement` | NGA001, NGA002 | AST-based advisory linter (NGA001, NGA002): a person's surname or patronymic in the other gender's form. |
 | `name_lists` | NLC001 | AST linter for name-list DSL records (`name_list_records()` / `listed_person()` from verso.ru.dsl). |
 | `names` | NAM001, NAM002, NAM003, NAM004, NAM005 | Lint script to check first names and patronymics in person() calls. |

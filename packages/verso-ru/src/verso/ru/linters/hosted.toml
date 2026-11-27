@@ -522,6 +522,12 @@ severity = "refuse"
 scope = "record"
 note = "a status in the old orthography or capitalised (its constant variant is the source's)"
 
+[MIL001]
+class = "written"
+severity = "warn"
+scope = "record"
+note = "a soldier's status written as free text (a catalog constant, the scribe's words in comment=)"
+
 [RLA001]
 class = "written"
 severity = "warn"

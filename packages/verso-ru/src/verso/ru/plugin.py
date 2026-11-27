@@ -113,6 +113,7 @@ COMMANDS: dict[str, str] = {
     "lint-config":                  "verso.ru.consolidation.lint_config",
     "lint-kin":                     "verso.ru.familio.lint_kin",
     "merge-plan":                   "verso.ru.consolidation.merge_plan",
+    "migrate-soldier-statuses":     "verso.ru.cli.migrate_soldier_statuses",
     "migrate-statuses":             "verso.ru.cli.migrate_statuses",
     "moved-blocks":                 "verso.ru.consolidation.moved_blocks",
     "name-variants":                "verso.ru.consolidation.name_variants",
