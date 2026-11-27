@@ -152,6 +152,8 @@ main { width: min(62rem, calc(100% - 2rem)); margin: 1.4rem auto 0; padding: 1.6
 .p:first-child { border-top: 0; }
 .role { padding-top: .3rem; }
 .name { font: 500 1.02rem/1.4 var(--font-body); }
+a.surname { color: inherit; font-weight: inherit; text-decoration: underline dotted var(--faint); text-underline-offset: 3px; }   /* its page of names */
+a.surname:hover { text-decoration: underline solid var(--accent); }
 .w { color: var(--text); }
 .d { color: var(--muted); }
 .modern { font-size: .86rem; margin-left: .2rem; }

@@ -77,8 +77,12 @@ script, no counter.
 Without JavaScript: the index of surnames, a page for each with every mention of it in the order
 of the years; a feminine form stands with its masculine one where the corpus has both. A surname
 the library derived counts as one — a child stands under the father's. Those left with no surname
-are found by the patronymic in the book's form, those with a name alone have a page of their own,
-and a name written «?» is no name to find anyone by.
+are found by the patronymic in the book's form, those with a name alone have a page of their own.
+A reading in doubt («Сидоров?») stands, marked, on the page of the name read surely; one not made
+out has a page of its own in the index's last section; a «?» alone is no name to find anyone by.
+A record's card links the surname it shows to the page of the index its mention stands on — the
+written one, else the modern one beside the name — so from a mention the reader reaches every other
+of that name. A woman indexed by a maiden name the card does not show has no such link.
 
 With it: the search reads `search/index.json` once and looks for every word of the query in the
 modern and the written forms, folded — lower case, the letters the 1918 reform dropped as their

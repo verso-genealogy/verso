@@ -127,6 +127,7 @@ class Mention:
     given: str
     patronymic: str      # in the book's form («Петров»), the key of who is written with no surname
     surname: str
+    place: int           # the persona's place among its record's `persons`
 
 
 @dataclass(frozen=True)
@@ -169,21 +170,47 @@ def hidden(persona: Node) -> bool:
 def name_parts(persona: Node) -> list[tuple[str, str]]:
     """The name as the source writes it, part by part with its mark; the modern forms where it
     writes none."""
-    parts = [found for part in _NAME if (found := form(persona, part, "original"))]
-    return parts or modern_parts(persona)
+    return [(text, mark) for _, text, mark in named_parts(persona)]
+
+
+def named_parts(persona: Node) -> list[tuple[str, str, str]]:
+    """`name_parts` with each part's name: `("surname", "Петровъ", "w")`."""
+    parts = [(part, *found) for part in _NAME if (found := form(persona, part, "original"))]
+    return parts or modern_named(persona)
 
 
 def modern_parts(persona: Node) -> list[tuple[str, str]]:
-    parts = [form(persona, "given", "modern"), form(persona, "patronymic", "modern"),
-             form(persona, "surname", "modern") or form(persona, "maiden_surname", "modern")]
-    return [(text, "d") for text, _ in filter(None, parts)]
+    return [(text, mark) for _, text, mark in modern_named(persona)]
+
+
+def modern_named(persona: Node) -> list[tuple[str, str, str]]:
+    """The modern forms of a name, each part's name beside it, all marked derived."""
+    parts = [("given", form(persona, "given", "modern")), ("patronymic", form(persona, "patronymic", "modern")),
+             ("surname", form(persona, "surname", "modern") or form(persona, "maiden_surname", "modern"))]
+    return [(part, found[0], "d") for part, found in parts if found]
+
+
+def shows_modern(persona: Node) -> bool:
+    """Whether a card draws the modern forms beside the name: where they say other than it does."""
+    modern = modern_parts(persona)
+    return bool(modern) and fold(_text(modern)) != fold(_text(name_parts(persona)))
+
+
+def drawn_surname(persona: Node) -> tuple[str, bool] | None:
+    """The surname a card draws and whether in the name as written (`True`) or in its modern form beside it: the
+    written one where it holds a letter, else the modern one where the card draws it — or None."""
+    for parts, written in ((named_parts(persona), True), (modern_named(persona) if shows_modern(persona) else [], False)):
+        found = next((text for part, text, _ in parts if part == "surname"), "")
+        if any(char.isalnum() for char in found):
+            return found, written
+    return None
 
 
 def _text(parts: Iterable[tuple[str, str]]) -> str:
     return " ".join(text for text, _ in parts)
 
 
-def _mention(entry: Entry, persona: Node) -> Mention:
+def _mention(entry: Entry, persona: Node, place: int) -> Mention:
     def first(*asks: tuple[str, str]) -> str:
         # «?» — a name the reader could not make out — is no name to index a person by.
         return next((found[0] for part, form_ in asks if (found := form(persona, part, form_))
@@ -193,7 +220,8 @@ def _mention(entry: Entry, persona: Node) -> Mention:
     return Mention(entry, persona, persona["role"], _text(name_parts(persona)), _text(modern_parts(persona)),
                    given=first(("given", "modern"), ("given", "original")),
                    patronymic=first(("patronymic", "old"), ("patronymic", "original")),
-                   surname=first(("surname", "modern"), ("maiden_surname", "modern"), ("surname", "original")))
+                   surname=first(("surname", "modern"), ("maiden_surname", "modern"), ("surname", "original")),
+                   place=place)
 
 
 def _order(book: Book) -> tuple[Any, ...]:
@@ -263,6 +291,6 @@ def load(files: Iterable[Node], *, village: str) -> Site:
     for book in books:
         cases.setdefault((book.village, book.year, book.kind, book.part), set()).add(book.shelfmark)
     books = [replace(book, twin=len(cases[(book.village, book.year, book.kind, book.part)]) > 1) for book in books]
-    mentions = tuple(_mention(entry, persona) for book in books for entry in book.entries
-                     for persona in entry.node.get("persons", []) if not hidden(persona))
+    mentions = tuple(_mention(entry, persona, place) for book in books for entry in book.entries
+                     for place, persona in enumerate(entry.node.get("persons", [])) if not hidden(persona))
     return Site(village, tuple(books), mentions)

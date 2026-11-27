@@ -17,7 +17,7 @@ from typing import Any
 from verso.core import i18n
 from verso.core.records import ui as ui_schema
 from verso.ru.messages import t
-from verso.ru.site import check, model, pages, prose, shell
+from verso.ru.site import check, model, pages, prose, shell, urls
 from verso.ru.site.errors import SiteError
 from verso.ru.site.records import Ui
 from verso.ru.site.shell import RESERVED, Context
@@ -87,10 +87,14 @@ def _build(site: model.Site, out: Path, ctx: Context, docs: Path | None, workspa
     page("years/", pages.years_index(site, ui, ctx))
     for year in site.years:
         page(f"years/{year}/", pages.year(year, site, ui, ctx))
+    surnames = pages.surname_pages(site)
+    links: dict[str, dict[tuple[str, int], str]] = {}             # by book: a page takes its own alone
+    for (record, place), key in pages.surname_links(surnames).items():
+        links.setdefault(urls.book_of(record), {})[(record, place)] = key
     for book in site.books:
-        page(book.path, pages.book(book, ui, ctx))
+        page(book.path, pages.book(book, ui, ctx, links.get(book.id)))
     page(f"{pages.NAMES}/", pages.names_index(site, ctx))
-    for found in pages.surname_pages(site):
+    for found in surnames:
         page(f"{pages.NAMES}/{found.key}/", pages.name(found, pages.NAMES, site, ui, ctx))
     patronymics = pages.patronymic_pages(site)
     if patronymics:
