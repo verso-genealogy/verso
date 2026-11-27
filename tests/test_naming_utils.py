@@ -30,7 +30,7 @@ class TestNamingUtils(unittest.TestCase):
         self.assertEqual(modernize_orthography("Петровъ,"), "Петров,")
         self.assertEqual(modernize_orthography("Сидоровъ."), "Сидоров.")
         # ...before a doubtful reading's «?» (В19)
-        self.assertEqual(modernize_orthography("Маруговъ?"), "Маругов?")
+        self.assertEqual(modernize_orthography("Индюшевъ?"), "Индюшев?")
         self.assertEqual(modernize_orthography("Ѳедоръ??"), "Федор??")
         self.assertEqual(modernize_orthography("Ѳедоръ? Алексѣевъ?"), "Федор? Алексеев?")
 

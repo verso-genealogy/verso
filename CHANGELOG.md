@@ -59,6 +59,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   relative, the witnesses) to `Комментарий`. A corpus's deaths
   CSVs move where a death or one of its people carries a comment; nothing else moves.
 
+### Fixed
+
+- verso-ru, `modernize_orthography`: a word's final ъ is dropped before the «?» of a doubtful reading too
+  («Свиристеловъ?» → «Свиристелов?»), as before a space or a stop; the modern fields of such a name kept the ъ. A
+  corpus moves where a name ends in «ъ?»: its modern forms in the records JSON and the CSVs, its Geni profile's
+  name and the document text that quotes it (a `geni_document` force-replace).
+
 ## 0.1.55 — 2026-11-27
 
 The reading task's prompt and schema gain `alternatives`, the other readings of a doubtful name, for the review page's
