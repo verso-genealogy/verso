@@ -41,6 +41,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   for an export made before this release, derives both forms too.
 - Tests: the golden files `tests/golden/records/fixture.json` and `tests/golden/ui/value-at.json` gain the
   newborns' derived patronymic (verso-app keeps a copy of the second).
+- Tests: the census-redundancy fixture (`tests/test_check_census_redundancy.py`) names its daughter's maiden surname
+  with an invented word; the one it had became a surname of a corpus.
 
 ### Fixed
 
