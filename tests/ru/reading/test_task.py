@@ -282,7 +282,7 @@ def test_no_imports():
 
 
 def _members(*rows):
-    return [dict(zip(("number", "role", "of"), row)) for row in rows]
+    return [dict(zip(("number", "role", "of"), row, strict=True)) for row in rows]
 
 
 def _targets(*rows):
