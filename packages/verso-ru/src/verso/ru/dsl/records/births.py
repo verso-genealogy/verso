@@ -10,13 +10,11 @@ from verso.ru.domain.statuses import child_status_for
 from verso.ru.dsl.records.reviewed import resolve_reviewed
 from verso.ru.naming import derive_old_patronymic, derive_patronymic, feminize_surname, get_gender_from_name
 from verso.ru.relationship import Relative, relative  # noqa: F401 (re-exported for backward compat)
-from verso.core.written import written_of
 from verso.ru.relationship import Relationship, gender_from_relationship
-from verso.core.written import captures_written, shadow
+from verso.core.written import captures_written, shadow, written_of
 
 if TYPE_CHECKING:
     from verso.ru.exporters.base import RecordsExporter
-
 
 
 def as_written(child: Person | None) -> Person | None:
@@ -28,6 +26,7 @@ def as_written(child: Person | None) -> Person | None:
     bare.patr_old = ""
     bare.patr_modern = ""
     return bare
+
 
 class Birth:
     # Overridden to True by the Christening subclass so the translator can

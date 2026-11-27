@@ -13,6 +13,7 @@ from verso.ru.facts.extract.common import SlotIndex
 from verso.ru.facts.extract.deaths import facts_from_deaths
 from verso.ru.facts.model import AssertionSet
 from verso.ru.gender import Gender
+from verso.ru.relationship import Relationship, relative
 from verso.ru.persons.lives import Clue, Life, after_death, lives, lives_of, min_age, record_days, year_days
 
 KEY = ("Горелово", "иван", "петрович", "")
@@ -194,6 +195,18 @@ class FromTheRecords(unittest.TestCase):
         self.assertTrue(newborn.newborn)
         assert newborn.born is not None
         self.assertEqual(1880, _year(newborn.born.first))
+
+    def test_a_patronymic_made_of_the_father_keys_a_burial_and_not_a_birth(self):
+        """В10: the newborn's, made of the father, is no key of his life; a deceased child's keys it as before."""
+        child, daughter = person("Иван"), person("Марія", last_name_orig="Сидорова")
+        record = birth(1, Gender.MALE, 1, 2, Month.MARCH, Month.MARCH, year=1880,
+                       child=child, father=person("Петр", "Иванов"), reviewed=False)
+        burial = death(1, Gender.FEMALE, 3, 5, Month.MARCH, Month.MARCH, year=1880, deceased=daughter, age=20,
+                       relatives=[relative(person("Петръ", "Ивановъ", "Сидоровъ"), Relationship.FATHER)])
+        found = self._clues(births=[record], deaths=[burial])
+        assert found[id(child)].key is not None and found[id(daughter)].key is not None
+        self.assertEqual(found[id(child)].key[2], "")
+        self.assertEqual(found[id(daughter)].key[2], "петровна")
 
 
 def _year(day: int) -> int:

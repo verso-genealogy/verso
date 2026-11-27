@@ -196,8 +196,9 @@ def clues_of(facts: AssertionSet, slots: Any, *, year: int | None = None) -> dic
                    or any(isinstance(c, (SurvivedUntil, OfficiatedAt)) for c in claims))
         died = (min(d[0] for d in deaths), min(d[1] for d in deaths)) if deaths else None
         # A newborn's patronymic made of the father is no key of his life (В10): the book wrote none.
-        made = any(isinstance(c, NameClaim) and isinstance(c.basis, Derived)
-                   and c.basis.rationale == PATRONYMIC_FROM_FATHER for c in claims)
+        # A deceased child's, also derived from the father, keys his life as before.
+        made = locator == _NEWBORN and any(isinstance(c, NameClaim) and isinstance(c.basis, Derived)
+                                           and c.basis.rationale == PATRONYMIC_FROM_FATHER for c in claims)
         out[id(person)] = Clue(life_key(as_written(person) if made else person), on, born, died,
                                present, locator == _NEWBORN, locator.startswith(ADULT_SLOTS))
     return out
