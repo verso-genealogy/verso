@@ -1,6 +1,6 @@
 # Invented: the check a household answers with its roll (verso.ru.facts.signals) — a father under fifteen at the
 # child's birth, a child older than the father, a father at fifteen, and the quiet cases: the author's
-# source_age_error=, a household of one. One household is held (reviewed=False).
+# source_age_error=, a household of one. The whole roll is held (reviewed=False): the check reads drafts too.
 from verso.ru.dsl import CensusRole, census_records, household, member, page, person
 
 census = census_records(

@@ -37,8 +37,8 @@ def is_household(record: object) -> bool:
 def extractor_of(record: object, *, record_set: object | None = None) -> Extract | None:
     """The extractor of a record read alone — a birth, a wedding, a death, a divorce — or None: a card and a line
     of a list are read with their book around them, never alone. A household is read as a roll of one household
-    (the roll its `record_set` is): the facts are those the whole roll yields for it, its number and its entry
-    in the roll's order included, so a citation reads the same either way. Without its roll a household has none."""
+    (the roll its `record_set` is): its facts are those that roll yields for it — its year, its dates, its previous
+    revision — and are cited by its place in that roll. Without its roll a household has none."""
     if is_household(record):
         if record_set is None:
             return None

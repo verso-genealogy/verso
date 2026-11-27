@@ -40,6 +40,7 @@ def test_father_of_eleven_is_a_finding():
     assert (f.kind, f.confidence) == ("too_young", "HIGH")
     assert (round(f.gap_low), round(f.gap_high)) == (10, 12)
     assert f.cite.locator == "member1"
+    assert f.child_cite.locator == "member2"
 
 
 def test_father_at_fifteen_is_not():
@@ -107,23 +108,34 @@ def test_signals_of_a_household_ask_household_ages_only():
     [one] = s.found
     assert (one.variant, one.confidence, one.stand_down, one.record) == ("too_young", "HIGH", "source_age_error", RID)
     assert one.key == "facts.signal.household_ages.too_young"
-    assert one.said.params == {"low": "10", "high": "12"}
-    assert i18n.render(one.said, "ru") == "Отцу при рождении ребёнка 10–12 лет — сверьте возрасты в росписи."
+    assert one.said.params == {"low": "10", "high": "12", "child": "2"}
+    assert i18n.render(one.said, "ru") == "Отцу при рождении ребёнка № 2 10–12 лет — сверьте возрасты в росписи."
     with i18n.use("en"):
-        assert "father" in i18n.render(one.said, "en").lower()
+        assert "father" in i18n.render(one.said, "en").lower() and "№ 2" in i18n.render(one.said, "en")
 
 
 def test_child_older_is_said_in_its_words():
     roll, dvor = _roll_and_household(_father_son(30, 31))
     [one] = signals_of(dvor, record_id=RID, record_set=roll).found
     assert one.key == "facts.signal.household_ages.child_older"
-    assert i18n.render(one.said, "ru").startswith("Ребёнок старше отца")
+    assert i18n.render(one.said, "ru").startswith("Ребёнок № 2 старше отца")
 
 
-def test_a_household_without_its_set_answers_nothing():
+def test_two_sons_of_one_age_are_two_signals_each_naming_its_son():
+    roll = _roll(member(1, person("Иванъ", "Петровъ"), CensusRole.HEAD, age=23),
+                 member(2, person("Петръ"), CensusRole.SON, age=12), member(3, person("Павелъ"), CensusRole.SON, age=12))
+    found = signals_of(roll.households[0], record_id=RID, record_set=roll).found
+    assert [s.said.params["child"] for s in found] == ["2", "3"]
+    assert len({i18n.render(s.said, "ru") for s in found}) == 2
+
+
+def test_a_household_without_its_set_is_unanswered():
+    """A check that could not be asked is said so, never silently empty: without its roll a household has no year."""
     _roll, dvor = _roll_and_household(_father_son(23, 12))
     s = signals_of(dvor, record_id=RID)
-    assert (s.found, s.unanswered) == ((), ())
+    assert (s.found, s.unanswered) == ((), ("household-ages",))
+    assert signals_of(dvor, record_id=RID, checks=["name-days"]) == signals_of(dvor, record_id=RID, checks=[])
+    assert signals_of(dvor, record_id=RID, checks=["name-days"]).unanswered == ()
 
 
 def test_the_household_alone_yields_the_facts_the_whole_roll_yields_for_it():

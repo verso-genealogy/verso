@@ -183,10 +183,13 @@ def _within(f: WithinFinding) -> tuple[str, str, Message, Message, tuple[Message
 
 
 def _household_age(f: HouseholdAgeFinding) -> tuple[str, str, Message, Message, tuple[Message, ...]]:
+    # The child by its number in the household (its locator is `member<N>`): two sons of one age are two lines.
+    child = f.child_cite.locator.removeprefix("member")
     if f.kind == "child_older":
-        return f.kind, f.cite.locator, _said(_key("household-ages", "child_older")), _said(_key("household-ages", "child_older_why")), ()
+        return (f.kind, f.cite.locator, _said(_key("household-ages", "child_older"), {"child": child}),
+                _said(_key("household-ages", "child_older_why")), ())
     said = _said(_key("household-ages", "too_young"), {"low": f"{max(f.gap_low, 0):.1f}".removesuffix(".0"),
-                                                       "high": f"{f.gap_high:.1f}".removesuffix(".0")})
+                                                       "high": f"{f.gap_high:.1f}".removesuffix(".0"), "child": child})
     return f.kind, f.cite.locator, said, _said(_key("household-ages", "too_young_why"), {"minimum": FATHER_MIN}), ()
 
 
@@ -266,8 +269,8 @@ def signals_of(record: object, *, record_id: str, village: str = "", book_year: 
     revision tale or a confession list; anything else (a card, a line of a list) answers none of these
     checks. A divorce answers two: its own two dates (`date-order`) and the church wedding its act names
     (`wedding-calendar`). A household answers only `household-ages`, and only with `record_set`, the roll it
-    stands in: its year, its dates and its previous revision are the roll's. Without it a household answers
-    nothing, as it never did; no other kind answers `household-ages`.
+    stands in: its year, its dates and its previous revision are the roll's. Without it the check cannot be
+    asked and is in `unanswered`; no other kind answers `household-ages`.
     `record_id` names it in every signal; `book_year` dates a record that
     writes no year of its own. `svyatcy` is the table `name-days` reads (the
     package's, when none is given). A check that could not be asked — the
@@ -280,6 +283,8 @@ def signals_of(record: object, *, record_id: str, village: str = "", book_year: 
     household = is_household(record)
     wanted = [c for c in wanted if (c in HOUSEHOLD_CHECKS) == household]
     extract = extractor_of(record, record_set=record_set) if household else extractor_of(record)
+    if household and extract is None:
+        return Signals((), tuple(wanted))            # no roll: no year, no dates — the check could not be asked
     if extract is None or not wanted:
         return Signals((), ())
     believed = _assertions(record, extract, record_id, village, book_year).believed()

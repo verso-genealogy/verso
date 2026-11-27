@@ -1734,9 +1734,9 @@ out_of_range_why_mother = "The books' mothers are {minimum} to {maximum}: an age
 out_of_range_why_father = "The books' fathers are at least {minimum}: a younger age is most likely a misreading."
 
 [facts.signal.household_ages]
-too_young = "The father was {low}–{high} at the child's birth — read the ages in the roll again."
+too_young = "The father was {low}–{high} at the birth of № {child} — read the ages in the roll again."
 too_young_why = "The books' fathers are at least {minimum}: a smaller difference between the father's and the child's age is most likely a misreading."
-child_older = "The child is older than the father — read the ages in the roll again."
+child_older = "The child № {child} is older than the father — read the ages in the roll again."
 child_older_why = "A child is never older than its father: one of the two ages is misread, or he is not the father."
 
 [facts.signal.date_order]

@@ -27,10 +27,12 @@ from verso.ru.gender import Gender
 @dataclass(frozen=True)
 class HouseholdAgeFinding:
     """The `parent`'s age beside the `child`'s, taken at one date of one roll: the years the father was at the
-    birth lie in `(gap_low, gap_high)`. `cite` is the father's age, where a note stands it down."""
+    birth lie in `(gap_low, gap_high)`. `cite` is the father's age, where a note stands it down; `child_cite` the
+    child's, which names the child among the household's members."""
     parent: str
     child: str
     cite: Citation
+    child_cite: Citation
     gap_low: float
     gap_high: float
     kind: Literal["too_young", "child_older"]
@@ -74,7 +76,8 @@ def household_age_findings(facts: AssertionSet) -> list[HouseholdAgeFinding]:
             low, high = round(old[0] - young[1], 6), round(old[1] - young[0], 6)
             if high <= FATHER_MIN:
                 found.append(HouseholdAgeFinding(
-                    parent=str(link.subject), child=str(link.other), cite=father[date].cite, gap_low=low, gap_high=high,
+                    parent=str(link.subject), child=str(link.other), cite=father[date].cite,
+                    child_cite=child[date].cite, gap_low=low, gap_high=high,
                     kind="child_older" if high <= 0 else "too_young", confidence="HIGH"))
             break                              # the latest date both are aged at speaks for the pair
     found.sort(key=lambda f: (f.cite.sort_key, f.child))
