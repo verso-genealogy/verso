@@ -319,9 +319,13 @@ def test_who_is_written_by_a_name_alone_has_a_page_too(site: model.Site, ui: Ui,
     assert "Анна" in pages.nameless_page(site, ui, ctx)
 
 
-def test_an_unread_mention_is_marked_in_the_index(site: model.Site, ui: Ui, ctx: Context) -> None:
-    page = pages.nameless_page(site, ui, ctx)
-    held = next(row for row in re.findall(r"<tr><td>(.*?)</tr>", page) if "#f2" in row)
+def test_an_unread_mention_is_marked_in_the_index(site: model.Site, ui: Ui) -> None:
+    # The held record's newborn has no surname; since В10 the patronymic the library derives from the father
+    # keys it, as it keys a deceased child.
+    page = next(p for p in pages.patronymic_pages(site)
+                if any(m.entry.anchor == "f2" and m.role == "child" for m in p.mentions))
+    rows = pages._mention_rows(page.mentions, site, ui, "../../")  # pyright: ignore[reportPrivateUsage]
+    held = next(row for row in re.findall(r"<tr><td>(.*?)</tr>", rows) if "#f2" in row and "Рождения" in row)
     assert "не вычитано" in held
 
 

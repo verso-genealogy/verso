@@ -38,6 +38,10 @@
       "given": {
        "modern": "Пахом"
       },
+      "patronymic": {
+       "old": "Кузьмин",
+       "modern": "Кузьмич"
+      },
       "surname": {
        "modern": "Пересыпкин"
       },
@@ -256,6 +260,10 @@
      "derived": {
       "given": {
        "modern": "Васса"
+      },
+      "patronymic": {
+       "old": "Саввина",
+       "modern": "Саввична"
       },
       "maiden_surname": {
        "modern": "Перекатова"

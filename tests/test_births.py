@@ -830,3 +830,30 @@ class TestGodparentSurnameFromRelative(unittest.TestCase):
                   relatives=[relative(person("Иванъ", "Петровъ", "Абрамовъ"),
                                       Relationship.FATHER, "восприемника №2")])
         self.assertFalse(b.god_parent1.last_name_modern)
+
+
+class TestInfantPatronymic(unittest.TestCase):
+    """A newborn takes the father's name as its patronymic, both forms, as a deceased child does (В10)."""
+
+    def _birth(self, gender=Gender.MALE, child=None, father=None):
+        return Birth(1, gender, 5, 6, Month.MAY, Month.MAY,
+                     child=child or person("Иванъ" if gender == Gender.MALE else "Марія"),
+                     father=father if father is not None else person("Ѳома", "Петровъ"))
+
+    def test_son_and_daughter(self):
+        son, daughter = self._birth(), self._birth(Gender.FEMALE)
+        self.assertEqual((son.child.patr_orig, son.child.patr_old, son.child.patr_modern), (None, "Фомин", "Фомич"))
+        self.assertEqual((daughter.child.patr_old, daughter.child.patr_modern), ("Фомина", "Фоминична"))
+        self.assertTrue(son.child_patronymic_derived())
+
+    def test_a_written_patronymic_stays(self):
+        b = self._birth(child=person("Иванъ", "Сергѣевъ"))
+        self.assertEqual((b.child.patr_old, b.child.patr_modern), ("Сергеев", "Сергеевич"))
+        self.assertFalse(b.child_patronymic_derived())
+
+    def test_none_without_a_father_or_his_name(self):
+        no_father = Birth(1, Gender.MALE, 5, 6, Month.MAY, Month.MAY, child=person("Иванъ"))
+        unread = self._birth(father=person("?"))
+        for b in (no_father, unread):
+            self.assertEqual((b.child.patr_old, b.child.patr_modern), ("", ""))
+            self.assertFalse(b.child_patronymic_derived())

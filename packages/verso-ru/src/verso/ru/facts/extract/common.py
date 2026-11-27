@@ -240,7 +240,8 @@ class Entry:
               stated_role: str | None = None,
               status_basis: Stated | Derived | None = None,
               own_status: bool = True,
-              calendar_note: str | None = None) -> Persona:
+              calendar_note: str | None = None,
+              stated_patronymic: bool = True) -> Persona:
         """NameClaim (+ residence, + status) for one named appearance.
 
         The persona is named as the records JSON names it (`persona_id`): by
@@ -253,6 +254,8 @@ class Entry:
         not state (a reconstructed member). Otherwise the status is `Stated`,
         and `basis_unknown` when the book's defaults filled it in place.
         `calendar_note` rides on the claim that carries the given name.
+        `stated_patronymic=False` for an appearance whose patronymic the DSL derived (a newborn's, from the
+        father): the claim of what the record shows carries none, and the extractor restates it as derived.
         """
         ref = Persona(persona_id(self.source_id, *(slot or role_of(locator))))
         self.refs[locator] = ref
@@ -261,7 +264,7 @@ class Entry:
         cite = self.cite(locator, stated_role=stated_role)
         name = NameClaim(subject=ref, cite=cite, basis=name_basis or Stated(),
                          given=getattr(p, "name_modern", None),
-                         patronymic=getattr(p, "patr_modern", None),
+                         patronymic=getattr(p, "patr_modern", None) if stated_patronymic else None,
                          surname=getattr(p, "last_name_modern", None),
                          birth_surname=getattr(p, "birth_last_name_modern", None),
                          gender=gender_of(p), calendar_note=calendar_note or None)

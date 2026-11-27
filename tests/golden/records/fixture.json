@@ -82,6 +82,10 @@
           "given": {
            "modern": "Иван"
           },
+          "patronymic": {
+           "old": "Петров",
+           "modern": "Петрович"
+          },
           "surname": {
            "modern": "Сидоров"
           },
@@ -276,6 +280,10 @@
           "given": {
            "modern": "Анна"
           },
+          "patronymic": {
+           "old": "Петрова",
+           "modern": "Петровна"
+          },
           "residence": "Маниловка",
           "status": {
            "text": "крестьянская дочь",
@@ -345,6 +353,10 @@
          "derived": {
           "given": {
            "modern": "Марья"
+          },
+          "patronymic": {
+           "old": "Иванова",
+           "modern": "Ивановна"
           },
           "residence": "Маниловка",
           "status": {
@@ -416,6 +428,10 @@
          "derived": {
           "given": {
            "modern": "Петр"
+          },
+          "patronymic": {
+           "old": "Иванов",
+           "modern": "Иванович"
           },
           "residence": "Маниловка",
           "status": {
@@ -490,6 +506,10 @@
          "derived": {
           "given": {
            "modern": "Василий"
+          },
+          "patronymic": {
+           "old": "Иванов",
+           "modern": "Иванович"
           },
           "residence": "Маниловка",
           "status": {

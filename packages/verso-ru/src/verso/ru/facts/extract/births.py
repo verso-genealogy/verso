@@ -19,7 +19,8 @@ from typing import Any
 from verso.ru.facts.extract.common import (
     Entry, RecordId, SlotIndex, claim_clergy, fact_date, kinship, reviewed, stated_unless)
 from verso.ru.facts.model import (
-    AgedYears, Assertion, BaptizedOn, BornOn, Derived, GodparentOf, ParentOf, Persona, SpouseOf, Stated, Surety)
+    PATRONYMIC_FROM_FATHER, AgedYears, Assertion, BaptizedOn, BornOn, Derived, GodparentOf, NameClaim, ParentOf, Persona,
+    SpouseOf, Stated, Surety)
 
 __all__ = ["RECORD_KIND", "facts_from_births"]
 
@@ -64,10 +65,22 @@ def _facts_from_birth(birth: Any, village: str, source_file: str, entry: int,
         # Counting it would add 145 estate findings in Горюхино and 2 in
         # Заманиловка, every one resting on our inheritance rule; whether it
         # should is a separate question, asked after parity (2026-09-23).
+        #
+        # The newborn's patronymic, too, is the father's name, derived by
+        # `Birth.__init__` (В10): the claim of what the record shows carries none
+        # — so the child never stands witness to the patronymic beside the
+        # father it was made from — and it is restated as derived.
+        derived_patronymic = _derived_patronymic(birth)
         child_ref = e.claim(birth.child, "child",
                             residence_basis=Stated(basis_unknown=True),
                             own_status=False,
-                            calendar_note=getattr(birth, "calendar_note", None))
+                            calendar_note=getattr(birth, "calendar_note", None),
+                            stated_patronymic=derived_patronymic is None)
+        if derived_patronymic is not None:
+            e.facts.append(NameClaim(
+                subject=child_ref, cite=e.cite("child"),
+                basis=Derived(PATRONYMIC_FROM_FATHER, Surety.ASSUMED, ()),
+                given=None, patronymic=derived_patronymic, surname=None, gender=None))
         # A christening entry (`christening()`: a late or adult baptism) states
         # no birth at all. Its `b_month` is the section month `birth_month()`
         # fills in, and its year the book's — the day of the BAPTISM, not of
@@ -184,3 +197,10 @@ def _anchor_ref(e: Entry, ref_text: str | None, child_ref: Persona | None) -> Pe
     if text.startswith("реб") or text.startswith("млад"):  # i18n: content — the reference words the DSL writes
         return child_ref
     return None
+
+
+def _derived_patronymic(birth: Any) -> str | None:
+    """The newborn's patronymic `Birth.__init__` derived from the father (`Birth.child_patronymic_derived`),
+    or None where the record wrote one or none was derived."""
+    derived = getattr(birth, "child_patronymic_derived", None)
+    return birth.child.patr_modern if derived is not None and derived() else None

@@ -77,7 +77,7 @@ def test_a_mention_is_keyed_by_surname_else_by_patronymic(site: model.Site) -> N
     births = site.book("r1:Маниловка/47-9-755/1900/birth")
     first = [m for m in site.mentions if m.entry.id == births.entries[0].id]
     assert [(m.role, m.surname, m.patronymic) for m in first] == [
-        ("child", "Сидоров", ""), ("father", "Сидоров", "Иванов"), ("mother", "Сидорова", "Петрова"),
+        ("child", "Сидоров", "Петров"), ("father", "Сидоров", "Иванов"), ("mother", "Сидорова", "Петрова"),
         ("godparent", "Сидоров", "Петров"), ("relative", "Сидоров", "Петров")]
 
 
@@ -137,6 +137,17 @@ def _child(site: model.Site) -> model.Mention:
     return next(m for m in site.mentions if m.persona["id"] == CHILD)
 
 
+def _before_v10(node: dict[str, Any]) -> None:
+    """The node as an export made before the library derived a newborn's patronymic (В10): the child's derived
+    patronymic taken out, as `infant_patronymic` finds it in such an export."""
+    for doc in node["documents"]:
+        for run in doc.get("pages", []):
+            for record in run["records"]:
+                for persona in record.get("persons", []):
+                    if persona.get("role") == "child":
+                        (persona.get("derived") or {}).pop("patronymic", None)
+
+
 def test_an_infant_takes_its_fathers_patronymic_as_the_library_derives_it(site: model.Site) -> None:
     """A birth writes no patronymic of the child; the site says the father's, as derived — as it says the
     father's surname (`Birth`), and as the Geni translator and the CSV derive it."""
@@ -145,11 +156,22 @@ def test_an_infant_takes_its_fathers_patronymic_as_the_library_derives_it(site: 
     assert model.form(child.persona, "patronymic", "modern") == ("Петрович", "d")
 
 
+def test_the_export_carries_the_infants_patronymic_and_the_site_reads_it_from_there(file_node: dict[str, Any]) -> None:
+    """Since В10 the library derives it (`Birth.__init__`), both forms, into the export's `derived`; the site's
+    own derivation is for an export made before."""
+    child = next(p for p in _persons(file_node, CHILD.rsplit("/", 1)[0]) if p["role"] == "child")
+    assert child["derived"]["patronymic"] == {"old": "Петров", "modern": "Петрович"}
+    record = next(r for d in file_node["documents"] if "pages" in d for p in d["pages"] for r in p["records"]
+                  if r["id"] == CHILD.rsplit("/", 1)[0])
+    assert model.infant_patronymic(record) is record
+
+
 def test_a_daughter_takes_the_feminine_and_the_file_node_is_left_as_it_was(file_node: dict[str, Any]) -> None:
     node = copy.deepcopy(file_node)
     record = next(r for d in node["documents"] if "pages" in d for p in d["pages"] for r in p["records"]
                   if r["id"] == CHILD.rsplit("/", 1)[0])
     record["written"]["gender"] = "female"
+    _before_v10(node)
     before = copy.deepcopy(node)
     site = model.load([node], village="Маниловка")
     assert model.form(_child(site).persona, "patronymic", "modern") == ("Петровна", "d")
@@ -165,6 +187,7 @@ def test_a_christening_names_its_child_as_a_birth_does_and_a_null_form_is_no_pat
                       if r["id"] == CHILD.rsplit("/", 1)[0])
         record["kind"] = "christening"
         next(p for p in record["persons"] if p["role"] == "child")["written"]["patronymic"] = {"original": None}
+        _before_v10(node)
     assert model.form(_child(changed(rewrite)).persona, "patronymic", "modern") == ("Петрович", "d")
 
 
@@ -172,6 +195,7 @@ def test_a_christening_names_its_child_as_a_birth_does_and_a_null_form_is_no_pat
 def test_no_patronymic_is_made_where_the_record_gives_one_or_none_can_be_made(
         changed: Any, change: str) -> None:
     def rewrite(node: dict[str, Any]) -> None:
+        _before_v10(node)
         persons = _persons(node, CHILD.rsplit("/", 1)[0])
         child = next(p for p in persons if p["role"] == "child")
         if change == "written":

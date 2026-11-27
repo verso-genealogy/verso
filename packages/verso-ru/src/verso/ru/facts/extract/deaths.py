@@ -32,7 +32,7 @@ from verso.ru.relationship import Relationship
 from verso.ru.facts.extract.common import (
     Entry, RecordId, SlotIndex, claim_clergy, fact_date, kinship, reviewed, stated_unless)
 from verso.ru.facts.model import (
-    AgedYears, Assertion, BuriedOn, Derived, DiedOn, NameClaim, Persona, Stated, Surety)
+    PATRONYMIC_FROM_FATHER, AgedYears, Assertion, BuriedOn, Derived, DiedOn, NameClaim, Persona, Stated, Surety)
 
 __all__ = ["RECORD_KIND", "facts_from_deaths"]
 
@@ -136,5 +136,5 @@ def _patronymic_basis(e: Entry, rec: Any, deceased: Persona) -> None:
         return
     e.facts.append(NameClaim(
         subject=deceased, cite=e.cite("deceased"),
-        basis=Derived("dsl.patronymic-from-father", Surety.ASSUMED, ()),
+        basis=Derived(PATRONYMIC_FROM_FATHER, Surety.ASSUMED, ()),
         given=None, patronymic=person.patr_modern, surname=None, gender=None))
