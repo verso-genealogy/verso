@@ -119,7 +119,7 @@ class TestNotFlagged(_Harness):
         # The generator derives no maiden name for a daughter who has a current surname: hers is load-bearing.
         errs = self._check(_household(
             '        member(1, person("Алексей", "Матвеев", "Индюшев"), CensusRole.HEAD, age=47),\n'
-            '        member(2, person("Домна", "Алексеева", last_name_orig="Гусакова", '
+            '        member(2, person("Домна", "Алексеева", last_name_orig="Свиристелова", '
             'birth_last_name_modern_orth="Индюшева"), CensusRole.DAUGHTER, 1, age=25),'
         ))
         self.assertFalse(any("birth_last_name_modern_orth" in e for e in errs), errs)
