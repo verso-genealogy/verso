@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verso-ru"
-version = "0.1.54.dev0"
+version = "0.1.54"
 description = "verso's plugin for records written in Russian: DSL, naming, linters, facts, translator"
 requires-python = ">=3.14"
 license = "Apache-2.0"
@@ -34,7 +34,7 @@ classifiers = [
 # exact. The res_names' transliteration is no package since 0.1.0: the profile ru-v1, our own table
 # frozen by its hash (verso.ru.naming.transliteration).
 dependencies = [
-    "verso-core==0.1.54.dev0",
+    "verso-core==0.1.54",
     "python-dateutil==4.0.0",
 ]
 
