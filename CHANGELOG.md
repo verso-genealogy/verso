@@ -43,7 +43,6 @@ Revision and confession lists can be started blank (`BookSpec(kind="census")`, `
   «+» between creatable cards offers «+ двор» on a census book.
 - verso-ru: CAI002's skip predicates moved to `linters.checks.census_age.link_age_pair`, which the linter on the JSON and
   the page's `age_gap` both read; no finding moves.
-||||||| parent of f7c51da (Reading task: alternatives for a doubtful name)
 - verso-ru, the reading task (`verso.ru.reading.task`): an answer's `alternatives` — for a given name, patronymic
   or surname read two or three ways, the likelier in its field with «?» and listed in `doubtful`, the others
   (at most three) as `{"path": "persons[2].name", "readings": [...]}` by the field's path. The schema requires the
