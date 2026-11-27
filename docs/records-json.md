@@ -149,19 +149,27 @@ the fix is an addition to the format; until then, leave such an argument out rat
 
 A book started where no DSL file exists — on a review page — is a records JSON from its first day.
 `verso.ru.records.blank.blank_book(BookSpec(...))` writes it: one document and no pages, made by the record set's own
-factory (`birth_records`, `marriage_records`, `death_records`) without any record and without `reviewed`, so what is
-typed into it is read as it is typed. Replayed, it is the object the factory builds.
+factory (`birth_records`, `marriage_records`, `death_records`, and `census_records` for a revision list or, with
+`preset="confessions"`, a confession list — the vocabulary `CONFESSION_LIST` on the same factory) without any record
+and without `reviewed`, so what is typed into it is read as it is typed. Replayed, it is the object the factory builds.
 
 - `sha256` is `""`: «there is no DSL source». It is the sign of such a book, and no reader compares it with a file.
-- `file` is the path the DSL file would have had, `<year>/<kind>_<fund>-<inventory>-<case>[_<part>].py`; nothing is
-  there. The schema does not change.
-- The book lies at `book_path(spec)`, `<locality>/<year>/<kind>_<fund>-<inventory>-<case>[_<part>].json`, the variable
-  being `<kind>_<fund>_<inventory>_<case>[_<part>]`. A metric book's id has no part (rule `r1` takes one from a roll's
-  `archive_suffix` alone), so `part` only tells two books of one shelfmark apart in the path.
+- `file` is the path the DSL file would have had, `<year>/<word>_<fund>-<inventory>-<case>[_<part>].py`; nothing is
+  there. `<word>` is the kind (`births`, `marriages`, `deaths`, `census`), `confessions` for a confession list. The
+  schema does not change.
+- The book lies at `book_path(spec)`, `<locality>/<year>/<word>_<fund>-<inventory>-<case>[_<part>].json`, the variable
+  being `<word>_<fund>_<inventory>_<case>[_<part>]`. A metric book's id has no part (rule `r1` takes one from a roll's
+  `archive_suffix` alone), so `part` only tells two books of one shelfmark apart in the path. A roll is the other way
+  round: its part is `archive_suffix`, in the path and in the id, and `part` is refused.
+- A roll's own fields — `preset`, `prev_revision_year`, `female_previous_age`, `district`, `volost`,
+  `archive_suffix` — are refused on a metric book, and `prev_revision_year` and `female_previous_age` on a confession
+  list. On a roll each is checked as the value it is: a whole year before the book's, `true` or `false`, a text. An
+  empty `district`, `volost` or `archive_suffix` is not given: the path and the header hold none.
 - `BlankError` refuses a year outside 1700–1930, an empty fund, inventory or case, an empty parish, a `/`, `\` or `..` in
-  a field of the path or in the parish (which the id writes between its `/`s), a path field (fund, inventory, case, part, locality) or the parish with spaces at its ends or a
-  control character, a locality that is empty, `.` or `..`, defaults the record set does not accept, and a kind that is not
-  births, marriages or deaths. It is a `ValueError`: `str(exc)` is the message in the library's language, `exc.key` the
+  a field of the path or in the parish (which the id writes between its `/`s), a path field (fund, inventory, case, part,
+  archive_suffix, locality) or the parish with spaces at its ends or a control character, a locality that is empty, `.`
+  or `..`, defaults the record set does not accept, a kind that is not births, marriages, deaths or census, and a roll's
+  field as above. It is a `ValueError`: `str(exc)` is the message in the library's language, `exc.key` the
   catalog key and `exc.params` its parameters, for a caller that says it in its own language (`BlankError(key, message)`
   with a ready message still works, `params` then empty):
 
@@ -173,6 +181,9 @@ typed into it is read as it is typed. Replayed, it is the object the factory bui
   | `records.blank.parish` | none |
   | `records.blank.path` | `value` — the offending field |
   | `records.blank.defaults` | `error` — the record set's own refusal |
+  | `records.blank.roll_field` | `field` — a roll's field on a book it does not apply to (or `part` on a roll) |
+  | `records.blank.roll_value` | `field`, `value` — the field and its value as Python writes it (`'1834'`) |
+  | `records.blank.prev_revision` | `previous`, `year` — a previous revision not before the book's year |
 
 ## Ids — the rule `r1`
 
@@ -301,6 +312,28 @@ A path addresses one value of a record: a record's field is its key (`birth.day`
 `<role>/<field>` (`groom/given.original`) or, in a numbered slot, `<role>/<slot>/<field>`
 (`godparent/2/surname.original`), and an item of a group `<group>/<n>/<field>`, `n` its place in the
 source from 1 (`members/3/age`; its person's fields `members/3/person/given.original`).
+
+A book offers what a new book of its set can be made as (`presets`: `[{name, label}]` — the census's `confessions`,
+the `preset` of `BookSpec`). A group may be drawn otherwise than item by item: `view` (`table`) with its `columns`, the
+two together — an item's field or its person's (`person.given.original`). A kind's `rules` are what a page runs on its
+own fields: `follows`, `late`, `shown_when`, `renumber`, `ref_choices`, and, on a household, three suggestions as it is
+typed, which never write into a record:
+
+- `ref_hint` — whose a son, a daughter or a wife is (`path`, the field it fills: `ref_member`): a child of the
+  `children` roles, the nearest man above of the `parents` roles with a wife in the household and at least `min_gap`
+  years older; a wife (`spouse`), the nearest of them without one, at least `min_husband_age` and not more than
+  `max_wife_older` years her junior. Both ages written, or no hint.
+- `patronymic_hint` — a member of `of_role` (a brother) written with no patronymic (`path`, a person's field) takes the
+  patronymic of the member his reference names, of the `from_role` member (the head) where none is written.
+- `age_gap` — a member's two ages off the revision gap by more than a year, as CAI002 reads them: `gaps` is the
+  revision chain (a roll's year → its previous revision's), `prior_comment` the comment's marker of the previous age.
+
+A rule names every item field it reads: `renumber` its `number` and `refs`, `shown_when` its `when.gender_of`, the three
+hints theirs — `role`, `number`, `age` (`ref_hint`); `role`, `number`, `ref` (`patronymic_hint`); `age`, `previous`,
+`departure_year`, `departure_reason`, `hidden`, `comment` (`age_gap`) — so a page reads a member through the rule's
+paths alone. The library's answers are `verso.ru.records.household_hints`, which read the same keys. A key the build
+cannot read is refused: `records.ui.unknown_rule_key`, `rule_not_table` (a table that is not one), `rule_bad_value`
+(a key missing or holding the wrong kind of value), `unknown_path` (a field the group lacks), `bad_view`, `bad_preset`.
 
 ## Linters on records JSON
 
@@ -462,10 +495,12 @@ The rules are not asserted equal to the checks; two oracles compare them, both o
 
 ## The signals of one record
 
-Seven checks of the facts layer ([the checks](checks.md); their thresholds, [the reference](reference/checks.md)) need one record and nothing else: a wedding on a day the Church did not marry
+Eight checks of the facts layer ([the checks](checks.md); their thresholds, [the reference](reference/checks.md)) need one record and nothing else: a wedding on a day the Church did not marry
 (`wedding-calendar`), a newborn's name no saint near the birth supports (`name-days`), a christening or a burial long
 after (`baptism-lag`, `burial-lag`), an age at the wedding the law cannot hold (`wedding-ages`), a parent's age no birth can have (`parent-ages`), two dates the entry
-itself orders wrongly (`date-order`, its class «inside one entry»). A store that holds one record per row asks them
+itself orders wrongly (`date-order`, its class «inside one entry»), and, of a household of a revision list or a
+confession list, a father too young for his child or a child older than him (`household-ages`, its class «a household,
+with its roll»). A store that holds one record per row asks them
 of the row, the way it lints it:
 
 ```python
@@ -477,7 +512,8 @@ for signal in got.found:              # HIGH before LOW, then in the order of si
     signal.confidence                 # "HIGH" | "LOW" — the finding's own
     signal.said, signal.why           # messages of verso.ru's catalog: a key and plain params
     signal.details                    # more of them: Pascha's date, an open day beside, a look-alike name
-    signal.locator                    # the slot: "child", "groom", "bride", "deceased", "husband", "wife"; "" — the entry
+    signal.locator                    # the slot: "child", "groom", "bride", "deceased", "husband", "wife";
+                                      # "member<N>" — a household's member N (the father); "" — the entry
     signal.stand_down                 # the key of `written` that answers it, or None
 got.unanswered                        # the checks that could not be asked
 ```
@@ -492,7 +528,8 @@ got.unanswered                        # the checks that could not be asked
 - **A signal refuses nothing.** It is a prompt to look at the scan again. Nothing raises for what the record holds: a
   record the factories cannot build, or a workspace with no names table, leaves the checks `unanswered`.
 - **«Так в подлиннике» is a field of the record.** `stand_down` names it: `calendar_note` (`name-days`,
-  `wedding-calendar`), `lag_note` (the two lags), `age_note` (`wedding-ages`) — notes, the value stays believed — and
+  `wedding-calendar`), `lag_note` (the two lags), `age_note` (`wedding-ages`) — notes, the value stays believed —,
+  `source_age_error` (`parent-ages`, `household-ages`), which withdraws the age it is written on, and
   `source_date_error` for a christening before the birth, a burial before the death or a divorce before the marriage
   its own act names, which withdraws that date (of a divorce: the marriage's). An
   edit that writes the field is the whole answer; `facts.signal.note_default` is the text a page may offer for it.
@@ -505,5 +542,8 @@ got.unanswered                        # the checks that could not be asked
 
 An act of divorce answers two of them: `date-order` (its own two dates, said once of the entry, at the first spouse
 it names) and `wedding-calendar` (the church wedding it names, 1917 and before; `calendar_note`). A household of a
-roll, a card and a line of a list answer none of these checks; the checks that compare records need the people
+roll answers `household-ages` alone, and only with its roll: `signals_of(household, record_set=roll, …)` reads it as
+the roll yields it — its year, its dates, its previous revision — and `signals_on_json` passes the set it built; without
+the roll the check is `unanswered`. Its signal names the child by its number in the household (`child`), the father by
+`locator`. A card and a line of a list answer none of these checks; the checks that compare records need the people
 folded first and are not asked of one record.

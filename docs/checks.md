@@ -22,7 +22,7 @@ numbers each check holds are in [the reference](reference/checks.md).
 
 ## One record
 
-Seven checks need one record and nothing else, so they speak on a fresh workspace, before anything is
+Eight checks need one record and nothing else (a household, its roll), so they speak on a fresh workspace, before anything is
 consolidated. `verso facts --village V --check CHECK` asks one of them of the village.
 
 | Check | It asks | Answered by |
