@@ -148,7 +148,7 @@ def _subjects(rec, kind: str) -> list[PersonKey]:
         slots = ("deceased",)
     else:
         slots = ("groom", "bride")
-    keys = [person_key(getattr(rec, s, None)) for s in slots]
+    keys = [person_key(_slot(rec, s)) for s in slots]
     if kind == "смерть":  # i18n: content — a record kind, internal
         for rel in getattr(rec, "relatives", None) or []:
             keys.append(person_key(rel.person))
@@ -164,12 +164,18 @@ def _record_date(rec, kind: str, fallback_year: int) -> date | None:
     return as_date(year, getattr(rec, "w_month", None), getattr(rec, "w_day", None))
 
 
+def _slot(rec, slot: str):
+    """The person in `slot`: a newborn as the book writes him, without the patronymic made of his father (В10)."""
+    written = getattr(rec, "written_child", None) if slot == "child" else None
+    return written() if written is not None else getattr(rec, slot, None)
+
+
 def _everyone(rec) -> list[PersonKey]:
     """Every person a record names, in any slot — the index of attestations."""
     slots = ("child", "father", "mother", "deceased", "groom", "bride",
              "god_parent1", "god_parent2", "god_parent3", "god_parent4",
              "witness1", "witness2", "witness3", "witness4", "witness5", "witness6")
-    keys = [person_key(getattr(rec, s, None)) for s in slots]
+    keys = [person_key(_slot(rec, s)) for s in slots]
     for rel in getattr(rec, "relatives", None) or []:
         keys.append(person_key(rel.person))
     return [k for k in keys if k is not None]

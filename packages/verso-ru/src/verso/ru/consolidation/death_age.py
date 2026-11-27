@@ -206,7 +206,10 @@ def collect_births(birth_record_sets) -> list[BirthFact]:
     facts: list[BirthFact] = []
     for records, source in birth_record_sets:
         for rec in records.records:
-            child = person_key(getattr(rec, "child", None))
+            # The newborn as the book writes him (В10): a patronymic made of «Иванъ» would part him from his
+            # burial, whose father the book spells «Іоаннъ».
+            written = getattr(rec, "written_child", None)
+            child = person_key(written() if written is not None else getattr(rec, "child", None))
             if child is None:
                 continue
             year = getattr(rec, "year", None) or records.year

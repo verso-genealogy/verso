@@ -226,6 +226,19 @@ class FindConflicts(unittest.TestCase):
         self.assertEqual([], ss.find_spacing_conflicts(*args, min_gap_days=30))
 
 
+class NewbornPatronymic(unittest.TestCase):
+    """A newborn's patronymic made of the father (В10) is no key: the birth book's «Иванъ» and the burial's
+    «Іоаннъ» made two Петрs of one child, born and buried two months apart."""
+
+    def test_the_child_and_his_burial_stay_one(self):
+        ivan = person("Иванъ", "Петровъ", last_name_orig="Бекешевъ")
+        ioann = person("Іоаннъ", "Петровъ", last_name_orig="Бекешевъ")
+        found = ss.find_spacing_conflicts(
+            births(a_birth("Петръ", 3, Month.MAY, 1895, gender=Gender.MALE, father=ivan)),
+            deaths(a_death("Петръ", 10, Month.JULY, 1895, "2 мес", father=ioann)))
+        self.assertEqual(found, [])
+
+
 class Reporting(unittest.TestCase):
     def setUp(self):
         self.found = ss.find_spacing_conflicts(

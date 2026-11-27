@@ -98,7 +98,7 @@ def person_label(person: Any) -> str:
 
 def _principals(record: Any) -> list[Any]:
     if isinstance(record, Birth):
-        return [record.child]
+        return [record.written_child()]          # the newborn as the book writes him (В10)
     if isinstance(record, Marriage):
         return [record.groom, record.bride]
     if isinstance(record, Death):

@@ -48,12 +48,14 @@ from typing import Any
 from verso.ru.ages import DAYS_PER_YEAR
 from verso.ru.consolidation.age_conflicts import FATHER_MIN_DEFAULT, MOTHER_MIN_DEFAULT
 from verso.ru.consolidation.death_age import person_key
+from verso.ru.dsl.records.births import as_written
 from verso.ru.facts.checks.births import BirthSpan, birth_slack_years, birth_span, years_apart
 from verso.ru.facts.checks.dates import as_read
 from verso.ru.facts.checks.parenthood import FATHER_DAYS
 from verso.ru.facts.checks.reconcile import PRESENT_SLOTS, entry_days
 from verso.ru.facts.model import (
-    AgedYears, Assertion, AssertionSet, BornOn, BuriedOn, DiedOn, FactDate, OfficiatedAt, Persona, SurvivedUntil)
+    PATRONYMIC_FROM_FATHER, AgedYears, Assertion, AssertionSet, BornOn, BuriedOn, Derived, DiedOn, FactDate, NameClaim,
+    OfficiatedAt, Persona, SurvivedUntil)
 
 #: No one is offered older than this on the day of the record. The corpus's
 #: oldest stated ages stop short of it, and the books make the old older
@@ -193,7 +195,10 @@ def clues_of(facts: AssertionSet, slots: Any, *, year: int | None = None) -> dic
         present = (locator.startswith(_ALIVE_SLOTS)
                    or any(isinstance(c, (SurvivedUntil, OfficiatedAt)) for c in claims))
         died = (min(d[0] for d in deaths), min(d[1] for d in deaths)) if deaths else None
-        out[id(person)] = Clue(life_key(person), on, born, died,
+        # A newborn's patronymic made of the father is no key of his life (В10): the book wrote none.
+        made = any(isinstance(c, NameClaim) and isinstance(c.basis, Derived)
+                   and c.basis.rationale == PATRONYMIC_FROM_FATHER for c in claims)
+        out[id(person)] = Clue(life_key(as_written(person) if made else person), on, born, died,
                                present, locator == _NEWBORN, locator.startswith(ADULT_SLOTS))
     return out
 

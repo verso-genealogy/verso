@@ -249,10 +249,12 @@ def extract_occurrences(records, source_file: str,
             if not _reviewed(b):
                 continue
             year = b.year if b.year is not None else records.year
-            ck = person_key(b.child)
+            # The newborn as the book writes him (В10): the patronymic made of the father is no key.
+            written_child = b.written_child()
+            ck = person_key(written_child)
             fk = person_key(b.father)
             mk = person_key(b.mother)
-            child = _make_occ(b.child, rec_type="birth", record_num=b.record_num,
+            child = _make_occ(written_child, rec_type="birth", record_num=b.record_num,
                               role="child", year=year, source_file=source_file, stub_of=stub_of)
             if child:
                 if fk:

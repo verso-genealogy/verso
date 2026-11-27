@@ -210,8 +210,6 @@ class ClaimsDisagree(unittest.TestCase):
         self.assertEqual("LOW", f.confidence)
 
 
-if __name__ == "__main__":
-    unittest.main()
 
 
 class NewbornPatronymic(unittest.TestCase):
@@ -226,3 +224,7 @@ class NewbornPatronymic(unittest.TestCase):
                          [("Stated", None), ("Derived", "Изотович")])
         who = {("b1.py", "child"): "ivan"}
         self.assertEqual(1, _claims(facts, who, "ivan"))          # the father's edge alone
+
+
+if __name__ == "__main__":
+    unittest.main()

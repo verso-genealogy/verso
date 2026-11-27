@@ -788,8 +788,6 @@ class TestMotherSurnameInheritance(unittest.TestCase):
         self.assertIsNone(b.mother.last_name_modern)
 
 
-if __name__ == '__main__':
-    unittest.main()
 
 
 class TestGodparentSurnameFromRelative(unittest.TestCase):
@@ -851,9 +849,26 @@ class TestInfantPatronymic(unittest.TestCase):
         self.assertEqual((b.child.patr_old, b.child.patr_modern), ("Сергеев", "Сергеевич"))
         self.assertFalse(b.child_patronymic_derived())
 
+    def test_the_written_child_has_none_and_the_record_keeps_it(self):
+        b = self._birth()
+        bare = b.written_child()
+        self.assertIsNot(bare, b.child)
+        self.assertEqual((bare.patr_old, bare.patr_modern, bare.name_orig), ("", "", "Иванъ"))
+        self.assertEqual(b.child.patr_modern, "Фомич")
+
+    def test_a_patronymic_written_in_its_modern_spelling_is_the_records(self):
+        """`person("Иванъ", patr_old="Фомин")` writes one: it is no derivation, though it reads the same."""
+        b = self._birth(child=person("Иванъ", patr_old="Фомин"))
+        self.assertFalse(b.child_patronymic_derived())
+        self.assertIs(b.written_child(), b.child)
+
     def test_none_without_a_father_or_his_name(self):
         no_father = Birth(1, Gender.MALE, 5, 6, Month.MAY, Month.MAY, child=person("Иванъ"))
         unread = self._birth(father=person("?"))
         for b in (no_father, unread):
             self.assertEqual((b.child.patr_old, b.child.patr_modern), ("", ""))
             self.assertFalse(b.child_patronymic_derived())
+
+
+if __name__ == '__main__':
+    unittest.main()

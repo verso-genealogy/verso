@@ -16,7 +16,7 @@ from typing import Any
 from verso.core.records import ids
 from verso.ru.gender import Gender
 from verso.ru.messages import t
-from verso.ru.naming.patronymics import derive_patronymic
+from verso.ru.naming.patronymics import derive_old_patronymic, derive_patronymic
 from verso.ru.site import urls
 from verso.ru.site.errors import SiteError
 
@@ -253,7 +253,10 @@ def infant_patronymic(node: Node) -> Node:
     patronymic = derive_patronymic(given[0], gender) if given else ""
     if not patronymic or "?" in patronymic:
         return node
-    derived = {**(child.get("derived") or {}), "patronymic": {"modern": patronymic}}
+    # Both forms, as the library derives them since В10, so an older export keys the child as a newer one does.
+    old = derive_old_patronymic(given[0], gender) if given else ""
+    derived = {**(child.get("derived") or {}),
+               "patronymic": {"old": old, "modern": patronymic} if old else {"modern": patronymic}}
     return {**node, "persons": [{**p, "derived": derived} if p is child else p for p in persons]}
 
 

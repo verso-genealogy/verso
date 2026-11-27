@@ -10,12 +10,24 @@ from verso.ru.domain.statuses import child_status_for
 from verso.ru.dsl.records.reviewed import resolve_reviewed
 from verso.ru.naming import derive_old_patronymic, derive_patronymic, feminize_surname, get_gender_from_name
 from verso.ru.relationship import Relative, relative  # noqa: F401 (re-exported for backward compat)
+from verso.core.written import written_of
 from verso.ru.relationship import Relationship, gender_from_relationship
 from verso.core.written import captures_written, shadow
 
 if TYPE_CHECKING:
     from verso.ru.exporters.base import RecordsExporter
 
+
+
+def as_written(child: Person | None) -> Person | None:
+    """A copy of a newborn without the patronymic `Birth.__init__` derived from the father (both forms
+    empty, as the record left them); the record's own child is not touched."""
+    if child is None:
+        return None
+    bare = copy.copy(child)
+    bare.patr_old = ""
+    bare.patr_modern = ""
+    return bare
 
 class Birth:
     # Overridden to True by the Christening subclass so the translator can
@@ -314,12 +326,24 @@ class Birth:
 
     def child_patronymic_derived(self) -> bool:
         """Whether the newborn's patronymic is the one `__init__` derived from the father rather than the
-        record's: none written (`patr_orig`) and the derived one in place. The Geni translator keeps it out of
-        «Имена в МК», as it keeps a deceased child's (`_shallow_person_without_patr`); the facts layer states it
-        as derived."""
+        record's: none written — by what the `person()` call wrote (`written_of`) where it kept it, else by
+        `patr_orig` — and the derived one in place. The Geni translator keeps it out of «Имена в МК», as it keeps
+        a deceased child's (`_shallow_person_without_patr`); the facts layer states it as derived; the
+        consolidation channels read the child without it (`written_child`)."""
         child = self.child
-        return (child is not None and self.father is not None and not child.patr_orig
-                and bool(child.patr_modern) and child.patr_modern == self.derive_child_patronymic())
+        if child is None or self.father is None or not child.patr_modern:
+            return False
+        written = written_of(child)
+        wrote = (any(written.get(k) for k in ("patr_orig", "patr_old")) if written is not None
+                 else bool(child.patr_orig))
+        return not wrote and child.patr_modern == self.derive_child_patronymic()
+
+    def written_child(self) -> Person | None:
+        """The newborn as the record writes him: `child` without the patronymic `__init__` derived from the
+        father. The channels that weigh who may be whom read this one — a patronymic made of the father is no
+        evidence of the child (В10), and two spellings of the father's name would part the child from his own
+        burial."""
+        return as_written(self.child) if self.child_patronymic_derived() else self.child
 
     def get_birth_location(self, default: str | None = None) -> str | None:
         """Return the village where the birth actually happened.
