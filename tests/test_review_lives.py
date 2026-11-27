@@ -204,9 +204,10 @@ class FromTheRecords(unittest.TestCase):
         burial = death(1, Gender.FEMALE, 3, 5, Month.MARCH, Month.MARCH, year=1880, deceased=daughter, age=20,
                        relatives=[relative(person("Петръ", "Ивановъ", "Сидоровъ"), Relationship.FATHER)])
         found = self._clues(births=[record], deaths=[burial])
-        assert found[id(child)].key is not None and found[id(daughter)].key is not None
-        self.assertEqual(found[id(child)].key[2], "")
-        self.assertEqual(found[id(daughter)].key[2], "петровна")
+        newborn, buried = found[id(child)].key, found[id(daughter)].key
+        assert newborn is not None and buried is not None
+        self.assertEqual(newborn[2], "")
+        self.assertEqual(buried[2], "петровна")
 
 
 def _year(day: int) -> int:
