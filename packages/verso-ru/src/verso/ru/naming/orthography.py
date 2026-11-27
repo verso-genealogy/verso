@@ -14,7 +14,8 @@ from verso.ru.naming.names_registry import _full_reading, _name_facts, _old_read
 def modernize_orthography(text: str | None) -> str:
     """
     Converts historical Russian orthography to modern.
-    Replaces ѣ -> е, і -> и, ѳ -> ф, ѵ -> и, ѯ -> кс, and removes trailing ъ.
+    Replaces ѣ -> е, і -> и, ѳ -> ф, ѵ -> и, ѯ -> кс, and removes a word's trailing ъ, a doubtful
+    reading's «?» after it included («Маруговъ?» -> «Маругов?»).
     Also handles some common look-alikes like Ө (barred O) for Ѳ (Fita).
     """
     if not text:
@@ -34,9 +35,9 @@ def modernize_orthography(text: str | None) -> str:
     for old, new in replacements.items():
         modernized = modernized.replace(old, new)
 
-    # Remove trailing ъ
-    modernized = re.sub(r'ъ(?=\s|$|[.,;])', '', modernized)
-    modernized = re.sub(r'Ъ(?=\s|$|[.,;])', '', modernized)
+    # Remove trailing ъ — also before the «?» of a doubtful reading («Маруговъ?» → «Маругов?», В19)
+    modernized = re.sub(r'ъ(?=\s|$|[.,;?])', '', modernized)
+    modernized = re.sub(r'Ъ(?=\s|$|[.,;?])', '', modernized)
 
     return modernized
 

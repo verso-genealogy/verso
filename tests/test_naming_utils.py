@@ -29,6 +29,10 @@ class TestNamingUtils(unittest.TestCase):
         self.assertEqual(modernize_orthography("Ивановъ"), "Иванов")
         self.assertEqual(modernize_orthography("Петровъ,"), "Петров,")
         self.assertEqual(modernize_orthography("Сидоровъ."), "Сидоров.")
+        # ...before a doubtful reading's «?» (В19)
+        self.assertEqual(modernize_orthography("Маруговъ?"), "Маругов?")
+        self.assertEqual(modernize_orthography("Ѳедоръ??"), "Федор??")
+        self.assertEqual(modernize_orthography("Ѳедоръ? Алексѣевъ?"), "Федор? Алексеев?")
 
         # Combined
         self.assertEqual(modernize_orthography("Ѳедоръ Алексѣевъ"), "Федор Алексеев")
@@ -575,3 +579,12 @@ class TestFeminizeSurname(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestDoubtfulReadingModernized(unittest.TestCase):
+    def test_person_fields_drop_the_hard_sign_before_the_question_mark(self):
+        """A doubtful reading keeps its «?» and loses its ъ in the modern fields (В19)."""
+        from verso.ru.domain import Person
+        p = Person("Ѳедоръ", patr_orig="Петровъ", last_name="Свиристеловъ?", gender=Gender.MALE)
+        self.assertEqual(p.last_name_modern, "Свиристелов?")
+        self.assertEqual(p.name_modern, "Федор")
