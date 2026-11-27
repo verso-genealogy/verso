@@ -3,6 +3,8 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.55.dev0)
+
 ## 0.1.54 — 2026-11-27
 
 Revision and confession lists can be started blank (`BookSpec(kind="census")`, `preset="confessions"`), and the interface schema (ui-v1) draws a household as a table with three hints a page runs as it is typed (whose a child or a wife is, a brother's patronymic, two ages off the revision gap); a household's draft is creatable, and every book gains `presets`. A new facts check, `household-ages` (a father under 15 at his child's birth, or a child older than him, within one roll), joins `verso facts`, the signals of one record (a household, asked with its roll) and the facts snapshot, so every village's `facts_findings.tsv` gains a `household-ages` row — `0 0` where nothing is found, a village with no rolls too — and `verso facts-snapshot --check` fails until it is rewritten. CAI002's skip predicates move to a module of their own; no finding moves. A corpus's CSVs, Terraform, records JSON and facts do not move.
