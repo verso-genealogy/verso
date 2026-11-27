@@ -1072,6 +1072,10 @@ def _set_reviewed(call: cst.Call) -> cst.Call:
     return set_param(call, "reviewed", cst.Name("True"))
 
 
+def _set_unreviewed(call: cst.Call) -> cst.Call:
+    return set_param(call, "reviewed", cst.Name("False"))
+
+
 class _Rewriter(cst.CSTTransformer):
     def __init__(self, edits: Mapping[int, list[Callable[[cst.Call], cst.Call]]]) -> None:
         self.edits = edits
@@ -1084,10 +1088,15 @@ class _Rewriter(cst.CSTTransformer):
 
 def apply(source: str, ordinal: int, expected_sha: str,
           ops: Sequence[Mapping[str, Any]] = (), mark_reviewed: bool = False,
-          on_geni: Iterable[str] | None = None) -> str:
+          on_geni: Iterable[str] | None = None, *, unreview: bool = False) -> str:
     """`source` with the record at `ordinal` edited by `ops` and, when asked,
-    marked reviewed. Raises `Stale` when the record is not the one the caller
-    saw, `EditError` when an edit cannot be written.
+    marked reviewed — or, with `unreview`, marked unreviewed again: the record's
+    own call writes `reviewed=False` (an edit someone other than the owner made
+    is the owner's to read again). `unreview` leaves a record that is unreviewed
+    already as it is, and touches no ratchet line: the caller decides where an
+    unreviewed record may stand. Raises `Stale` when the record is not the one
+    the caller saw, `EditError` when an edit cannot be written (both flags at
+    once among them).
 
     With `on_geni` (the file's ratchet fingerprints) an edit of a record that is
     on Geni and still unreviewed is refused unless it is marked reviewed with
@@ -1100,6 +1109,8 @@ def apply(source: str, ordinal: int, expected_sha: str,
     target = found[ordinal]
     if sha(module.code_for_node(target.node)) != expected_sha:
         raise Stale(t("source.stale"))
+    if mark_reviewed and unreview:
+        raise EditError(t("source.review_and_unreview"))
     if on_geni is not None and ops and not mark_reviewed and struck(source, ordinal, on_geni):
         raise EditError(t("source.listed_needs_review"))
 
@@ -1114,6 +1125,8 @@ def apply(source: str, ordinal: int, expected_sha: str,
             raise EditError(t("source.reviewed_already"))
         for node, fn in _review_edits(found, target):
             edits.setdefault(id(node), []).append(fn)
+    if unreview and not _state(target)[0]:
+        edits.setdefault(id(target.node), []).append(_set_unreviewed)
     if not edits:
         return source
     new = module.visit(_Rewriter(edits))

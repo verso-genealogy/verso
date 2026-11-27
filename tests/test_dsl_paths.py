@@ -315,6 +315,7 @@ PHRASES: list[tuple[str, dict[str, object], str]] = [
     ("source.element_not_a_call", {"param": "relatives", "key": "#0"}, "relatives=#0 — не вызов"),
     ("source.empty_path", {}, "пустой путь правки"),
     ("source.reviewed_already", {}, "запись уже вычитана"),
+    ("source.review_and_unreview", {}, "запись нельзя одновременно вычитать и снять с неё вычитку"),
     ("source.not_a_constant_name", {"code": "a-b"}, "'a-b' — не имя константы"),
     ("source.dsl_v0", {}, "DSL v0: verso upgrade-dsl <файл>"),
 ]

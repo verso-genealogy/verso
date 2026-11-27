@@ -7,6 +7,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ### Added
 
+- verso-ru, the DSL's source (`verso.ru.dsl.source.apply`): `unreview=True` marks a proofread record unreviewed again
+  — its own call writes `reviewed=False`, with or without an edit in the same call; a record unreviewed already is
+  left as it is, the other records of its leaf or file keep their flags, and no ratchet line is written or struck (the
+  caller decides where an unreviewed record may stand). With `mark_reviewed=True` at once it is refused
+  (`source.review_and_unreview`). For a sync that carries someone else's edit back into the DSL for the owner to read
+  again.
 - verso-ru, the reading task (`verso.ru.reading.task`): a census household member is read with `of` — whose
   member they are, by the number of the person they belong to, or by the member's place where the list writes no
   numbers — and with `departure_year` and `departure_reason`, the year and the reason of a «убыл». `task.CARD_KINDS`

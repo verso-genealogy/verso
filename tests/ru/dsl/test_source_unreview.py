@@ -1,0 +1,61 @@
+"""`source.apply(…, unreview=True)`: a proofread record of a DSL file marked unreviewed again — `reviewed=False` on its
+own call, the other records and the ratchet left alone. On the invented book of tests/fixtures/mini (its people,
+parish and record numbers made up)."""
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from verso.ru.dsl import source
+
+BOOK = Path(__file__).resolve().parents[2] / "fixtures" / "mini" / "root" / "Маниловка" / "1900" / "manilovka_births_1900.py"
+
+
+def _records(text: str) -> list[source.Record]:
+    return source.find_records(text)
+
+
+def _reviewed(text: str) -> list[bool]:
+    return [not r.pending for r in _records(text)]
+
+
+def test_unreview_writes_reviewed_false():
+    text = BOOK.read_text(encoding="utf-8")
+    ordinal = _reviewed(text).index(True)                       # the book's proofread record (Агафья)
+    rec = _records(text)[ordinal]
+    out = source.apply(text, ordinal, rec.sha, unreview=True)
+    assert not _reviewed(out)[ordinal]
+    lines = out.splitlines()
+    assert "reviewed=False" in lines[next(i for i, line in enumerate(lines) if "Агафья" in line) - 1]
+
+
+def test_unreview_keeps_other_records():
+    text = BOOK.read_text(encoding="utf-8")
+    before = _reviewed(text)
+    ordinal = before.index(True)
+    out = source.apply(text, ordinal, _records(text)[ordinal].sha, unreview=True)
+    after = _reviewed(out)
+    assert [a for i, a in enumerate(after) if i != ordinal] == [b for i, b in enumerate(before) if i != ordinal]
+    assert len(out.splitlines()) == len(text.splitlines())
+
+
+def test_unreview_of_an_unreviewed_record_is_a_no_op():
+    text = BOOK.read_text(encoding="utf-8")
+    ordinal = _reviewed(text).index(False)
+    assert source.apply(text, ordinal, _records(text)[ordinal].sha, unreview=True) == text
+
+
+def test_unreview_with_an_edit():
+    text = BOOK.read_text(encoding="utf-8")
+    ordinal = _reviewed(text).index(True)
+    ops = [{"op": "set", "path": ["b_day"], "value": {"kind": "int", "value": 7}}]
+    out = source.apply(text, ordinal, _records(text)[ordinal].sha, ops, unreview=True)
+    assert _records(out)[ordinal].day == 7 and not _reviewed(out)[ordinal]
+
+
+def test_review_and_unreview_at_once_is_refused():
+    text = BOOK.read_text(encoding="utf-8")
+    ordinal = _reviewed(text).index(False)
+    with pytest.raises(source.EditError):
+        source.apply(text, ordinal, _records(text)[ordinal].sha, mark_reviewed=True, unreview=True)
