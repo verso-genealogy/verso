@@ -196,11 +196,11 @@ def test_nullable_count_per_group():
     assert max(counts.values()) <= 16
 
 
-#: The metric groups' prompt and schema, hashed before the household's «whose» and departure were added.
+#: The metric groups' prompt and schema, hashed before the household's «whose» and departure were added (main's, 0.1.55).
 METRIC_HASHES = {
-    "births": "6514425d2ff2daed2620a707b9bd06b2f9f55b9c735f03d28eae87fd88649464",
-    "marriages": "de7b681c837d5f459ab0ab272173686cfe75ae2f45d673fa44757e0019cf9034",
-    "deaths": "a604d5568d1367f7f599454ec91c85dccdf60fe9f3eb6414b7a09fad9ae651f4",
+    "births": "26b6e5d5585a84e47096e97c67033c2967a02e316bb5d68c38e726cfd9d59b07",
+    "marriages": "2424e4aa173394cb267a0766e1132030a2b19ae7a8b11fd12e52d9c8d4fc0256",
+    "deaths": "5773573aac8ed8553e6a0a193a7e25141db75a5f9fd2dcf35c20e472372e7ebf",
 }
 CENSUS_PERSON = ("slot", "number", "name", "patronymic", "surname", "status", "residence", "role", "of", "age",
                  "previous_age", "departure_year", "departure_reason")
