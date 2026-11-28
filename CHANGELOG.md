@@ -3,6 +3,8 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.57.dev0)
+
 ## 0.1.56 — 2026-11-28
 
 A corpus moves in these places. Its records JSON gains every newborn's patronymic derived from the father, under the
