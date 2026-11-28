@@ -8,8 +8,8 @@ class by its parameters (name, kind, the default's repr — annotations are not 
 enum by its members, a constant by its value (and the sex a status carries). `api-v<DSL_API>.json`
 beside this module holds it, and DSL v1 may only grow: `incompatible(old, new)` says what a new
 surface takes from an old one — a name, a parameter, a default, a kind, the order of the
-positionals, a value. A new name, and a new parameter with a default after the old positionals,
-are compatible; anything else is DSL v2 (`DSL_API = 2`, `api-v2.json`).
+positionals, a value. A new name, a parameter that gains a default, and a new parameter with a default
+after the old positionals, are compatible; anything else is DSL v2 (`DSL_API = 2`, `api-v2.json`).
 """
 from __future__ import annotations
 
@@ -65,7 +65,7 @@ def _params(where: str, old: list[list[Any]], new: list[list[Any]]) -> list[str]
             out.append(str(t("dsl.surface.no_param", where=where, name=name)))
         elif now[name][1] != kind:
             out.append(str(t("dsl.surface.param_kind", where=where, name=name)))
-        elif now[name][2] != default:
+        elif default is not None and now[name][2] != default:  # a parameter may gain a default
             out.append(str(t("dsl.surface.param_default", where=where, name=name, was=default, now=now[name][2])))
     before = [p[0] for p in old if p[1] in _POSITIONAL]
     after = [p[0] for p in new if p[1] in _POSITIONAL]

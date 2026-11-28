@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 
 ## Unreleased (0.1.57.dev0)
 
+A household member's role may be left out in the DSL's `member(...)`, the same as `None`: the records JSON is the
+same, and a member written without a role replays. A call that passes `None` explicitly builds the same object as
+before.
+
 ## 0.1.56 — 2026-11-28
 
 A corpus moves in these places. Its records JSON gains every newborn's patronymic derived from the father, under the
