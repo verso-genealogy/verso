@@ -439,13 +439,13 @@ def _check_member(m: ast.Call, members: dict[int, ast.Call],
 
 
 def _role_is_none(m: ast.Call) -> bool:
-    """True when the member DECLARES `role=None` — distinct from a call that
-    simply omits the argument, which `_role_name` cannot tell apart."""
+    """True when the member has no role: `role=None` written out, or the argument left out
+    (`member(n, person(...), ref_member=...)`); the two build the same member."""
     role_expr: ast.expr | None = m.args[2] if len(m.args) >= 3 else None
     kw = _kwargs(m)
     if "role" in kw:
         role_expr = kw["role"].value
-    return isinstance(role_expr, ast.Constant) and role_expr.value is None
+    return role_expr is None or (isinstance(role_expr, ast.Constant) and role_expr.value is None)
 
 
 def _check_cpl008(m: ast.Call,

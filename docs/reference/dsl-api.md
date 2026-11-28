@@ -2,7 +2,7 @@
 
 # DSL API v1
 
-What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only when a name goes or is renamed; a new keyword with a default is compatible.
+What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only when a name goes or is renamed; a new keyword with a default, or a parameter that gains a default, is compatible.
 
 
 ## `verso.ru.dsl`

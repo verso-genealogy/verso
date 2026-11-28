@@ -57,6 +57,11 @@ def surface() -> dict[str, Any]:
     return {"api": verso.ru.dsl.DSL_API, "modules": modules}
 
 
+def _shown(default: str | None) -> str:
+    """A default as the message says it: JSON null is no default."""
+    return str(t("dsl.surface.no_default")) if default is None else default
+
+
 def _params(where: str, old: list[list[Any]], new: list[list[Any]]) -> list[str]:
     out = []
     now = {p[0]: p for p in new}
@@ -66,7 +71,8 @@ def _params(where: str, old: list[list[Any]], new: list[list[Any]]) -> list[str]
         elif now[name][1] != kind:
             out.append(str(t("dsl.surface.param_kind", where=where, name=name)))
         elif default is not None and now[name][2] != default:  # a parameter may gain a default
-            out.append(str(t("dsl.surface.param_default", where=where, name=name, was=default, now=now[name][2])))
+            out.append(str(t("dsl.surface.param_default", where=where, name=name, was=_shown(default),
+                             now=_shown(now[name][2]))))
     before = [p[0] for p in old if p[1] in _POSITIONAL]
     after = [p[0] for p in new if p[1] in _POSITIONAL]
     if after[:len(before)] != before and set(before) <= set(after):

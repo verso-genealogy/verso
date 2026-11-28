@@ -143,7 +143,7 @@ def render_dsl_api() -> str:
     api = json.loads(API.read_text(encoding="utf-8"))
     lines = [HEAD + f"# DSL API v{api['api']}\n",
              "What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only when a "
-             "name goes or is renamed; a new keyword with a default is compatible.\n"]
+             "name goes or is renamed; a new keyword with a default, or a parameter that gains a default, is compatible.\n"]
     for module, names in api["modules"].items():
         lines.append(f"\n## `{module}`\n")
         for name, entry in names.items():

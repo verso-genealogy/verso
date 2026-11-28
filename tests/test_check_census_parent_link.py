@@ -718,6 +718,19 @@ class TestCpl007(unittest.TestCase):
             'member(1, person("Лукьянъ", "Макаровъ"), CensusRole.HEAD, age=78)',
             'member(2, person("Макаръ"), CensusRole.SON, ref_member=1, age=45)'), [])
 
+    def test_a_left_out_role_is_none(self):
+        """`member(n, person(...), ref_member=N)` builds the same member as `role=None`: the same finding."""
+        left_out = 'member(17, person("Герасим"), ref_member=3, age="?", hidden=True)'
+        found = self._codes(*self._HOUSEHOLD, left_out)
+        self.assertEqual(len(found), 1, found)
+        self.assertIn("member 17 (Герасим)", found[0])
+        self.assertEqual(self._codes(*self._HOUSEHOLD, left_out[:-1] + ', spouse_member=3)'), [])
+
+    def test_a_role_left_out_without_a_ref_is_silent(self):
+        self.assertEqual(self._codes(
+            'member(1, person("Лука", "Шумилов"), CensusRole.HEAD, age=41)',
+            'member(9, person("Мирон"), age="?", hidden=True)'), [])
+
     def test_role_none_without_a_ref_is_silent(self):
         """A member with no reference has nothing to disambiguate — the
         «связь не указана» shape, and the bare hidden ancestors."""
