@@ -77,6 +77,18 @@ def test_a_changed_default_is_not():
     assert surface.incompatible(OLD, new) == ["verso.ru.dsl.birth: умолчание k_year None → 0"]
 
 
+def test_a_parameter_gaining_a_default_is_compatible():
+    new = _new()
+    new["modules"]["verso.ru.dsl"]["birth"]["params"][1][2] = "None"
+    assert surface.incompatible(OLD, new) == []
+
+
+def test_a_parameter_losing_its_default_is_not():
+    new = _new()
+    new["modules"]["verso.ru.dsl"]["birth"]["params"][2][2] = None
+    assert surface.incompatible(OLD, new) == ["verso.ru.dsl.birth: умолчание k_year None → нет умолчания"]
+
+
 def test_a_reordered_positional_is_not():
     new = _new()
     params = new["modules"]["verso.ru.dsl"]["birth"]["params"]

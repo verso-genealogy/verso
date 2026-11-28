@@ -345,7 +345,7 @@ def _cpl006(household: Household, m: Member, rid: str) -> Iterator[Finding]:
 def _cpl007(_household: Household, m: Member, rid: str) -> Iterator[Finding]:
     """`census_parent_link._check_cpl007`: a `role=None` member whose ref_member is named on no typed axis."""
     ref = m.ref("ref_member")
-    if "role" not in m.link or m.link["role"] is not None or ref is None:
+    if m.link.get("role") is not None or ref is None:
         return
     if ref in (m.ref("spouse_member"), m.ref("parent_member")):
         return

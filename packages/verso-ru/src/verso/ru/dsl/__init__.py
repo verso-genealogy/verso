@@ -10,7 +10,7 @@ status and a marital status, two constants that one namespace could not hold. A 
 statuses are its `corpus.statuses`.
 
 `DSL_API` versions this surface: `api-v1.json` holds it, `verso.ru.dsl.surface` writes it and
-checks that it only grows (`verso dsl-surface --check`). A name or a parameter with a default added keeps
+checks that it only grows (`verso dsl-surface --check`). A name, a parameter with a default added, or a parameter that gains a default keeps
 DSL v1; one removed or renamed, a default, a kind, the order of the positionals or a constant's
 value changed is DSL v2.
 

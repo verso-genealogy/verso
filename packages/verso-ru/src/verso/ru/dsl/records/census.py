@@ -566,7 +566,7 @@ class CensusRecords:
 
 
 @captures_written
-def member(number: int, person: Person, role: CensusRole | None, ref_member: int | None = None,
+def member(number: int, person: Person, role: CensusRole | None = None, ref_member: int | None = None,
            age: int | str | None = None, previous_age: int | str | None = None, marital_status: str | None = None,
            occupation: str | None = None, origin: str | None = None, destination: str | None = None,
            arrival_year: int | None = None, arrival_reason: str | None = None, departure_year: int | None = None,

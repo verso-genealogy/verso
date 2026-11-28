@@ -1747,6 +1747,7 @@ not_written = "поверхность DSL не записана: verso dsl-surfa
 no_param = "{where}: нет параметра {name}"
 param_kind = "{where}: параметр {name}: другой вид"
 param_default = "{where}: умолчание {name} {was} → {now}"
+no_default = "нет умолчания"
 positional_order = "{where}: порядок позиционных"
 new_param = "{where}: новый параметр {name} без умолчания"
 value = "{where}: значение «{was}» → «{now}»"

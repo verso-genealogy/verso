@@ -67,7 +67,8 @@ links = census_records(
               member(7, person("Семенъ"), CensusRole.SON, ref_member=1, age=30, secondary_role=CensusRole.BROTHER,
                      secondary_ref_member=1),
               member(8, person("Петръ"), CensusRole.SON, ref_member=1, age=30, secondary_role=CensusRole.BROTHER,
-                     secondary_ref_member=2)),
+                     secondary_ref_member=2),
+              member(9, person("Ѳекла"), ref_member=1, age=50)),
     # CPL009, CPL010: a number the household lacks; a number used twice (the later wins).
     household("8",
               member(1, person("Лука", "Ѳоминъ", "Примеровъ"), CensusRole.HEAD, age=60),

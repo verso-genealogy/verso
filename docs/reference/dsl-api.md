@@ -2,7 +2,7 @@
 
 # DSL API v1
 
-What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only when a name goes or is renamed; a new keyword with a default is compatible.
+What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only when a name goes or is renamed; a new keyword with a default, or a parameter that gains a default, is compatible.
 
 
 ## `verso.ru.dsl`
@@ -41,7 +41,7 @@ What a DSL file may import (IMP001 refuses anything else). `DSL_API` rises only 
 - `marriage_month(month, *records)`
 - `marriage_month_year(month, year, *records)`
 - `marriage_records(archive, fund, inventory, case, village, church, year, *records, defaults=None, reviewed=True, civil=False)`
-- `member(number, person, role, ref_member=None, age=None, previous_age=None, marital_status=None, occupation=None, origin=None, destination=None, arrival_year=None, arrival_reason=None, departure_year=None, departure_reason=None, record_number=None, birth_day=None, birth_month=None, birth_year=None, parent_member=None, father_ref=None, secondary_role=None, secondary_ref_member=None, hidden=False, comment=None, spouse_member=None, source_age_error=None, previous_age_error=None)`
+- `member(number, person, role=None, ref_member=None, age=None, previous_age=None, marital_status=None, occupation=None, origin=None, destination=None, arrival_year=None, arrival_reason=None, departure_year=None, departure_reason=None, record_number=None, birth_day=None, birth_month=None, birth_year=None, parent_member=None, father_ref=None, secondary_role=None, secondary_ref_member=None, hidden=False, comment=None, spouse_member=None, source_age_error=None, previous_age_error=None)`
 - `name_list_records(archive, fund, inventory, case, village, year, *entries, document_type, document_type_genitive=None, district=None, volost=None, record_day=None, record_month=None, scan_file=None, source_url=None, labels=None, reviewed=True, household_order=False)`
 - `page(num, *records, archive=None, fund=None, inventory=None, case=None, church=None, year=None, day=None, month=None, reviewed=None)`
 - `person(name_orig=None, patr_orig=None, last_name_orig=None, name_modern_orth=None, patr_old=None, last_name_modern_orth=None, residence=None, status=None, gender=None, side=None, comment=None, last_name_in_book=True, birth_last_name_modern_orth=None, occupation=None)`

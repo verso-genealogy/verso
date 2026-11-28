@@ -1585,7 +1585,7 @@
      [
       "role",
       "POSITIONAL_OR_KEYWORD",
-      null
+      "None"
      ],
      [
       "ref_member",
