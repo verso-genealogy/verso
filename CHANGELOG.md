@@ -3,13 +3,15 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
+## Unreleased (0.1.58.dev0)
+
 ## 0.1.57 — 2026-11-28
 
 A household member's role may be left out in the DSL's `member(...)`. It builds the same member as `None`; its records
-JSON leaves the field out where `None` writes `"role": null`, and both replay. CPL007 reads a left-out role as
-`None`. A call that passes `None` explicitly builds the same object as before. `verso dsl-surface` accepts a
-parameter that gains a default and names a default taken away «no default»; DSL v1 stays. A corpus whose DSL writes every member's role, `None` included, does not move: its
-CSVs, Terraform, records JSON, facts and dsllint findings are as before.
+JSON leaves the field out where `None` writes `"role": null`, and both replay. CPL007 reads a left-out role as `None`. A
+call that passes `None` explicitly builds the same object as before. `verso dsl-surface` accepts a parameter that gains
+a default and names a default taken away «no default»; DSL v1 stays. A corpus whose DSL writes every member's role,
+`None` included, does not move: its CSVs, Terraform, records JSON, facts and dsllint findings are as before.
 
 ## 0.1.56 — 2026-11-28
 
