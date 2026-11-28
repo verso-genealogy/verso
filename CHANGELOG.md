@@ -3,7 +3,23 @@
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow
 [compatibility](docs/compatibility.md) — while 0.x, a minor version may break compatibility.
 
-## Unreleased (0.1.56.dev0)
+## 0.1.56 — 2026-11-28
+
+A corpus moves in these places. Its records JSON gains every newborn's patronymic derived from the father, under the
+child's `derived` (14 734 newborns on a corpus of six villages), and its facts the same as a Derived claim; the site
+lists a newborn with no surname under that patronymic. Its deaths' CSVs, the Familio справочник's deaths too, carry the
+comments of the record and of its people where one has any. A name read in doubt that ends in «ъ?» loses the ъ in its
+modern forms (10 readings on six villages) — in the records JSON, the site, the CSVs, the Geni profile's name and the
+document text that quotes it, so such a `geni_document` is force-replaced (the data's apply gate refuses it until the
+documents are synced), and in one village `tf-generate` warns RPF001 on a preference that became redundant. The
+reading task's census schema reads a household member's `of` (whose member) and a «убыл» (`departure_year`,
+`departure_reason`) and requires them: a client that validates an answer against the 0.1.55 census schema refuses the
+new one, and an App that does not know the fields drops them without a word, so an App moves onto this release only
+with its own release that reads them (verso-app's copy of `tests/golden/ui/value-at.json` moves with it). `verso drift`
+(`make tf-drift`) counts real changes only and lists planned creates and deletes apart. The DSL's source can unreview a
+record (`unreview=True`). The metric groups' prompts and schemas do not move, nor do a corpus's Terraform (but for the
+«ъ?» names), its births' and marriages' CSVs, the facts snapshot and the reports of `father-claims`, `name-variants`,
+`sibling-spacing`, `stale-claims` and `candidates`.
 
 ### Added
 
@@ -13,17 +29,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
   caller decides where an unreviewed record may stand). With `mark_reviewed=True` at once it is refused
   (`source.review_and_unreview`). For a sync that carries someone else's edit back into the DSL for the owner to read
   again.
-- verso-ru, the reading task (`verso.ru.reading.task`): a census household member is read with `of` — whose
-  member they are, by the number of the person they belong to, or by the member's place where the list writes no
-  numbers — and with `departure_year` and `departure_reason`, the year and the reason of a «убыл». `task.CARD_KINDS`
-  names the two card kinds, «ревизская сказка» and «исповедная роспись». `of`, `departure_year` and
-  `departure_reason` are required in the census person: a client that validates an answer against the schema rejects
-  one written to the 0.1.55 census schema. `task.of_targets(persons)` resolves each member's `of` to the index of
-  the member it names, one rule for every client: by the 1-based place in `persons` when no member has a written
-  `number`, else by `number`; an `of` naming the head, oneself or no member (also in a household numbered in part)
-  is no link, never a guess, and `OfTarget.under_head` tells the head from oneself and nobody; an `of` written «2?» resolves as «2» and is reported `doubtful`. The census prompt and schema changed
-  (the test's `PROMPT_HASH` moves); the metric groups' prompts and schemas did not. The census prompt equals the one
-  measured on the reading benchmark apart from the shared «?»/`alternatives` lines main added in 0.1.55.
+- verso-ru, the reading task (`verso.ru.reading.task`): a census household member is read with `of` — whose member they
+  are, by the number of the person they belong to, or by the member's place where the list writes no numbers — and with
+  `departure_year` and `departure_reason`, the year and the reason of a «убыл». `task.CARD_KINDS` names the two card
+  kinds, «ревизская сказка» and «исповедная роспись». `of`, `departure_year` and `departure_reason` are required in the
+  census person: a client that validates an answer against the schema rejects one written to the 0.1.55 census schema.
+  `task.of_targets(persons)` resolves each member's `of` to the index of the member it names, one rule for every client:
+  by the 1-based place in `persons` when no member has a written `number`, else by `number`; an `of` naming the head,
+  oneself or no member (also in a household numbered in part) is no link, never a guess, and `OfTarget.under_head` tells
+  the head from oneself and nobody; an `of` written «2?» resolves as «2» and is reported `doubtful`. The census prompt
+  and schema changed (the test's `PROMPT_HASH` moves); the metric groups' prompts and schemas did not. The census prompt
+  equals the one measured on the reading benchmark apart from the shared «?»/`alternatives` lines main added in 0.1.55.
 
 ### Changed
 
@@ -55,10 +71,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); ver
 - verso-ru, `verso drift` (`verso.ru.consolidation.drift`, the data's `make tf-drift`): a plan with no drift block is
   read through its `resource_changes`, and every no-op there counted as DERIVED-NAME — thousands of resources where
   nothing changed. No-ops are skipped, and so is a value the plan leaves to be computed (`after_unknown`, a list's
-  element too), and an empty the provider writes either way (null, "", [], {}); the header says it lists planned
-  changes then, and a planned create or delete is listed apart (PLANNED-CREATE, PLANNED-DELETE), not as MERGE. CONTENT is any real difference — every name field (a maiden name, nicknames),
-  an event's date or place, the unions, the rest — where it was the surname and the event dates alone; DERIVED-NAME
-  is a difference in an event's name alone.
+  element too), and an empty the provider writes either way (null, "", [], {}); the header says it lists planned changes
+  then, and a planned create or delete is listed apart (PLANNED-CREATE, PLANNED-DELETE), not as MERGE. CONTENT is any
+  real difference — every name field (a maiden name, nicknames), an event's date or place, the unions, the rest — where
+  it was the surname and the event dates alone; DERIVED-NAME is a difference in an event's name alone.
 - verso-ru, the deaths' Familio CSV (`DeathRecordsCsvFamilioExporter`, and so the Familio справочник's deaths):
   `пометки` carries the record's `comment=` and each person's — the deceased, every relative, the witnesses, the
   clergy — before the witnesses' names, as the births' and the marriages' CSVs carry theirs; neither was exported. A
